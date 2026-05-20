@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Package, ArrowUpDown, PlusCircle, MapPin, Clock } from 'lucide-react';
+import { ArrowUpDown, PlusCircle, MapPin, Clock } from 'lucide-react';
 import type { Titipan } from '../../types/dashboard';
 import LocationModal from './LocationModal';
 
@@ -41,8 +41,8 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
             >
-              <option value="newest">Terbaru (Restock Terdekat)</option>
-              <option value="oldest">Terlama (Restock Terjauh)</option>
+              <option value="newest">Terbaru</option>
+              <option value="oldest">Terlama</option>
             </select>
           </div>
           <button 
@@ -72,9 +72,6 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
                 <tr key={item.id} className="hover:bg-rose-50/30 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center shrink-0">
-                        <Package className="h-5 w-5 text-rose-600" />
-                      </div>
                       <span className="font-bold text-gray-900 text-sm">{item.produk}</span>
                     </div>
                   </td>

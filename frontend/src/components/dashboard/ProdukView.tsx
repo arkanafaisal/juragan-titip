@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Plus, Tags } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import type { Produk } from '../../types/dashboard';
 
 interface ProdukViewProps {
@@ -60,9 +60,6 @@ export default function ProdukView({ produkData }: ProdukViewProps) {
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
-                          <Tags className="h-5 w-5 text-gray-600" />
-                        </div>
                         <span className="font-bold text-gray-900 text-sm">{item.nama}</span>
                       </div>
                     </td>
