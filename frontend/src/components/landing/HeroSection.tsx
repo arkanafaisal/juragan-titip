@@ -9,10 +9,10 @@ export default function HeroSection({ onRegister }: HeroSectionProps) {
   return (
     <section className="relative pt-28 pb-10 md:pt-36 md:pb-12 bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold uppercase tracking-wider mb-6">
+        {/* <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold uppercase tracking-wider mb-6">
           <Activity className="h-4 w-4" /><span>Sistem Manajemen Titip Warung</span>
-        </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-gray-900">
+        </div> */}
+        <h1 className="mt-7 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-gray-900">
           Sistematiskan Bisnis <br className="hidden sm:block" /> Titip Barang Anda.
         </h1>
         <p className="mt-4 text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
