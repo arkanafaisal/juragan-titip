@@ -1,0 +1,13 @@
+**/node_modules/
+**/.env
+
+**/dist/
+.env.migrate
+
+
+local-note.md
+
+project-context.json
+
+**/repomix-output.xml
+**/.repomixignore
