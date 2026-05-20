@@ -1,0 +1,22 @@
+name: ${PROJECT_NAME}
+
+services:
+  app:
+    build:
+      context: .
+      target: app
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        DATABASE_URL: ${DATABASE_URL}
+        SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+
+  migrate:
+    build: .
+    env_file:
+      - .env.migrate
+    command: sh -c "npx prisma migrate deploy"
+    profiles: ["migrate"]
