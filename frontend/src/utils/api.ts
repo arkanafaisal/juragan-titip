@@ -89,13 +89,13 @@ const api = {
     },
   },
 
-  titipan: {
+  consignment: {
     getAll: async (): Promise<ApiResponse<Consignment[]>> => {
-      const response = await fetcher('titipan', { method: 'GET' });
+      const response = await fetcher('consignment', { method: 'GET' });
       
       const httpCode = response.status;
       const success = response.ok;
-      const message = await apiMessages.titipan.getAll(response);
+      const message = await apiMessages.consignment.getAll(response);
       
       let data = null;
       if (success) data = await response.clone().json().catch(() => null);
@@ -104,14 +104,14 @@ const api = {
     },
 
     create: async (payload: Omit<Consignment, 'id'>): Promise<ApiResponse<Consignment>> => {
-      const response = await fetcher('titipan', { 
+      const response = await fetcher('consignment', { 
         method: 'POST', 
         body: payload 
       });
       
       const httpCode = response.status;
       const success = response.ok;
-      const message = await apiMessages.titipan.create(response);
+      const message = await apiMessages.consignment.create(response);
       
       let data = null;
       if (success) data = await response.clone().json().catch(() => null);

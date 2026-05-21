@@ -50,7 +50,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       setIsLoading(true);
       try {
         const [titipanRes, productRes] = await Promise.all([
-          api.titipan.getAll(),
+          api.consignment.getAll(),
           api.products.getAll()
         ]);
 
@@ -75,7 +75,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, ...payload } = newData;
-      const response = await api.titipan.create(payload);
+      const response = await api.consignment.create(payload);
       if (response.success && response.data) {
         setConsignmentData(prevData => [response.data!, ...prevData]);
       } else {

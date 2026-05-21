@@ -87,7 +87,7 @@ const apiMessages: ApiMessagesType = {
     },
   },
 
-  titipan: {
+  consignment: {
     getAll: async (response) => {
       const common = await handleCommonMessages(response);
       if (common) return common;
