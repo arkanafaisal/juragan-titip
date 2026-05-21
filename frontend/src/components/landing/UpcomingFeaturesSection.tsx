@@ -1,10 +1,13 @@
 import React from 'react';
 import { BarChart3, MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function UpcomingFeaturesSection() {
+  const { t } = useTranslation();
+
   const upcoming = [
-    { icon: <BarChart3 />, title: "Analitik Data & Pencarian Lanjutan", desc: "Visualisasi metrik tren performa warung terbaik dan pencarian riwayat data menggunakan kombinasi filter yang spesifik." },
-    { icon: <MessageCircle />, title: "Automasi WhatsApp & Export Excel", desc: "Kirim rincian tagihan ke pemilik warung via WA dengan sekali klik, dan unduh rekapitulasi data format XLSX untuk pembukuan eksternal." },
+    { icon: <BarChart3 />, title: t('roadmap.list.0.title'), desc: t('roadmap.list.0.desc') },
+    { icon: <MessageCircle />, title: t('roadmap.list.1.title'), desc: t('roadmap.list.1.desc') },
   ];
 
   return (
@@ -12,9 +15,9 @@ export default function UpcomingFeaturesSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-rose-600 mb-3 block">Roadmap Mendatang</span>
-            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-4 text-gray-900">Persiapan Skala Besar</h2>
-            <p className="text-base text-gray-600 mb-6 leading-relaxed">Kami sedang menyiapkan fitur-fitur ini agar aplikasi tidak hanya menjadi buku catatan, tetapi juga asisten bisnis proaktif Anda.</p>
+            <span className="text-xs font-bold uppercase tracking-widest text-rose-600 mb-3 block">{t('roadmap.badge')}</span>
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-4 text-gray-900">{t('roadmap.title')}</h2>
+            <p className="text-base text-gray-600 mb-6 leading-relaxed">{t('roadmap.desc')}</p>
           </div>
           <div className="flex flex-col gap-4">
             {upcoming.map((item, index) => (

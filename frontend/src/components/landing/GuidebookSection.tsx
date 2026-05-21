@@ -1,11 +1,14 @@
 import React from 'react';
 import { MapPin, PackagePlus, Wallet, BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function GuidebookSection() {
+  const { t } = useTranslation();
+
   const steps = [
-    { icon: <MapPin />, title: "1. Daftarkan Titik Warung", desc: "Masukkan nama warung dan lokasi. Anda hanya perlu melakukan ini sekali di awal kerja sama." },
-    { icon: <PackagePlus />, title: "2. Input Barang Titipan", desc: "Pilih produk, masukkan jumlah yang dititipkan, dan tentukan harga dasar serta harga jual." },
-    { icon: <Wallet />, title: "3. Pantau & Tarik Laba", desc: "Saat jadwal restock tiba, perbarui sisa barang. Sistem otomatis menghitung uang yang harus ditagih." }
+    { icon: <MapPin />, title: t('guide.steps.0.title'), desc: t('guide.steps.0.desc') },
+    { icon: <PackagePlus />, title: t('guide.steps.1.title'), desc: t('guide.steps.1.desc') },
+    { icon: <Wallet />, title: t('guide.steps.2.title'), desc: t('guide.steps.2.desc') }
   ];
 
   return (
@@ -13,10 +16,10 @@ export default function GuidebookSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full mb-4">
-            <BookOpen className="h-4 w-4 text-rose-600" /><span className="text-xs font-bold uppercase tracking-widest text-rose-600">Buku Panduan</span>
+            <BookOpen className="h-4 w-4 text-rose-600" /><span className="text-xs font-bold uppercase tracking-widest text-rose-600">{t('guide.badge')}</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3 text-gray-900">3 Langkah Mudah Memulai</h2>
-          <p className="text-base text-gray-600">Tidak butuh waktu lama untuk memindahkan catatan manual Anda. Prosesnya kami buat sesederhana mungkin.</p>
+          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3 text-gray-900">{t('guide.title')}</h2>
+          <p className="text-base text-gray-600">{t('guide.desc')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 relative">
           <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10 -translate-y-1/2"></div>

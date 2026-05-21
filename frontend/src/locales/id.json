@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "features": "Fitur",
+    "guide": "Panduan",
+    "roadmap": "Roadmap",
+    "login": "Masuk",
+    "signup": "Mulai Gratis"
+  },
+  "hero": {
+    "title": "Sistematiskan Bisnis Titip Barang Anda.",
+    "desc": "Catat stok, pantau tagihan lunas/bon, dan hitung keuntungan per warung dalam satu layar yang ringkas dan bebas pusing.",
+    "btnStart": "Mulai Pencatatan",
+    "btnGuide": "Baca Panduan"
+  },
+  "features": {
+    "badge": "Operasional Lapangan Lebih Terukur",
+    "desc": "Modul inti yang dirancang seringkas mungkin agar input data bisa dilakukan dengan cepat dari HP saat Anda sedang berada di lapangan.",
+    "list": {
+      "0": {
+        "title": "Data Produk & Pemetaan Warung",
+        "desc": "Kelola daftar produk beserta rincian jumlah stoknya, serta pantau di warung mana saja barang tersebut didistribusikan dalam satu database terpusat."
+      },
+      "1": {
+        "title": "Tagihan Piutang & Kalkulasi Laba",
+        "desc": "Tandai otomatis warung yang masih berstatus bon atau sudah lunas. Sistem akan langsung merekap margin keuntungan bersih Anda pada periode tersebut."
+      },
+      "2": {
+        "title": "Penjadwalan Restock Otomatis",
+        "desc": "Tidak ada lagi warung yang terlewat. Atur tanggal pengiriman terakhir dan sistem akan mengingatkan jadwal penarikan barang kadaluarsa atau restock."
+      }
+    }
+  },
+  "guide": {
+    "badge": "Buku Panduan",
+    "title": "3 Langkah Mudah Memulai",
+    "desc": "Tidak butuh waktu lama untuk memindahkan catatan manual Anda. Prosesnya kami buat sesederhana mungkin.",
+    "steps": {
+      "0": {
+        "title": "1. Daftarkan Titik Warung",
+        "desc": "Masukkan nama warung dan lokasi. Anda hanya perlu melakukan ini sekali di awal kerja sama."
+      },
+      "1": {
+        "title": "2. Input Barang Titipan",
+        "desc": "Pilih produk, masukkan jumlah yang dititipkan, dan tentukan harga dasar serta harga jual."
+      },
+      "2": {
+        "title": "3. Pantau & Tarik Laba",
+        "desc": "Saat jadwal restock tiba, perbarui sisa barang. Sistem otomatis menghitung uang yang harus ditagih."
+      }
+    }
+  },
+  "roadmap": {
+    "badge": "Roadmap Mendatang",
+    "title": "Persiapan Skala Besar",
+    "desc": "Kami sedang menyiapkan fitur-fitur ini agar aplikasi tidak hanya menjadi buku catatan, tetapi juga asisten bisnis proaktif Anda.",
+    "list": {
+      "0": {
+        "title": "Analitik Data & Pencarian Lanjutan",
+        "desc": "Visualisasi metrik tren performa warung terbaik dan pencarian riwayat data menggunakan kombinasi filter yang spesifik."
+      },
+      "1": {
+        "title": "Automasi WhatsApp & Export Excel",
+        "desc": "Kirim rincian tagihan ke pemilik warung via WA dengan sekali klik, dan unduh rekapitulasi data format XLSX untuk pembukuan eksternal."
+      }
+    }
+  },
+  "changelog": {
+    "title": "Riwayat Pengembangan",
+    "btnMore": "Lihat Seluruh Catatan Rilis",
+    "modal": {
+      "title": "Seluruh Catatan Versi",
+      "desc": "Riwayat pembaruan sistem secara lengkap.",
+      "footer": "Anda sedang melihat riwayat hingga versi v1.0.0"
+    }
+  },
+  "cta": {
+    "title": "Tinggalkan Cara Manual.",
+    "desc": "Mulai kendalikan penuh distribusi barang Anda sekarang. Pendaftaran gratis dan langsung bisa digunakan.",
+    "btn": "Buat Akun Gratis"
+  },
+  "footer": {
+    "copyright": "JuraganTitip. Hak Cipta Dilindungi.",
+    "links": {
+      "help": "Bantuan",
+      "privacy": "Privasi",
+      "terms": "Syarat Ketentuan"
+    }
+  },
+  "auth": {
+    "loginTitle": "Masuk ke Akun",
+    "registerTitle": "Buat Akun Gratis",
+    "loginDesc": "Kelola kembali catatan warung Anda.",
+    "registerDesc": "Mulai sistematiskan usaha titip Anda hari ini.",
+    "labelIdentifier": "Username / Email",
+    "labelUsername": "Username",
+    "labelEmail": "Email",
+    "labelOptional": "(Opsional)",
+    "labelPassword": "Password",
+    "labelConfirm": "Konfirmasi Password",
+    "placeholderIdentifier": "Masukkan username atau email",
+    "placeholderPassword": "••••••••",
+    "placeholderUsername": "Maks 20 karakter",
+    "placeholderEmail": "nama@email.com",
+    "placeholderConfirm": "Ulangi password",
+    "btnLogin": "Masuk",
+    "btnSignup": "Daftar Sekarang",
+    "noAccount": "Belum punya akun?",
+    "hasAccount": "Sudah punya akun?",
+    "linkSignup": "Daftar di sini",
+    "linkLogin": "Masuk",
+    "errRequired": "Wajib diisi.",
+    "errMax20": "Maksimal 20 karakter.",
+    "errMax255": "Maksimal 255 karakter.",
+    "errMin6": "Minimal 6 karakter.",
+    "errMismatch": "Tidak cocok.",
+    "errLimit": "Melebihi batas."
+  }
+}

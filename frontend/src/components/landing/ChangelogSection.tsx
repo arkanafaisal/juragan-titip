@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, X, Wrench, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface Release {
   version: string;
@@ -18,6 +19,7 @@ const changelogData: Release[] = [
 ];
 
 export default function ChangelogSection() {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const majorReleases = changelogData.filter(release => release.isMajor).slice(0, 3);
 
@@ -25,7 +27,7 @@ export default function ChangelogSection() {
     <section id="changelog" className="py-12 md:py-16 bg-white border-t border-gray-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 md:mb-10 text-center md:text-left">
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900">Riwayat Pengembangan</h2>
+          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900">{t('changelog.title')}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
           {majorReleases.map((release, index) => (
@@ -46,7 +48,7 @@ export default function ChangelogSection() {
         </div>
         <div className="mt-8 md:mt-10 text-center">
           <button onClick={() => setIsModalOpen(true)} className="inline-flex items-center gap-2 px-6 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-full font-bold text-sm transition-colors">
-            Lihat Seluruh Catatan Rilis <ChevronRight className="h-4 w-4" />
+            {t('changelog.btnMore')} <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -61,6 +63,7 @@ interface ChangelogModalProps {
 }
 
 export function ChangelogModal({ releases, onClose }: ChangelogModalProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -74,8 +77,8 @@ export function ChangelogModal({ releases, onClose }: ChangelogModalProps) {
       <div className="relative bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-5 sm:p-6 sm:px-8 border-b border-gray-100 shrink-0">
           <div>
-            <h3 className="text-xl font-extrabold text-gray-900">Seluruh Catatan Versi</h3>
-            <p className="text-sm text-gray-500 mt-1">Riwayat pembaruan sistem secara lengkap.</p>
+            <h3 className="text-xl font-extrabold text-gray-900">{t('changelog.modal.title')}</h3>
+            <p className="text-sm text-gray-500 mt-1">{t('changelog.modal.desc')}</p>
           </div>
           <button onClick={onClose} className="p-2 bg-gray-50 hover:bg-rose-50 text-gray-400 hover:text-rose-600 rounded-full transition-colors focus:outline-none"><X className="h-6 w-6" /></button>
         </div>
@@ -100,7 +103,7 @@ export function ChangelogModal({ releases, onClose }: ChangelogModalProps) {
           ))}
         </div>
         <div className="p-4 border-t border-gray-100 bg-gray-50 rounded-b-[2rem] text-center shrink-0">
-          <p className="text-xs text-gray-500 font-medium">Anda sedang melihat riwayat hingga versi v1.0.0</p>
+          <p className="text-xs text-gray-500 font-medium">{t('changelog.modal.footer')}</p>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Store, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface NavbarProps {
   onLogin: () => void;
@@ -7,6 +8,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onLogin, onRegister }: NavbarProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -19,11 +21,11 @@ export default function Navbar({ onLogin, onRegister }: NavbarProps) {
           </div>
 
           <div className="hidden md:flex items-center space-x-6">
-            <a href="#fitur" className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors">Fitur</a>
-            <a href="#panduan" className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors">Panduan</a>
-            <a href="#roadmap" className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors">Roadmap</a>
-            <button onClick={onLogin} className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors ml-4">Masuk</button>
-            <button onClick={onRegister} className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-colors shadow-sm">Mulai Gratis</button>
+            <a href="#fitur" className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors">{t('nav.features')}</a>
+            <a href="#panduan" className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors">{t('nav.guide')}</a>
+            <a href="#roadmap" className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors">{t('nav.roadmap')}</a>
+            <button onClick={onLogin} className="text-sm font-semibold text-gray-600 hover:text-rose-600 transition-colors ml-4">{t('nav.login')}</button>
+            <button onClick={onRegister} className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-colors shadow-sm">{t('nav.signup')}</button>
           </div>
 
           <div className="md:hidden flex items-center">
@@ -36,12 +38,12 @@ export default function Navbar({ onLogin, onRegister }: NavbarProps) {
 
       {isOpen && (
         <div className="md:hidden bg-white border-b border-gray-100 px-4 pt-2 pb-6 shadow-lg">
-          <a href="#fitur" className="block px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">Fitur</a>
-          <a href="#panduan" className="block px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">Panduan</a>
-          <a href="#roadmap" className="block px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">Roadmap</a>
+          <a href="#fitur" className="block px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">{t('nav.features')}</a>
+          <a href="#panduan" className="block px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">{t('nav.guide')}</a>
+          <a href="#roadmap" className="block px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">{t('nav.roadmap')}</a>
           <hr className="border-gray-100 my-2" />
-          <button onClick={onLogin} className="w-full text-left px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">Masuk</button>
-          <button onClick={onRegister} className="w-full mt-2 bg-rose-600 text-white px-4 py-3.5 rounded-full text-base font-semibold text-center shadow-sm">Mulai Gratis</button>
+          <button onClick={onLogin} className="w-full text-left px-4 py-3 text-base font-semibold text-gray-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl">{t('nav.login')}</button>
+          <button onClick={onRegister} className="w-full mt-2 bg-rose-600 text-white px-4 py-3.5 rounded-full text-base font-semibold text-center shadow-sm">{t('nav.signup')}</button>
         </div>
       )}
     </nav>

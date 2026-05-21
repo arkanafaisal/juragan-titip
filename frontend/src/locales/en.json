@@ -1,3 +1,118 @@
 {
-  
+  "nav": {
+    "features": "Features",
+    "guide": "Guide",
+    "roadmap": "Roadmap",
+    "login": "Login",
+    "signup": "Sign Up Free"
+  },
+  "hero": {
+    "title": "Systematize Your Consignment Business.",
+    "desc": "Record stock, monitor paid/debt bills, and calculate profit per shop in one concise and headache-free screen.",
+    "btnStart": "Start Recording",
+    "btnGuide": "Read Guide"
+  },
+  "features": {
+    "badge": "More Measurable Field Operations",
+    "desc": "Core modules designed as concisely as possible so that data input can be done quickly from a mobile phone while you are in the field.",
+    "list": {
+      "0": {
+        "title": "Product Data & Shop Mapping",
+        "desc": "Manage product lists with stock details, and monitor which shops the items are distributed to in a centralized database."
+      },
+      "1": {
+        "title": "Accounts Receivable & Profit Calculation",
+        "desc": "Automatically mark shops with debt or paid status. The system will immediately recap your net profit margin for that period."
+      },
+      "2": {
+        "title": "Automatic Restock Scheduling",
+        "desc": "No more missed shops. Set the last delivery date and the system will remind you of the expired item withdrawal or restock schedule."
+      }
+    }
+  },
+  "guide": {
+    "badge": "Guidebook",
+    "title": "3 Easy Steps to Start",
+    "desc": "It doesn't take long to move your manual notes. We made the process as simple as possible.",
+    "steps": {
+      "0": {
+        "title": "1. Register Shop Points",
+        "desc": "Enter shop name and location. You only need to do this once at the beginning of the cooperation."
+      },
+      "1": {
+        "title": "2. Input Consigned Items",
+        "desc": "Select products, enter the amount consigned, and determine the base price and selling price."
+      },
+      "2": {
+        "title": "3. Monitor & Withdraw Profit",
+        "desc": "When the restock schedule arrives, update the remaining items. The system automatically calculates the money to be collected."
+      }
+    }
+  },
+  "roadmap": {
+    "badge": "Upcoming Roadmap",
+    "title": "Large Scale Preparation",
+    "desc": "We are preparing these features so that the application is not just a notebook, but also your proactive business assistant.",
+    "list": {
+      "0": {
+        "title": "Data Analytics & Advanced Search",
+        "desc": "Visualize best performing shop trend metrics and search history data using specific filter combinations."
+      },
+      "1": {
+        "title": "WhatsApp Automation & Excel Export",
+        "desc": "Send bill details to shop owners via WA with one click, and download the data recapitulation in XLSX format for external bookkeeping."
+      }
+    }
+  },
+  "changelog": {
+    "title": "Development History",
+    "btnMore": "View All Release Notes",
+    "modal": {
+      "title": "All Version Notes",
+      "desc": "Complete system update history.",
+      "footer": "You are viewing history up to version v1.0.0"
+    }
+  },
+  "cta": {
+    "title": "Leave the Manual Way.",
+    "desc": "Start taking full control of your goods distribution now. Free registration and ready to use immediately.",
+    "btn": "Create Free Account"
+  },
+  "footer": {
+    "copyright": "JuraganTitip. All Rights Reserved.",
+    "links": {
+      "help": "Help",
+      "privacy": "Privacy",
+      "terms": "Terms & Conditions"
+    }
+  },
+  "auth": {
+    "loginTitle": "Login to Account",
+    "registerTitle": "Create Free Account",
+    "loginDesc": "Manage your shop records again.",
+    "registerDesc": "Start systematizing your consignment business today.",
+    "labelIdentifier": "Username / Email",
+    "labelUsername": "Username",
+    "labelEmail": "Email",
+    "labelOptional": "(Optional)",
+    "labelPassword": "Password",
+    "labelConfirm": "Confirm Password",
+    "placeholderIdentifier": "Enter username or email",
+    "placeholderPassword": "••••••••",
+    "placeholderUsername": "Max 20 characters",
+    "placeholderEmail": "name@email.com",
+    "placeholderConfirm": "Repeat password",
+    "btnLogin": "Login",
+    "btnSignup": "Sign Up Now",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "linkSignup": "Sign up here",
+    "linkLogin": "Login",
+    "errRequired": "Required.",
+    "errMax20": "Max 20 characters.",
+    "errMax255": "Max 255 characters.",
+    "errMin6": "Min 6 characters.",
+    "errMismatch": "Doesn't match.",
+    "errLimit": "Exceeded limit."
+  }
 }
