@@ -12,17 +12,17 @@ export default function HeroSection({ onRegister }: HeroSectionProps) {
   return (
     <section className="relative pt-28 pb-10 md:pt-36 md:pb-12 bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <h1 className="mt-7 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-gray-900">
+        <h1 className="mt-7 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight jt-text-heading">
           {t('hero.title')}
         </h1>
         <p className="mt-4 text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
           {t('hero.desc')}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button onClick={onRegister} className="w-full sm:w-auto h-12 md:h-14 px-8 bg-rose-600 hover:bg-rose-700 text-white rounded-full font-bold text-base transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+          <button onClick={onRegister} className="w-full sm:w-auto h-12 md:h-14 px-8 jt-bg-primary hover:jt-bg-primary-hover text-white rounded-full font-bold text-base transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
             {t('hero.btnStart')} <ArrowRight className="h-5 w-5" />
           </button>
-          <a href="#panduan" className="w-full sm:w-auto h-12 md:h-14 px-8 bg-white border-2 border-gray-200 hover:border-gray-900 text-gray-900 rounded-full font-bold text-base transition-colors flex items-center justify-center">
+          <a href="#panduan" className="w-full sm:w-auto h-12 md:h-14 px-8 bg-white border-2 jt-border-base hover:border-gray-900 jt-text-heading rounded-full font-bold text-base transition-colors flex items-center justify-center">
             {t('hero.btnGuide')}
           </a>
         </div>

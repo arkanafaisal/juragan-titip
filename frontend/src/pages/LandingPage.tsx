@@ -19,7 +19,7 @@ export default function LandingPage({ onAuthSuccess }: LandingPageProps) {
   const [authModal, setAuthModal] = useState<AuthMode>(null);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-rose-200 selection:text-rose-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white jt-text-heading font-sans selection:bg-rose-200 selection:text-rose-900 overflow-x-hidden">
       <Navbar onLogin={() => setAuthModal('login')} onRegister={() => setAuthModal('register')} />
       <main>
         <HeroSection onRegister={() => setAuthModal('register')} />

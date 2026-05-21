@@ -12,18 +12,18 @@ export default function CurrentFeaturesSection() {
   ];
 
   return (
-    <section id="fitur" className="pt-12 pb-12 md:pb-16 bg-gray-50/50 border-t border-gray-100">
+    <section id="fitur" className="pt-12 pb-12 md:pb-16 bg-gray-50/50 border-t jt-border-light">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center md:text-left">
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3 text-gray-900">{t('features.badge')}</h2>
+          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3 jt-text-heading">{t('features.badge')}</h2>
           <p className="text-base text-gray-600 max-w-2xl">{t('features.desc')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {features.map((feat, index) => (
-            <div key={index} className="bg-white border border-gray-200 p-6 md:p-8 rounded-3xl hover:shadow-xl hover:border-rose-100 transition-all duration-300">
+            <div key={index} className="bg-white border jt-border-base p-6 md:p-8 rounded-3xl hover:shadow-xl hover:border-rose-100 transition-all duration-300">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full shrink-0 bg-rose-100 flex items-center justify-center text-rose-600">{React.cloneElement(feat.icon as React.ReactElement<{className: string}>, { className: "h-6 w-6" })}</div>
-                <h3 className="text-lg font-bold leading-tight text-gray-900">{feat.title}</h3>
+                <div className="w-12 h-12 rounded-full shrink-0 bg-rose-100 flex items-center justify-center jt-text-primary">{React.cloneElement(feat.icon as React.ReactElement<{className: string}>, { className: "h-6 w-6" })}</div>
+                <h3 className="text-lg font-bold leading-tight jt-text-heading">{feat.title}</h3>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">{feat.desc}</p>
             </div>
