@@ -2,7 +2,7 @@
 **/.env
 
 **/dist/
-.env.migrate
+**/.env.docker
 
 
 local-note.md

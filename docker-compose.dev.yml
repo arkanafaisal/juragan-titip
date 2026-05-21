@@ -12,11 +12,11 @@ services:
     ports:
       - "${PORT}:${PORT}"
     env_file:
-      - .env
+      - .env.docker
 
   migrate:
     build: .
     env_file:
-      - .env.migrate
+      - .env
     command: sh -c "npx prisma migrate deploy"
     profiles: ["migrate"]
