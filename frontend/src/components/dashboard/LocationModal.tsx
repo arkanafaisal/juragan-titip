@@ -97,7 +97,7 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
         <div className="flex items-start justify-between mb-5">
           <div className="pr-4 text-left">
             <h3 className="text-xl font-extrabold text-gray-900 leading-tight">{t('dashboard.locationModal.title')}</h3>
-            <p className="text-sm text-gray-500 mt-1 line-clamp-2" title={data.lokasi}>{data.lokasi}</p>
+            <p className="text-sm text-gray-500 mt-1 line-clamp-2" title={data.address}>{data.address}</p>
           </div>
           <button onClick={onClose} className="p-2 bg-gray-50 hover:bg-rose-50 text-gray-400 hover:text-rose-600 rounded-full transition-colors focus:outline-none shrink-0">
             <X className="h-5 w-5" />

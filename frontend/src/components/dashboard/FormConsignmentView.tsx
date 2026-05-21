@@ -16,8 +16,8 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
   // State Form
   const [selectedProductId, setSelectedProductId] = useState('');
   const [sum, setSum] = useState('');
-  const [lokasiType, setLokasiType] = useState<'map' | 'link'>('map'); 
-  const [alamatLokasi, setAlamatLokasi] = useState('');
+  const [addressType, setAddressType] = useState<'map' | 'link'>('map'); 
+  const [address, setAddress] = useState('');
   const [linkMap, setLinkMap] = useState('');
   
   // Tanggal Hari Ini & Next Restock
@@ -43,7 +43,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
   }, []);
 
   useEffect(() => {
-    if (lokasiType !== 'map') return;
+    if (addressType !== 'map') return;
 
     let isMounted = true;
 
@@ -105,7 +105,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
         markerInstance.current = null;
       }
     };
-  }, [lokasiType]);
+  }, [addressType]);
 
   useEffect(() => {
     if (mapInstance.current && markerInstance.current) {
@@ -126,19 +126,19 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
     const selectedProductObj = productData.find(p => p.id === parseInt(selectedProductId));
     const nameProductStr = selectedProductObj ? selectedProductObj.name : t('dashboard.form.unknownProduct');
 
-    let finalLokasi = alamatLokasi.trim();
+    let finalAddress = address.trim();
     
-    if (!finalLokasi) {
-      if (lokasiType === 'map') {
+    if (!finalAddress) {
+      if (addressType === 'map') {
         try {
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords[0]}&lon=${coords[1]}`);
           const data = await response.json();
-          finalLokasi = data.display_name || `Titik Koordinat: ${coords[0]}, ${coords[1]}`;
+          finalAddress = data.display_name || `Titik Koordinat: ${coords[0]}, ${coords[1]}`;
         } catch (error) {
-          finalLokasi = `Titik Koordinat: ${coords[0]}, ${coords[1]}`;
+          finalAddress = `Titik Koordinat: ${coords[0]}, ${coords[1]}`;
         }
       } else {
-        finalLokasi = linkMap.trim() || t('dashboard.form.unknownLocation');
+        finalAddress = linkMap.trim() || t('dashboard.form.unknownLocation');
       }
     }
 
@@ -154,12 +154,12 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
       id: Date.now(),
       product: nameProductStr,
       sum: parseInt(sum),
-      lokasi: finalLokasi,
+      address: finalAddress,
       lastRestock: lastRestock,
       nextRestock: finalNextRestock,
-      lat: lokasiType === 'map' ? coords[0] : null,
-      lng: lokasiType === 'map' ? coords[1] : null,
-      mapLink: lokasiType === 'link' ? linkMap : null
+      lat: addressType === 'map' ? coords[0] : null,
+      lng: addressType === 'map' ? coords[1] : null,
+      mapLink: addressType === 'link' ? linkMap : null
     };
 
     onAddConsignment(newConsignment);
@@ -211,15 +211,15 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
               <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
                 <button 
                   type="button"
-                  onClick={() => setLokasiType('map')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${lokasiType === 'map' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setAddressType('map')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${addressType === 'map' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                   <MapPin className="h-3.5 w-3.5" /> {t('dashboard.form.typeMap')}
                 </button>
                 <button 
                   type="button"
-                  onClick={() => setLokasiType('link')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${lokasiType === 'link' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setAddressType('link')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${addressType === 'link' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                   <Link2 className="h-3.5 w-3.5" /> {t('dashboard.form.typeLink')}
                 </button>
@@ -231,13 +231,13 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
               <input 
                 type="text" 
                 placeholder={t('dashboard.form.placeholderAddress')} 
-                value={alamatLokasi}
-                onChange={(e) => setAlamatLokasi(e.target.value)}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" 
               />
             </div>
 
-            {lokasiType === 'link' ? (
+            {addressType === 'link' ? (
               <input 
                 type="url" placeholder={t('dashboard.form.placeholderLink')} 
                 value={linkMap} onChange={(e) => setLinkMap(e.target.value)}

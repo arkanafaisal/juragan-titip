@@ -91,8 +91,8 @@ export default function ConsignmentView({ titipanData, onChangeMenu }: Consignme
                       >
                         <MapPin className="h-4 w-4" />
                       </button>
-                      <span className="text-sm font-medium text-gray-600 truncate block" title={item.lokasi}>
-                        {item.lokasi}
+                      <span className="text-sm font-medium text-gray-600 truncate block" title={item.address}>
+                        {item.address}
                       </span>
                     </div>
                   </td>
