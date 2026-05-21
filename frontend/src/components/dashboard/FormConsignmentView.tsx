@@ -124,7 +124,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
     setIsSubmitting(true);
 
     const selectedProductObj = productData.find(p => p.id === parseInt(selectedProductId));
-    const namaProductStr = selectedProductObj ? selectedProductObj.nama : t('dashboard.form.unknownProduct');
+    const nameProductStr = selectedProductObj ? selectedProductObj.name : t('dashboard.form.unknownProduct');
 
     let finalLokasi = alamatLokasi.trim();
     
@@ -152,7 +152,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
     // Include data koordinat & link ke payload state
     const newConsignment: Consignment = {
       id: Date.now(),
-      product: namaProductStr,
+      product: nameProductStr,
       jumlah: parseInt(jumlah),
       lokasi: finalLokasi,
       lastRestock: lastRestock,
@@ -189,7 +189,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
               >
                 <option value="">{t('dashboard.form.placeholderProduct')}</option>
                 {productData.map(p => (
-                  <option key={p.id} value={p.id}>{p.nama}</option>
+                  <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
             </div>

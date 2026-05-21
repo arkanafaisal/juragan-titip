@@ -11,7 +11,7 @@ export default function ProductView({ productData }: ProductViewProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredProduct = productData.filter(p => p.nama.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredProduct = productData.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const formatRupiah = (angka: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
@@ -62,7 +62,7 @@ export default function ProductView({ productData }: ProductViewProps) {
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <span className="font-bold text-gray-900 text-sm">{item.nama}</span>
+                        <span className="font-bold text-gray-900 text-sm">{item.name}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
