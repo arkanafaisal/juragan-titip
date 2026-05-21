@@ -79,7 +79,7 @@ export default function ConsignmentView({ titipanData, onChangeMenu }: Consignme
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center justify-center px-3 py-1 bg-gray-100 text-gray-800 font-bold text-sm rounded-lg">
-                      {item.jumlah}
+                      {item.sum}
                     </span>
                   </td>
                   <td className="px-6 py-4 max-w-[280px]">

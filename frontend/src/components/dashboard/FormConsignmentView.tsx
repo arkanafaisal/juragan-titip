@@ -15,7 +15,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
   
   // State Form
   const [selectedProductId, setSelectedProductId] = useState('');
-  const [jumlah, setJumlah] = useState('');
+  const [sum, setSum] = useState('');
   const [lokasiType, setLokasiType] = useState<'map' | 'link'>('map'); 
   const [alamatLokasi, setAlamatLokasi] = useState('');
   const [linkMap, setLinkMap] = useState('');
@@ -116,7 +116,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProductId || !jumlah || !lastRestock) {
+    if (!selectedProductId || !sum || !lastRestock) {
       alert(t('dashboard.form.errRequired'));
       return;
     }
@@ -153,7 +153,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
     const newConsignment: Consignment = {
       id: Date.now(),
       product: nameProductStr,
-      jumlah: parseInt(jumlah),
+      sum: parseInt(sum),
       lokasi: finalLokasi,
       lastRestock: lastRestock,
       nextRestock: finalNextRestock,
@@ -197,7 +197,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
               <label className="block text-sm font-bold text-gray-700 mb-2">{t('dashboard.form.labelQty')}</label>
               <input 
                 type="number" min="1" placeholder={t('dashboard.form.placeholderQty')} 
-                value={jumlah} onChange={(e) => setJumlah(e.target.value)}
+                value={sum} onChange={(e) => setSum(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" 
               />
             </div>
