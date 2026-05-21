@@ -36,7 +36,7 @@ model Product {
 
 model Consignment {
   id        Int       @id @default(autoincrement())
-  sum       Int       @db.Integer
+  amount       Int       @db.Integer
   address   String    @db.VarChar(255)
   lastRestock DateTime
   nextRestock DateTime
