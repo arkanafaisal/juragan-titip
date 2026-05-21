@@ -4,23 +4,23 @@ const handleCommonMessages = async (response: Response) => {
   const status = response.status;
   
   if (status === 0) {
-    return "Connection failed. Please check your internet connection.";
+    return "Gagal terhubung. Silakan periksa koneksi internet Anda.";
   }
   if (status >= 500) {
-    return "An internal server error occurred. Please try again later.";
+    return "Terjadi kesalahan pada server. Silakan coba lagi nanti.";
   }
   if (status === 429) {
-    return "Too many requests. Please wait a moment and try again.";
+    return "Terlalu banyak permintaan. Silakan tunggu sebentar.";
   }
   if (status === 403) {
-    return "Forbidden: You do not have permission to perform this action.";
+    return "Akses ditolak: Anda tidak memiliki izin untuk melakukan tindakan ini.";
   }
   if (status === 401) {
-    return "Unauthorized: Please log in again.";
+    return "Sesi berakhir: Silakan masuk kembali.";
   }
   if (status === 400) {
     const data = await response.clone().json().catch(() => null);
-    return data?.error || "Invalid data provided (Bad Request).";
+    return data?.error || "Data yang dikirim tidak valid.";
   }
   
   return "";
@@ -35,11 +35,11 @@ const apiMessages: ApiMessagesType = {
       if (common) return common;
       
       const status = response.status;
-      if (status === 200) return "Login successful.";
-      if (status === 404) return "User not found.";
-      if (status === 401) return "Incorrect password.";
+      if (status === 200) return "Berhasil masuk.";
+      if (status === 404) return "Pengguna tidak ditemukan.";
+      if (status === 401) return "Kata sandi salah.";
       
-      return `Login failed (Code: ${status}).`;
+      return `Gagal masuk (Kode: ${status}).`;
     },
     
     register: async (response) => {
@@ -47,18 +47,18 @@ const apiMessages: ApiMessagesType = {
       if (common) return common;
       
       const status = response.status;
-      if (status === 201 || status === 200) return "Registration successful.";
-      if (status === 409) return "Username or Email already taken."; 
+      if (status === 201 || status === 200) return "Pendaftaran berhasil.";
+      if (status === 409) return "Username atau Email sudah terdaftar."; 
       
-      return `Registration failed (Code: ${status}).`;
+      return `Pendaftaran gagal (Kode: ${status}).`;
     },
     
     logout: async (response) => {
       const common = await handleCommonMessages(response);
       if (common) return common;
 
-      if (response.status === 200) return "Logged out successfully.";
-      return `Logout failed (Code: ${response.status}).`;
+      if (response.status === 200) return "Berhasil keluar.";
+      return `Gagal keluar (Kode: ${response.status}).`;
     }
   },
   
@@ -68,10 +68,10 @@ const apiMessages: ApiMessagesType = {
       if (common) return common;
       
       const status = response.status;
-      if (status === 200) return "Profile loaded.";
-      if (status === 404) return "User profile not found.";
+      if (status === 200) return "Profil berhasil dimuat.";
+      if (status === 404) return "Profil tidak ditemukan.";
       
-      return `Failed to load profile (Code: ${status}).`;
+      return `Gagal memuat profil (Kode: ${status}).`;
     },
   },
 
@@ -81,9 +81,9 @@ const apiMessages: ApiMessagesType = {
       if (common) return common;
       
       const status = response.status;
-      if (status === 200) return "Products loaded.";
+      if (status === 200) return "Produk berhasil dimuat.";
       
-      return `Failed to load products (Code: ${status}).`;
+      return `Gagal memuat produk (Kode: ${status}).`;
     },
   },
 
@@ -93,9 +93,9 @@ const apiMessages: ApiMessagesType = {
       if (common) return common;
       
       const status = response.status;
-      if (status === 200) return "Titipan list loaded.";
+      if (status === 200) return "Data titipan berhasil dimuat.";
       
-      return `Failed to load titipan (Code: ${status}).`;
+      return `Gagal memuat data titipan (Kode: ${status}).`;
     },
 
     create: async (response) => {
@@ -103,10 +103,10 @@ const apiMessages: ApiMessagesType = {
       if (common) return common;
       
       const status = response.status;
-      if (status === 201 || status === 200) return "Titipan created successfully.";
-      if (status === 400) return "Invalid titipan data.";
+      if (status === 201 || status === 200) return "Berhasil menambah data titipan.";
+      if (status === 400) return "Data titipan tidak valid.";
       
-      return `Failed to create titipan (Code: ${status}).`;
+      return `Gagal menambah data titipan (Kode: ${status}).`;
     },
   }
 };
