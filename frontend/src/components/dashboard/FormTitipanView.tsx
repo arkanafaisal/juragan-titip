@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Link2, Info, Calendar, CalendarDays, Clock, Loader2, CheckSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Titipan, Produk } from '../../types/dashboard';
+import type { Consignment, Produk } from '../../types/dashboard';
 
-interface FormTitipanViewProps {
+interface FormConsignmentViewProps {
   produkData: Produk[];
-  onAddTitipan: (newData: Titipan) => void;
+  onAddConsignment: (newData: Consignment) => void;
   onChangeMenu: () => void;
 }
 
-export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu }: FormTitipanViewProps) {
+export default function FormConsignmentView({ produkData, onAddConsignment, onChangeMenu }: FormConsignmentViewProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -150,7 +150,7 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
     }
 
     // Include data koordinat & link ke payload state
-    const newTitipan: Titipan = {
+    const newConsignment: Consignment = {
       id: Date.now(),
       produk: namaProdukStr,
       jumlah: parseInt(jumlah),
@@ -162,7 +162,7 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
       mapLink: lokasiType === 'link' ? linkMap : null
     };
 
-    onAddTitipan(newTitipan);
+    onAddConsignment(newConsignment);
     setIsSubmitting(false);
     onChangeMenu();
   };

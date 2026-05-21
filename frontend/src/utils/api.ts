@@ -1,7 +1,7 @@
 // src/utils/api.ts
 import { fetcher } from "./fetcher";
 import apiMessages from "../helpers/apiMessages";
-import type { Titipan, Produk } from "../types/dashboard";
+import type { Consignment, Products } from "../types/dashboard";
 
 export interface ApiResponse<T = null> {
   success: boolean;
@@ -75,7 +75,7 @@ const api = {
   },
 
   products: {
-    getAll: async (): Promise<ApiResponse<Produk[]>> => {
+    getAll: async (): Promise<ApiResponse<Products[]>> => {
       const response = await fetcher('products', { method: 'GET' });
       
       const httpCode = response.status;
@@ -90,7 +90,7 @@ const api = {
   },
 
   titipan: {
-    getAll: async (): Promise<ApiResponse<Titipan[]>> => {
+    getAll: async (): Promise<ApiResponse<Consignment[]>> => {
       const response = await fetcher('titipan', { method: 'GET' });
       
       const httpCode = response.status;
@@ -103,7 +103,7 @@ const api = {
       return { success, message, data, httpCode };
     },
 
-    create: async (payload: Omit<Titipan, 'id'>): Promise<ApiResponse<Titipan>> => {
+    create: async (payload: Omit<Consignment, 'id'>): Promise<ApiResponse<Consignment>> => {
       const response = await fetcher('titipan', { 
         method: 'POST', 
         body: payload 

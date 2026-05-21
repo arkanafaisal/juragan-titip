@@ -1,18 +1,18 @@
 import { useState, useMemo } from 'react';
 import { ArrowUpDown, PlusCircle, MapPin, Clock, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Titipan } from '../../types/dashboard';
+import type { Consignment } from '../../types/dashboard';
 import LocationModal from './LocationModal';
 
-interface TitipanViewProps {
-  titipanData: Titipan[];
+interface ConsignmentViewProps {
+  titipanData: Consignment[];
   onChangeMenu: () => void;
 }
 
-export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewProps) {
+export default function ConsignmentView({ titipanData, onChangeMenu }: ConsignmentViewProps) {
   const { t } = useTranslation();
   const [sortOrder, setSortOrder] = useState('newest');
-  const [selectedLocationMap, setSelectedLocationMap] = useState<Titipan | null>(null);
+  const [selectedLocationMap, setSelectedLocationMap] = useState<Consignment | null>(null);
 
   const sortedData = useMemo(() => {
     return [...titipanData].sort((a, b) => {

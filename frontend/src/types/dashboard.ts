@@ -1,8 +1,8 @@
-export interface Titipan {
+export interface Consignment {
   id: number;
-  produk: string;
-  jumlah: number;
-  lokasi: string;
+  productName: string;
+  sum: number;
+  address: string;
   lastRestock: string;
   nextRestock: string;
   lat: number | null;
@@ -10,9 +10,9 @@ export interface Titipan {
   mapLink: string | null;
 }
 
-export interface Produk {
+export interface Products {
   id: number;
-  nama: string;
-  modal: number;
-  jual: number;
+  name: string;
+  capital: number;
+  sell: number;
 }
