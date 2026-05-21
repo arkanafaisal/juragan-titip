@@ -1,14 +1,16 @@
 import { useState, useMemo } from 'react';
-import { ArrowUpDown, PlusCircle, MapPin, Clock } from 'lucide-react';
+import { ArrowUpDown, PlusCircle, MapPin, Clock, Package } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Titipan } from '../../types/dashboard';
 import LocationModal from './LocationModal';
 
 interface TitipanViewProps {
   titipanData: Titipan[];
-  onChangeMenu: (menu: string) => void;
+  onChangeMenu: () => void;
 }
 
 export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewProps) {
+  const { t } = useTranslation();
   const [sortOrder, setSortOrder] = useState('newest');
   const [selectedLocationMap, setSelectedLocationMap] = useState<Titipan | null>(null);
 
@@ -22,15 +24,15 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-    return new Date(dateString).toLocaleDateString('id-ID', options);
+    return new Date(dateString).toLocaleDateString(t('i18n.locale') === 'en' ? 'en-US' : 'id-ID', options);
   };
 
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="text-left">
-          <h2 className="text-xl font-extrabold text-gray-900">Data Stok Warung</h2>
-          <p className="text-sm text-gray-500">Daftar produk yang sedang dititipkan di lokasi.</p>
+          <h2 className="text-xl font-extrabold text-gray-900">{t('dashboard.titipan.title')}</h2>
+          <p className="text-sm text-gray-500">{t('dashboard.titipan.desc')}</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -41,16 +43,16 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
             >
-              <option value="newest">Terbaru</option>
-              <option value="oldest">Terlama</option>
+              <option value="newest">{t('dashboard.titipan.sortNewest')}</option>
+              <option value="oldest">{t('dashboard.titipan.sortOldest')}</option>
             </select>
           </div>
           <button 
-            onClick={() => onChangeMenu('Tambah Titipan')}
+            onClick={onChangeMenu}
             className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-colors w-full sm:w-auto justify-center"
           >
             <PlusCircle className="h-4 w-4" />
-            Tambah Titipan
+            {t('dashboard.titipan.btnAdd')}
           </button>
         </div>
       </div>
@@ -60,11 +62,11 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100">
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Produk</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Jumlah (Pcs)</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Lokasi Warung</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Terakhir Restock</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Restock Selanjutnya</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.titipan.table.product')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.titipan.table.qty')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.titipan.table.location')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.titipan.table.lastRestock')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.titipan.table.nextRestock')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -85,7 +87,7 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
                       <button 
                         onClick={() => setSelectedLocationMap(item)}
                         className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl shrink-0 transition-colors shadow-sm"
-                        title="Lihat Peta Lokasi"
+                        title={t('dashboard.titipan.viewMap')}
                       >
                         <MapPin className="h-4 w-4" />
                       </button>
@@ -107,7 +109,7 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
               )) : (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-medium text-sm">
-                    Belum ada data titipan barang. Silakan tambah data baru.
+                    {t('dashboard.titipan.empty')}
                   </td>
                 </tr>
               )}
@@ -116,7 +118,7 @@ export default function TitipanView({ titipanData, onChangeMenu }: TitipanViewPr
         </div>
         
         <div className="bg-gray-50/50 border-t border-gray-100 px-6 py-4 flex items-center justify-between text-sm text-gray-500 font-medium">
-          <span>Menampilkan {sortedData.length} data</span>
+          <span>{t('dashboard.titipan.showingCount', { count: sortedData.length })}</span>
         </div>
       </div>
 

@@ -114,5 +114,91 @@
     "errMin6": "Min 6 characters.",
     "errMismatch": "Doesn't match.",
     "errLimit": "Exceeded limit."
+  },
+  "dashboard": {
+    "menu": {
+      "list": "Deposit List",
+      "add": "Add Deposit",
+      "catalog": "Product Catalog",
+      "analytics": "Analytics Dashboard"
+    },
+    "navbar": {
+      "title": "JuraganTitip",
+      "profileTitle": "Open Profile"
+    },
+    "sidebar": {
+      "title": "Main Menu",
+      "comingSoon": "Coming Soon",
+      "version": "Version",
+      "upToDate": "Up to date"
+    },
+    "profile": {
+      "noEmail": "No email added yet",
+      "logout": "Logout"
+    },
+    "titipan": {
+      "title": "Shop Stock Data",
+      "desc": "List of products currently deposited at locations.",
+      "sortNewest": "Newest",
+      "sortOldest": "Oldest",
+      "btnAdd": "Add Deposit",
+      "table": {
+        "product": "Product Name",
+        "qty": "Quantity (Pcs)",
+        "location": "Shop Location",
+        "lastRestock": "Last Restock",
+        "nextRestock": "Next Restock"
+      },
+      "viewMap": "View Location Map",
+      "empty": "No deposit data yet. Please add new data.",
+      "showingCount": "Showing {{count}} data"
+    },
+    "form": {
+      "title": "Add Deposit Form",
+      "desc": "Record product distribution to new or old shops.",
+      "labelProduct": "Product Name (From Catalog)",
+      "placeholderProduct": "-- Select Product --",
+      "labelQty": "Quantity Deposited (Pcs)",
+      "placeholderQty": "Example: 15",
+      "labelLocation": "Mark Shop Location",
+      "typeMap": "Map",
+      "typeLink": "Link Maps",
+      "labelAddress": "Full Name/Address (Optional)",
+      "placeholderAddress": "If left blank, system will generate automatically from Map point",
+      "placeholderLink": "Paste https://maps.google.com/...",
+      "mapInstruction": "Move the red pin to the shop location. System will detect address automatically (Reverse Geocoding).",
+      "labelStart": "Consignment Start Date (Restock)",
+      "labelNext": "Next Restock Date",
+      "toggleToDate": "Switch to Date Format",
+      "toggleToDays": "Switch to Day Format",
+      "placeholderDays": "How many days left?",
+      "suffixDays": "Days",
+      "labelStatus": "Payment Status",
+      "statusDraft": "Draft (System Will Track Automatically Later)",
+      "btnSubmitting": "Saving Data & Tracking Location...",
+      "btnSubmit": "Save Deposit Data",
+      "errRequired": "Please complete Product Name, Quantity, and Last Restock Date fields.",
+      "unknownProduct": "Unknown Product",
+      "unknownLocation": "Unknown Location"
+    },
+    "catalog": {
+      "title": "Product Catalog",
+      "desc": "Manage product master data and base prices for easy selection when depositing goods.",
+      "searchPlaceholder": "Search product...",
+      "btnAdd": "Add Product",
+      "table": {
+        "info": "Product Information",
+        "modal": "Base Price / Pcs",
+        "sell": "Selling Price / Pcs",
+        "margin": "Estimated Profit (Margin)"
+      },
+      "empty": "Product not found."
+    },
+    "locationModal": {
+      "title": "Shop Location",
+      "noMap": "Interactive Map Not Available.",
+      "noMapDesc": "User recorded this location using External Link or Manual Address Text.",
+      "btnOpenGmaps": "Open in Google Maps"
+    }
   }
 }

@@ -3,6 +3,7 @@ import {
   Store, PackageSearch, Menu, X, Zap, User as UserIcon, 
   LayoutDashboard, PackagePlus, Tags, LogOut 
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { User } from '../components/landing/AuthModal';
 import type { Titipan, Produk } from '../types/dashboard';
 
@@ -16,9 +17,10 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ user, onLogout }: DashboardProps) {
+  const { t } = useTranslation();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentMenu, setCurrentMenu] = useState('Daftar Titipan');
+  const [currentMenu, setCurrentMenu] = useState('list');
 
   // STATE TRANSAKSIONAL DENGAN LAT/LNG
   const [titipanData, setTitipanData] = useState<Titipan[]>([
@@ -58,6 +60,10 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     setIsSidebarOpen(false); 
   };
 
+  const menuTitle = currentMenu === 'list' 
+    ? t('dashboard.menu.list') 
+    : (currentMenu === 'add' ? t('dashboard.menu.add') : t('dashboard.menu.catalog'));
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm sticky top-0 z-40">
@@ -69,8 +75,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
             <Menu className="h-6 w-6" />
           </button>
           <div className="flex flex-col text-left">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-rose-600 leading-tight">JuraganTitip</span>
-            <span className="font-extrabold text-gray-900 text-base sm:text-lg leading-tight">{currentMenu}</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-rose-600 leading-tight">{t('dashboard.navbar.title')}</span>
+            <span className="font-extrabold text-gray-900 text-base sm:text-lg leading-tight">{menuTitle}</span>
           </div>
         </div>
         
@@ -81,7 +87,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
           <button 
             onClick={() => setIsProfileOpen(true)}
             className="bg-rose-100 text-rose-600 p-2 sm:p-2.5 rounded-full shadow-sm hover:bg-rose-200 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-200"
-            title="Buka Profil"
+            title={t('dashboard.navbar.profileTitle')}
           >
             <UserIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
@@ -89,9 +95,9 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       </nav>
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
-        {currentMenu === 'Daftar Titipan' && <TitipanView titipanData={titipanData} onChangeMenu={handleMenuChange} />}
-        {currentMenu === 'Tambah Titipan' && <FormTitipanView produkData={produkData} onAddTitipan={handleAddTitipan} onChangeMenu={handleMenuChange} />}
-        {currentMenu === 'Katalog Produk' && <ProdukView produkData={produkData} />}
+        {currentMenu === 'list' && <TitipanView titipanData={titipanData} onChangeMenu={() => handleMenuChange('add')} />}
+        {currentMenu === 'add' && <FormTitipanView produkData={produkData} onAddTitipan={handleAddTitipan} onChangeMenu={() => handleMenuChange('list')} />}
+        {currentMenu === 'catalog' && <ProdukView produkData={produkData} />}
       </main>
 
       {/* Sidebar Overlay */}
@@ -102,7 +108,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Store className="h-7 w-7 text-rose-600" />
-                <span className="font-extrabold text-xl text-gray-900 tracking-tight">Menu Utama</span>
+                <span className="font-extrabold text-xl text-gray-900 tracking-tight">{t('dashboard.sidebar.title')}</span>
               </div>
               <button onClick={() => setIsSidebarOpen(false)} className="p-2 -mr-2 bg-gray-50 hover:bg-rose-50 text-gray-400 hover:text-rose-600 rounded-full transition-colors">
                 <X className="h-5 w-5" />
@@ -110,17 +116,17 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              <button onClick={() => handleMenuChange('Daftar Titipan')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'Daftar Titipan' ? 'bg-rose-50 text-rose-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
-                <PackageSearch className="h-5 w-5" /> Daftar Titipan
+              <button onClick={() => handleMenuChange('list')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'list' ? 'bg-rose-50 text-rose-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+                <PackageSearch className="h-5 w-5" /> {t('dashboard.menu.list')}
               </button>
-              <button onClick={() => handleMenuChange('Tambah Titipan')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'Tambah Titipan' ? 'bg-rose-50 text-rose-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
-                <PackagePlus className="h-5 w-5" /> Tambah Titipan
+              <button onClick={() => handleMenuChange('add')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'add' ? 'bg-rose-50 text-rose-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+                <PackagePlus className="h-5 w-5" /> {t('dashboard.menu.add')}
               </button>
-              <button onClick={() => handleMenuChange('Katalog Produk')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'Katalog Produk' ? 'bg-rose-50 text-rose-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
-                <Tags className="h-5 w-5" /> Katalog Produk
+              <button onClick={() => handleMenuChange('catalog')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'catalog' ? 'bg-rose-50 text-rose-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+                <Tags className="h-5 w-5" /> {t('dashboard.menu.catalog')}
               </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3.5 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-colors cursor-not-allowed" title="Segera Hadir">
-                <LayoutDashboard className="h-5 w-5" /> Dashboard Analitik
+              <button className="w-full flex items-center gap-3 px-4 py-3.5 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-colors cursor-not-allowed" title={t('dashboard.sidebar.comingSoon')}>
+                <LayoutDashboard className="h-5 w-5" /> {t('dashboard.menu.analytics')}
               </button>
             </div>
             
@@ -128,8 +134,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
               <div className="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 text-left">
                 <div className="bg-white p-2 rounded-full shadow-sm text-gray-400"><Zap className="h-4 w-4" /></div>
                 <div>
-                  <p className="text-xs font-bold text-gray-900">Versi 1.0.0</p>
-                  <p className="text-[10px] font-medium text-gray-500">Up to date</p>
+                  <p className="text-xs font-bold text-gray-900">{t('dashboard.sidebar.version')} 1.0.0</p>
+                  <p className="text-[10px] font-medium text-gray-500">{t('dashboard.sidebar.upToDate')}</p>
                 </div>
               </div>
             </div>
@@ -147,10 +153,10 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
             </button>
             <div className="w-20 h-20 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner"><UserIcon className="h-10 w-10" /></div>
             <h3 className="text-xl font-extrabold text-gray-900 leading-none mb-2">{user.username}</h3>
-            <p className="text-sm text-gray-500 font-medium mb-8">{user.email || 'Belum ada email yang ditambahkan'}</p>
+            <p className="text-sm text-gray-500 font-medium mb-8">{user.email || t('dashboard.profile.noEmail')}</p>
             <div className="border-t border-gray-100 pt-6">
               <button onClick={onLogout} className="w-full flex items-center justify-center gap-2 py-3.5 bg-gray-50 hover:bg-rose-50 border border-gray-200 hover:border-rose-200 text-gray-700 hover:text-rose-600 font-bold rounded-xl transition-all shadow-sm">
-                <LogOut className="h-4 w-4" /> Keluar Akun
+                <LogOut className="h-4 w-4" /> {t('dashboard.profile.logout')}
               </button>
             </div>
           </div>

@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Link2, Info, Calendar, CalendarDays, Clock, Loader2, CheckSquare } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Titipan, Produk } from '../../types/dashboard';
 
 interface FormTitipanViewProps {
   produkData: Produk[];
   onAddTitipan: (newData: Titipan) => void;
-  onChangeMenu: (menu: string) => void;
+  onChangeMenu: () => void;
 }
 
 export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu }: FormTitipanViewProps) {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // State Form
@@ -115,14 +117,14 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProdukId || !jumlah || !lastRestock) {
-      alert("Mohon lengkapi field Nama Produk, Jumlah, dan Tanggal Terakhir Restock.");
+      alert(t('dashboard.form.errRequired'));
       return;
     }
 
     setIsSubmitting(true);
 
     const selectedProductObj = produkData.find(p => p.id === parseInt(selectedProdukId));
-    const namaProdukStr = selectedProductObj ? selectedProductObj.nama : "Produk Tidak Dikenal";
+    const namaProdukStr = selectedProductObj ? selectedProductObj.nama : t('dashboard.form.unknownProduct');
 
     let finalLokasi = alamatLokasi.trim();
     
@@ -136,7 +138,7 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
           finalLokasi = `Titik Koordinat: ${coords[0]}, ${coords[1]}`;
         }
       } else {
-        finalLokasi = linkMap.trim() || "Lokasi Tidak Diketahui";
+        finalLokasi = linkMap.trim() || t('dashboard.form.unknownLocation');
       }
     }
 
@@ -162,15 +164,15 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
 
     onAddTitipan(newTitipan);
     setIsSubmitting(false);
-    onChangeMenu('Daftar Titipan');
+    onChangeMenu();
   };
 
   return (
     <div className="max-w-3xl mx-auto w-full text-gray-900">
       <div className="mb-6 flex justify-between items-center">
         <div className="text-left">
-          <h2 className="text-xl font-extrabold text-gray-900">Form Tambah Titipan</h2>
-          <p className="text-sm text-gray-500">Catat penyebaran produk ke warung baru atau lama.</p>
+          <h2 className="text-xl font-extrabold text-gray-900">{t('dashboard.form.title')}</h2>
+          <p className="text-sm text-gray-500">{t('dashboard.form.desc')}</p>
         </div>
       </div>
 
@@ -179,22 +181,22 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="text-left">
-              <label className="block text-sm font-bold text-gray-700 mb-2">Nama Produk (Dari Katalog)</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">{t('dashboard.form.labelProduct')}</label>
               <select 
                 value={selectedProdukId}
                 onChange={(e) => setSelectedProdukId(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium"
               >
-                <option value="">-- Pilih Produk --</option>
+                <option value="">{t('dashboard.form.placeholderProduct')}</option>
                 {produkData.map(p => (
                   <option key={p.id} value={p.id}>{p.nama}</option>
                 ))}
               </select>
             </div>
             <div className="text-left">
-              <label className="block text-sm font-bold text-gray-700 mb-2">Jumlah Dititipkan (Pcs)</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">{t('dashboard.form.labelQty')}</label>
               <input 
-                type="number" min="1" placeholder="Contoh: 15" 
+                type="number" min="1" placeholder={t('dashboard.form.placeholderQty')} 
                 value={jumlah} onChange={(e) => setJumlah(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" 
               />
@@ -205,30 +207,30 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
 
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
-              <label className="block text-sm font-bold text-gray-700">Tandai Lokasi Warung</label>
+              <label className="block text-sm font-bold text-gray-700">{t('dashboard.form.labelLocation')}</label>
               <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
                 <button 
                   type="button"
                   onClick={() => setLokasiType('map')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${lokasiType === 'map' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 >
-                  <MapPin className="h-3.5 w-3.5" /> Peta (Map)
+                  <MapPin className="h-3.5 w-3.5" /> {t('dashboard.form.typeMap')}
                 </button>
                 <button 
                   type="button"
                   onClick={() => setLokasiType('link')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${lokasiType === 'link' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 >
-                  <Link2 className="h-3.5 w-3.5" /> Link Maps
+                  <Link2 className="h-3.5 w-3.5" /> {t('dashboard.form.typeLink')}
                 </button>
               </div>
             </div>
 
             <div className="mb-4 text-left">
-              <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wider">Nama/Alamat Lengkap (Opsional)</label>
+              <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wider">{t('dashboard.form.labelAddress')}</label>
               <input 
                 type="text" 
-                placeholder="Jika dikosongkan, sistem akan generate otomatis dari titik Map" 
+                placeholder={t('dashboard.form.placeholderAddress')} 
                 value={alamatLokasi}
                 onChange={(e) => setAlamatLokasi(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" 
@@ -237,7 +239,7 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
 
             {lokasiType === 'link' ? (
               <input 
-                type="url" placeholder="Paste https://maps.google.com/..." 
+                type="url" placeholder={t('dashboard.form.placeholderLink')} 
                 value={linkMap} onChange={(e) => setLinkMap(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" 
               />
@@ -248,7 +250,7 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
                 </div>
                 <p className="text-xs text-gray-500 flex items-center gap-1.5 font-medium">
                   <Info className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                  Geser pin merah ke lokasi warung. Sistem akan mendeteksi nama alamat otomatis (Reverse Geocoding).
+                  {t('dashboard.form.mapInstruction')}
                 </p>
               </div>
             )}
@@ -258,7 +260,7 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="text-left">
-              <label className="block text-sm font-bold text-gray-700 mb-2">Tanggal Mulai Titip (Restock)</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">{t('dashboard.form.labelStart')}</label>
               <div className="relative">
                 <Calendar className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400" />
                 <input 
@@ -272,13 +274,13 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
             
             <div className="text-left">
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-bold text-gray-700">Tanggal Next Restock</label>
+                <label className="block text-sm font-bold text-gray-700">{t('dashboard.form.labelNext')}</label>
                 <button 
                   type="button" 
                   onClick={() => setNextRestockType(prev => prev === 'tanggal' ? 'hari' : 'tanggal')}
                   className="text-[10px] font-bold text-rose-600 hover:text-rose-700 hover:underline uppercase tracking-wider"
                 >
-                  Ubah ke Format {nextRestockType === 'tanggal' ? 'Hari' : 'Tanggal'}
+                  {nextRestockType === 'tanggal' ? t('dashboard.form.toggleToDays') : t('dashboard.form.toggleToDate')}
                 </button>
               </div>
               
@@ -297,12 +299,12 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
                   <>
                     <Clock className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400" />
                     <input 
-                      type="number" min="1" placeholder="Berapa hari lagi?" 
+                      type="number" min="1" placeholder={t('dashboard.form.placeholderDays')} 
                       value={nextRestockDays}
                       onChange={(e) => setNextRestockDays(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium text-gray-700" 
                     />
-                    <span className="absolute right-4 top-3.5 text-sm font-bold text-gray-400">Hari</span>
+                    <span className="absolute right-4 top-3.5 text-sm font-bold text-gray-400">{t('dashboard.form.suffixDays')}</span>
                   </>
                 )}
               </div>
@@ -312,9 +314,9 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
           <hr className="border-gray-100" />
 
           <div className="text-left">
-            <label className="block text-sm font-bold text-gray-700 mb-2">Status Pembayaran</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">{t('dashboard.form.labelStatus')}</label>
             <select disabled className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-sm font-medium text-gray-400 cursor-not-allowed appearance-none">
-              <option>Draft (Sistem Akan Melacak Otomatis Nanti)</option>
+              <option>{t('dashboard.form.statusDraft')}</option>
             </select>
           </div>
 
@@ -325,9 +327,9 @@ export default function FormTitipanView({ produkData, onAddTitipan, onChangeMenu
               className={`w-full h-14 bg-gray-900 hover:bg-black text-white rounded-xl font-bold text-base transition-all shadow-md flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
             >
               {isSubmitting ? (
-                <><Loader2 className="h-5 w-5 animate-spin" /> Menyimpan Data & Melacak Lokasi...</>
+                <><Loader2 className="h-5 w-5 animate-spin" /> {t('dashboard.form.btnSubmitting')}</>
               ) : (
-                <><CheckSquare className="h-5 w-5" /> Simpan Data Titipan</>
+                <><CheckSquare className="h-5 w-5" /> {t('dashboard.form.btnSubmit')}</>
               )}
             </button>
           </div>

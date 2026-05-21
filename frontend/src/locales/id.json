@@ -114,5 +114,91 @@
     "errMin6": "Minimal 6 karakter.",
     "errMismatch": "Tidak cocok.",
     "errLimit": "Melebihi batas."
+  },
+  "dashboard": {
+    "menu": {
+      "list": "Daftar Titipan",
+      "add": "Tambah Titipan",
+      "catalog": "Katalog Produk",
+      "analytics": "Dashboard Analitik"
+    },
+    "navbar": {
+      "title": "JuraganTitip",
+      "profileTitle": "Buka Profil"
+    },
+    "sidebar": {
+      "title": "Menu Utama",
+      "comingSoon": "Segera Hadir",
+      "version": "Versi",
+      "upToDate": "Up to date"
+    },
+    "profile": {
+      "noEmail": "Belum ada email yang ditambahkan",
+      "logout": "Keluar Akun"
+    },
+    "titipan": {
+      "title": "Data Stok Warung",
+      "desc": "Daftar produk yang sedang dititipkan di lokasi.",
+      "sortNewest": "Terbaru",
+      "sortOldest": "Terlama",
+      "btnAdd": "Tambah Titipan",
+      "table": {
+        "product": "Nama Produk",
+        "qty": "Jumlah (Pcs)",
+        "location": "Lokasi Warung",
+        "lastRestock": "Terakhir Restock",
+        "nextRestock": "Restock Selanjutnya"
+      },
+      "viewMap": "Lihat Peta Lokasi",
+      "empty": "Belum ada data titipan barang. Silakan tambah data baru.",
+      "showingCount": "Menampilkan {{count}} data"
+    },
+    "form": {
+      "title": "Form Tambah Titipan",
+      "desc": "Catat penyebaran produk ke warung baru atau lama.",
+      "labelProduct": "Nama Produk (Dari Katalog)",
+      "placeholderProduct": "-- Pilih Produk --",
+      "labelQty": "Jumlah Dititipkan (Pcs)",
+      "placeholderQty": "Contoh: 15",
+      "labelLocation": "Tandai Lokasi Warung",
+      "typeMap": "Peta (Map)",
+      "typeLink": "Link Maps",
+      "labelAddress": "Nama/Alamat Lengkap (Opsional)",
+      "placeholderAddress": "Jika dikosongkan, sistem akan generate otomatis dari titik Map",
+      "placeholderLink": "Paste https://maps.google.com/...",
+      "mapInstruction": "Geser pin merah ke lokasi warung. Sistem akan mendeteksi nama alamat otomatis (Reverse Geocoding).",
+      "labelStart": "Tanggal Mulai Titip (Restock)",
+      "labelNext": "Tanggal Next Restock",
+      "toggleToDate": "Ubah ke Format Tanggal",
+      "toggleToDays": "Ubah ke Format Hari",
+      "placeholderDays": "Berapa hari lagi?",
+      "suffixDays": "Hari",
+      "labelStatus": "Status Pembayaran",
+      "statusDraft": "Draft (Sistem Akan Melacak Otomatis Nanti)",
+      "btnSubmitting": "Menyimpan Data & Melacak Lokasi...",
+      "btnSubmit": "Simpan Data Titipan",
+      "errRequired": "Mohon lengkapi field Nama Produk, Jumlah, dan Tanggal Terakhir Restock.",
+      "unknownProduct": "Produk Tidak Dikenal",
+      "unknownLocation": "Lokasi Tidak Diketahui"
+    },
+    "catalog": {
+      "title": "Katalog Produk",
+      "desc": "Kelola master data produk dan harga dasar agar mudah dipilih saat menitipkan barang.",
+      "searchPlaceholder": "Cari produk...",
+      "btnAdd": "Tambah Produk",
+      "table": {
+        "info": "Informasi Produk",
+        "modal": "Harga Modal / Pcs",
+        "sell": "Harga Jual / Pcs",
+        "margin": "Estimasi Laba (Margin)"
+      },
+      "empty": "Produk tidak ditemukan."
+    },
+    "locationModal": {
+      "title": "Lokasi Warung",
+      "noMap": "Peta Interaktif Tidak Tersedia.",
+      "noMapDesc": "Pengguna mencatat lokasi ini menggunakan Link Eksternal atau Teks Alamat Manual.",
+      "btnOpenGmaps": "Buka di Google Maps"
+    }
   }
 }

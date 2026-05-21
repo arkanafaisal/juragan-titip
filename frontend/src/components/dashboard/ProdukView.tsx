@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Produk } from '../../types/dashboard';
 
 interface ProdukViewProps {
@@ -7,6 +8,7 @@ interface ProdukViewProps {
 }
 
 export default function ProdukView({ produkData }: ProdukViewProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredProduk = produkData.filter(p => p.nama.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -19,8 +21,8 @@ export default function ProdukView({ produkData }: ProdukViewProps) {
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="text-left">
-          <h2 className="text-xl font-extrabold text-gray-900">Katalog Produk</h2>
-          <p className="text-sm text-gray-500">Kelola master data produk dan harga dasar agar mudah dipilih saat menitipkan barang.</p>
+          <h2 className="text-xl font-extrabold text-gray-900">{t('dashboard.catalog.title')}</h2>
+          <p className="text-sm text-gray-500">{t('dashboard.catalog.desc')}</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -29,7 +31,7 @@ export default function ProdukView({ produkData }: ProdukViewProps) {
             <Search className="h-4 w-4 text-gray-400 shrink-0" />
             <input 
               type="text" 
-              placeholder="Cari produk..." 
+              placeholder={t('dashboard.catalog.searchPlaceholder')} 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent text-sm font-medium text-gray-700 focus:outline-none w-full"
@@ -37,7 +39,7 @@ export default function ProdukView({ produkData }: ProdukViewProps) {
           </div>
           <button className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-colors w-full sm:w-auto justify-center">
             <Plus className="h-4 w-4" />
-            Tambah Produk
+            {t('dashboard.catalog.btnAdd')}
           </button>
         </div>
       </div>
@@ -47,10 +49,10 @@ export default function ProdukView({ produkData }: ProdukViewProps) {
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100">
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Informasi Produk</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Harga Modal / Pcs</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Harga Jual / Pcs</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Estimasi Laba (Margin)</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.info')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.modal')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.sell')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.margin')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -79,7 +81,7 @@ export default function ProdukView({ produkData }: ProdukViewProps) {
               }) : (
                 <tr>
                   <td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-medium text-sm">
-                    Produk tidak ditemukan.
+                    {t('dashboard.catalog.empty')}
                   </td>
                 </tr>
               )}

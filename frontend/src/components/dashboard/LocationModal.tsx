@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { X, MapPin, Map } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Titipan } from '../../types/dashboard';
 
 interface LocationModalProps {
@@ -14,6 +15,7 @@ declare global {
 }
 
 export default function LocationModal({ data, onClose }: LocationModalProps) {
+  const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   
@@ -94,7 +96,7 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
         
         <div className="flex items-start justify-between mb-5">
           <div className="pr-4 text-left">
-            <h3 className="text-xl font-extrabold text-gray-900 leading-tight">Lokasi Warung</h3>
+            <h3 className="text-xl font-extrabold text-gray-900 leading-tight">{t('dashboard.locationModal.title')}</h3>
             <p className="text-sm text-gray-500 mt-1 line-clamp-2" title={data.lokasi}>{data.lokasi}</p>
           </div>
           <button onClick={onClose} className="p-2 bg-gray-50 hover:bg-rose-50 text-gray-400 hover:text-rose-600 rounded-full transition-colors focus:outline-none shrink-0">
@@ -109,8 +111,8 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
         ) : (
           <div className="w-full h-64 bg-gray-50 rounded-2xl border border-gray-200 border-dashed flex flex-col items-center justify-center mb-6 text-gray-400">
              <MapPin className="h-10 w-10 mb-2 opacity-40" />
-             <p className="text-sm font-medium">Peta Interaktif Tidak Tersedia.</p>
-             <p className="text-xs mt-1 text-center px-4">Pengguna mencatat lokasi ini menggunakan Link Eksternal atau Teks Alamat Manual.</p>
+             <p className="text-sm font-medium">{t('dashboard.locationModal.noMap')}</p>
+             <p className="text-xs mt-1 text-center px-4">{t('dashboard.locationModal.noMapDesc')}</p>
           </div>
         )}
 
@@ -120,7 +122,7 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
           rel="noopener noreferrer"
           className="w-full h-12 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold transition-all shadow-md"
         >
-           <Map className="h-4 w-4" /> Buka di Google Maps
+           <Map className="h-4 w-4" /> {t('dashboard.locationModal.btnOpenGmaps')}
         </a>
       </div>
     </div>
