@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { 
   Store, PackageSearch, Menu, X, Zap, User as UserIcon, 
-  LayoutDashboard, PackagePlus, Tags, LogOut 
+  LayoutDashboard, PackagePlus, Tags, LogOut, Loader2 
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { User } from '../components/landing/AuthModal';
 import type { Consignment, Product } from '../types/dashboard';
+import api from '../utils/api';
 
 import ConsignmentView from '../components/dashboard/ConsignmentView';
 import FormConsignmentView from '../components/dashboard/FormConsignmentView';
@@ -22,7 +23,12 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentMenu, setCurrentMenu] = useState('list');
 
-  // STATE TRANSAKSIONAL DENGAN LAT/LNG
+  // STATE TRANSAKSIONAL
+  const [titipanData, setConsignmentData] = useState<Consignment[]>([]);
+  const [productData, setProductData] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  /* DUMMY DATA COMMENTED OUT
   const [titipanData, setConsignmentData] = useState<Consignment[]>([
     { id: 1, product: "Keripik Singkong Pedas", sum: 15, address: "Warung Bu Siti - Jl. Mawar No. 2", lastRestock: "2026-05-15", nextRestock: "2026-05-22", lat: -7.5666, lng: 110.8166, mapLink: null },
     { id: 2, product: "Roti Coklat Mini Lumer", sum: 20, address: "Toko Berkah - Jl. Melati No. 10", lastRestock: "2026-05-18", nextRestock: "2026-05-25", lat: -7.5566, lng: 110.8266, mapLink: null },
@@ -30,7 +36,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     { id: 4, product: "Kue Sus Kering Rasa Keju", sum: 8, address: "Kantin Sekolah SD 01", lastRestock: "2026-05-19", nextRestock: "2026-05-26", lat: -7.5866, lng: 110.8366, mapLink: null },
   ]);
 
-  // STATE MASTER DATA
   const [productData] = useState<Product[]>([
     { id: 1, name: "Keripik Singkong Pedas", capital: 8000, sell: 10000 },
     { id: 2, name: "Roti Coklat Mini Lumer", capital: 2000, sell: 3000 },
@@ -38,10 +43,58 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     { id: 4, name: "Kue Sus Kering Rasa Keju", capital: 12000, sell: 15000 },
     { id: 5, name: "Makaroni Pedas Daun Jeruk", capital: 3500, sell: 5000 },
   ]);
+  */
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [titipanRes, productRes] = await Promise.all([
+          api.titipan.getAll(),
+          api.products.getAll()
+        ]);
+
+        if (titipanRes.success && titipanRes.data) {
+          setConsignmentData(titipanRes.data);
+        }
+        if (productRes.success && productRes.data) {
+          setProductData(productRes.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Handler Update Data Consignment
-  const handleAddConsignment = (newData: Consignment) => {
-    setConsignmentData(prevData => [newData, ...prevData]);
+  const handleAddConsignment = async (newData: Consignment) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, ...payload } = newData;
+      const response = await api.titipan.create(payload);
+      if (response.success && response.data) {
+        setConsignmentData(prevData => [response.data!, ...prevData]);
+      } else {
+        alert(response.message || "Gagal menambahkan data titipan");
+      }
+    } catch (error) {
+      console.error("Error creating consignment:", error);
+      alert("Terjadi kesalahan sistem");
+    }
+  };
+
+  const handleLogoutClick = async () => {
+    try {
+      await api.auth.logout();
+      onLogout();
+    } catch (error) {
+      console.error("Logout error:", error);
+      onLogout(); // Force logout on client even if API fails
+    }
   };
 
   useEffect(() => {
@@ -95,9 +148,18 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       </nav>
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
-        {currentMenu === 'list' && <ConsignmentView titipanData={titipanData} onChangeMenu={() => handleMenuChange('add')} />}
-        {currentMenu === 'add' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleMenuChange('list')} />}
-        {currentMenu === 'catalog' && <ProductView productData={productData} />}
+        {isLoading ? (
+          <div className="flex-1 flex flex-col items-center justify-center jt-text-muted gap-3">
+            <Loader2 className="h-10 w-10 animate-spin jt-text-primary" />
+            <p className="text-sm font-bold">{t('dashboard.status.loading') || 'Loading data...'}</p>
+          </div>
+        ) : (
+          <>
+            {currentMenu === 'list' && <ConsignmentView titipanData={titipanData} onChangeMenu={() => handleMenuChange('add')} />}
+            {currentMenu === 'add' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleMenuChange('list')} />}
+            {currentMenu === 'catalog' && <ProductView productData={productData} />}
+          </>
+        )}
       </main>
 
       {/* Sidebar Overlay */}
@@ -155,7 +217,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
             <h3 className="text-xl font-extrabold jt-text-heading leading-none mb-2">{user.username}</h3>
             <p className="text-sm jt-text-muted font-medium mb-8">{user.email || t('dashboard.profile.noEmail')}</p>
             <div className="border-t jt-border-light pt-6">
-              <button onClick={onLogout} className="w-full flex items-center justify-center gap-2 py-3.5 jt-bg-surface hover:jt-bg-primary-soft border jt-border-base hover:border-rose-200 jt-text-body hover:jt-text-primary font-bold rounded-xl transition-all shadow-sm">
+              <button onClick={handleLogoutClick} className="w-full flex items-center justify-center gap-2 py-3.5 jt-bg-surface hover:jt-bg-primary-soft border jt-border-base hover:border-rose-200 jt-text-body hover:jt-text-primary font-bold rounded-xl transition-all shadow-sm">
                 <LogOut className="h-4 w-4" /> {t('dashboard.profile.logout')}
               </button>
             </div>
