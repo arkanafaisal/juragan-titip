@@ -9,6 +9,7 @@ const redisType = {
     "reset_password": {level: 2, prefix: ':reset_password:', ttl: 60 * 15},
 
     'profile': {level: 3, prefix: ':cache:profile:', ttl: 60 * 30},
+    'products': {level: 4, prefix: ':cache:products:', ttl: 60 * 30}
 } as const
 type RedisType = keyof typeof redisType
 
@@ -17,7 +18,8 @@ type RedisPayloadType = {
     'verify_email': {id: number, email: string},
     'reset_password': {id: number},
 
-    'profile': any
+    'profile': any,
+    'products': any
 } 
 
 
@@ -105,11 +107,11 @@ export async function delPattern(type: RedisType, key: string) {
 
 export async function invalidate(type: RedisType, key: string) {
     const level = redisType[type].level
-    // if(level === 4){
-    //     await delPattern(type, key)
-    //     retry(()=>delPattern(type, key), 1, 500).catch(()=>{})
+    if(level === 4){
+        await delPattern(type, key)
+        retry(()=>delPattern(type, key), 1, 500).catch(()=>{})
         
-    // } else 
+    } else 
     if(level === 3){
         await del(type, key)
         retry(()=>del(type, key), 1, 500).catch(()=>{})

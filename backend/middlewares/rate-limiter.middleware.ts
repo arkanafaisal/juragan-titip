@@ -13,6 +13,7 @@ const rlSchemas = {
     
     'health': { ttl: 1, limit: 60 },
 
+
     // --- AUTH ROUTER ---
     'register': { ttl: 60, limit: 9, increaseBy: 2 },
     'login': { ttl: 15, limit: 12, increaseBy: 3 },
@@ -22,12 +23,19 @@ const rlSchemas = {
     'sendResetPasswordLink': { ttl: 60, limit: 5, increaseBy: 5 },
     'verifyResetPassword': { ttl: 60, limit: 10, increaseBy: 10 }, 
     
+
     // --- USER ROUTER ---
     'getMyProfile': { ttl: 1, limit: 60 },
     'updateUsername': { ttl: 60, limit: 10, increaseBy: 10 },
     'sendEmailVerificationLink': { ttl: 60, limit: 10, increaseBy: 4 }, 
     'updatePassword': { ttl: 60, limit: 10, increaseBy: 4 },
     'deleteMyAccount': { ttl: 60, limit: 10, increaseBy: 10 },
+
+
+    // --- USER ROUTER ---
+    'addProduct': { ttl: 60, limit: 10, increaseBy: 10 },
+    'getMyProducts': { ttl: 1, limit: 60 },
+
 
 } as const
 

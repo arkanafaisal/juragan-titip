@@ -12,22 +12,44 @@ datasource db {
 }
 
 
-model Pengguna {
+model User {
   id        Int       @id @default(autoincrement())
   username  String    @unique @db.VarChar(30)
   email     String?   @unique @db.VarChar(255)
   password  String    @db.VarChar(63)
   createdAt DateTime  @default(now())
 
-  produk    Produk[]
+  product    Product[]
+  consignment Consignment[]
 }
 
-model Produk {
+model Product {
   id        Int       @id @default(autoincrement())
-  nama      String    @db.VarChar(100)
-  modal     Int
-  jual      Int
+  name      String    @db.VarChar(30)
+  capital   Int       @db.Integer
+  sell      Int       @db.Integer
 
-  penggunaId Int
-  pengguna   Pengguna @relation(fields: [penggunaId], references: [id])
+  userId    Int       @db.Integer
+  user   User @relation(fields: [userId], references: [id])
+  consignment Consignment[]
+}
+
+model Consignment {
+  id        Int       @id @default(autoincrement())
+  sum       Int       @db.Integer
+  address   String    @db.VarChar(255)
+  lastRestock DateTime
+  nextRestock DateTime
+  lat       Float      
+  lng       Float      
+  
+  updatedAt DateTime  @updatedAt
+
+
+
+  
+  userId    Int       @db.Integer
+  user   User @relation(fields: [userId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
 }

@@ -7,7 +7,7 @@ const password = z.string().trim().min(6).max(255);
 const token = z.string().trim().length(64).regex(/^[0-9a-fA-F]+$/);
 
 export const authSchema = {
-    register: { body: z.object({ username, password }).strict() },
+    register: { body: z.object({ username, email: email.optional(), password }).strict() },
     login: {
         body: z.object({
             identifier: z.union([

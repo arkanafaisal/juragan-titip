@@ -6,7 +6,7 @@ import { jwtSecret } from '../configs/env.config.js';
 
 
 
-export const authenticate: RequestHandler = async (req, res, next) => {
+export const auth: RequestHandler = async (req, res, next) => {
     const authHeader = req.headers.authorization
     if (!authHeader?.startsWith('Bearer ')) {
         logger.debug('access token missing')
