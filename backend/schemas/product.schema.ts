@@ -1,15 +1,16 @@
-import zod from 'zod'
+import { z } from 'zod'
 
 
 
 
-const id = zod.number().int().positive()
-const name = zod.string().min(2).max(30)
-const capital = zod.number().positive()
-const sell = zod.number().positive()
+const id = z.number().int().positive()
+
+const name = z.string().min(2).max(30)
+const capital = z.number().positive()
+const sell = z.number().positive()
 
 
 export const productSchema = {
-    add: { body: zod.object({ name, capital, sell }).strict() },
+    add: { body: z.object({ name, capital, sell }).strict() },
 
 }

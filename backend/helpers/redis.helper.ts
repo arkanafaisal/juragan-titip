@@ -9,7 +9,8 @@ const redisType = {
     "reset_password": {level: 2, prefix: ':reset_password:', ttl: 60 * 15},
 
     'profile': {level: 3, prefix: ':cache:profile:', ttl: 60 * 30},
-    'products': {level: 4, prefix: ':cache:products:', ttl: 60 * 30}
+    'products': {level: 4, prefix: ':cache:products:', ttl: 60 * 30},
+    'consignments': {level: 4, prefix: ':cache:consignments:', ttl: 60 * 30},
 } as const
 type RedisType = keyof typeof redisType
 
@@ -19,7 +20,8 @@ type RedisPayloadType = {
     'reset_password': {id: number},
 
     'profile': any,
-    'products': any
+    'products': any,
+    'consignments': any
 } 
 
 
