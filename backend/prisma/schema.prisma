@@ -12,10 +12,22 @@ datasource db {
 }
 
 
-model User {
+model Pengguna {
   id        Int       @id @default(autoincrement())
   username  String    @unique @db.VarChar(30)
   email     String?   @unique @db.VarChar(255)
   password  String    @db.VarChar(63)
   createdAt DateTime  @default(now())
+
+  produk    Produk[]
+}
+
+model Produk {
+  id        Int       @id @default(autoincrement())
+  nama      String    @db.VarChar(100)
+  modal     Int
+  jual      Int
+
+  penggunaId Int
+  pengguna   Pengguna @relation(fields: [penggunaId], references: [id])
 }
