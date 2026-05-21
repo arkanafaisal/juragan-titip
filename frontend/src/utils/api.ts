@@ -61,7 +61,7 @@ const api = {
 
   users: {
     getMe: async (): Promise<ApiResponse<{ username: string, email: string | null }>> => {
-      const response = await fetcher('users/me', { method: 'GET' });
+      const response = await fetcher('users', { method: 'GET' });
       
       const httpCode = response.status;
       const success = response.ok;
