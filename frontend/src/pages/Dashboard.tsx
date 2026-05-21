@@ -32,11 +32,11 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
   // STATE MASTER DATA
   const [productData] = useState<Product[]>([
-    { id: 1, name: "Keripik Singkong Pedas", modal: 8000, jual: 10000 },
-    { id: 2, name: "Roti Coklat Mini Lumer", modal: 2000, jual: 3000 },
-    { id: 3, name: "Kacang Telur Garuda Premium", modal: 5000, jual: 6500 },
-    { id: 4, name: "Kue Sus Kering Rasa Keju", modal: 12000, jual: 15000 },
-    { id: 5, name: "Makaroni Pedas Daun Jeruk", modal: 3500, jual: 5000 },
+    { id: 1, name: "Keripik Singkong Pedas", capital: 8000, sell: 10000 },
+    { id: 2, name: "Roti Coklat Mini Lumer", capital: 2000, sell: 3000 },
+    { id: 3, name: "Kacang Telur Garuda Premium", capital: 5000, sell: 6500 },
+    { id: 4, name: "Kue Sus Kering Rasa Keju", capital: 12000, sell: 15000 },
+    { id: 5, name: "Makaroni Pedas Daun Jeruk", capital: 3500, sell: 5000 },
   ]);
 
   // Handler Update Data Consignment

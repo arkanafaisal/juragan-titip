@@ -50,14 +50,14 @@ export default function ProductView({ productData }: ProductViewProps) {
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100">
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.info')}</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.modal')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.capital')}</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.sell')}</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('dashboard.catalog.table.margin')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredProduct.length > 0 ? filteredProduct.map((item) => {
-                const margin = item.jual - item.modal;
+                const margin = item.sell - item.capital;
                 return (
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
@@ -66,10 +66,10 @@ export default function ProductView({ productData }: ProductViewProps) {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-gray-600">{formatRupiah(item.modal)}</span>
+                      <span className="text-sm font-medium text-gray-600">{formatRupiah(item.capital)}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-gray-900">{formatRupiah(item.jual)}</span>
+                      <span className="text-sm font-bold text-gray-900">{formatRupiah(item.sell)}</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center justify-center px-3 py-1 bg-green-50 text-green-700 font-bold text-sm rounded-lg border border-green-100">
