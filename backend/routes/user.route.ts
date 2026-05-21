@@ -9,10 +9,10 @@ import { validate } from '../middlewares/validator.middleware.js';
 
 export const userRouter = express.Router();
 
-userRouter.get('/me', rl('getMyProfile'), auth, userController.getMe)
+userRouter.get('/', rl('getMyProfile'), auth, userController.getMe)
 
-userRouter.patch('/me/username',    rl('updateUsername'),  auth, validate('updateUsername'),           userController.updateUsername)
-userRouter.patch('/me/email',       rl('sendEmailVerificationLink'),  auth, validate('sendEmailVerification'),    userController.sendEmailVerification)
-userRouter.patch('/me/password',    rl('updatePassword'),  auth, validate('updatePassword'),           userController.updatePassword)
+userRouter.patch('/username',    rl('updateUsername'),  auth, validate('updateUsername'),           userController.updateUsername)
+userRouter.patch('/email',       rl('sendEmailVerificationLink'),  auth, validate('sendEmailVerification'),    userController.sendEmailVerification)
+userRouter.patch('/password',    rl('updatePassword'),  auth, validate('updatePassword'),           userController.updatePassword)
 
-userRouter.delete('/me',            rl('deleteMyAccount'),  auth, validate('deleteUser'),               userController.delete)
+userRouter.delete('/',            rl('deleteMyAccount'),  auth, validate('deleteUser'),               userController.delete)
