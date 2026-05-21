@@ -1,10 +1,57 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brand Colors (Rose Scale) */
+  --color-jt-primary: #e11d48;       /* rose-600 */
+  --color-jt-primary-hover: #be123c; /* rose-700 */
+  --color-jt-primary-light: #f43f5e; /* rose-500 */
+  --color-jt-primary-active: #fb7185;/* rose-400 */
+  --color-jt-primary-mute: #fecdd3;  /* rose-200 */
+  --color-jt-primary-soft: #fff1f2;  /* rose-50 */
 
+  /* Neutral Colors (Gray Scale) */
+  --color-jt-heading: #111827;       /* gray-900 */
+  --color-jt-body: #374151;          /* gray-700 */
+  --color-jt-muted: #6b7280;         /* gray-500 */
+  --color-jt-light: #9ca3af;         /* gray-400 */
+  --color-jt-border: #e5e7eb;        /* gray-200 */
+  --color-jt-border-light: #f3f4f6;  /* gray-100 */
+  --color-jt-bg: #f9fafb;            /* gray-50 */
+  --color-jt-overlay: rgba(17, 24, 39, 0.6); /* gray-900/60 */
 
-@layer base{
-    button, select {
-        cursor: pointer
-    }
+  /* Status Colors (Green/Red) */
+  --color-jt-success: #15803d;       /* green-700 */
+  --color-jt-success-soft: #f0fdf4;  /* green-50 */
+  --color-jt-error: #ef4444;         /* red-500 */
+}
 
+@layer base {
+  button, select {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  /* Text Colors */
+  .jt-text-primary { color: var(--color-jt-primary); }
+  .jt-text-primary-hover { color: var(--color-jt-primary-hover); }
+  .jt-text-primary-light { color: var(--color-jt-primary-light); }
+  .jt-text-heading { color: var(--color-jt-heading); }
+  .jt-text-body { color: var(--color-jt-body); }
+  .jt-text-muted { color: var(--color-jt-muted); }
+  .jt-text-light { color: var(--color-jt-light); }
+  .jt-text-success { color: var(--color-jt-success); }
+  .jt-text-error { color: var(--color-jt-error); }
+
+  /* Background Colors */
+  .jt-bg-primary { background-color: var(--color-jt-primary); }
+  .jt-bg-primary-hover { background-color: var(--color-jt-primary-hover); }
+  .jt-bg-primary-soft { background-color: var(--color-jt-primary-soft); }
+  .jt-bg-surface { background-color: var(--color-jt-bg); }
+  .jt-bg-success-soft { background-color: var(--color-jt-success-soft); }
+  .jt-bg-overlay { background-color: var(--color-jt-overlay); }
+
+  /* Border Colors */
+  .jt-border-base { border-color: var(--color-jt-border); }
+  .jt-border-light { border-color: var(--color-jt-border-light); }
 }
