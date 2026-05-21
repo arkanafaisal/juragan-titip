@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Produk } from '../../types/dashboard';
+import type { Product } from '../../types/dashboard';
 
-interface ProdukViewProps {
-  produkData: Produk[];
+interface ProductViewProps {
+  productData: Product[];
 }
 
-export default function ProdukView({ produkData }: ProdukViewProps) {
+export default function ProductView({ productData }: ProductViewProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredProduk = produkData.filter(p => p.nama.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredProduct = productData.filter(p => p.nama.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const formatRupiah = (angka: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
@@ -56,7 +56,7 @@ export default function ProdukView({ produkData }: ProdukViewProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredProduk.length > 0 ? filteredProduk.map((item) => {
+              {filteredProduct.length > 0 ? filteredProduct.map((item) => {
                 const margin = item.jual - item.modal;
                 return (
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">

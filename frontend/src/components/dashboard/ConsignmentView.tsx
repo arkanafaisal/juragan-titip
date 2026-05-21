@@ -74,7 +74,7 @@ export default function ConsignmentView({ titipanData, onChangeMenu }: Consignme
                 <tr key={item.id} className="hover:bg-rose-50/30 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="font-bold text-gray-900 text-sm">{item.produk}</span>
+                      <span className="font-bold text-gray-900 text-sm">{item.product}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">

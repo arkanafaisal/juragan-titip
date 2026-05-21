@@ -5,11 +5,11 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { User } from '../components/landing/AuthModal';
-import type { Consignment, Produk } from '../types/dashboard';
+import type { Consignment, Product } from '../types/dashboard';
 
 import ConsignmentView from '../components/dashboard/ConsignmentView';
 import FormConsignmentView from '../components/dashboard/FormConsignmentView';
-import ProdukView from '../components/dashboard/ProdukView';
+import ProductView from '../components/dashboard/ProductView';
 
 interface DashboardProps {
   user: User;
@@ -24,14 +24,14 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
   // STATE TRANSAKSIONAL DENGAN LAT/LNG
   const [titipanData, setConsignmentData] = useState<Consignment[]>([
-    { id: 1, produk: "Keripik Singkong Pedas", jumlah: 15, lokasi: "Warung Bu Siti - Jl. Mawar No. 2", lastRestock: "2026-05-15", nextRestock: "2026-05-22", lat: -7.5666, lng: 110.8166, mapLink: null },
-    { id: 2, produk: "Roti Coklat Mini Lumer", jumlah: 20, lokasi: "Toko Berkah - Jl. Melati No. 10", lastRestock: "2026-05-18", nextRestock: "2026-05-25", lat: -7.5566, lng: 110.8266, mapLink: null },
-    { id: 3, produk: "Kacang Telur Garuda Premium", jumlah: 12, lokasi: "Warkop Cak Min - Gg. Kencana", lastRestock: "2026-05-10", nextRestock: "2026-05-17", lat: -7.5766, lng: 110.8066, mapLink: null },
-    { id: 4, produk: "Kue Sus Kering Rasa Keju", jumlah: 8, lokasi: "Kantin Sekolah SD 01", lastRestock: "2026-05-19", nextRestock: "2026-05-26", lat: -7.5866, lng: 110.8366, mapLink: null },
+    { id: 1, product: "Keripik Singkong Pedas", jumlah: 15, lokasi: "Warung Bu Siti - Jl. Mawar No. 2", lastRestock: "2026-05-15", nextRestock: "2026-05-22", lat: -7.5666, lng: 110.8166, mapLink: null },
+    { id: 2, product: "Roti Coklat Mini Lumer", jumlah: 20, lokasi: "Toko Berkah - Jl. Melati No. 10", lastRestock: "2026-05-18", nextRestock: "2026-05-25", lat: -7.5566, lng: 110.8266, mapLink: null },
+    { id: 3, product: "Kacang Telur Garuda Premium", jumlah: 12, lokasi: "Warkop Cak Min - Gg. Kencana", lastRestock: "2026-05-10", nextRestock: "2026-05-17", lat: -7.5766, lng: 110.8066, mapLink: null },
+    { id: 4, product: "Kue Sus Kering Rasa Keju", jumlah: 8, lokasi: "Kantin Sekolah SD 01", lastRestock: "2026-05-19", nextRestock: "2026-05-26", lat: -7.5866, lng: 110.8366, mapLink: null },
   ]);
 
   // STATE MASTER DATA
-  const [produkData] = useState<Produk[]>([
+  const [productData] = useState<Product[]>([
     { id: 1, nama: "Keripik Singkong Pedas", modal: 8000, jual: 10000 },
     { id: 2, nama: "Roti Coklat Mini Lumer", modal: 2000, jual: 3000 },
     { id: 3, nama: "Kacang Telur Garuda Premium", modal: 5000, jual: 6500 },
@@ -96,8 +96,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
         {currentMenu === 'list' && <ConsignmentView titipanData={titipanData} onChangeMenu={() => handleMenuChange('add')} />}
-        {currentMenu === 'add' && <FormConsignmentView produkData={produkData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleMenuChange('list')} />}
-        {currentMenu === 'catalog' && <ProdukView produkData={produkData} />}
+        {currentMenu === 'add' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleMenuChange('list')} />}
+        {currentMenu === 'catalog' && <ProductView productData={productData} />}
       </main>
 
       {/* Sidebar Overlay */}

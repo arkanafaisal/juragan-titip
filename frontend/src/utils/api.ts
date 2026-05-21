@@ -1,7 +1,7 @@
 // src/utils/api.ts
 import { fetcher } from "./fetcher";
 import apiMessages from "../helpers/apiMessages";
-import type { Consignment, Products } from "../types/dashboard";
+import type { Consignment, Product } from "../types/dashboard";
 
 export interface ApiResponse<T = null> {
   success: boolean;
@@ -75,7 +75,7 @@ const api = {
   },
 
   products: {
-    getAll: async (): Promise<ApiResponse<Products[]>> => {
+    getAll: async (): Promise<ApiResponse<Product[]>> => {
       const response = await fetcher('products', { method: 'GET' });
       
       const httpCode = response.status;

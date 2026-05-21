@@ -1,6 +1,6 @@
 export interface Consignment {
   id: number;
-  productName: string;
+  product: string;
   sum: number;
   address: string;
   lastRestock: string;
@@ -10,7 +10,7 @@ export interface Consignment {
   mapLink: string | null;
 }
 
-export interface Products {
+export interface Product {
   id: number;
   name: string;
   capital: number;

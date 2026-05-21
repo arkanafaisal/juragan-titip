@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Link2, Info, Calendar, CalendarDays, Clock, Loader2, CheckSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Consignment, Produk } from '../../types/dashboard';
+import type { Consignment, Product } from '../../types/dashboard';
 
 interface FormConsignmentViewProps {
-  produkData: Produk[];
+  productData: Product[];
   onAddConsignment: (newData: Consignment) => void;
   onChangeMenu: () => void;
 }
 
-export default function FormConsignmentView({ produkData, onAddConsignment, onChangeMenu }: FormConsignmentViewProps) {
+export default function FormConsignmentView({ productData, onAddConsignment, onChangeMenu }: FormConsignmentViewProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // State Form
-  const [selectedProdukId, setSelectedProdukId] = useState('');
+  const [selectedProductId, setSelectedProductId] = useState('');
   const [jumlah, setJumlah] = useState('');
   const [lokasiType, setLokasiType] = useState<'map' | 'link'>('map'); 
   const [alamatLokasi, setAlamatLokasi] = useState('');
@@ -116,15 +116,15 @@ export default function FormConsignmentView({ produkData, onAddConsignment, onCh
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProdukId || !jumlah || !lastRestock) {
+    if (!selectedProductId || !jumlah || !lastRestock) {
       alert(t('dashboard.form.errRequired'));
       return;
     }
 
     setIsSubmitting(true);
 
-    const selectedProductObj = produkData.find(p => p.id === parseInt(selectedProdukId));
-    const namaProdukStr = selectedProductObj ? selectedProductObj.nama : t('dashboard.form.unknownProduct');
+    const selectedProductObj = productData.find(p => p.id === parseInt(selectedProductId));
+    const namaProductStr = selectedProductObj ? selectedProductObj.nama : t('dashboard.form.unknownProduct');
 
     let finalLokasi = alamatLokasi.trim();
     
@@ -152,7 +152,7 @@ export default function FormConsignmentView({ produkData, onAddConsignment, onCh
     // Include data koordinat & link ke payload state
     const newConsignment: Consignment = {
       id: Date.now(),
-      produk: namaProdukStr,
+      product: namaProductStr,
       jumlah: parseInt(jumlah),
       lokasi: finalLokasi,
       lastRestock: lastRestock,
@@ -183,12 +183,12 @@ export default function FormConsignmentView({ produkData, onAddConsignment, onCh
             <div className="text-left">
               <label className="block text-sm font-bold text-gray-700 mb-2">{t('dashboard.form.labelProduct')}</label>
               <select 
-                value={selectedProdukId}
-                onChange={(e) => setSelectedProdukId(e.target.value)}
+                value={selectedProductId}
+                onChange={(e) => setSelectedProductId(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium"
               >
                 <option value="">{t('dashboard.form.placeholderProduct')}</option>
-                {produkData.map(p => (
+                {productData.map(p => (
                   <option key={p.id} value={p.id}>{p.nama}</option>
                 ))}
               </select>
