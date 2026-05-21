@@ -19,8 +19,8 @@ model User {
   password  String    @db.VarChar(60)
   createdAt DateTime  @default(now())
 
-  product    Product[]
-  consignment Consignment[]
+  products    Product[]
+  consignments Consignment[]
 }
 
 model Product {
@@ -30,8 +30,8 @@ model Product {
   sell      Int       @db.Integer
 
   userId    Int       @db.Integer
-  user   User @relation(fields: [userId], references: [id])
-  consignment Consignment[]
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consignments Consignment[]
 }
 
 model Consignment {
@@ -40,8 +40,8 @@ model Consignment {
   address   String    @db.VarChar(255)
   lastRestock DateTime
   nextRestock DateTime
-  lat       Float      
-  lng       Float      
+  lat       Decimal @db.Decimal(9,6)      
+  lng       Decimal @db.Decimal(9,6)      
   
   updatedAt DateTime  @updatedAt
 
@@ -49,7 +49,7 @@ model Consignment {
 
   
   userId    Int       @db.Integer
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
