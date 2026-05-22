@@ -1,4 +1,3 @@
-// src/components/dashboard/ProductView.tsx
 import { Search, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Product } from '@/types/dashboard';
@@ -18,16 +17,8 @@ export default function ProductView({ productData, onAddProduct }: ProductViewPr
     filteredProduct,
     formatRupiah,
     isAddModalOpen,
-    setIsAddModalOpen,
-    isSubmitting,
-    name,
-    setName,
-    capital,
-    setCapital,
-    sell,
-    setSell,
-    handleAddSubmit
-  } = useProductView({ productData, onAddProduct });
+    setIsAddModalOpen
+  } = useProductView({ productData });
 
   return (
     <>
@@ -38,7 +29,6 @@ export default function ProductView({ productData, onAddProduct }: ProductViewPr
         </div>
         
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          {/* Pencarian */}
           <div className="flex items-center gap-2 bg-white border jt-border-base rounded-xl px-3 py-2 shadow-sm flex-1 sm:flex-none">
             <Search className="h-4 w-4 jt-text-light shrink-0" />
             <input 
@@ -108,14 +98,7 @@ export default function ProductView({ productData, onAddProduct }: ProductViewPr
       <AddProductModal 
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        isSubmitting={isSubmitting}
-        name={name}
-        setName={setName}
-        capital={capital}
-        setCapital={setCapital}
-        sell={sell}
-        setSell={setSell}
-        onSubmit={handleAddSubmit}
+        onAddProduct={onAddProduct}
       />
     </>
   );

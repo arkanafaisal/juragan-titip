@@ -2,33 +2,27 @@
 import React from 'react';
 import { X, Loader2, Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAddProductModal } from '@/hooks/useAddProductModal';
+import type { Product } from '@/types/dashboard';
 
 interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  isSubmitting: boolean;
-  name: string;
-  setName: (val: string) => void;
-  capital: string;
-  setCapital: (val: string) => void;
-  sell: string;
-  setSell: (val: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onAddProduct?: (product: Product) => void;
 }
 
-export default function AddProductModal({
-  isOpen,
-  onClose,
-  isSubmitting,
-  name,
-  setName,
-  capital,
-  setCapital,
-  sell,
-  setSell,
-  onSubmit
-}: AddProductModalProps) {
+export default function AddProductModal({ isOpen, onClose, onAddProduct }: AddProductModalProps) {
   const { t } = useTranslation();
+  const {
+    isSubmitting,
+    name,
+    setName,
+    capital,
+    setCapital,
+    sell,
+    setSell,
+    handleAddSubmit
+  } = useAddProductModal({ onClose, onAddProduct });
 
   if (!isOpen) return null;
 
@@ -42,7 +36,7 @@ export default function AddProductModal({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <form onSubmit={onSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleAddSubmit} className="p-6 space-y-4">
           <div className="text-left">
             <label className="block text-sm font-bold jt-text-body mb-2">{t('dashboard.catalog.addModal.name')}</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder={t('dashboard.catalog.addModal.namePlaceholder')} className="w-full px-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" />
