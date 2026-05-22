@@ -12,7 +12,7 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
   const [currentMenu, setCurrentMenu] = useState('list');
 
   // STATE TRANSAKSIONAL
-  const [titipanData, setConsignmentData] = useState<Consignment[]>([]);
+  const [consignmentData, setConsignmentData] = useState<Consignment[]>([]);
   const [productData, setProductData] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -20,13 +20,13 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [titipanRes, productRes] = await Promise.all([
+        const [consignmentRes, productRes] = await Promise.all([
           api.consignment.getAll(),
           api.products.getAll()
         ]);
 
-        if (titipanRes.success && titipanRes.data) {
-          setConsignmentData(titipanRes.data);
+        if (consignmentRes.success && consignmentRes.data) {
+          setConsignmentData(consignmentRes.data);
         }
         if (productRes.success && productRes.data) {
           setProductData(productRes.data);
@@ -50,7 +50,7 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
       if (response.success && response.data) {
         setConsignmentData(prevData => [response.data!, ...prevData]);
       } else {
-        alert(response.message || "Gagal menambahkan data titipan");
+        alert(response.message);
       }
     } catch (error) {
       console.error("Error creating consignment:", error);
@@ -90,7 +90,7 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
     isSidebarOpen,
     setIsSidebarOpen,
     currentMenu,
-    titipanData,
+    consignmentData,
     productData,
     isLoading,
     handleAddConsignment,

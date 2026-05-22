@@ -25,7 +25,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     isSidebarOpen,
     setIsSidebarOpen,
     currentMenu,
-    titipanData,
+    consignmentData,
     productData,
     isLoading,
     handleAddConsignment,
@@ -54,7 +54,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
           </div>
         ) : (
           <>
-            {currentMenu === 'list' && <ConsignmentView titipanData={titipanData} productData={productData} onChangeMenu={() => handleMenuChange('add')} />}
+            {currentMenu === 'list' && <ConsignmentView consignmentData={consignmentData} productData={productData} onChangeMenu={() => handleMenuChange('add')} />}
             {currentMenu === 'add' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleMenuChange('list')} />}
             {currentMenu === 'catalog' && <ProductView productData={productData} />}
           </>

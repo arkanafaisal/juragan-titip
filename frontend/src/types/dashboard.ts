@@ -1,7 +1,7 @@
 export interface Consignment {
   id: number;
   productId: number;
-  sum: number;
+  amount: number;
   address: string;
   lastRestock: string;
   nextRestock: string;
