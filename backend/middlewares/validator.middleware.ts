@@ -18,6 +18,7 @@ const schemas: Record<string, Record<string, ZodTypeAny>> = {
     deleteUser: userSchema.delete,
 
     addProduct: productSchema.add,
+    deleteProduct: productSchema.delete,
     
     addConsignment: consignmentSchema.add
 }

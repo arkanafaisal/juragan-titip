@@ -12,5 +12,5 @@ const sell = z.number().positive()
 
 export const productSchema = {
     add: { body: z.object({ name, capital, sell }).strict() },
-
+    delete: { params: z.object({ id }).strict() }
 }

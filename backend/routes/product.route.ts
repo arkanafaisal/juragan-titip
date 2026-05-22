@@ -11,3 +11,5 @@ export const productRouter = express.Router()
 
 productRouter.get('/', rl('getMyProducts'), auth, productController.get)
 productRouter.post('/', rl('addProduct'), auth, validate('addProduct'),  productController.add)
+
+productRouter.delete('/:id', rl('deleteProduct'), auth, validate('deleteProduct'), productController.delete)

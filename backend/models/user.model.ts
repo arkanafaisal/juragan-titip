@@ -127,7 +127,7 @@ export const userModel = {
 
 import { Prisma } from '@prisma/client'
 
-const safePrisma = async <T>(prismaPromise: Promise<T>): Promise<T | null> => {
+export const safePrisma = async <T>(prismaPromise: Promise<T>): Promise<T | null> => {
     try {
         return await prismaPromise;
     } catch (err) {

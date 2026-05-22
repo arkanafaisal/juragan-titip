@@ -23,6 +23,18 @@ export const productController = {
         await redisHelper.set('products', String(req.user.id), products)
         res.status(200).json(products)
         return
+    }),
+
+    delete: authTypedHandler<typeof productSchema.delete>(async (req, res) => {
+        const { id } = req.validated.params
+
+        const success = await productModel.del({ id, userId: req.user.id })
+        if(!success){res.sendStatus(404); return}
+
+        await redisHelper.invalidate('products', String(req.user.id)).catch(()=>{})
+
+        res.sendStatus(200)
+        return
     })
 
 }

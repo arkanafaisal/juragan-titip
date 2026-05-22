@@ -35,6 +35,7 @@ const rlSchemas = {
     // --- USER ROUTER ---
     'addProduct': { ttl: 30, limit: 15, increaseBy: 5 },
     'getMyProducts': { ttl: 1, limit: 60 },
+    'deleteProduct': { ttl: 30, limit: 10, increaseBy: 5 },
     
     // --- CONSIGNMENT ROUTER ---
     'addConsignment': { ttl: 20, limit: 15, increaseBy: 3 },
