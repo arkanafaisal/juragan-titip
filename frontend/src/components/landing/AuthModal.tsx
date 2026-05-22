@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Store, X, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import api from '../../utils/api';
+import api from '@/utils/api';
 
 export type User = {
   username: string;

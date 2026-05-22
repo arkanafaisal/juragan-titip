@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Product } from '../../types/dashboard';
+import type { Product } from '@/types/dashboard';
 
 interface ProductViewProps {
   productData: Product[];

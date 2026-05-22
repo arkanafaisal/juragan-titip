@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { ArrowUpDown, PlusCircle, MapPin, Clock, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Consignment } from '../../types/dashboard';
-import LocationModal from './LocationModal';
+import type { Consignment } from '@/types/dashboard';
+import LocationModal from '@/components/dashboard/LocationModal';
 
 interface ConsignmentViewProps {
   titipanData: Consignment[];

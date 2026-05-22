@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Link2, Info, Calendar, CalendarDays, Clock, Loader2, CheckSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Consignment, Product } from '../../types/dashboard';
+import type { Consignment, Product } from '@/types/dashboard';
 
 interface FormConsignmentViewProps {
   productData: Product[];

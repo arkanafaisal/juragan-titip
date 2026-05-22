@@ -1,7 +1,7 @@
 // src/utils/api.ts
-import { fetcher } from "./fetcher";
-import apiMessages from "../helpers/apiMessages";
-import type { Consignment, Product } from "../types/dashboard";
+import { fetcher } from "@/utils/fetcher";
+import apiMessages from "@/helpers/apiMessages";
+import type { Consignment, Product } from "@/types/dashboard";
 
 export interface ApiResponse<T = null> {
   success: boolean;

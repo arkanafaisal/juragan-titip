@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { X, MapPin, Map } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Consignment } from '../../types/dashboard';
+import type { Consignment } from '@/types/dashboard';
 
 interface LocationModalProps {
   data: Consignment;

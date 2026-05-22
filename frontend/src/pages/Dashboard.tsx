@@ -4,13 +4,13 @@ import {
   LayoutDashboard, PackagePlus, Tags, LogOut, Loader2 
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { User } from '../components/landing/AuthModal';
-import type { Consignment, Product } from '../types/dashboard';
-import api from '../utils/api';
+import type { User } from '@/components/landing/AuthModal';
+import type { Consignment, Product } from '@/types/dashboard';
+import api from '@/utils/api';
 
-import ConsignmentView from '../components/dashboard/ConsignmentView';
-import FormConsignmentView from '../components/dashboard/FormConsignmentView';
-import ProductView from '../components/dashboard/ProductView';
+import ConsignmentView from '@/components/dashboard/ConsignmentView';
+import FormConsignmentView from '@/components/dashboard/FormConsignmentView';
+import ProductView from '@/components/dashboard/ProductView';
 
 interface DashboardProps {
   user: User;
