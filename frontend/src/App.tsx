@@ -1,3 +1,4 @@
+// src/App.tsx
 import { Loader2 } from 'lucide-react';
 import LandingPage from '@/pages/LandingPage';
 import Dashboard from '@/pages/Dashboard';
@@ -22,11 +23,10 @@ export default function App() {
   }
 
   const renderPage = () => {
-    if (currentPath === '/dashboard' || currentUser) {
-      return <Dashboard user={currentUser || { username: 'Guest' }} onLogout={handleLogout} />;
+    if (currentPath.startsWith('/dashboard')) {
+      return <Dashboard user={currentUser || { username: 'Guest' }} currentPath={currentPath} onLogout={handleLogout} />;
     }
 
-    // Default route
     return <LandingPage onAuthSuccess={handleAuthSuccess} />;
   };
 

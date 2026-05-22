@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { User } from '@/components/landing/AuthModal';
 import api from '@/utils/api';
+import { navigate } from '@/utils/navigation';
 
 export function useApp() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -13,6 +14,7 @@ export function useApp() {
         const response = await api.users.getMe();
         if (response.success && response.data) {
           setCurrentUser(response.data as User);
+          if(currentPath === '/') navigate('/dashboard')
         }
       } catch (error) {
         console.error("Session check failed:", error);

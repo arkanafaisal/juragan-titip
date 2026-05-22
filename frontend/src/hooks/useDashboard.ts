@@ -1,6 +1,8 @@
+// src/hooks/useDashboard.ts
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import type { Consignment, Product } from '@/types/dashboard';
+import { navigate } from '@/utils/navigation';
 
 interface UseDashboardProps {
   onLogout: () => void;
@@ -9,9 +11,7 @@ interface UseDashboardProps {
 export function useDashboard({ onLogout }: UseDashboardProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentMenu, setCurrentMenu] = useState('list');
 
-  // STATE TRANSAKSIONAL
   const [consignmentData, setConsignmentData] = useState<Consignment[]>([]);
   const [productData, setProductData] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,10 +41,8 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
     fetchData();
   }, []);
 
-  // Handler Update Data Consignment
   const handleAddConsignment = async (newData: Consignment) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, ...payload } = newData;
       const response = await api.consignment.create(payload);
       if (response.success && response.data) {
@@ -64,8 +62,13 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
       onLogout();
     } catch (error) {
       console.error("Logout error:", error);
-      onLogout(); // Force logout on client even if API fails
+      onLogout(); 
     }
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setIsSidebarOpen(false);
   };
 
   useEffect(() => {
@@ -79,22 +82,16 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
     };
   }, [isProfileOpen, isSidebarOpen]);
 
-  const handleMenuChange = (menuName: string) => {
-    setCurrentMenu(menuName);
-    setIsSidebarOpen(false); 
-  };
-
   return {
     isProfileOpen,
     setIsProfileOpen,
     isSidebarOpen,
     setIsSidebarOpen,
-    currentMenu,
     consignmentData,
     productData,
     isLoading,
     handleAddConsignment,
     handleLogoutClick,
-    handleMenuChange
+    handleNavigate
   };
 }

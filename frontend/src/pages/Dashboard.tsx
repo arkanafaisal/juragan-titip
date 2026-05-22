@@ -14,28 +14,29 @@ import Navbar from '@/components/dashboard/Navbar';
 
 interface DashboardProps {
   user: User;
+  currentPath: string;
   onLogout: () => void;
 }
 
-export default function Dashboard({ user, onLogout }: DashboardProps) {
+export default function Dashboard({ user, currentPath, onLogout }: DashboardProps) {
   const { t } = useTranslation();
   const {
     isProfileOpen,
     setIsProfileOpen,
     isSidebarOpen,
     setIsSidebarOpen,
-    currentMenu,
     consignmentData,
     productData,
     isLoading,
     handleAddConsignment,
     handleLogoutClick,
-    handleMenuChange
+    handleNavigate
   } = useDashboard({ onLogout });
 
-  const menuTitle = currentMenu === 'list' 
-    ? t('dashboard.menu.list') 
-    : (currentMenu === 'add' ? t('dashboard.menu.add') : t('dashboard.menu.catalog'));
+  let menuTitle = '';
+  if (currentPath === '/dashboard/titipan/tambah') menuTitle = t('dashboard.menu.add');
+  else if (currentPath === '/dashboard/produk') menuTitle = t('dashboard.menu.catalog');
+  else menuTitle = t('dashboard.menu.list');
 
   return (
     <div className="min-h-screen jt-bg-surface flex flex-col">
@@ -54,9 +55,9 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
           </div>
         ) : (
           <>
-            {currentMenu === 'list' && <ConsignmentView consignmentData={consignmentData} productData={productData} onChangeMenu={() => handleMenuChange('add')} />}
-            {currentMenu === 'add' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleMenuChange('list')} />}
-            {currentMenu === 'catalog' && <ProductView productData={productData} />}
+            {(currentPath === '/dashboard' || currentPath === '/dashboard/titipan') && <ConsignmentView consignmentData={consignmentData} productData={productData} onChangeMenu={() => handleNavigate('/dashboard/titipan/tambah')} />}
+            {currentPath === '/dashboard/titipan/tambah' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleNavigate('/dashboard/titipan')} />}
+            {currentPath === '/dashboard/produk' && <ProductView productData={productData} />}
           </>
         )}
       </main>
@@ -76,13 +77,13 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              <button onClick={() => handleMenuChange('list')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'list' ? 'jt-bg-primary-soft jt-text-primary' : 'text-gray-600 hover:jt-bg-surface hover:text-gray-900'}`}>
+              <button onClick={() => handleNavigate('/dashboard/titipan')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${(currentPath === '/dashboard' || currentPath === '/dashboard/titipan') ? 'jt-bg-primary-soft jt-text-primary' : 'text-gray-600 hover:jt-bg-surface hover:text-gray-900'}`}>
                 <PackageSearch className="h-5 w-5" /> {t('dashboard.menu.list')}
               </button>
-              <button onClick={() => handleMenuChange('add')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'add' ? 'jt-bg-primary-soft jt-text-primary' : 'text-gray-600 hover:jt-bg-surface hover:text-gray-900'}`}>
+              <button onClick={() => handleNavigate('/dashboard/titipan/tambah')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentPath === '/dashboard/titipan/tambah' ? 'jt-bg-primary-soft jt-text-primary' : 'text-gray-600 hover:jt-bg-surface hover:text-gray-900'}`}>
                 <PackagePlus className="h-5 w-5" /> {t('dashboard.menu.add')}
               </button>
-              <button onClick={() => handleMenuChange('catalog')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentMenu === 'catalog' ? 'jt-bg-primary-soft jt-text-primary' : 'text-gray-600 hover:jt-bg-surface hover:text-gray-900'}`}>
+              <button onClick={() => handleNavigate('/dashboard/produk')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-colors ${currentPath === '/dashboard/produk' ? 'jt-bg-primary-soft jt-text-primary' : 'text-gray-600 hover:jt-bg-surface hover:text-gray-900'}`}>
                 <Tags className="h-5 w-5" /> {t('dashboard.menu.catalog')}
               </button>
               <button className="w-full flex items-center gap-3 px-4 py-3.5 jt-text-light hover:jt-bg-surface rounded-2xl font-bold transition-colors cursor-not-allowed" title={t('dashboard.sidebar.comingSoon')}>
