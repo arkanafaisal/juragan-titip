@@ -1,6 +1,6 @@
 // src/pages/Dashboard.tsx
 import { 
-  Store, PackageSearch, Menu, X, Zap, User as UserIcon, 
+  Store, PackageSearch, X, Zap, User as UserIcon, 
   LayoutDashboard, PackagePlus, Tags, LogOut, Loader2 
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { useDashboard } from '@/hooks/useDashboard';
 import ConsignmentView from '@/components/dashboard/ConsignmentView';
 import FormConsignmentView from '@/components/dashboard/FormConsignmentView';
 import ProductView from '@/components/dashboard/ProductView';
+import Navbar from '@/components/dashboard/Navbar';
 
 interface DashboardProps {
   user: User;
@@ -38,33 +39,12 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
   return (
     <div className="min-h-screen jt-bg-surface flex flex-col">
-      <nav className="bg-white border-b jt-border-base px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setIsSidebarOpen(true)}
-            className="p-2 -ml-2 text-gray-600 hover:jt-text-primary hover:jt-bg-primary-soft rounded-full transition-colors focus:outline-none"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-          <div className="flex flex-col text-left">
-            <span className="text-[10px] font-bold uppercase tracking-widest jt-text-primary leading-tight">{t('dashboard.navbar.title')}</span>
-            <span className="font-extrabold jt-text-heading text-base sm:text-lg leading-tight">{menuTitle}</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3 sm:gap-4">
-          <span className="text-sm font-bold jt-text-body truncate max-w-[120px] sm:max-w-[200px]">
-            {user.username}
-          </span>
-          <button 
-            onClick={() => setIsProfileOpen(true)}
-            className="bg-rose-100 jt-text-primary p-2 sm:p-2.5 rounded-full shadow-sm hover:bg-rose-200 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-200"
-            title={t('dashboard.navbar.profileTitle')}
-          >
-            <UserIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-          </button>
-        </div>
-      </nav>
+      <Navbar 
+        menuTitle={menuTitle} 
+        username={user.username} 
+        onOpenSidebar={() => setIsSidebarOpen(true)} 
+        onOpenProfile={() => setIsProfileOpen(true)} 
+      />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
         {isLoading ? (
