@@ -104,6 +104,7 @@
     "placeholderConfirm": "Ulangi password",
     "btnLogin": "Masuk",
     "btnSignup": "Daftar Sekarang",
+    "btnSubmitting": "Tunggu sebentar...",
     "noAccount": "Belum punya akun?",
     "hasAccount": "Sudah punya akun?",
     "linkSignup": "Daftar di sini",
@@ -192,7 +193,16 @@
         "sell": "Harga Jual / Pcs",
         "margin": "Estimasi Laba (Margin)"
       },
-      "empty": "Produk tidak ditemukan."
+      "empty": "Produk tidak ditemukan.",
+      "addModal": {
+        "title": "Tambah Produk Baru",
+        "name": "Nama Produk",
+        "namePlaceholder": "Contoh: Keripik Singkong",
+        "capital": "Harga Modal / Pcs (Rp)",
+        "sell": "Harga Jual / Pcs (Rp)",
+        "saving": "Menyimpan...",
+        "save": "Simpan Produk"
+      }
     },
     "locationModal": {
       "title": "Lokasi Warung",

@@ -85,6 +85,17 @@ const apiMessages: ApiMessagesType = {
       
       return `Gagal memuat produk (Kode: ${status}).`;
     },
+
+    create: async (response) => {
+      const common = await handleCommonMessages(response);
+      if (common) return common;
+      
+      const status = response.status;
+      if (status === 201 || status === 200) return "Berhasil menambah produk.";
+      if (status === 400) return "Data produk tidak valid.";
+      
+      return `Gagal menambah produk (Kode: ${status}).`;
+    },
   },
 
   consignment: {

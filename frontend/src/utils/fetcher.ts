@@ -1,5 +1,5 @@
 // src/utils/fetcher.js
-import { navigate } from './navigation';
+import { navigate } from '@/utils/navigation';
 
 let inMemoryAccessToken: string | null;
 

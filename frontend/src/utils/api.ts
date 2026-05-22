@@ -1,7 +1,7 @@
 // src/utils/api.ts
-import { fetcher } from "./fetcher";
-import apiMessages from "../helpers/apiMessages";
-import type { Consignment, Product } from "../types/dashboard";
+import { fetcher } from "@/utils/fetcher";
+import apiMessages from "@/helpers/apiMessages";
+import type { Consignment, Product } from "@/types/dashboard";
 
 export interface ApiResponse<T = null> {
   success: boolean;
@@ -81,6 +81,22 @@ const api = {
       const httpCode = response.status;
       const success = response.ok;
       const message = await apiMessages.products.getAll(response);
+      
+      let data = null;
+      if (success) data = await response.clone().json().catch(() => null);
+      
+      return { success, message, data, httpCode };
+    },
+
+    create: async (payload: Omit<Product, 'id'>): Promise<ApiResponse<Product>> => {
+      const response = await fetcher('products', { 
+        method: 'POST', 
+        body: payload 
+      });
+      
+      const httpCode = response.status;
+      const success = response.ok;
+      const message = await apiMessages.products.create(response);
       
       let data = null;
       if (success) data = await response.clone().json().catch(() => null);

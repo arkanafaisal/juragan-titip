@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ChevronRight, X, Wrench, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useChangelogSection } from '@/hooks/useChangelogSection';
 
 export interface Release {
   version: string;
@@ -20,7 +21,7 @@ const changelogData: Release[] = [
 
 export default function ChangelogSection() {
   const { t } = useTranslation();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isModalOpen, setIsModalOpen } = useChangelogSection();
   const majorReleases = changelogData.filter(release => release.isMajor).slice(0, 3);
 
   return (
