@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { Store, Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavbar } from '@/hooks/useNavbar';
 
 interface NavbarProps {
   onLogin: () => void;
@@ -9,7 +9,7 @@ interface NavbarProps {
 
 export default function Navbar({ onLogin, onRegister }: NavbarProps) {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, toggleOpen } = useNavbar();
 
   return (
     <nav className="fixed w-full top-0 z-50 bg-white/95 backdrop-blur-sm border-b jt-border-light">
@@ -29,7 +29,7 @@ export default function Navbar({ onLogin, onRegister }: NavbarProps) {
           </div>
 
           <div className="md:hidden flex items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-gray-600 hover:jt-text-primary p-2 focus:outline-none">
+            <button onClick={toggleOpen} className="text-gray-600 hover:jt-text-primary p-2 focus:outline-none">
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>

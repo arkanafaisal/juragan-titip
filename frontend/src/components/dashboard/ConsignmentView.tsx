@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
-import { ArrowUpDown, PlusCircle, MapPin, Clock, Package } from 'lucide-react';
+import { ArrowUpDown, PlusCircle, MapPin, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Consignment } from '@/types/dashboard';
 import LocationModal from '@/components/dashboard/LocationModal';
+import { useConsignmentView } from '@/hooks/useConsignmentView';
 
 interface ConsignmentViewProps {
   titipanData: Consignment[];
@@ -11,21 +11,14 @@ interface ConsignmentViewProps {
 
 export default function ConsignmentView({ titipanData, onChangeMenu }: ConsignmentViewProps) {
   const { t } = useTranslation();
-  const [sortOrder, setSortOrder] = useState('newest');
-  const [selectedLocationMap, setSelectedLocationMap] = useState<Consignment | null>(null);
-
-  const sortedData = useMemo(() => {
-    return [...titipanData].sort((a, b) => {
-      const dateA = new Date(a.nextRestock).getTime();
-      const dateB = new Date(b.nextRestock).getTime();
-      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
-    });
-  }, [titipanData, sortOrder]);
-
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-    return new Date(dateString).toLocaleDateString(t('i18n.locale') === 'en' ? 'en-US' : 'id-ID', options);
-  };
+  const {
+    sortOrder,
+    setSortOrder,
+    selectedLocationMap,
+    setSelectedLocationMap,
+    sortedData,
+    formatDate
+  } = useConsignmentView({ titipanData });
 
   return (
     <>
@@ -74,7 +67,7 @@ export default function ConsignmentView({ titipanData, onChangeMenu }: Consignme
                 <tr key={item.id} className="hover:bg-rose-50/30 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="font-bold jt-text-heading text-sm">{item.product}</span>
+                      <span className="font-bold jt-text-heading text-sm">{item.productId}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">

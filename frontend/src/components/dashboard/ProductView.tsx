@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Product } from '@/types/dashboard';
+import { useProductView } from '@/hooks/useProductView';
 
 interface ProductViewProps {
   productData: Product[];
@@ -9,13 +9,12 @@ interface ProductViewProps {
 
 export default function ProductView({ productData }: ProductViewProps) {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredProduct = productData.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-  const formatRupiah = (angka: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-  };
+  const {
+    searchQuery,
+    setSearchQuery,
+    filteredProduct,
+    formatRupiah
+  } = useProductView({ productData });
 
   return (
     <>

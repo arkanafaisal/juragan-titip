@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import { Store, X, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import api from '@/utils/api';
+import { useAuthModal } from '@/hooks/useAuthModal';
 
 export type User = {
   username: string;
@@ -16,115 +15,18 @@ interface AuthModalProps {
   onSuccess: (userData: User) => void;
 }
 
-type AuthFormData = {
-  identifier?: string;
-  username?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-};
-
-type AuthErrors = Partial<AuthFormData>;
-
 export default function AuthModal({ initialMode, onClose, onSuccess }: AuthModalProps) {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<'login' | 'register'>(initialMode); 
-  const [formData, setFormData] = useState<AuthFormData>({ identifier: '', username: '', email: undefined, password: '', confirmPassword: '' });
-  const [errors, setErrors] = useState<AuthErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name as keyof AuthErrors]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-    if (apiError) setApiError(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setApiError(null);
-    const newErrors: AuthErrors = {};
-
-    if (mode === 'register') {
-      if (!formData.username) newErrors.username = t('auth.errRequired');
-      else if (formData.username.length > 20) newErrors.username = t('auth.errMax20');
-
-      if (formData.email && formData.email.length > 255) newErrors.email = t('auth.errMax255');
-
-      if (!formData.password) newErrors.password = t('auth.errRequired');
-      else if (formData.password.length < 6) newErrors.password = t('auth.errMin6');
-      else if (formData.password.length > 255) newErrors.password = t('auth.errMax255');
-
-      if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = t('auth.errMismatch');
-      }
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-      }
-      
-      setIsSubmitting(true);
-      try {
-        const response = await api.auth.register({
-          username: formData.username!,
-          email: formData.email,
-          password: formData.password!
-        });
-        
-        if (response.success && response.data) {
-          onSuccess(response.data.user);
-        } else {
-          setApiError(response.message);
-        }
-      } catch (error) {
-        setApiError(t('auth.errSystem'));
-      } finally {
-        setIsSubmitting(false);
-      }
-
-    } else {
-      if (!formData.identifier) newErrors.identifier = t('auth.errRequired');
-      else if (formData.identifier.length > 255) newErrors.identifier = t('auth.errLimit');
-
-      if (!formData.password) newErrors.password = t('auth.errRequired');
-      else if (formData.password.length < 6) newErrors.password = t('auth.errMin6');
-      else if (formData.password.length > 255) newErrors.password = t('auth.errMax255');
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-      }
-
-      setIsSubmitting(true);
-      try {
-        const response = await api.auth.login({
-          identifier: formData.identifier!,
-          password: formData.password!
-        });
-        
-        if (response.success && response.data) {
-          onSuccess(response.data.user);
-        } else {
-          setApiError(response.message);
-        }
-      } catch (error) {
-        setApiError(t('auth.errSystem'));
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
-  };
+  const {
+    mode,
+    setMode,
+    formData,
+    errors,
+    isSubmitting,
+    apiError,
+    handleChange,
+    handleSubmit
+  } = useAuthModal({ initialMode, onSuccess });
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">

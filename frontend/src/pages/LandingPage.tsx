@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import Navbar from '@/components/landing/Navbar';
 import HeroSection from '@/components/landing/HeroSection';
 import CurrentFeaturesSection from '@/components/landing/CurrentFeaturesSection';
@@ -8,15 +6,15 @@ import UpcomingFeaturesSection from '@/components/landing/UpcomingFeaturesSectio
 import ChangelogSection from '@/components/landing/ChangelogSection';
 import CtaSection from '@/components/landing/CtaSection';
 import Footer from '@/components/landing/Footer';
-import AuthModal from '@/components/landing/AuthModal';
-import type  { AuthMode, User } from '@/components/landing/AuthModal';
+import AuthModal, { type User } from '@/components/landing/AuthModal';
+import { useLanding } from '@/hooks/useLanding';
 
 interface LandingPageProps {
   onAuthSuccess: (userData: User) => void;
 }
 
 export default function LandingPage({ onAuthSuccess }: LandingPageProps) {
-  const [authModal, setAuthModal] = useState<AuthMode>(null);
+  const { authModal, setAuthModal } = useLanding();
 
   return (
     <div className="min-h-screen bg-white jt-text-heading font-sans selection:bg-rose-200 selection:text-rose-900 overflow-x-hidden">
