@@ -2,6 +2,7 @@ import { Request, RequestHandler } from 'express'
 import { ZodTypeAny } from 'zod'
 import { authSchema, userSchema } from '../schemas/user.schema.js'
 import { validateHelper } from '../utils/zod-formatter.util.js'
+import { productSchema } from '../schemas/product.schema.js'
 
 const schemas: Record<string, Record<string, ZodTypeAny>> = {
     register: authSchema.register,
@@ -14,6 +15,8 @@ const schemas: Record<string, Record<string, ZodTypeAny>> = {
     updatePassword: userSchema.updatePassword,
     sendEmailVerification: userSchema.sendEmailVerification,
     deleteUser: userSchema.delete,
+
+    addProduct: productSchema.add,
 }
 
 const fields = ['body', 'query', 'params'] as const
