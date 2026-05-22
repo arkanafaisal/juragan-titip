@@ -5,6 +5,7 @@ services:
     build:
       context: .
       target: app
+    command: sh -c "npx prisma generate && tsx watch server.ts"
     volumes:
       - .:/app
       - /app/node_modules
