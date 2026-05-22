@@ -15,6 +15,8 @@ export function useApp() {
         if (response.success && response.data) {
           setCurrentUser(response.data as User);
           if(currentPath === '/') navigate('/dashboard')
+        } else {
+          if(currentPath !== '/') navigate('/')
         }
       } catch (error) {
         console.error("Session check failed:", error);
