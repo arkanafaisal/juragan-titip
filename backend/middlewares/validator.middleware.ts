@@ -3,6 +3,7 @@ import { ZodTypeAny } from 'zod'
 import { authSchema, userSchema } from '../schemas/user.schema.js'
 import { validateHelper } from '../utils/zod-formatter.util.js'
 import { productSchema } from '../schemas/product.schema.js'
+import { consignmentSchema } from '../schemas/consignment.schema.js'
 
 const schemas: Record<string, Record<string, ZodTypeAny>> = {
     register: authSchema.register,
@@ -17,6 +18,8 @@ const schemas: Record<string, Record<string, ZodTypeAny>> = {
     deleteUser: userSchema.delete,
 
     addProduct: productSchema.add,
+    
+    addConsignment: consignmentSchema.add
 }
 
 const fields = ['body', 'query', 'params'] as const

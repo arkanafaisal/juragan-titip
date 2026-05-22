@@ -9,3 +9,4 @@ export const consignmentRouter = express.Router()
 
 
 consignmentRouter.get('/', rl('getMyConsignments'), auth, consignmentController.get)
+consignmentRouter.post('/', rl('addConsignment'), auth, validate('addConsignment'), consignmentController.add)
