@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+// src/hooks/useLocationModal.ts
+import { useEffect } from 'react';
 import type { Consignment } from '@/types/dashboard';
 
 interface UseLocationModalProps {
@@ -7,10 +8,7 @@ interface UseLocationModalProps {
 }
 
 export function useLocationModal({ data, onClose }: UseLocationModalProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
-  
-  const coords: [number, number] = [data.lat!, data.lng!]
+  const coords: [number, number] = [data.lat!, data.lng!];
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -19,65 +17,10 @@ export function useLocationModal({ data, onClose }: UseLocationModalProps) {
     };
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadLeaflet = async () => {
-      if (!document.getElementById('leaflet-css')) {
-        const link = document.createElement('link');
-        link.id = 'leaflet-css';
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(link);
-      }
-
-      if (!window.L) {
-        const script = document.createElement('script');
-        script.id = 'leaflet-js';
-        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-        script.async = true;
-        document.body.appendChild(script);
-        await new Promise((resolve) => {
-          script.onload = resolve;
-        });
-      }
-
-      if (window.L) {
-        delete window.L.Icon.Default.prototype._getIconUrl;
-        window.L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        });
-      }
-
-      if (isMounted && window.L && mapRef.current && !mapInstance.current) {
-        const map = window.L.map(mapRef.current).setView(coords, 16);
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        window.L.marker(coords).addTo(map); // View only, no draggable
-        mapInstance.current = map;
-      }
-    };
-
-    loadLeaflet();
-
-    return () => {
-      isMounted = false;
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-      }
-    };
-  }, [coords]);
-
-  // URL Buka Eksternal
-  const gmapsLink = `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}` 
+  const gmapsLink = `https://www.google.com/maps/search/?api=1&query=$${data.lat},${data.lng}` 
 
   return {
-    mapRef,
+    coords,
     gmapsLink
   };
 }

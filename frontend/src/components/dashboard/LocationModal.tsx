@@ -1,23 +1,19 @@
-import { X, MapPin, Map } from 'lucide-react';
+// src/components/dashboard/LocationModal.tsx
+import { X, MapPin, Map as MapIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Consignment } from '@/types/dashboard';
 import { useLocationModal } from '@/hooks/useLocationModal';
+import MapLocation from '@/components/dashboard/MapLocation';
 
 interface LocationModalProps {
   data: Consignment;
   onClose: () => void;
 }
 
-declare global {
-  interface Window {
-    L: any;
-  }
-}
-
 export default function LocationModal({ data, onClose }: LocationModalProps) {
   const { t } = useTranslation();
   const {
-    mapRef,
+    coords,
     gmapsLink
   } = useLocationModal({ data, onClose });
 
@@ -36,12 +32,17 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
           </button>
         </div>
         
-        <div className="w-full h-64 jt-bg-surface rounded-2xl border jt-border-base border-dashed flex flex-col items-center justify-center mb-6 jt-text-light">
-            <MapPin className="h-10 w-10 mb-2 opacity-40" />
-            <p className="text-sm font-medium">{t('dashboard.locationModal.noMap')}</p>
-            <p className="text-xs mt-1 text-center px-4">{t('dashboard.locationModal.noMapDesc')}</p>
-        </div>
-        
+        {data.lat && data.lng ? (
+          <div className="w-full h-64 bg-gray-100 rounded-2xl overflow-hidden border jt-border-base relative mb-6">
+             <MapLocation coords={coords} mode="view" />
+          </div>
+        ) : (
+          <div className="w-full h-64 jt-bg-surface rounded-2xl border jt-border-base border-dashed flex flex-col items-center justify-center mb-6 jt-text-light">
+              <MapPin className="h-10 w-10 mb-2 opacity-40" />
+              <p className="text-sm font-medium">{t('dashboard.locationModal.noMap')}</p>
+              <p className="text-xs mt-1 text-center px-4">{t('dashboard.locationModal.noMapDesc')}</p>
+          </div>
+        )}
 
         <a 
           href={gmapsLink} 
@@ -49,7 +50,7 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
           rel="noopener noreferrer"
           className="w-full h-12 flex items-center justify-center gap-2 jt-bg-primary hover:jt-bg-primary-hover text-white rounded-xl font-bold transition-all shadow-md"
         >
-           <Map className="h-4 w-4" /> {t('dashboard.locationModal.btnOpenGmaps')}
+           <MapIcon className="h-4 w-4" /> {t('dashboard.locationModal.btnOpenGmaps')}
         </a>
       </div>
     </div>

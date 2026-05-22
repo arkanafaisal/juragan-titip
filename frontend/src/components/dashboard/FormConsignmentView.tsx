@@ -3,6 +3,7 @@ import { MapPin, Link2, Info, Calendar, Clock, Loader2, CheckSquare } from 'luci
 import { useTranslation } from 'react-i18next';
 import type { Consignment, Product } from '@/types/dashboard';
 import { useFormConsignment } from '@/hooks/useFormConsignment';
+import MapLocation from '@/components/dashboard/MapLocation';
 
 interface FormConsignmentViewProps {
   productData: Product[];
@@ -28,7 +29,8 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
     setLastRestock,
     nextRestockDays,
     setNextRestockDays,
-    mapRef,
+    coords,
+    setCoords,
     handleSubmit
   } = useFormConsignment({ productData, onAddConsignment, onChangeMenu });
 
@@ -111,7 +113,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
             ) : (
               <div className="space-y-3">
                 <div className="relative w-full h-64 sm:h-72 bg-gray-100 rounded-xl overflow-hidden border jt-border-base z-10" id="map-container">
-                  <div ref={mapRef} className="w-full h-full"></div>
+                  <MapLocation coords={coords} mode="drag" onCoordsChange={setCoords} />
                 </div>
                 <p className="text-xs jt-text-muted flex items-center gap-1.5 font-medium">
                   <Info className="h-3.5 w-3.5 jt-text-primary-light shrink-0" />
