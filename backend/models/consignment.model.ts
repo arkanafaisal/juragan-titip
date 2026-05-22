@@ -14,8 +14,9 @@ export const consignmentModel = {
             const consignment = await prisma.consignment.create({
                 data: { userId, productId, amount, address, lastRestock, nextRestock, lat, lng }
             })
+            const { userId: z, updatedAt: y, ...clean } = consignment
 
-            return consignment
+            return clean
         }
 }
 

@@ -7,8 +7,9 @@ export const productModel = {
         const product = await prisma.product.create({
             data: { userId, name, capital, sell}
         })
+        const { userId: z, ...clean } = product
 
-        return product
+        return clean
     },
     get: async ({ userId }: { userId: number }) => { 
         return await prisma.product.findMany({ where: { userId } }) 
