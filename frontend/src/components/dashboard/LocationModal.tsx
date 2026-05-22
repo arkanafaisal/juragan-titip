@@ -18,7 +18,6 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
   const { t } = useTranslation();
   const {
     mapRef,
-    hasCoords,
     gmapsLink
   } = useLocationModal({ data, onClose });
 
@@ -37,17 +36,12 @@ export default function LocationModal({ data, onClose }: LocationModalProps) {
           </button>
         </div>
         
-        {hasCoords ? (
-          <div className="w-full h-64 bg-gray-100 rounded-2xl overflow-hidden border jt-border-base relative mb-6">
-             <div ref={mapRef} className="w-full h-full z-0"></div>
-          </div>
-        ) : (
-          <div className="w-full h-64 jt-bg-surface rounded-2xl border jt-border-base border-dashed flex flex-col items-center justify-center mb-6 jt-text-light">
-             <MapPin className="h-10 w-10 mb-2 opacity-40" />
-             <p className="text-sm font-medium">{t('dashboard.locationModal.noMap')}</p>
-             <p className="text-xs mt-1 text-center px-4">{t('dashboard.locationModal.noMapDesc')}</p>
-          </div>
-        )}
+        <div className="w-full h-64 jt-bg-surface rounded-2xl border jt-border-base border-dashed flex flex-col items-center justify-center mb-6 jt-text-light">
+            <MapPin className="h-10 w-10 mb-2 opacity-40" />
+            <p className="text-sm font-medium">{t('dashboard.locationModal.noMap')}</p>
+            <p className="text-xs mt-1 text-center px-4">{t('dashboard.locationModal.noMapDesc')}</p>
+        </div>
+        
 
         <a 
           href={gmapsLink} 

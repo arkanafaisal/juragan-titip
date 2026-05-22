@@ -10,8 +10,7 @@ export function useLocationModal({ data, onClose }: UseLocationModalProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   
-  const hasCoords = data.lat != null && data.lng != null;
-  const coords: [number, number] | null = hasCoords ? [data.lat!, data.lng!] : null;
+  const coords: [number, number] = [data.lat!, data.lng!]
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -21,7 +20,6 @@ export function useLocationModal({ data, onClose }: UseLocationModalProps) {
   }, []);
 
   useEffect(() => {
-    if (!hasCoords || !coords) return;
     let isMounted = true;
 
     const loadLeaflet = async () => {
@@ -73,16 +71,13 @@ export function useLocationModal({ data, onClose }: UseLocationModalProps) {
         mapInstance.current = null;
       }
     };
-  }, [coords, hasCoords]);
+  }, [coords]);
 
   // URL Buka Eksternal
-  const gmapsLink = hasCoords 
-    ? `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}` 
-    : data.mapLink || '#';
+  const gmapsLink = `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}` 
 
   return {
     mapRef,
-    hasCoords,
     gmapsLink
   };
 }

@@ -1,3 +1,4 @@
+// src/pages/Dashboard.tsx
 import { 
   Store, PackageSearch, Menu, X, Zap, User as UserIcon, 
   LayoutDashboard, PackagePlus, Tags, LogOut, Loader2 
@@ -73,14 +74,13 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
           </div>
         ) : (
           <>
-            {currentMenu === 'list' && <ConsignmentView titipanData={titipanData} onChangeMenu={() => handleMenuChange('add')} />}
+            {currentMenu === 'list' && <ConsignmentView titipanData={titipanData} productData={productData} onChangeMenu={() => handleMenuChange('add')} />}
             {currentMenu === 'add' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleMenuChange('list')} />}
             {currentMenu === 'catalog' && <ProductView productData={productData} />}
           </>
         )}
       </main>
 
-      {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div className="fixed inset-0 z-50 flex">
           <div className="fixed inset-0 jt-bg-overlay backdrop-blur-sm transition-opacity" onClick={() => setIsSidebarOpen(false)}></div>
@@ -123,7 +123,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
         </div>
       )}
 
-      {/* Modal Profile */}
       {isProfileOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 jt-bg-overlay backdrop-blur-sm transition-opacity" onClick={() => setIsProfileOpen(false)}></div>

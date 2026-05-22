@@ -1,4 +1,5 @@
-import { MapPin, Link2, Info, Calendar, CalendarDays, Clock, Loader2, CheckSquare } from 'lucide-react';
+// src/components/dashboard/FormConsignmentView.tsx
+import { MapPin, Link2, Info, Calendar, Clock, Loader2, CheckSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Consignment, Product } from '@/types/dashboard';
 import { useFormConsignment } from '@/hooks/useFormConsignment';
@@ -25,10 +26,6 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
     setLinkMap,
     lastRestock,
     setLastRestock,
-    nextRestockType,
-    setNextRestockType,
-    nextRestockDate,
-    setNextRestockDate,
     nextRestockDays,
     setNextRestockDays,
     mapRef,
@@ -143,38 +140,17 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
             <div className="text-left">
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-bold jt-text-body">{t('dashboard.form.labelNext')}</label>
-                <button 
-                  type="button" 
-                  onClick={() => setNextRestockType(prev => prev === 'tanggal' ? 'hari' : 'tanggal')}
-                  className="text-[10px] font-bold jt-text-primary hover:text-rose-700 hover:underline uppercase tracking-wider"
-                >
-                  {nextRestockType === 'tanggal' ? t('dashboard.form.toggleToDays') : t('dashboard.form.toggleToDate')}
-                </button>
               </div>
               
               <div className="relative">
-                {nextRestockType === 'tanggal' ? (
-                  <>
-                    <CalendarDays className="absolute left-3.5 top-3.5 h-4 w-4 jt-text-light" />
-                    <input 
-                      type="date" 
-                      value={nextRestockDate}
-                      onChange={(e) => setNextRestockDate(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium jt-text-body" 
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Clock className="absolute left-3.5 top-3.5 h-4 w-4 jt-text-light" />
-                    <input 
-                      type="number" min="1" placeholder={t('dashboard.form.placeholderDays')} 
-                      value={nextRestockDays}
-                      onChange={(e) => setNextRestockDays(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium jt-text-body" 
-                    />
-                    <span className="absolute right-4 top-3.5 text-sm font-bold jt-text-light">{t('dashboard.form.suffixDays')}</span>
-                  </>
-                )}
+                <Clock className="absolute left-3.5 top-3.5 h-4 w-4 jt-text-light" />
+                <input 
+                  type="number" min="1" placeholder={t('dashboard.form.placeholderDays')} 
+                  value={nextRestockDays}
+                  onChange={(e) => setNextRestockDays(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium jt-text-body" 
+                />
+                <span className="absolute right-4 top-3.5 text-sm font-bold jt-text-light">{t('dashboard.form.suffixDays')}</span>
               </div>
             </div>
           </div>

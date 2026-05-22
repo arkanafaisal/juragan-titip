@@ -1,3 +1,4 @@
+// src/hooks/useFormConsignment.ts
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Consignment, Product } from '@/types/dashboard';
@@ -12,22 +13,17 @@ export function useFormConsignment({ productData, onAddConsignment, onChangeMenu
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // State Form
   const [selectedProductId, setSelectedProductId] = useState('');
   const [sum, setSum] = useState('');
   const [addressType, setAddressType] = useState<'map' | 'link'>('map'); 
   const [address, setAddress] = useState('');
   const [linkMap, setLinkMap] = useState('');
   
-  // Tanggal Hari Ini & Next Restock
   const todayDate = new Date().toISOString().split('T')[0];
   const [lastRestock, setLastRestock] = useState(todayDate);
-  const [nextRestockType, setNextRestockType] = useState<'tanggal' | 'hari'>('hari'); 
-  const [nextRestockDate, setNextRestockDate] = useState('');
-  const [nextRestockDays, setNextRestockDays] = useState('7'); // Default 1 minggu
+  const [nextRestockDays, setNextRestockDays] = useState('7');
 
-  // State Map
-  const [coords, setCoords] = useState<[number, number]>([-7.5666, 110.8166]); // Default Surakarta
+  const [coords, setCoords] = useState<[number, number]>([-7.5666, 110.8166]);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const markerInstance = useRef<any>(null);
@@ -36,7 +32,7 @@ export function useFormConsignment({ productData, onAddConsignment, onChangeMenu
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => setCoords([position.coords.latitude, position.coords.longitude]),
-        (error) => console.log("GPS Ditolak/Gagal, menggunakan default kota.", error)
+        () => {}
       );
     }
   }, []);
@@ -123,42 +119,58 @@ export function useFormConsignment({ productData, onAddConsignment, onChangeMenu
     setIsSubmitting(true);
 
     const selectedProductObj = productData.find(p => p.id === parseInt(selectedProductId));
-    const nameProductStr = selectedProductObj ? selectedProductObj.name : t('dashboard.form.unknownProduct');
+    if(!selectedProductObj){
+      alert(t('dashboard.form.errProductNotFound'));
+      setIsSubmitting(false);
+      return;
+    }
+
+    let finalLat = 0;
+    let finalLng = 0;
+
+    if (addressType === 'map') {
+      finalLat = coords[0];
+      finalLng = coords[1];
+    } else {
+      const match = linkMap.match(/@?(-?\d+\.\d+)[,](-?\d+\.\d+)/);
+      if (!match) {
+        alert(t('dashboard.form.unknownLocation'));
+        setIsSubmitting(false);
+        return;
+      }
+      finalLat = parseFloat(match[1]);
+      finalLng = parseFloat(match[2]);
+    }
 
     let finalAddress = address.trim();
     
     if (!finalAddress) {
       if (addressType === 'map') {
         try {
-          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords[0]}&lon=${coords[1]}`);
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${finalLat}&lon=${finalLng}`);
           const data = await response.json();
-          finalAddress = data.display_name || `Titik Koordinat: ${coords[0]}, ${coords[1]}`;
+          finalAddress = data.display_name || `Titik Koordinat: ${finalLat}, ${finalLng}`;
         } catch (error) {
-          finalAddress = `Titik Koordinat: ${coords[0]}, ${coords[1]}`;
+          finalAddress = `Titik Koordinat: ${finalLat}, ${finalLng}`;
         }
       } else {
-        finalAddress = linkMap.trim() || t('dashboard.form.unknownLocation');
+        finalAddress = `Titik Koordinat: ${finalLat}, ${finalLng}`;
       }
     }
 
-    let finalNextRestock = nextRestockDate;
-    if (nextRestockType === 'hari') {
-      const restockDateObj = new Date(lastRestock);
-      restockDateObj.setDate(restockDateObj.getDate() + parseInt(nextRestockDays || '0'));
-      finalNextRestock = restockDateObj.toISOString().split('T')[0];
-    }
+    const restockDateObj = new Date(lastRestock);
+    restockDateObj.setDate(restockDateObj.getDate() + parseInt(nextRestockDays || '0'));
+    const finalNextRestock = restockDateObj.toISOString().split('T')[0];
 
-    // Include data koordinat & link ke payload state
     const newConsignment: Consignment = {
       id: Date.now(),
-      product: nameProductStr,
+      productId: parseInt(selectedProductId),
       sum: parseInt(sum),
       address: finalAddress,
       lastRestock: lastRestock,
       nextRestock: finalNextRestock,
-      lat: addressType === 'map' ? coords[0] : null,
-      lng: addressType === 'map' ? coords[1] : null,
-      mapLink: addressType === 'link' ? linkMap : null
+      lat: finalLat,
+      lng: finalLng,
     };
 
     onAddConsignment(newConsignment);
@@ -180,10 +192,6 @@ export function useFormConsignment({ productData, onAddConsignment, onChangeMenu
     setLinkMap,
     lastRestock,
     setLastRestock,
-    nextRestockType,
-    setNextRestockType,
-    nextRestockDate,
-    setNextRestockDate,
     nextRestockDays,
     setNextRestockDays,
     mapRef,
