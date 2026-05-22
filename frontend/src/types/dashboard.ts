@@ -1,13 +1,12 @@
 export interface Consignment {
   id: number;
-  product: string;
+  productId: number;
   sum: number;
   address: string;
   lastRestock: string;
   nextRestock: string;
-  lat: number | null;
-  lng: number | null;
-  mapLink: string | null;
+  lat: number;
+  lng: number;
 }
 
 export interface Product {

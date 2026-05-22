@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import LandingPage from './pages/LandingPage';
-import Dashboard from './pages/Dashboard';
-import type { User } from './components/landing/AuthModal';
-import api from './utils/api';
 import { Loader2 } from 'lucide-react';
+
+import LandingPage from '@/pages/LandingPage';
+import Dashboard from '@/pages/Dashboard';
+
+import type { User } from '@/components/landing/AuthModal'
+import api from '@/utils/api';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
