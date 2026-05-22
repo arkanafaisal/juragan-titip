@@ -22,6 +22,7 @@ export const consignmentController = {
         const { amount, address, lastRestock, nextRestock, lat, lng, productId } = req.validated.body
 
         const consignment = await consignmentModel.add({ userId: req.user.id, productId, amount, address, lastRestock, nextRestock, lat, lng })
+        if(!consignment){res.status(400).json({ error: "invalid id" }); return}
         await redisHelper.invalidate('consignments', String(req.user.id)).catch(()=>{})
 
         res.status(201).json(consignment)

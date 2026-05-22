@@ -10,8 +10,10 @@ export const productController = {
         const { name, capital, sell } = req.validated.body
         
         const product = await productModel.add({ userId: req.user.id, name, capital, sell })
-        await redisHelper.invalidate('products', String(req.user.id)).catch(()=>{})
+        if(!product){res.status(400).json({ error: "invalid id" }); return}
 
+        await redisHelper.invalidate('products', String(req.user.id)).catch(()=>{})
+        
         res.status(201).json(product)
     }),
 
@@ -32,6 +34,7 @@ export const productController = {
         if(!success){res.sendStatus(404); return}
 
         await redisHelper.invalidate('products', String(req.user.id)).catch(()=>{})
+        await redisHelper.invalidate('consignments', String(req.user.id)).catch(()=>{})
 
         res.sendStatus(200)
         return

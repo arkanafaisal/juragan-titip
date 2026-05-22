@@ -1,6 +1,6 @@
 import { prisma } from '../libs/prisma.lib.js'
 
-
+import { safeFK } from '../helpers/prisma.helper.js'
 
 
 export const consignmentModel = {
@@ -11,12 +11,9 @@ export const consignmentModel = {
     },
     add: async ({ userId, productId, amount, address, lastRestock, nextRestock, lat, lng }
         : { userId: number, productId: number, amount: number, address: string, lastRestock: Date, nextRestock: Date, lat: number, lng: number }) => {
-            const consignment = await prisma.consignment.create({
+            const result = await safeFK(prisma.consignment.create({
                 data: { userId, productId, amount, address, lastRestock, nextRestock, lat, lng }
-            })
-            const { userId: z, updatedAt: y, ...clean } = consignment
-
-            return clean
+            }))
+            return result
         }
 }
-

@@ -1,26 +1,24 @@
 import { prisma } from '../libs/prisma.lib.js'
-import { safePrisma } from './user.model.js'
+import { safeFK, safeNotFound } from '../helpers/prisma.helper.js'
 
 
 
 export const productModel = {
     add: async ({ userId, name, capital, sell }: { userId: number, name: string, capital: number, sell: number }) => {
-        const product = await prisma.product.create({
+        const result = await safeFK(prisma.product.create({
             data: { userId, name, capital, sell}
-        })
-        const { userId: z, ...clean } = product
-
-        return clean
+        }))
+        return result
     },
     get: async ({ userId }: { userId: number }) => { 
         return await prisma.product.findMany({ where: { userId } }) 
     },
     del: async ({ id, userId }: { id: number, userId: number }) => {
-        const product = await safePrisma(prisma.product.delete({
+        const result = await safeNotFound(prisma.product.delete({
             where: { id, userId },
             select: { id: true }
         }))
-        return !!product
+        return result
     }
     
 }

@@ -1,6 +1,7 @@
 import { prisma } from '../libs/prisma.lib.js'
 import { comparePassword, hashPassword } from '../utils/crypto.util.js'
 
+import { safeNotFound } from '../helpers/prisma.helper.js'
 // import { migratePasswordVersion } from '../scripts/migrate-password-version.js'
 
 export const authModel = {
@@ -33,14 +34,14 @@ export const authModel = {
         return user !== null
     },
     updateEmail: async ({ email, id }: { email: string, id: number }) => {
-        const user = await safePrisma(
+        const result = await safeNotFound(
             prisma.user.update({
                 where: { id },
                 data: { email },
                 select: { email: true }
         }))
 
-        return !!user
+        return result
     },
     getIdByEmail: async ({ email }: { email: string }) => {
         const user = await prisma.user.findUnique({
@@ -53,14 +54,14 @@ export const authModel = {
     updatePassword: async ({ id, password }: { id: number, password: string }) => {
         const hashed = await hashPassword(password)
 
-        const user = await safePrisma(
+        const result = await safeNotFound(
             prisma.user.update({
                 where: { id },
                 data: { password: hashed },
                 select: { id: true }
         }))
 
-        return !!user
+        return result
     }
 }
 
@@ -82,14 +83,14 @@ export const userModel = {
         return user !== null
     },
     updateUsername: async ({ id, username }: { id: number, username: string }) => {
-        const user = await safePrisma(
+        const result = await safeNotFound(
             prisma.user.update({
                 where: { id },
                 data: { username },
                 select: { id: true }
         }))
 
-        return !!user
+        return result
     },
     getPasswordById: async ({ id }: { id: number }) => { 
         const user = await prisma.user.findUnique({
@@ -102,38 +103,24 @@ export const userModel = {
     updatePassword: async ({ id, password }: { id: number, password: string }) => {
         const hashed = await hashPassword(password)
 
-        const user = await safePrisma(
+        const result = await safeNotFound(
             prisma.user.update({
                 where: { id },
                 data: { password: hashed },
                 select: { id: true }
         }))
-
-        return !!user
+        return result
     },
     del: async ({ id, username }: { id: number, username: string }) => {
-        const user = await safePrisma(
+        const result = await safeNotFound(
             prisma.user.delete({
                 where: { id, username },
                 select: { id: true }
         }))
 
-        return !!user
+        return result
     },
     
 }
 
 
-
-import { Prisma } from '@prisma/client'
-
-export const safePrisma = async <T>(prismaPromise: Promise<T>): Promise<T | null> => {
-    try {
-        return await prismaPromise;
-    } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-            return null;
-        }
-        throw err;
-    }
-};

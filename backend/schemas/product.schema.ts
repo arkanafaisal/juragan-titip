@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 
 
-const id = z.number().int().positive()
+const id = z.coerce.number().int().positive()
 
 const name = z.string().min(2).max(30)
 const capital = z.number().positive()
