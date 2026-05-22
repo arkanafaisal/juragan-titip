@@ -8,8 +8,8 @@ const amount = z.number().int().positive()
 const address = z.string().min(2).max(255)
 const lastRestock = z.coerce.date()
 const nextRestock = z.coerce.date()
-const lat = z.number().min(-90).max(90)
-const lng = z.number().min(-180).max(180)
+const lat = z.coerce.number().min(-90).max(90)
+const lng = z.coerce.number().min(-180).max(180)
 
 
 
