@@ -1,8 +1,8 @@
-// src/components/dashboard/ProductView.tsx
-import { Search, Plus, X, Loader2, Save } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Product } from '@/types/dashboard';
 import { useProductView } from '@/hooks/useProductView';
+import AddProductModal from '@/components/dashboard/AddProductModal';
 
 interface ProductViewProps {
   productData: Product[];
@@ -17,16 +17,8 @@ export default function ProductView({ productData, onAddProduct }: ProductViewPr
     filteredProduct,
     formatRupiah,
     isAddModalOpen,
-    setIsAddModalOpen,
-    isSubmitting,
-    name,
-    setName,
-    capital,
-    setCapital,
-    sell,
-    setSell,
-    handleAddSubmit
-  } = useProductView({ productData, onAddProduct });
+    setIsAddModalOpen
+  } = useProductView({ productData });
 
   return (
     <>
@@ -37,7 +29,6 @@ export default function ProductView({ productData, onAddProduct }: ProductViewPr
         </div>
         
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          {/* Pencarian */}
           <div className="flex items-center gap-2 bg-white border jt-border-base rounded-xl px-3 py-2 shadow-sm flex-1 sm:flex-none">
             <Search className="h-4 w-4 jt-text-light shrink-0" />
             <input 
@@ -104,38 +95,11 @@ export default function ProductView({ productData, onAddProduct }: ProductViewPr
         </div>
       </div>
 
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 jt-bg-overlay backdrop-blur-sm" onClick={() => !isSubmitting && setIsAddModalOpen(false)}></div>
-          <div className="relative bg-white w-full max-w-md rounded-3xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-6 border-b jt-border-light">
-              <h3 className="text-lg font-extrabold jt-text-heading">{t('dashboard.catalog.addModal.title', 'Tambah Produk Baru')}</h3>
-              <button onClick={() => !isSubmitting && setIsAddModalOpen(false)} className="p-2 -mr-2 jt-bg-surface hover:jt-bg-primary-soft jt-text-light hover:jt-text-primary rounded-full transition-colors">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <form onSubmit={handleAddSubmit} className="p-6 space-y-4">
-              <div className="text-left">
-                <label className="block text-sm font-bold jt-text-body mb-2">{t('dashboard.catalog.addModal.name', 'Nama Produk')}</label>
-                <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder={t('dashboard.catalog.addModal.namePlaceholder', 'Contoh: Keripik Singkong')} className="w-full px-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" />
-              </div>
-              <div className="text-left">
-                <label className="block text-sm font-bold jt-text-body mb-2">{t('dashboard.catalog.addModal.capital', 'Harga Modal / Pcs (Rp)')}</label>
-                <input type="number" min="0" value={capital} onChange={e => setCapital(e.target.value)} required placeholder="0" className="w-full px-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" />
-              </div>
-              <div className="text-left">
-                <label className="block text-sm font-bold jt-text-body mb-2">{t('dashboard.catalog.addModal.sell', 'Harga Jual / Pcs (Rp)')}</label>
-                <input type="number" min="0" value={sell} onChange={e => setSell(e.target.value)} required placeholder="0" className="w-full px-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" />
-              </div>
-              <div className="pt-2">
-                <button type="submit" disabled={isSubmitting} className={`w-full h-14 bg-gray-900 hover:bg-black text-white rounded-xl font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}>
-                  {isSubmitting ? <><Loader2 className="h-5 w-5 animate-spin" /> {t('dashboard.catalog.addModal.saving', 'Menyimpan...')}</> : <><Save className="h-5 w-5" /> {t('dashboard.catalog.addModal.save', 'Simpan Produk')}</>}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <AddProductModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddProduct={onAddProduct}
+      />
     </>
   );
 }

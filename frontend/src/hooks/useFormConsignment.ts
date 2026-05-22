@@ -1,7 +1,8 @@
-// src/hooks/useFormConsignment.ts
+// src/hooks/useFormConsignment.ts (Perubahan Bagian Atas)
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Consignment, Product } from '@/types/dashboard';
+import api from '@/utils/api';
 
 interface UseFormConsignmentProps {
   productData: Product[];
@@ -14,7 +15,7 @@ export function useFormConsignment({ productData, onAddConsignment, onChangeMenu
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [selectedProductId, setSelectedProductId] = useState('');
-  const [sum, setSum] = useState('');
+  const [amount, setAmount] = useState('');
   const [addressType, setAddressType] = useState<'map' | 'link'>('map'); 
   const [address, setAddress] = useState('');
   const [linkMap, setLinkMap] = useState('');
@@ -111,7 +112,7 @@ export function useFormConsignment({ productData, onAddConsignment, onChangeMenu
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProductId || !sum || !lastRestock) {
+    if (!selectedProductId || !amount || !lastRestock) {
       alert(t('dashboard.form.errRequired'));
       return;
     }
@@ -159,31 +160,37 @@ export function useFormConsignment({ productData, onAddConsignment, onChangeMenu
     }
 
     const restockDateObj = new Date(lastRestock);
-    restockDateObj.setDate(restockDateObj.getDate() + parseInt(nextRestockDays || '0'));
-    const finalNextRestock = restockDateObj.toISOString().split('T')[0];
+      restockDateObj.setDate(restockDateObj.getDate() + parseInt(nextRestockDays || '0'));
+      const finalNextRestock = restockDateObj.toISOString().split('T')[0];
 
-    const newConsignment: Consignment = {
-      id: Date.now(),
-      productId: parseInt(selectedProductId),
-      sum: parseInt(sum),
-      address: finalAddress,
-      lastRestock: lastRestock,
-      nextRestock: finalNextRestock,
-      lat: finalLat,
-      lng: finalLng,
+      const payload = {
+        productId: parseInt(selectedProductId),
+        amount: parseInt(amount),
+        address: finalAddress,
+        lastRestock: lastRestock,
+        nextRestock: finalNextRestock,
+        lat: finalLat,
+        lng: finalLng,
+      };
+
+      const response = await api.consignment.create(payload);
+
+      if (response.success && response.data) {
+        onAddConsignment(response.data);
+        setIsSubmitting(false);
+        onChangeMenu();
+      } else {
+        alert(response.message);
+        setIsSubmitting(false);
+      }
     };
 
-    onAddConsignment(newConsignment);
-    setIsSubmitting(false);
-    onChangeMenu();
-  };
-
-  return {
+    return {
     isSubmitting,
     selectedProductId,
     setSelectedProductId,
-    sum,
-    setSum,
+    amount,
+    setAmount,
     addressType,
     setAddressType,
     address,

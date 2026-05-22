@@ -6,12 +6,12 @@ import LocationModal from '@/components/dashboard/LocationModal';
 import { useConsignmentView } from '@/hooks/useConsignmentView';
 
 interface ConsignmentViewProps {
-  titipanData: Consignment[];
+  consignmentData: Consignment[];
   productData: Product[];
   onChangeMenu: () => void;
 }
 
-export default function ConsignmentView({ titipanData, productData, onChangeMenu }: ConsignmentViewProps) {
+export default function ConsignmentView({ consignmentData, productData, onChangeMenu }: ConsignmentViewProps) {
   const { t } = useTranslation();
   const {
     sortOrder,
@@ -20,14 +20,14 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
     setSelectedLocationMap,
     sortedData,
     formatDate
-  } = useConsignmentView({ titipanData });
+  } = useConsignmentView({ consignmentData });
 
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="text-left">
-          <h2 className="text-xl font-extrabold jt-text-heading">{t('dashboard.titipan.title')}</h2>
-          <p className="text-sm jt-text-muted">{t('dashboard.titipan.desc')}</p>
+          <h2 className="text-xl font-extrabold jt-text-heading">{t('dashboard.consignment.title')}</h2>
+          <p className="text-sm jt-text-muted">{t('dashboard.consignment.desc')}</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -38,8 +38,8 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
             >
-              <option value="newest">{t('dashboard.titipan.sortNewest')}</option>
-              <option value="oldest">{t('dashboard.titipan.sortOldest')}</option>
+              <option value="newest">{t('dashboard.consignment.sortNewest')}</option>
+              <option value="oldest">{t('dashboard.consignment.sortOldest')}</option>
             </select>
           </div>
           <button 
@@ -47,7 +47,7 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
             className="jt-bg-primary hover:jt-bg-primary-hover text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-colors w-full sm:w-auto justify-center"
           >
             <PlusCircle className="h-4 w-4" />
-            {t('dashboard.titipan.btnAdd')}
+            {t('dashboard.consignment.btnAdd')}
           </button>
         </div>
       </div>
@@ -57,11 +57,11 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="bg-gray-50/80 border-b jt-border-light">
-                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.titipan.table.product')}</th>
-                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.titipan.table.qty')}</th>
-                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.titipan.table.location')}</th>
-                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.titipan.table.lastRestock')}</th>
-                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.titipan.table.nextRestock')}</th>
+                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.consignment.table.product')}</th>
+                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.consignment.table.qty')}</th>
+                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.consignment.table.location')}</th>
+                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.consignment.table.lastRestock')}</th>
+                <th className="px-6 py-4 text-xs font-bold jt-text-muted uppercase tracking-wider">{t('dashboard.consignment.table.nextRestock')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -76,7 +76,7 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center justify-center px-3 py-1 bg-gray-100 text-gray-800 font-bold text-sm rounded-lg">
-                        {item.sum}
+                        {item.amount}
                       </span>
                     </td>
                     <td className="px-6 py-4 max-w-[280px]">
@@ -84,7 +84,7 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
                         <button 
                           onClick={() => setSelectedLocationMap(item)}
                           className="p-2 jt-bg-primary-soft jt-text-primary hover:bg-rose-100 rounded-xl shrink-0 transition-colors shadow-sm"
-                          title={t('dashboard.titipan.viewMap')}
+                          title={t('dashboard.consignment.viewMap')}
                         >
                           <MapPin className="h-4 w-4" />
                         </button>
@@ -107,7 +107,7 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
               }) : (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center jt-text-muted font-medium text-sm">
-                    {t('dashboard.titipan.empty')}
+                    {t('dashboard.consignment.empty')}
                   </td>
                 </tr>
               )}
@@ -116,7 +116,7 @@ export default function ConsignmentView({ titipanData, productData, onChangeMenu
         </div>
         
         <div className="bg-gray-50/50 border-t jt-border-light px-6 py-4 flex items-center justify-between text-sm jt-text-muted font-medium">
-          <span>{t('dashboard.titipan.showingCount', { count: sortedData.length })}</span>
+          <span>{t('dashboard.consignment.showingCount', { count: sortedData.length })}</span>
         </div>
       </div>
 

@@ -16,8 +16,8 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
     isSubmitting,
     selectedProductId,
     setSelectedProductId,
-    sum,
-    setSum,
+    amount,
+    setAmount,
     addressType,
     setAddressType,
     address,
@@ -62,7 +62,7 @@ export default function FormConsignmentView({ productData, onAddConsignment, onC
               <label className="block text-sm font-bold jt-text-body mb-2">{t('dashboard.form.labelQty')}</label>
               <input 
                 type="number" min="1" placeholder={t('dashboard.form.placeholderQty')} 
-                value={sum} onChange={(e) => setSum(e.target.value)}
+                value={amount} onChange={(e) => setAmount(e.target.value)}
                 className="w-full px-4 py-3 jt-bg-surface border jt-border-base rounded-xl focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all text-sm font-medium" 
               />
             </div>

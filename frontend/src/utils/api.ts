@@ -107,7 +107,7 @@ const api = {
 
   consignment: {
     getAll: async (): Promise<ApiResponse<Consignment[]>> => {
-      const response = await fetcher('consignment', { method: 'GET' });
+      const response = await fetcher('consignments', { method: 'GET' });
       
       const httpCode = response.status;
       const success = response.ok;
@@ -119,8 +119,8 @@ const api = {
       return { success, message, data, httpCode };
     },
 
-    create: async (payload: Omit<Consignment, 'id'>): Promise<ApiResponse<Consignment>> => {
-      const response = await fetcher('consignment', { 
+    create: async (payload: { amount: number, address: string, lastRestock: string, nextRestock: string, lat: number, lng: number, productId: number }): Promise<ApiResponse<Consignment>> => {
+      const response = await fetcher('consignments', { 
         method: 'POST', 
         body: payload 
       });
