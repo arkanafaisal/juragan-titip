@@ -56,6 +56,10 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
     }
   };
 
+  const handleAddProduct = (newProduct: Product) => {
+    setProductData(prevData => [newProduct, ...prevData]);
+  };
+
   const handleLogoutClick = async () => {
     try {
       await api.auth.logout();
@@ -91,6 +95,7 @@ export function useDashboard({ onLogout }: UseDashboardProps) {
     productData,
     isLoading,
     handleAddConsignment,
+    handleAddProduct,
     handleLogoutClick,
     handleNavigate
   };

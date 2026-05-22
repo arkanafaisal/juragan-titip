@@ -29,6 +29,7 @@ export default function Dashboard({ user, currentPath, onLogout }: DashboardProp
     productData,
     isLoading,
     handleAddConsignment,
+    handleAddProduct,
     handleLogoutClick,
     handleNavigate
   } = useDashboard({ onLogout });
@@ -57,7 +58,7 @@ export default function Dashboard({ user, currentPath, onLogout }: DashboardProp
           <>
             {(currentPath === '/dashboard' || currentPath === '/dashboard/titipan') && <ConsignmentView consignmentData={consignmentData} productData={productData} onChangeMenu={() => handleNavigate('/dashboard/titipan/tambah')} />}
             {currentPath === '/dashboard/titipan/tambah' && <FormConsignmentView productData={productData} onAddConsignment={handleAddConsignment} onChangeMenu={() => handleNavigate('/dashboard/titipan')} />}
-            {currentPath === '/dashboard/produk' && <ProductView productData={productData} />}
+            {currentPath === '/dashboard/produk' && <ProductView productData={productData} onAddProduct={handleAddProduct} />}
           </>
         )}
       </main>
