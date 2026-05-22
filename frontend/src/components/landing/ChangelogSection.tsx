@@ -78,8 +78,8 @@ export function ChangelogModal({ releases, onClose }: ChangelogModalProps) {
       <div className="relative bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-5 sm:p-6 sm:px-8 border-b jt-border-light shrink-0">
           <div>
-            <h3 className="text-xl font-extrabold jt-text-heading">{t('changelog.modal.title')}</h3>
-            <p className="text-sm jt-text-muted mt-1">{t('changelog.modal.desc')}</p>
+            <h3 className="text-xl font-extrabold jt-text-heading">{t('changelog.capital.title')}</h3>
+            <p className="text-sm jt-text-muted mt-1">{t('changelog.capital.desc')}</p>
           </div>
           <button onClick={onClose} className="p-2 jt-bg-surface hover:jt-bg-primary-soft jt-text-light hover:jt-text-primary rounded-full transition-colors focus:outline-none"><X className="h-6 w-6" /></button>
         </div>
@@ -104,7 +104,7 @@ export function ChangelogModal({ releases, onClose }: ChangelogModalProps) {
           ))}
         </div>
         <div className="p-4 border-t jt-border-light jt-bg-surface rounded-b-[2rem] text-center shrink-0">
-          <p className="text-xs jt-text-muted font-medium">{t('changelog.modal.footer')}</p>
+          <p className="text-xs jt-text-muted font-medium">{t('changelog.capital.footer')}</p>
         </div>
       </div>
     </div>

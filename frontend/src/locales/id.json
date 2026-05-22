@@ -67,7 +67,7 @@
   "changelog": {
     "title": "Riwayat Pengembangan",
     "btnMore": "Lihat Seluruh Catatan Rilis",
-    "modal": {
+    "capital": {
       "title": "Seluruh Catatan Versi",
       "desc": "Riwayat pembaruan sistem secara lengkap.",
       "footer": "Anda sedang melihat riwayat hingga versi v1.0.0"
@@ -189,7 +189,7 @@
       "btnAdd": "Tambah Produk",
       "table": {
         "info": "Informasi Produk",
-        "modal": "Harga Modal / Pcs",
+        "capital": "Harga Modal / Pcs",
         "sell": "Harga Jual / Pcs",
         "margin": "Estimasi Laba (Margin)"
       },

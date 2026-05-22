@@ -67,7 +67,7 @@
   "changelog": {
     "title": "Development History",
     "btnMore": "View All Release Notes",
-    "modal": {
+    "capital": {
       "title": "All Version Notes",
       "desc": "Complete system update history.",
       "footer": "You are viewing history up to version v1.0.0"
@@ -188,7 +188,7 @@
       "btnAdd": "Add Product",
       "table": {
         "info": "Product Information",
-        "modal": "Base Price / Pcs",
+        "capital": "Base Price / Pcs",
         "sell": "Selling Price / Pcs",
         "margin": "Estimated Profit (Margin)"
       },
