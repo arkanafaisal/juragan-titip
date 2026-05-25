@@ -1,0 +1,37 @@
+name: ${PROJECT_NAME}
+
+services:
+  app:
+    build:
+      context: .
+      target: app
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        DATABASE_URL: ${DATABASE_URL}
+        SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
+    expose:
+      - "3001"
+    env_file:
+      - .env
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+  # caddy:
+  #   image: caddy:latest
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   restart: always
+
+
+
+
+# volumes:
+#   caddy_data:
+#   caddy_config:

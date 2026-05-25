@@ -1,0 +1,14 @@
+name: ${PROJECT_NAME}_backend
+
+services:
+  app:
+    build:
+      context: .
+      target: app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"

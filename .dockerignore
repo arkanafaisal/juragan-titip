@@ -1,0 +1,11 @@
+**/node_modules
+**/.env
+**/.env.*
+**/dist
+**/build
+**/.git
+**/*.log
+
+repomix-output.md
+project-context.json
+README.md
