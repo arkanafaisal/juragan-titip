@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { Package, Mail, Lock, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function RegisterForm() {
+    const { register } = useAuth();
+    const navigate = useNavigate();
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
+    });
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
@@ -13,8 +25,25 @@ export default function RegisterForm() {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const update = (field: string, value: string) =>
+        setForm((prev) => ({ ...prev, [field]: value }));
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (form.password !== form.confirmPassword) {
+            alert("Password tidak cocok");
+            return;
+        }
+
+        setLoading(true);
+        const result = await register(form);
+        if (result.success) {
+            navigate("/dashboard");
+        } else {
+            alert(result.message || "Gagal mendaftar");
+        }
+        setLoading(false);
     };
 
     return (
@@ -44,7 +73,8 @@ export default function RegisterForm() {
                                 <User className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="name" placeholder="Nama Lengkap Anda" type="text" />
+                                    id="name" name="name" placeholder="Nama Lengkap Anda" type="text"
+                                    value={form.name} onChange={(e) => update("name", e.target.value)} required />
                             </div>
                         </div>
 
@@ -55,7 +85,8 @@ export default function RegisterForm() {
                                 <Mail className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="email" placeholder="nama@perusahaan.com" type="email" />
+                                    id="email" name="email" placeholder="nama@perusahaan.com" type="email"
+                                    value={form.email} onChange={(e) => update("email", e.target.value)} required />
                             </div>
                         </div>
 
@@ -66,7 +97,8 @@ export default function RegisterForm() {
                                 <Phone className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="phone" placeholder="081234567890" type="tel" />
+                                    id="phone" name="phone" placeholder="081234567890" type="tel"
+                                    value={form.phone} onChange={(e) => update("phone", e.target.value)} required />
                             </div>
                         </div>
 
@@ -77,7 +109,8 @@ export default function RegisterForm() {
                                 <Lock className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="password" placeholder="••••••••" type={showPassword ? "text" : "password"} />
+                                    id="password" name="password" placeholder="••••••••" type={showPassword ? "text" : "password"}
+                                    value={form.password} onChange={(e) => update("password", e.target.value)} required />
                                 <button
                                     className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
                                     type="button" onClick={handleTogglePassword}>
@@ -93,7 +126,8 @@ export default function RegisterForm() {
                                 <Lock className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="confirm-password" placeholder="••••••••" type={showConfirmPassword ? "text" : "password"} />
+                                    id="confirm-password" name="confirmPassword" placeholder="••••••••" type={showConfirmPassword ? "text" : "password"}
+                                    value={form.confirmPassword} onChange={(e) => update("confirmPassword", e.target.value)} required />
                                 <button
                                     className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
                                     type="button" onClick={handleToggleConfirmPassword}>
@@ -105,7 +139,7 @@ export default function RegisterForm() {
                         {/* Primary Action */}
                         <button
                             className="mt-sm w-full py-2.5 bg-primary-container text-on-primary-container font-h3 text-h3 rounded-lg shadow-sm hover:opacity-90 active:scale-[0.97] transition-all duration-100 flex items-center justify-center gap-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-container"
-                            type="submit">
+                            type="submit" disabled={loading}>
                             Daftar
                             <ArrowRight size={18} />
                         </button>
@@ -115,7 +149,7 @@ export default function RegisterForm() {
                     <div className="text-center mt-xs pt-md border-t border-outline-variant border-opacity-50">
                         <p className="font-body-sm text-body-sm text-text-secondary">
                             Sudah punya akun?{" "}
-                            <a className="text-primary-container font-data-md hover:underline focus:outline-none" href="#">Masuk</a>
+                            <a className="text-primary-container font-data-md hover:underline focus:outline-none" href="#" onClick={(e) => { e.preventDefault(); navigate("/login"); }}>Masuk</a>
                         </p>
                     </div>
                 </div>

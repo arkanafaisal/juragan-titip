@@ -1,15 +1,31 @@
 import React, { useState } from "react";
 import { Package, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function LoginForm() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+
+    const result = await login({ email, password });
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
+      alert(result.message || "Gagal masuk");
+    }
+    setLoading(false);
   };
 
   return (
@@ -42,7 +58,8 @@ export default function LoginForm() {
                 <Mail className="absolute left-md text-text-secondary" size={20} />
                 <input
                   className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                  id="email" placeholder="nama@perusahaan.com" type="email" />
+                  id="email" name="email" placeholder="nama@perusahaan.com" type="email"
+                  value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
             </div>
 
@@ -53,7 +70,8 @@ export default function LoginForm() {
                 <Lock className="absolute left-md text-text-secondary" size={20} />
                 <input
                   className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                  id="password" placeholder="••••••••" type={showPassword ? "text" : "password"} />
+                  id="password" name="password" placeholder="••••••••" type={showPassword ? "text" : "password"}
+                  value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <button
                   className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
                   type="button" onClick={handleTogglePassword}>
@@ -69,7 +87,7 @@ export default function LoginForm() {
             {/* Primary Action */}
             <button
               className="mt-sm w-full py-2.5 bg-primary-container text-on-primary-container font-h3 text-h3 rounded-lg shadow-sm hover:opacity-90 active:scale-[0.97] transition-all duration-100 flex items-center justify-center gap-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-container"
-              type="submit">
+              type="submit" disabled={loading}>
               Masuk
               <ArrowRight size={18} />
             </button>
@@ -79,7 +97,7 @@ export default function LoginForm() {
           <div className="text-center mt-xs pt-md border-t border-outline-variant border-opacity-50">
             <p className="font-body-sm text-body-sm text-text-secondary">
               Belum punya akun?
-              <a className="text-primary-container font-data-md hover:underline focus:outline-none" href="#">Daftar di
+              <a className="text-primary-container font-data-md hover:underline focus:outline-none pl-sm" href="#" onClick={(e) => { e.preventDefault(); navigate("/register"); }}>Daftar di
                 sini</a>
             </p>
           </div>
