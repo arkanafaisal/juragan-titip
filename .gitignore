@@ -11,3 +11,5 @@ project-context.json
 
 **/repomix-output.xml
 **/.repomixignore
+
+**/screen.png
