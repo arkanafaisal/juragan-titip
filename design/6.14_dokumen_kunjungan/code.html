@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Invoice - JuraganTitip</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Design System Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#434655",
+                        "on-error": "#ffffff",
+                        "warning": "38 92% 50%",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-primary-container": "#eeefff",
+                        "info": "262 83% 66%",
+                        "on-secondary-container": "#fffbff",
+                        "text-primary": "222 47% 11%",
+                        "text-muted": "215 20% 65%",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary-fixed-variant": "#5516be",
+                        "surface-elevated": "0 0% 100%",
+                        "secondary-fixed-dim": "#d0bcff",
+                        "on-surface": "#0b1c30",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary-container": "#bdffdb",
+                        "inverse-surface": "#213145",
+                        "surface-container-high": "#dce9ff",
+                        "on-primary-fixed": "#00174b",
+                        "destructive": "350 89% 60%",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "221 83% 53%",
+                        "on-background": "#0b1c30",
+                        "outline-variant": "#c3c6d7",
+                        "inverse-primary": "#b4c5ff",
+                        "text-secondary": "215 16% 47%",
+                        "border": "214 32% 91%",
+                        "on-secondary": "#ffffff",
+                        "background": "210 40% 98%",
+                        "surface": "0 0% 100%",
+                        "tertiary-fixed": "#6ffbbe",
+                        "success": "161 64% 39%",
+                        "secondary-container": "#8455ef",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-dim": "#cbdbf5",
+                        "tertiary-container": "#007d55",
+                        "secondary": "#6b38d4",
+                        "outline": "#737686",
+                        "on-secondary-fixed": "#23005c",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary": "#006242",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#d3e4fe",
+                        "surface-tint": "#0053db",
+                        "secondary-fixed": "#e9ddff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#eff4ff",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-fixed-variant": "#005236"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "12px",
+                        "container-max": "1280px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "xl": "40px",
+                        "sm": "8px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "overline": ["Inter"],
+                        "h2": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "display": ["Inter"],
+                        "data-sm": ["JetBrains Mono"],
+                        "data-md": ["JetBrains Mono"],
+                        "h1": ["Inter"],
+                        "caption": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body": ["Inter"]
+                    },
+                    "fontSize": {
+                        "overline": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "h2": ["20px", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "data-lg": ["18px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600" }],
+                        "display": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "data-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400" }],
+                        "data-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+                        "h1": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "h3": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Ambient Background pattern */
+        body {
+            background-image: radial-gradient(hsl(var(--color-outline-variant) / 0.2) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Subtle entry animation for the document */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-doc-entry {
+            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col relative">
+<!-- Transactional Header (Suppressed global nav shell) -->
+<header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant px-md h-16 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h1 class="font-h3 text-h3 font-semibold text-text-primary">Preview Invoice</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 p-md md:p-lg pb-[120px] md:pb-32 flex justify-center w-full">
+<!-- The Invoice Document Card -->
+<article class="bg-surface rounded-xl shadow-[0_8px_30px_rgb(15,23,42,0.08)] border border-outline-variant w-full max-w-[800px] flex flex-col overflow-hidden animate-doc-entry relative">
+<!-- Document Header -->
+<div class="p-lg bg-surface-container-lowest border-b border-outline-variant/60 flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined filled">storefront</span>
+</div>
+<div>
+<h2 class="font-h1 text-h1 text-text-primary font-bold tracking-tight">JuraganTitip</h2>
+<p class="font-caption text-caption text-text-secondary uppercase tracking-wider mt-1">Consignment System</p>
+</div>
+</div>
+<div class="flex flex-col items-start md:items-end gap-1">
+<div class="flex items-center gap-2">
+<span class="font-data-md text-data-md text-text-muted">INV-</span>
+<span class="font-data-lg text-data-lg text-text-primary font-bold">2410-089</span>
+</div>
+<div class="flex gap-2 items-center">
+<span class="font-caption text-caption text-text-secondary">24 Oct 2023, 14:30</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-warning/10 text-warning font-overline text-overline">DRAFT</span>
+</div>
+</div>
+</div>
+<!-- Meta Data Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md p-lg border-b border-outline-variant border-dashed">
+<div class="flex flex-col gap-xs">
+<p class="font-overline text-overline text-text-muted">DITUJUKAN KEPADA</p>
+<p class="font-h3 text-h3 text-text-primary font-semibold">Toko Makmur Jaya</p>
+<p class="font-body-sm text-body-sm text-text-secondary flex items-start gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                        Jl. Pasar Baru No. 45, Blok C
+                    </p>
+</div>
+<div class="flex flex-col gap-xs md:items-end">
+<p class="font-overline text-overline text-text-muted">PETUGAS</p>
+<p class="font-body text-body text-text-primary flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-xs font-bold text-primary">A</span>
+                        Ahmad Supir
+                    </p>
+</div>
+</div>
+<div class="p-lg flex flex-col gap-xl">
+<!-- Section 1: Billing (Tagihan) - Bento Style Container -->
+<section class="bg-surface-bright border border-surface-dim rounded-xl overflow-hidden relative">
+<!-- Accent bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-destructive/80"></div>
+<div class="p-md bg-surface-container-low/50 border-b border-surface-dim flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-destructive">receipt_long</span>
+<h3 class="font-h2 text-h2 text-text-primary font-semibold">Tagihan <span class="font-body-sm text-text-secondary font-normal ml-2">(Penjualan Titipan Sebelumnya)</span></h3>
+</div>
+</div>
+<div class="p-md">
+<!-- Desktop Table Header -->
+<div class="hidden md:grid grid-cols-12 gap-sm pb-sm border-b border-surface-dim font-caption text-caption text-text-muted mb-sm">
+<div class="col-span-6">ITEM</div>
+<div class="col-span-2 text-right">LAKU</div>
+<div class="col-span-2 text-right">HARGA (Rp)</div>
+<div class="col-span-2 text-right">SUBTOTAL</div>
+</div>
+<!-- Items -->
+<div class="flex flex-col gap-sm">
+<!-- Row 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-y-1 gap-x-sm py-xs items-center group hover:bg-surface-container-lowest transition-colors -mx-2 px-2 rounded-lg">
+<div class="col-span-1 md:col-span-6 flex flex-col">
+<span class="font-body text-body text-text-primary font-medium">Keripik Singkong Balado</span>
+<span class="font-caption text-caption text-text-secondary md:hidden mt-0.5">Laku: 15 × Rp 12.000</span>
+</div>
+<div class="hidden md:block col-span-2 text-right font-data-md text-data-md text-text-primary">15</div>
+<div class="hidden md:block col-span-2 text-right font-data-md text-data-md text-text-secondary">12.000</div>
+<div class="col-span-1 md:col-span-2 text-right font-data-md text-data-md text-text-primary font-semibold">180.000</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-y-1 gap-x-sm py-xs items-center group hover:bg-surface-container-lowest transition-colors -mx-2 px-2 rounded-lg">
+<div class="col-span-1 md:col-span-6 flex flex-col">
+<span class="font-body text-body text-text-primary font-medium">Kacang Telur Garuda</span>
+<span class="font-caption text-caption text-text-secondary md:hidden mt-0.5">Laku: 8 × Rp 15.000</span>
+</div>
+<div class="hidden md:block col-span-2 text-right font-data-md text-data-md text-text-primary">8</div>
+<div class="hidden md:block col-span-2 text-right font-data-md text-data-md text-text-secondary">15.000</div>
+<div class="col-span-1 md:col-span-2 text-right font-data-md text-data-md text-text-primary font-semibold">120.000</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-md flex justify-between items-center border-t border-surface-dim">
+<span class="font-body-sm text-body-sm text-text-secondary">Total Tagihan Harus Dibayar</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-sm text-data-sm text-text-muted">Rp</span>
+<span class="font-data-lg text-data-lg text-text-primary font-bold">300.000</span>
+</div>
+</div>
+</section>
+<!-- Section 2: Consignment Note (Nota Titipan Baru) - Bento Style Container -->
+<section class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm relative">
+<!-- Accent bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="p-md bg-surface-container-lowest border-b border-outline-variant/50 flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">inventory_2</span>
+<h3 class="font-h2 text-h2 text-text-primary font-semibold">Nota Titipan Baru</h3>
+</div>
+<span class="bg-primary/10 text-primary font-caption text-caption px-2 py-1 rounded-sm">Drops Hari Ini</span>
+</div>
+<div class="p-md">
+<!-- Desktop Table Header -->
+<div class="hidden md:grid grid-cols-12 gap-sm pb-sm border-b border-outline-variant/30 font-caption text-caption text-text-muted mb-sm">
+<div class="col-span-7">ITEM BARU</div>
+<div class="col-span-2 text-right">JUMLAH</div>
+<div class="col-span-3 text-right">NILAI POTENSIAL</div>
+</div>
+<!-- Items -->
+<div class="flex flex-col gap-sm">
+<!-- Row 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-y-1 gap-x-sm py-xs items-center border-b border-outline-variant/20 last:border-0 pb-sm last:pb-0">
+<div class="col-span-1 md:col-span-7 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-text-muted">
+<span class="material-symbols-outlined text-[20px]">cookie</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body text-body text-text-primary font-medium">Keripik Singkong Balado</span>
+<span class="font-caption text-caption text-text-secondary">Stok Awal: 30 pcs</span>
+</div>
+</div>
+<div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-end mt-2 md:mt-0">
+<span class="md:hidden font-caption text-caption text-text-muted">Titip Baru:</span>
+<span class="font-data-md text-data-md text-text-primary font-bold bg-surface-container px-2 py-0.5 rounded">+30 pcs</span>
+</div>
+<div class="hidden md:flex col-span-3 justify-end items-center gap-1 text-text-muted">
+<span class="font-data-sm text-data-sm">Rp</span>
+<span class="font-data-md text-data-md">360.000</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-y-1 gap-x-sm py-xs items-center border-b border-outline-variant/20 last:border-0 pb-sm last:pb-0">
+<div class="col-span-1 md:col-span-7 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-text-muted">
+<span class="material-symbols-outlined text-[20px]">local_cafe</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body text-body text-text-primary font-medium">Kopi Bubuk Murni</span>
+<span class="font-caption text-caption text-text-secondary">Produk Baru Dititipkan</span>
+</div>
+</div>
+<div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-end mt-2 md:mt-0">
+<span class="md:hidden font-caption text-caption text-text-muted">Titip Baru:</span>
+<span class="font-data-md text-data-md text-text-primary font-bold bg-surface-container px-2 py-0.5 rounded">+10 pcs</span>
+</div>
+<div class="hidden md:flex col-span-3 justify-end items-center gap-1 text-text-muted">
+<span class="font-data-sm text-data-sm">Rp</span>
+<span class="font-data-md text-data-md">250.000</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final Summary Area -->
+<div class="flex flex-col items-end gap-xs pt-md border-t border-outline-variant/50">
+<p class="font-body-sm text-body-sm text-text-secondary">Estimasi Selesai Transaksi</p>
+<div class="bg-surface-container rounded-lg px-md py-sm flex items-center gap-md">
+<span class="font-body text-body text-text-primary">Kas Diterima:</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-md text-data-md text-text-primary">Rp</span>
+<span class="font-data-lg text-data-lg font-bold text-text-primary">300.000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Document Footer Watermark -->
+<div class="p-md bg-surface-container-lowest border-t border-outline-variant/30 text-center">
+<p class="font-caption text-caption text-text-muted">Dokumen internal JuraganTitip. Bukan bukti pembayaran sah sebelum dicetak struk.</p>
+</div>
+</article>
+</main>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-outline-variant shadow-[0_-10px_40px_rgb(15,23,42,0.08)] z-50 p-md pb-safe">
+<div class="max-w-[800px] mx-auto flex flex-row gap-sm items-center justify-between w-full">
+<div class="flex gap-sm">
+<!-- Secondary Action: Print -->
+<button class="flex flex-col items-center justify-center w-14 h-12 md:w-auto md:h-12 md:px-4 md:flex-row gap-1 rounded-lg border border-outline text-text-secondary hover:bg-surface-container hover:text-text-primary hover:border-outline transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span class="font-caption text-caption font-medium hidden md:block">Print</span>
+</button>
+<!-- Secondary Action: Share WA -->
+<!-- Using design system success color to hint at WA without arbitrary colors -->
+<button class="flex flex-col items-center justify-center w-14 h-12 md:w-auto md:h-12 md:px-4 md:flex-row gap-1 rounded-lg border border-outline text-[hsl(var(--color-success))] hover:bg-success/10 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">share</span>
+<span class="font-caption text-caption font-medium hidden md:block">Share WA</span>
+</button>
+</div>
+<!-- Primary Action -->
+<button class="flex-1 max-w-[300px] h-12 bg-primary text-on-primary rounded-lg flex items-center justify-center gap-2 font-h3 text-h3 font-semibold hover:bg-primary/90 shadow-md transition-all active:scale-[0.98]">
+<span>Navigasi ke Toko Berikutnya</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Micro-interaction script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simple logic to add a subtle hover effect to table rows
+            const rows = document.querySelectorAll('.group');
+            rows.forEach(row => {
+                row.addEventListener('mouseenter', () => {
+                    row.style.transform = 'translateX(4px)';
+                    row.style.transition = 'transform 0.2s ease';
+                });
+                row.addEventListener('mouseleave', () => {
+                    row.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
+</body></html>

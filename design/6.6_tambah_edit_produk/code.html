@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tambah Produk - JuraganTitip</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434655",
+                    "on-error": "#ffffff",
+                    "warning": "38 92% 50%",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-primary-container": "#eeefff",
+                    "info": "262 83% 66%",
+                    "on-secondary-container": "#fffbff",
+                    "text-primary": "222 47% 11%",
+                    "text-muted": "215 20% 65%",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-secondary-fixed-variant": "#5516be",
+                    "surface-elevated": "0 0% 100%",
+                    "secondary-fixed-dim": "#d0bcff",
+                    "on-surface": "#0b1c30",
+                    "surface-container": "#e5eeff",
+                    "on-tertiary-container": "#bdffdb",
+                    "inverse-surface": "#213145",
+                    "surface-container-high": "#dce9ff",
+                    "on-primary-fixed": "#00174b",
+                    "destructive": "350 89% 60%",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "221 83% 53%",
+                    "on-background": "#0b1c30",
+                    "outline-variant": "#c3c6d7",
+                    "inverse-primary": "#b4c5ff",
+                    "text-secondary": "215 16% 47%",
+                    "border": "214 32% 91%",
+                    "on-secondary": "#ffffff",
+                    "background": "210 40% 98%",
+                    "surface": "0 0% 100%",
+                    "tertiary-fixed": "#6ffbbe",
+                    "success": "161 64% 39%",
+                    "secondary-container": "#8455ef",
+                    "on-tertiary-fixed": "#002113",
+                    "surface-dim": "#cbdbf5",
+                    "tertiary-container": "#007d55",
+                    "secondary": "#6b38d4",
+                    "outline": "#737686",
+                    "on-secondary-fixed": "#23005c",
+                    "primary-fixed": "#dbe1ff",
+                    "tertiary": "#006242",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#d3e4fe",
+                    "surface-tint": "#0053db",
+                    "secondary-fixed": "#e9ddff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#eff4ff",
+                    "surface-bright": "#f8f9ff",
+                    "primary-container": "#2563eb",
+                    "on-tertiary-fixed-variant": "#005236"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "12px",
+                    "container-max": "1280px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "xl": "40px",
+                    "sm": "8px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "overline": ["Inter"],
+                    "h2": ["Inter"],
+                    "data-lg": ["JetBrains Mono"],
+                    "display": ["Inter"],
+                    "data-sm": ["JetBrains Mono"],
+                    "data-md": ["JetBrains Mono"],
+                    "h1": ["Inter"],
+                    "caption": ["Inter"],
+                    "h3": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body": ["Inter"]
+            },
+            "fontSize": {
+                    "overline": ["11px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h2": ["20px", {"lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "data-lg": ["18px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600"}],
+                    "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "data-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400"}],
+                    "data-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500"}],
+                    "h1": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "h3": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation (Web) -->
+<header class="hidden md:flex justify-between items-center w-full px-lg h-16 bg-surface border-b border-outline-variant shadow-sm docked full-width top-0 z-30">
+<div class="flex items-center gap-md">
+<span class="font-h2 text-h2 font-bold text-primary">JuraganTitip</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 text-text-secondary hover:bg-surface-container-low transition-colors rounded-full active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-text-secondary hover:bg-surface-container-low transition-colors rounded-full active:scale-95">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoZEoRCFbz9pIioKPZa_LXUcrOdu20pKX0lV3ae892vc3TV_hXC7Gx9IHDm_HlEEsYKlkdwV5js0jg1gcUSZOGbUvCFfoe5YFqzvukLlaL5WArUBGfRhFIhjwqzcZvjSsOl-5cXl-Cw9tW1QlbnDUsdvRKcfwtDPA9E8XWX9IdcUdlvNcDfc4_0gcfzAcrs2P3i1hBF5gDAlxw-Rf_zBx8yazrRxTGBWpCszZiLl6leq_TCNw1rH1nWMgZ86LBcf-_Ju7FHVQLPVrl"/>
+</div>
+</header>
+<div class="flex flex-col md:flex-row h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-hidden">
+<!-- Side Navigation (Web) -->
+<nav class="hidden lg:flex flex-col p-md gap-sm bg-surface-container-lowest shadow-sm border-r border-outline-variant w-[240px] z-40 h-full overflow-y-auto">
+<div class="mb-lg px-sm">
+<div class="font-h3 text-h3 font-semibold text-primary">JuraganTitip</div>
+<div class="font-caption text-caption text-text-secondary">Consignment System</div>
+</div>
+<button class="w-full bg-primary text-on-primary hover:bg-surface-tint transition-colors rounded-lg py-2 px-4 font-body font-medium mb-md flex items-center justify-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                Add New Entry
+            </button>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-text-secondary hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body text-body">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg bg-primary-container text-on-primary-container font-bold transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-body text-body">Produk</span>
+</a>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-text-secondary hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-body text-body">Toko</span>
+</a>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-text-secondary hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body text-body">Keuangan</span>
+</a>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-text-secondary hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body text-body">Laporan</span>
+</a>
+<div class="mt-auto pt-md border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-text-secondary hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body text-body">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-text-secondary hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body text-body">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas (Modal Underlay) -->
+<main class="flex-1 overflow-y-auto bg-slate-50 relative p-md md:p-lg relative">
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 bg-[#0f172a] bg-opacity-40 backdrop-blur-sm z-50 flex justify-center items-end sm:items-center">
+<!-- Modal Content (Sheet on Mobile, Centered Modal on Web) -->
+<div class="bg-surface w-full sm:max-w-2xl rounded-t-xl sm:rounded-xl shadow-xl flex flex-col max-h-[921px] transform transition-all duration-300 ease-out translate-y-0">
+<!-- Modal Header -->
+<div class="px-md py-4 border-b border-outline-variant flex justify-between items-center sticky top-0 bg-surface rounded-t-xl z-10">
+<h2 class="font-h2 text-h2 text-text-primary">Tambah Produk</h2>
+<button class="text-text-muted hover:text-text-primary transition-colors p-1 rounded-full hover:bg-surface-container-low active:scale-95">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body (Form) -->
+<div class="p-md overflow-y-auto flex flex-col gap-lg">
+<!-- Basic Info Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm font-medium text-text-secondary" for="productName">Nama Produk</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-md py-2 font-body text-body text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="productName" placeholder="Contoh: Kopi Susu Aren" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm font-medium text-text-secondary" for="productCategory">Kategori</label>
+<div class="relative">
+<select class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-10 py-2 font-body text-body text-text-primary appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="productCategory">
+<option disabled="" selected="" value="">Pilih Kategori</option>
+<option value="minuman">Minuman</option>
+<option value="makanan">Makanan</option>
+<option value="snack">Snack</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-muted">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pricing Section (3 Columns) -->
+<div class="bg-surface-bright rounded-lg p-md border border-outline-variant/50">
+<h3 class="font-h3 text-h3 text-text-primary mb-md">Informasi Harga</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm font-medium text-text-secondary" for="priceHPP">HPP (Modal)</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted font-data-md">Rp</span>
+<input class="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-md py-2 font-data-md text-data-md text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-right" id="priceHPP" placeholder="0" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm font-medium text-text-secondary" for="priceWholesale">Harga Grosir</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted font-data-md">Rp</span>
+<input class="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-md py-2 font-data-md text-data-md text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-right" id="priceWholesale" placeholder="0" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm font-medium text-text-secondary" for="priceRetail">Harga Eceran (HET)</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted font-data-md">Rp</span>
+<input class="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-md py-2 font-data-md text-data-md text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-right" id="priceRetail" placeholder="0" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Inventory & Description -->
+<div class="grid grid-cols-1 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm font-medium text-text-secondary" for="initialStock">Stok Awal</label>
+<input class="w-1/2 md:w-1/3 bg-surface border border-outline-variant rounded-lg px-md py-2 font-data-md text-data-md text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="initialStock" placeholder="0" type="number"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm font-medium text-text-secondary" for="productDescription">Deskripsi (Opsional)</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-md py-2 font-body text-body text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none" id="productDescription" placeholder="Tambahkan keterangan produk..." rows="3"></textarea>
+</div>
+</div>
+</div>
+<!-- Modal Footer (Actions) -->
+<div class="px-md py-4 border-t border-outline-variant bg-surface-bright flex justify-end gap-sm rounded-b-xl sticky bottom-0">
+<button class="px-md py-2 rounded-lg font-body font-medium text-primary hover:bg-surface-container-low border border-transparent transition-colors active:scale-95">
+                            Batal
+                        </button>
+<button class="px-md py-2 rounded-lg bg-primary text-on-primary font-body font-medium hover:bg-surface-tint shadow-sm transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                            Simpan
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
