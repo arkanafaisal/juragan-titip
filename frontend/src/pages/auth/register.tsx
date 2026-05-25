@@ -1,166 +1,125 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router"
-import { useAuth } from "@/contexts/auth-context"
-import { APP_NAME } from "@/lib/constants"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import React, { useState } from "react";
+import { Package, Mail, Lock, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react";
 
-export default function RegisterPage() {
-  const { register } = useAuth()
-  const navigate = useNavigate()
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+export default function RegisterForm() {
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
-  const update = (field: string, value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value }))
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    const handleToggleConfirmPassword = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
 
-    if (form.password !== form.confirmPassword) {
-      setError("Password tidak cocok")
-      return
-    }
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+    };
 
-    setLoading(true)
-    const result = await register(form)
-    if (result.success) {
-      navigate("/dashboard")
-    } else {
-      setError(result.message || "Gagal mendaftar")
-    }
-    setLoading(false)
-  }
+    return (
+        <div className="bg-background min-h-screen flex items-center justify-center p-md text-on-surface antialiased py-8">
+            {/* Register Canvas */}
+            <main className="w-full max-w-[400px]">
+                {/* Glassmorphism Card */}
+                <div className="bg-surface rounded-xl shadow-sm border border-outline-variant p-5 flex flex-col gap-lg relative overflow-hidden">
+                    {/* Subtle Top Accent Line */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--background)] px-4 py-8">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)] text-white font-bold text-lg">
-            JT
-          </div>
-          <h1 className="text-h1 text-[var(--text-primary)]">{APP_NAME}</h1>
-          <p className="text-body text-[var(--text-secondary)] mt-1">
-            Buat akun baru
-          </p>
+                    {/* Branding Header */}
+                    <div className="flex flex-col items-center text-center mt-sm">
+                        <div className="w-12 h-12 rounded-lg bg-surface-container-high text-primary-container flex items-center justify-center mb-md shadow-sm">
+                            <Package size={28} fill="currentColor" strokeWidth={1.5} />
+                        </div>
+                        <h1 className="font-h1 text-h1 text-text-primary mb-xs">JuraganTitip</h1>
+                        <p className="font-body text-body text-text-secondary">Daftar Akun Baru</p>
+                    </div>
+
+                    {/* Form */}
+                    <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
+                        {/* Nama Input */}
+                        <div className="flex flex-col gap-xs">
+                            <label className="font-data-md text-data-md text-text-primary" htmlFor="name">Nama Lengkap</label>
+                            <div className="relative flex items-center">
+                                <User className="absolute left-md text-text-secondary" size={20} />
+                                <input
+                                    className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
+                                    id="name" placeholder="Nama Lengkap Anda" type="text" />
+                            </div>
+                        </div>
+
+                        {/* Email Input */}
+                        <div className="flex flex-col gap-xs">
+                            <label className="font-data-md text-data-md text-text-primary" htmlFor="email">Email</label>
+                            <div className="relative flex items-center">
+                                <Mail className="absolute left-md text-text-secondary" size={20} />
+                                <input
+                                    className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
+                                    id="email" placeholder="nama@perusahaan.com" type="email" />
+                            </div>
+                        </div>
+
+                        {/* Phone Input */}
+                        <div className="flex flex-col gap-xs">
+                            <label className="font-data-md text-data-md text-text-primary" htmlFor="phone">Nomor Telepon</label>
+                            <div className="relative flex items-center">
+                                <Phone className="absolute left-md text-text-secondary" size={20} />
+                                <input
+                                    className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
+                                    id="phone" placeholder="081234567890" type="tel" />
+                            </div>
+                        </div>
+
+                        {/* Password Input */}
+                        <div className="flex flex-col gap-xs">
+                            <label className="font-data-md text-data-md text-text-primary" htmlFor="password">Password</label>
+                            <div className="relative flex items-center">
+                                <Lock className="absolute left-md text-text-secondary" size={20} />
+                                <input
+                                    className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
+                                    id="password" placeholder="••••••••" type={showPassword ? "text" : "password"} />
+                                <button
+                                    className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
+                                    type="button" onClick={handleTogglePassword}>
+                                    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Confirm Password Input */}
+                        <div className="flex flex-col gap-xs">
+                            <label className="font-data-md text-data-md text-text-primary" htmlFor="confirm-password">Konfirmasi Password</label>
+                            <div className="relative flex items-center">
+                                <Lock className="absolute left-md text-text-secondary" size={20} />
+                                <input
+                                    className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
+                                    id="confirm-password" placeholder="••••••••" type={showConfirmPassword ? "text" : "password"} />
+                                <button
+                                    className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
+                                    type="button" onClick={handleToggleConfirmPassword}>
+                                    {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Primary Action */}
+                        <button
+                            className="mt-sm w-full py-2.5 bg-primary-container text-on-primary-container font-h3 text-h3 rounded-lg shadow-sm hover:opacity-90 active:scale-[0.97] transition-all duration-100 flex items-center justify-center gap-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-container"
+                            type="submit">
+                            Daftar
+                            <ArrowRight size={18} />
+                        </button>
+                    </form>
+
+                    {/* Footer Link */}
+                    <div className="text-center mt-xs pt-md border-t border-outline-variant border-opacity-50">
+                        <p className="font-body-sm text-body-sm text-text-secondary">
+                            Sudah punya akun?{" "}
+                            <a className="text-primary-container font-data-md hover:underline focus:outline-none" href="#">Masuk</a>
+                        </p>
+                    </div>
+                </div>
+            </main>
         </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 rounded-xl border bg-[var(--surface)] p-6 shadow-sm"
-        >
-          {error && (
-            <div className="rounded-lg bg-[var(--color-destructive-50)] px-4 py-3 text-body-sm text-[var(--destructive)]">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-[var(--text-primary)]">
-              Nama Lengkap
-            </label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              required
-              className="w-full rounded-lg border bg-[var(--background)] px-3 py-2.5 text-body text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-shadow"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-[var(--text-primary)]">
-              Email
-            </label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
-              required
-              className="w-full rounded-lg border bg-[var(--background)] px-3 py-2.5 text-body text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-shadow"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-[var(--text-primary)]">
-              No. Telepon
-            </label>
-            <input
-              type="tel"
-              value={form.phone}
-              onChange={(e) => update("phone", e.target.value)}
-              placeholder="08xx-xxxx-xxxx"
-              required
-              className="w-full rounded-lg border bg-[var(--background)] px-3 py-2.5 text-body text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-shadow"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-[var(--text-primary)]">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={(e) => update("password", e.target.value)}
-                required
-                className="w-full rounded-lg border bg-[var(--background)] px-3 py-2.5 pr-10 text-body text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-shadow"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-[var(--text-primary)]">
-              Konfirmasi Password
-            </label>
-            <input
-              type="password"
-              value={form.confirmPassword}
-              onChange={(e) => update("confirmPassword", e.target.value)}
-              required
-              className="w-full rounded-lg border bg-[var(--background)] px-3 py-2.5 text-body text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-shadow"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-[var(--primary)] px-4 py-2.5 text-body font-medium text-white hover:bg-[var(--primary-hover)] active:scale-[0.98] disabled:opacity-50 transition-all"
-          >
-            {loading ? (
-              <Loader2 size={18} className="mx-auto animate-spin" />
-            ) : (
-              "Daftar"
-            )}
-          </button>
-
-          <p className="text-center text-body-sm text-[var(--text-secondary)]">
-            Sudah punya akun?{" "}
-            <Link
-              to="/login"
-              className="text-[var(--primary)] font-medium hover:underline"
-            >
-              Masuk di sini
-            </Link>
-          </p>
-        </form>
-      </div>
-    </div>
-  )
+    );
 }
