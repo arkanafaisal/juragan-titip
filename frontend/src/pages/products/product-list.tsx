@@ -1,21 +1,12 @@
-// frontend/src/pages/products/product-list.tsx
+// Lokasi: frontend/src/pages/products/product-list.tsx
 import React, { useState, useEffect } from "react";
-import { ProductFormModal } from "@/components/products/product-form-modal";
 import { 
-  Plus, 
-  Search, 
-  SlidersHorizontal, 
-  Cookie, 
-  Coffee, 
-  Utensils,
-  Package,
-  Pencil, 
-  Trash2,
-  ChevronLeft, 
-  ChevronRight 
+  Plus, Search, SlidersHorizontal, Cookie, Coffee, 
+  Utensils, Package, Pencil, Trash2, ChevronLeft, ChevronRight 
 } from "lucide-react";
 import { productApi } from "@/services/api/products";
 import type { Product } from "@/types";
+import { ProductFormModal } from "@/components/products/product-form-modal";
 
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -25,10 +16,31 @@ export default function ProductListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
+  // === STATE UNTUK FILTER & SEARCH ===
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [stockFilter, setStockFilter] = useState("");
+
+  // === EFEK DEBOUNCE 1 DETIK ===
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 1000); // Tunggu 1000ms (1 detik) setelah user berhenti mengetik
+    
+    return () => clearTimeout(timer); // Bersihkan timer jika ngetik lagi sebelum 1 detik
+  }, [searchInput]);
+
+  // === PEMANGGILAN API DENGAN QUERY PARAMS ===
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const response = await productApi.getAll();
+      // Panggil API backend simulasi dengan mengirim state filter saat ini
+      const response = await productApi.getAll({
+        search: debouncedSearch,
+        category: categoryFilter,
+        stockStatus: stockFilter
+      });
       if (response.success) {
         setProducts(response.data);
       }
@@ -39,9 +51,11 @@ export default function ProductListPage() {
     }
   };
 
+  // Otomatis fetch data ualng HANYA JIKA paramater yang di-debounce / filter berubah
   useEffect(() => {
     fetchProducts();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, categoryFilter, stockFilter]);
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
@@ -62,13 +76,14 @@ export default function ProductListPage() {
     if (window.confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
       try {
         await productApi.delete(id);
-        await fetchProducts();
+        fetchProducts(); // Refresh tabel pakai data filter saat ini
       } catch (error) {
         console.error("Gagal menghapus produk:", error);
       }
     }
   };
 
+  // Format Helper
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -96,7 +111,6 @@ export default function ProductListPage() {
     if (cat === "basah") return { bg: "bg-success/10", text: "text-success", icon: <Utensils className="w-5 h-5" strokeWidth={1.5} /> };
     if (cat === "kering") return { bg: "bg-warning/10", text: "text-warning", icon: <Cookie className="w-5 h-5" strokeWidth={1.5} /> };
     if (cat === "non-makanan") return { bg: "bg-secondary/10", text: "text-secondary", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
-    
     return { bg: "bg-surface-variant", text: "text-on-surface-variant", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
   };
 
@@ -121,26 +135,39 @@ export default function ProductListPage() {
         <div className="w-full md:w-1/3 relative">
           <Search className="absolute left-sm top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
           <input 
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full pl-xl pr-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body text-body bg-surface-container-lowest outline-none transition-all" 
             placeholder="Cari nama produk..." 
             type="text" 
           />
         </div>
         <div className="flex gap-sm w-full md:w-auto">
-          <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
+          <select 
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer"
+          >
             <option value="">Semua Kategori</option>
             <option value="kering">Kering</option>
             <option value="basah">Basah</option>
             <option value="minuman">Minuman</option>
             <option value="non-makanan">Non-Makanan</option>
           </select>
-          <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
+          <select 
+            value={stockFilter}
+            onChange={(e) => setStockFilter(e.target.value)}
+            className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer"
+          >
             <option value="">Status Stok</option>
-            <option value="in_stock">Tersedia</option>
-            <option value="low_stock">Menipis</option>
-            <option value="out_of_stock">Habis</option>
+            <option value="in_stock">Tersedia {'>'} 20</option>
+            <option value="low_stock">Menipis (1-20)</option>
+            <option value="out_of_stock">Habis (0)</option>
           </select>
-          <button className="p-sm border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors text-text-secondary flex items-center justify-center">
+          <button 
+            title="Filter Lanjutan (Segera Hadir)"
+            className="p-sm border border-outline-variant rounded-lg bg-surface-container-low text-text-muted opacity-50 cursor-not-allowed flex items-center justify-center"
+          >
             <SlidersHorizontal className="w-5 h-5" />
           </button>
         </div>
@@ -162,11 +189,15 @@ export default function ProductListPage() {
             <tbody className="font-body text-body text-text-primary divide-y divide-border">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-lg text-center text-text-secondary">Memuat data produk...</td>
+                  <td colSpan={6} className="py-lg text-center text-text-secondary">
+                    <div className="animate-pulse">Menyelaraskan data produk...</div>
+                  </td>
                 </tr>
               ) : products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-lg text-center text-text-secondary">Tidak ada produk ditemukan.</td>
+                  <td colSpan={6} className="py-lg text-center text-text-secondary">
+                    Pencarian tidak menemukan produk.
+                  </td>
                 </tr>
               ) : (
                 products.map((product) => {
@@ -237,7 +268,7 @@ export default function ProductListPage() {
 
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-md py-sm border-t border-border bg-surface-container-lowest gap-sm">
           <span className="font-caption text-caption text-text-secondary">
-            Menampilkan 1-{products.length} dari {products.length} produk
+            Menampilkan {products.length > 0 ? "1" : "0"}-{products.length} dari {products.length} produk
           </span>
           <div className="flex gap-xs">
             <button className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low disabled:opacity-50" disabled>
@@ -255,7 +286,7 @@ export default function ProductListPage() {
       <ProductFormModal 
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onSuccess={fetchProducts}
+        onSuccess={fetchProducts} // Refresh data pakai filter terakhir
         product={editingProduct}
       />
     </div>
