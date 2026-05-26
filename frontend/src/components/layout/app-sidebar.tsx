@@ -1,3 +1,4 @@
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   LayoutDashboard,
@@ -7,21 +8,38 @@ import {
   BarChart3,
   Settings,
   User,
+  LogOut,
 } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/use-sidebar.tsx";
+import { useAuth } from "@/contexts/auth-context";
 
 export function AppSidebar() {
   const { isCollapsed } = useSidebar();
   const location = useLocation();
+  const { user, logout } = useAuth();
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav
       className={cn(
-        "hidden md:flex flex-col bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 h-full z-40 transition-all duration-300 py-md overflow-x-hidden",
+        // PENYEBAB MASALAH: "overflow-x-hidden" sudah dihapus dari baris ini
+        "hidden md:flex flex-col bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 h-full z-40 transition-all duration-300 py-md",
         isCollapsed ? "w-20" : "w-60"
       )}
     >
@@ -118,14 +136,48 @@ export function AppSidebar() {
           <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Pengaturan</span>
         </Link>
 
-        <div className={cn("mt-sm bg-surface-container-low rounded-lg p-sm flex items-center gap-sm cursor-pointer mx-xs border border-outline-variant", isCollapsed ? "justify-center" : "justify-start")}>
+        <div 
+          ref={dropdownRef}
+          onClick={() => setIsProfileOpen(!isProfileOpen)}
+          className={cn("relative mt-sm bg-surface-container-low rounded-lg p-sm flex items-center gap-sm cursor-pointer mx-xs border border-outline-variant", isCollapsed ? "justify-center" : "justify-start")}
+        >
           <div className="w-8 h-8 rounded-full bg-primary-fixed text-primary-container flex items-center justify-center flex-shrink-0">
             <User className="w-4 h-4" />
           </div>
           <div className={cn("transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>
-            <div className="font-body-sm text-body-sm font-medium text-on-surface truncate w-[130px]">Ahmad</div>
-            <div className="font-caption text-caption text-on-surface-variant truncate w-[130px]">Reseller</div>
+            <div className="font-body-sm text-body-sm font-medium text-on-surface truncate w-[130px]">{user?.name}</div>
+            <div className="font-caption text-caption text-on-surface-variant truncate w-[130px]">{user?.email}</div>
           </div>
+
+          {/* LAYER DROPDOWN MELAYANG */}
+          {isProfileOpen && (
+            <div 
+              onClick={(e) => e.stopPropagation()} 
+              className="absolute bottom-0 left-[calc(100%+12px)] flex flex-col w-[240px] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg z-50 animate-in fade-in slide-in-from-bottom-2 duration-200 cursor-default"
+            >
+              <div className="px-md py-sm border-b border-outline-variant flex flex-col">
+                <span className="font-body text-body font-medium text-on-surface truncate">
+                  {user?.name}
+                </span>
+                <span className="font-caption text-caption text-on-surface-variant truncate">
+                  {user?.email}
+                </span>
+              </div>
+              <div className="p-xs">
+                <Link to="/settings" className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full">
+                  <Settings className="w-4 h-4 shrink-0" />
+                  <span className="font-body-sm text-body-sm">Pengaturan</span>
+                </Link>
+                <button 
+                  onClick={logout}
+                  className="flex items-center gap-sm px-md py-sm text-error hover:bg-error/10 rounded-lg transition-colors text-left w-full"
+                >
+                  <LogOut className="w-4 h-4 shrink-0" />
+                  <span className="font-body-sm text-body-sm">Keluar</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>
