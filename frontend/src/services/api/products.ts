@@ -3,25 +3,23 @@ import { storageGetOrSeed, storageSet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
 import { seedProducts } from "@/seed-data/products"
 import { generateId } from "@/lib/utils"
-
 export interface ProductQueryParams {
   search?: string;
   category?: string;
   stockStatus?: string;
+  page?: number;
 }
 
 export const productApi = {
   getAll: async (params?: ProductQueryParams) => {
-    // Simulasi delay jaringan (biar terasa seperti API beneran)
+    // Simulasi delay jaringan
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // Ambil data asli dari localStorage (sesuaikan nama key kamu jika berbeda)
-    const storedData = localStorage.getItem("jt_products"); // atau STORAGE_KEYS.PRODUCTS
+    const storedData = localStorage.getItem("jt_products"); // Sesuaikan dengan key localstorage-mu
     let products = storedData ? JSON.parse(storedData) : [];
 
-    // 3. Terapkan logika Backend Filtering jika ada parameter yang dikirim
+    // 1. Proses Filtering
     if (params) {
-      // Filter Nama Produk
       if (params.search) {
         const query = params.search.toLowerCase();
         products = products.filter((p: any) => 
@@ -29,14 +27,12 @@ export const productApi = {
         );
       }
       
-      // Filter Kategori
       if (params.category) {
         products = products.filter((p: any) => 
           p.category.toLowerCase() === params.category!.toLowerCase()
         );
       }
       
-      // Filter Status Stok
       if (params.stockStatus) {
         if (params.stockStatus === 'in_stock') {
           products = products.filter((p: any) => p.warehouseStock > 20);
@@ -47,6 +43,14 @@ export const productApi = {
         }
       }
     }
+
+    // 2. Proses Pagination (Ambil 6 item untuk cek halaman selanjutnya)
+    const page = params?.page || 1;
+    const limit = 5;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit + 1; // +1 untuk mengintip data halaman berikutnya
+
+    products = products.slice(startIndex, endIndex);
 
     return { success: true, data: products };
   },
