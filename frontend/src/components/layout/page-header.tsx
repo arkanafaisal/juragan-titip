@@ -13,7 +13,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ 
   title = "Dashboard", 
-  description = "Dashboard Overview" 
+  description = "" 
 }: PageHeaderProps) {
   
   const todayDate = format(new Date(), "dd MMM yyyy", { locale: id });
