@@ -1,4 +1,6 @@
+// frontend/src/pages/products/product-list.tsx
 import React, { useState, useEffect } from "react";
+import { ProductFormModal } from "@/components/products/product-form-modal";
 import { 
   Plus, 
   Search, 
@@ -18,24 +20,54 @@ import type { Product } from "@/types";
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await productApi.getAll();
+      if (response.success) {
+        setProducts(response.data);
+      }
+    } catch (error) {
+      console.error("Gagal mengambil data produk:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const response = await productApi.getAll();
-        if (response.success) {
-          setProducts(response.data);
-        }
-      } catch (error) {
-        console.error("Gagal mengambil data produk:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchProducts();
   }, []);
+
+  const handleOpenAdd = () => {
+    setEditingProduct(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (product: Product) => {
+    setEditingProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingProduct(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
+      try {
+        await productApi.delete(id);
+        await fetchProducts();
+      } catch (error) {
+        console.error("Gagal menghapus produk:", error);
+      }
+    }
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -71,19 +103,20 @@ export default function ProductListPage() {
   return (
     <div className="max-w-container-max mx-auto space-y-lg">
       
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
         <div>
           <h2 className="font-h1 text-h1 text-text-primary">Daftar Produk</h2>
           <p className="font-body text-body text-text-secondary mt-xs">Kelola inventaris dan harga produk Anda.</p>
         </div>
-        <button className="bg-primary text-on-primary font-body text-body px-md py-sm rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs">
+        <button 
+          onClick={handleOpenAdd}
+          className="bg-primary text-on-primary font-body text-body px-md py-sm rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs"
+        >
           <Plus className="w-5 h-5" />
           Tambah Produk
         </button>
       </div>
 
-      {/* Toolbar (Search & Filters) */}
       <div className="bg-surface rounded-xl shadow-sm p-md border border-border flex flex-col md:flex-row gap-md items-center justify-between">
         <div className="w-full md:w-1/3 relative">
           <Search className="absolute left-sm top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
@@ -113,9 +146,7 @@ export default function ProductListPage() {
         </div>
       </div>
 
-      {/* Data Table Card */}
       <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden flex flex-col">
-        {/* pb-32 dan -mb-32 digunakan agar tooltip absolute tidak memunculkan vertical scrollbar di table */}
         <div className="overflow-x-auto pb-32 -mb-32">
           <table className="w-full text-left border-collapse min-w-[750px]">
             <thead>
@@ -181,12 +212,14 @@ export default function ProductListPage() {
                       <td className="py-md px-md text-left">
                         <div className="flex items-center gap-xs">
                           <button 
+                            onClick={() => handleOpenEdit(product)}
                             className="text-warning hover:bg-warning/20 transition-colors p-sm rounded-md"
                             title="Edit Produk"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button 
+                            onClick={() => handleDelete(product.id)}
                             className="text-error hover:bg-error/20 transition-colors p-sm rounded-md"
                             title="Hapus Produk"
                           >
@@ -202,7 +235,6 @@ export default function ProductListPage() {
           </table>
         </div>
 
-        {/* Pagination diposisikan secara relative z-10 agar menutupi padding sisa dari trick scrollbar di atas */}
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-md py-sm border-t border-border bg-surface-container-lowest gap-sm">
           <span className="font-caption text-caption text-text-secondary">
             Menampilkan 1-{products.length} dari {products.length} produk
@@ -220,6 +252,12 @@ export default function ProductListPage() {
         </div>
       </div>
 
+      <ProductFormModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSuccess={fetchProducts}
+        product={editingProduct}
+      />
     </div>
   );
 }
