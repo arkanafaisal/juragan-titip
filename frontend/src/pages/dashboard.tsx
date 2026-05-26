@@ -11,14 +11,17 @@ import {
   Truck,
   CornerDownLeft
 } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function Dashboard() {
+  const { user } = useAuth()
+
   return (
     <div className="max-w-container-max mx-auto space-y-lg">
       
       {/* --- Greeting Section --- */}
       <div className="flex flex-col gap-xs">
-        <h1 className="font-h1 text-h1 text-on-surface">Selamat Siang, Ahmad 👋</h1>
+        <h1 className="font-h1 text-h1 text-on-surface">Selamat Siang, {user.name} 👋</h1>
         {/* Tanggal di mobile (di desktop pindah ke header) */}
         <p className="font-body text-body text-on-surface-variant md:hidden">📅 26 Mei 2026</p>
       </div>

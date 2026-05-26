@@ -1,5 +1,6 @@
 // Lokasi: src/hooks/use-sidebar.tsx
-import { createContext, useContext, useState, useCallback, ReactNode } from "react"
+import { createContext, useContext, useState, useCallback } from "react"
+import type { ReactNode } from 'react'
 import { storageGet, storageSet } from "@/lib/storage"
 // Catatan: Pastikan kamu sudah punya STORAGE_KEYS di "@/lib/constants"
 import { STORAGE_KEYS } from "@/lib/constants" 

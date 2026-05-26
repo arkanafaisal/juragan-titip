@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Package, Mail, Lock, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react";
+import { Package, Mail, Lock, Eye, EyeOff, ArrowRight, User } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -9,7 +9,6 @@ export default function RegisterForm() {
     const [form, setForm] = useState({
         name: "",
         email: "",
-        phone: "",
         password: "",
         confirmPassword: "",
     });
@@ -87,18 +86,6 @@ export default function RegisterForm() {
                                     className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
                                     id="email" name="email" placeholder="nama@perusahaan.com" type="email"
                                     value={form.email} onChange={(e) => update("email", e.target.value)} required />
-                            </div>
-                        </div>
-
-                        {/* Phone Input */}
-                        <div className="flex flex-col gap-xs">
-                            <label className="font-data-md text-data-md text-text-primary" htmlFor="phone">Nomor Telepon</label>
-                            <div className="relative flex items-center">
-                                <Phone className="absolute left-md text-text-secondary" size={20} />
-                                <input
-                                    className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="phone" name="phone" placeholder="081234567890" type="tel"
-                                    value={form.phone} onChange={(e) => update("phone", e.target.value)} required />
                             </div>
                         </div>
 

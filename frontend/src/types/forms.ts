@@ -45,7 +45,7 @@ export interface LoginFormData {
 export interface RegisterFormData {
   name: string
   email: string
-  phone: string
+  phone?: string  // <-- Tambahkan '?' di sini
   password: string
   confirmPassword: string
 }
