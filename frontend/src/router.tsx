@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router"
 import { MainLayout } from "@/components/layout/main-layout"
 import { AuthGuard } from "@/components/layout/auth-guard"
+import { SidebarProvider } from '@/hooks/use-sidebar.tsx'
+
 
 import LoginPage from "@/pages/auth/login"
 import RegisterPage from "@/pages/auth/register"
@@ -34,7 +36,9 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <AuthGuard>
-        <MainLayout />
+        <SidebarProvider>
+          <MainLayout />
+        </SidebarProvider>
       </AuthGuard>
     ),
     children: [

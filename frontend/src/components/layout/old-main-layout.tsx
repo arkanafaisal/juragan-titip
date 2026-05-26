@@ -1,9 +1,8 @@
 import { Outlet } from "react-router"
 import { AppSidebar } from "./app-sidebar"
 import { BottomTabBar } from "./bottom-tab-bar"
-import { PageHeader } from "./page-header"
 import { useMobile } from "@/hooks/use-mobile"
-import { useSidebar } from "@/hooks/use-sidebar.tsx"
+import { useSidebar } from "@/hooks/use-sidebar"
 import { cn } from "@/lib/utils"
 import { Toaster } from "sonner"
 
@@ -12,25 +11,23 @@ export function MainLayout() {
   const { isCollapsed } = useSidebar()
 
   return (
-    <div className="min-h-screen bg-surface-bright font-body text-body text-on-surface selection:bg-primary-container selection:text-on-primary-container flex">
-      
+    <div className="min-h-screen bg-[var(--background)]">
       {!isMobile && <AppSidebar />}
 
       <main
         className={cn(
-          "flex-1 flex flex-col min-h-screen transition-all duration-300 min-w-0 relative",
+          "min-h-screen transition-all duration-200",
           isMobile
-            ? "pb-safe"
+            ? "pb-20 px-4 pt-4"
             : isCollapsed
-              ? "pl-20"  /* Sidebar tertutup (80px) */
-              : "pl-60"  /* Sidebar terbuka (240px) */
+              ? "pl-16"
+              : "pl-60"
         )}
       >
-        <PageHeader />
-        
-        {/* Container Halaman */}
-        <div className="flex-1 overflow-y-auto p-md md:p-lg pb-24 md:pb-lg animate-fade-in">
+        <div className={cn("mx-auto w-full", !isMobile && "p-6 max-w-7xl")}>
+          <div className="animate-fade-in">
             <Outlet />
+          </div>
         </div>
       </main>
 
