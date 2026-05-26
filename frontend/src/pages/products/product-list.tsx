@@ -60,10 +60,10 @@ export default function ProductListPage() {
 
   const getCategoryStyles = (category: string) => {
     const cat = category?.toLowerCase() || "";
-    if (cat === "beverage") return { bg: "bg-blue-100", text: "text-blue-600", icon: <Coffee className="w-5 h-5" strokeWidth={1.5} /> };
-    if (cat === "food") return { bg: "bg-emerald-100", text: "text-emerald-600", icon: <Utensils className="w-5 h-5" strokeWidth={1.5} /> };
-    if (cat === "snack") return { bg: "bg-amber-100", text: "text-amber-600", icon: <Cookie className="w-5 h-5" strokeWidth={1.5} /> };
-    if (cat === "non-food") return { bg: "bg-purple-100", text: "text-purple-600", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "minuman") return { bg: "bg-info/10", text: "text-info", icon: <Coffee className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "basah") return { bg: "bg-success/10", text: "text-success", icon: <Utensils className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "kering") return { bg: "bg-warning/10", text: "text-warning", icon: <Cookie className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "non-makanan") return { bg: "bg-secondary/10", text: "text-secondary", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
     
     return { bg: "bg-surface-variant", text: "text-on-surface-variant", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
   };
@@ -96,10 +96,10 @@ export default function ProductListPage() {
         <div className="flex gap-sm w-full md:w-auto">
           <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
             <option value="">Semua Kategori</option>
-            <option value="snack">Snack</option>
-            <option value="food">Food</option>
-            <option value="beverage">Beverage</option>
-            <option value="non-food">Non-Food</option>
+            <option value="kering">Kering</option>
+            <option value="basah">Basah</option>
+            <option value="minuman">Minuman</option>
+            <option value="non-makanan">Non-Makanan</option>
           </select>
           <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
             <option value="">Status Stok</option>
@@ -114,17 +114,18 @@ export default function ProductListPage() {
       </div>
 
       {/* Data Table Card */}
-      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-visible">
-        <div className="overflow-x-auto overflow-y-visible">
+      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden flex flex-col">
+        {/* pb-32 dan -mb-32 digunakan agar tooltip absolute tidak memunculkan vertical scrollbar di table */}
+        <div className="overflow-x-auto pb-32 -mb-32">
           <table className="w-full text-left border-collapse min-w-[750px]">
             <thead>
               <tr className="bg-surface-container-low border-b border-border">
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold">Nama Produk</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold">Kategori</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold">Stok</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-right">HPP</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-right">Harga Grosir</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-right">Aksi</th>
+                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Nama Produk</th>
+                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Kategori</th>
+                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Stok</th>
+                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">HPP</th>
+                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Harga Grosir</th>
+                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left w-[120px]">Aksi</th>
               </tr>
             </thead>
             <tbody className="font-body text-body text-text-primary divide-y divide-border">
@@ -142,13 +143,12 @@ export default function ProductListPage() {
                   
                   return (
                     <tr key={product.id} className="hover:bg-surface-container-lowest transition-colors">
-                      <td className="py-md px-md">
+                      <td className="py-md px-md text-left">
                         <div className="flex items-center gap-md">
                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${catStyle.bg} ${catStyle.text}`}>
                             {catStyle.icon}
                           </div>
                           
-                          {/* Nama Produk dengan Deskripsi Popup */}
                           <div className="relative group/tooltip outline-none" tabIndex={0}>
                             <span className="font-medium whitespace-nowrap cursor-help border-b border-dashed border-outline-variant pb-0.5">
                               {product.name}
@@ -159,12 +159,12 @@ export default function ProductListPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="py-md px-md">
+                      <td className="py-md px-md text-left">
                         <span className={`px-2 py-1 rounded text-caption font-medium ${catStyle.bg} ${catStyle.text} capitalize`}>
                           {product.category}
                         </span>
                       </td>
-                      <td className="py-md px-md">
+                      <td className="py-md px-md text-left">
                         <div className="flex items-center gap-xs">
                           <div className={`w-2 h-2 rounded-full ${getStockStatusColor(product.warehouseStock)}`}></div>
                           <span className={`font-data-md text-data-md ${getStockTextColor(product.warehouseStock)}`}>
@@ -172,22 +172,22 @@ export default function ProductListPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">
+                      <td className="py-md px-md text-left font-data-md text-data-md whitespace-nowrap">
                         {formatCurrency(product.costPrice)}
                       </td>
-                      <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">
+                      <td className="py-md px-md text-left font-data-md text-data-md whitespace-nowrap">
                         {formatCurrency(product.wholesalePrice)}
                       </td>
-                      <td className="py-md px-md text-right">
-                        <div className="flex items-center justify-end gap-xs">
+                      <td className="py-md px-md text-left">
+                        <div className="flex items-center gap-xs">
                           <button 
-                            className="text-text-secondary hover:bg-primary-container hover:text-primary transition-colors p-sm rounded-md"
+                            className="text-warning hover:bg-warning/20 transition-colors p-sm rounded-md"
                             title="Edit Produk"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button 
-                            className="text-text-secondary hover:bg-error-container hover:text-error transition-colors p-sm rounded-md"
+                            className="text-error hover:bg-error/20 transition-colors p-sm rounded-md"
                             title="Hapus Produk"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -202,8 +202,8 @@ export default function ProductListPage() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between px-md py-sm border-t border-border bg-surface-container-lowest gap-sm">
+        {/* Pagination diposisikan secara relative z-10 agar menutupi padding sisa dari trick scrollbar di atas */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-md py-sm border-t border-border bg-surface-container-lowest gap-sm">
           <span className="font-caption text-caption text-text-secondary">
             Menampilkan 1-{products.length} dari {products.length} produk
           </span>
