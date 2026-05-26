@@ -6,39 +6,35 @@ import {
   Cookie, 
   Coffee, 
   Cake, 
-  IceCream, 
+  IceCream,
+  Package,
   Pencil, 
   ChevronLeft, 
   ChevronRight 
 } from "lucide-react";
-
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  stock: number;
-  costPrice: number;
-  wholesalePrice: number;
-  iconType: "cookie" | "coffee" | "cake" | "icecream";
-}
+import { productApi } from "@/services/api/products";
+import type { Product } from "@/types";
 
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jt_products_dummy");
-    if (stored) {
-      setProducts(JSON.parse(stored));
-    } else {
-      const defaultProducts: Product[] = [
-        { id: "1", name: "Keripik Singkong Pedas", category: "Snack", stock: 120, costPrice: 8000, wholesalePrice: 10000, iconType: "cookie" },
-        { id: "2", name: "Kopi Susu Literan", category: "Minuman", stock: 15, costPrice: 45000, wholesalePrice: 55000, iconType: "coffee" },
-        { id: "3", name: "Brownies Panggang", category: "Snack", stock: 0, costPrice: 30000, wholesalePrice: 40000, iconType: "cake" },
-        { id: "4", name: "Es Krim Coklat", category: "Dessert", stock: 85, costPrice: 15000, wholesalePrice: 20000, iconType: "icecream" },
-      ];
-      localStorage.setItem("jt_products_dummy", JSON.stringify(defaultProducts));
-      setProducts(defaultProducts);
-    }
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const response = await productApi.getAll();
+        if (response.success) {
+          setProducts(response.data);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data produk:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const formatCurrency = (value: number) => {
@@ -61,14 +57,14 @@ export default function ProductListPage() {
     return "";
   };
 
-  const renderIcon = (type: string) => {
-    switch (type) {
-      case "cookie": return <Cookie className="w-6 h-6" strokeWidth={1.5} />;
-      case "coffee": return <Coffee className="w-6 h-6" strokeWidth={1.5} />;
-      case "cake": return <Cake className="w-6 h-6" strokeWidth={1.5} />;
-      case "icecream": return <IceCream className="w-6 h-6" strokeWidth={1.5} />;
-      default: return <Cookie className="w-6 h-6" strokeWidth={1.5} />;
-    }
+  const renderIcon = (category: string) => {
+    const lowerCat = category.toLowerCase();
+    if (lowerCat.includes("minuman") || lowerCat.includes("kopi") || lowerCat.includes("coffee")) return <Coffee className="w-6 h-6" strokeWidth={1.5} />;
+    if (lowerCat.includes("kue") || lowerCat.includes("roti") || lowerCat.includes("cake")) return <Cake className="w-6 h-6" strokeWidth={1.5} />;
+    if (lowerCat.includes("es") || lowerCat.includes("dessert") || lowerCat.includes("ice cream")) return <IceCream className="w-6 h-6" strokeWidth={1.5} />;
+    if (lowerCat.includes("snack") || lowerCat.includes("makanan") || lowerCat.includes("keripik")) return <Cookie className="w-6 h-6" strokeWidth={1.5} />;
+    
+    return <Package className="w-6 h-6" strokeWidth={1.5} />;
   };
 
   return (
@@ -99,8 +95,8 @@ export default function ProductListPage() {
         <div className="flex gap-sm w-full md:w-auto">
           <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none">
             <option value="">Semua Kategori</option>
-            <option value="snack">Snack</option>
-            <option value="minuman">Minuman</option>
+            <option value="Makanan Ringan">Makanan Ringan</option>
+            <option value="Minuman">Minuman</option>
           </select>
           <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none">
             <option value="">Status Stok</option>
@@ -129,30 +125,40 @@ export default function ProductListPage() {
               </tr>
             </thead>
             <tbody className="font-body text-body text-text-primary divide-y divide-border">
-              {products.map((product) => (
-                <tr key={product.id} className="hover:bg-surface-container-lowest transition-colors group">
-                  <td className="py-md px-md flex items-center gap-md">
-                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-fixed-dim shrink-0">
-                      {renderIcon(product.iconType)}
-                    </div>
-                    <span className="font-medium whitespace-nowrap">{product.name}</span>
-                  </td>
-                  <td className="py-md px-md text-text-secondary whitespace-nowrap">{product.category}</td>
-                  <td className="py-md px-md">
-                    <div className="flex items-center gap-xs">
-                      <div className={`w-2 h-2 rounded-full ${getStockStatusColor(product.stock)}`}></div>
-                      <span className={`font-data-md text-data-md ${getStockTextColor(product.stock)}`}>{product.stock}</span>
-                    </div>
-                  </td>
-                  <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">{formatCurrency(product.costPrice)}</td>
-                  <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">{formatCurrency(product.wholesalePrice)}</td>
-                  <td className="py-md px-md text-center">
-                    <button className="text-text-muted hover:text-primary transition-colors p-xs lg:opacity-0 lg:group-hover:opacity-100 opacity-100 focus:opacity-100">
-                      <Pencil className="w-5 h-5" />
-                    </button>
-                  </td>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-lg text-center text-text-secondary">Memuat data produk...</td>
                 </tr>
-              ))}
+              ) : products.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-lg text-center text-text-secondary">Tidak ada produk ditemukan.</td>
+                </tr>
+              ) : (
+                products.map((product) => (
+                  <tr key={product.id} className="hover:bg-surface-container-lowest transition-colors group">
+                    <td className="py-md px-md flex items-center gap-md">
+                      <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-fixed-dim shrink-0">
+                        {renderIcon(product.category)}
+                      </div>
+                      <span className="font-medium whitespace-nowrap">{product.name}</span>
+                    </td>
+                    <td className="py-md px-md text-text-secondary whitespace-nowrap">{product.category}</td>
+                    <td className="py-md px-md">
+                      <div className="flex items-center gap-xs">
+                        <div className={`w-2 h-2 rounded-full ${getStockStatusColor(product.warehouseStock)}`}></div>
+                        <span className={`font-data-md text-data-md ${getStockTextColor(product.warehouseStock)}`}>{product.warehouseStock}</span>
+                      </div>
+                    </td>
+                    <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">{formatCurrency(product.costPrice)}</td>
+                    <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">{formatCurrency(product.wholesalePrice)}</td>
+                    <td className="py-md px-md text-center">
+                      <button className="text-text-muted hover:text-primary transition-colors p-xs lg:opacity-0 lg:group-hover:opacity-100 opacity-100 focus:opacity-100">
+                        <Pencil className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -165,10 +171,8 @@ export default function ProductListPage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button className="px-sm py-xs rounded bg-primary-container text-on-primary-container font-body-sm text-body-sm font-medium">1</button>
-            <button className="px-sm py-xs rounded hover:bg-surface-container-low text-text-secondary font-body-sm text-body-sm">2</button>
-            <button className="px-sm py-xs rounded hover:bg-surface-container-low text-text-secondary font-body-sm text-body-sm">3</button>
             <span className="px-sm py-xs text-text-secondary font-body-sm text-body-sm">...</span>
-            <button className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low">
+            <button className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low disabled:opacity-50" disabled>
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
