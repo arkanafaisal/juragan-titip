@@ -1,3 +1,5 @@
+// frontend/src/pages/stores/store-list.tsx
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { 
@@ -9,71 +11,44 @@ import {
   CircleDollarSign 
 } from "lucide-react";
 import type { Store } from "@/types";
-// import { storeApi } from "@/services/api/stores"; // Uncomment nanti saat API service sudah siap
+import { storeApi } from "@/services/api/stores";
 
 export default function StoreListPage() {
   const navigate = useNavigate();
   const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  // TODO: Ganti dengan pemanggilan API (storeApi.getAll)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   useEffect(() => {
     const fetchStores = async () => {
       setIsLoading(true);
-      // Simulasi fetch data
-      setTimeout(() => {
-        setStores([
-          {
-            id: "1",
-            name: "Toko Berkah",
-            ownerName: "Pak Hasan",
-            phone: "0812-3456-7890",
-            address: "Jl. Raya No. 15, Bandung",
-            latitude: -6.914744,
-            longitude: 107.609810,
-            notes: "",
-            activeItemCount: 45,
-            totalReceivable: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            id: "2",
-            name: "Toko Makmur",
-            ownerName: "Bu Siti",
-            phone: "0813-9876-5432",
-            address: "Jl. Merdeka 8, Jakarta",
-            latitude: -6.200000,
-            longitude: 106.816666,
-            notes: "",
-            activeItemCount: 30,
-            totalReceivable: 800000,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            id: "3",
-            name: "Toko Jaya",
-            ownerName: "Mas Budi",
-            phone: "0857-1122-3344",
-            address: "Jl. Veteran 22, Surabaya",
-            latitude: -7.250445,
-            longitude: 112.768845,
-            notes: "",
-            activeItemCount: 12,
-            totalReceivable: 1500000,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          }
-        ]);
+      try {
+        const response = await storeApi.getAll({
+          search: debouncedSearch,
+          status: statusFilter
+        });
+        if (response.success) {
+          setStores(response.data);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data toko:", error);
+      } finally {
         setIsLoading(false);
-      }, 500);
+      }
     };
 
     fetchStores();
-  }, []);
+  }, [debouncedSearch, statusFilter]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -83,15 +58,6 @@ export default function StoreListPage() {
       maximumFractionDigits: 0,
     }).format(value);
   };
-
-  const filteredStores = stores.filter(store => {
-    const matchesSearch = store.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          store.ownerName.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (statusFilter === "lunas") return matchesSearch && store.totalReceivable === 0;
-    if (statusFilter === "piutang") return matchesSearch && store.totalReceivable > 0;
-    return matchesSearch;
-  });
 
   return (
     <div className="max-w-container-max mx-auto space-y-lg">
@@ -116,8 +82,8 @@ export default function StoreListPage() {
         <div className="w-full md:w-1/2 relative">
           <Search className="absolute left-sm top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
           <input 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full pl-xl pr-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body text-body bg-surface-container-lowest outline-none transition-all" 
             placeholder="Cari nama toko atau pemilik..." 
             type="text" 
@@ -143,7 +109,7 @@ export default function StoreListPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
-          {filteredStores.map((store) => (
+          {stores.map((store) => (
             <div key={store.id} className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
               <div className="p-md flex-1 flex flex-col cursor-pointer" onClick={() => navigate(`/stores/${store.id}`)}>
                 {/* Identity */}
@@ -189,17 +155,23 @@ export default function StoreListPage() {
                 </div>
               </div>
 
-              {/* Action Buttons (Dari code.html) */}
+              {/* Action Buttons */}
               <div className="p-sm bg-surface-bright border-t border-outline-variant flex gap-sm">
                 <button 
-                  onClick={(e) => { e.stopPropagation(); window.open(`https://maps.google.com/?q=${store.latitude},${store.longitude}`, '_blank'); }}
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${store.latitude},${store.longitude}`, '_blank'); 
+                  }}
                   className="flex-1 border border-outline-variant text-text-secondary hover:text-primary hover:bg-surface-container-low font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
                 >
                   <MapPin className="w-4 h-4" />
                   Maps
                 </button>
                 <button 
-                  onClick={(e) => { e.stopPropagation(); navigate(`/stores/${store.id}/visit`); }}
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    navigate(`/stores/${store.id}/visit`); 
+                  }}
                   className="flex-1 bg-surface-container-high text-primary hover:bg-primary-container hover:text-on-primary-container font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
                 >
                   <StoreIcon className="w-4 h-4" />
@@ -209,7 +181,7 @@ export default function StoreListPage() {
             </div>
           ))}
 
-          {/* Card: Empty/New State (Dari code.html) */}
+          {/* Card: Empty/New State */}
           <div 
             onClick={() => navigate('/stores/new')}
             className="bg-surface-bright rounded-xl border-2 border-dashed border-outline-variant p-md flex flex-col items-center justify-center gap-sm text-center min-h-[220px] hover:bg-surface-container-low transition-colors cursor-pointer group"

@@ -1,12 +1,41 @@
+// frontend/src/services/api/stores.ts
+
 import type { Store, StoreFormData, ApiResponse } from "@/types"
 import { storageGetOrSeed, storageSet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
 import { seedStores } from "@/seed-data/stores"
 import { generateId } from "@/lib/utils"
 
+export interface StoreQueryParams {
+  search?: string;
+  status?: string;
+}
+
 export const storeApi = {
-  getAll: async (): Promise<ApiResponse<Store[]>> => {
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, seedStores)
+  getAll: async (params?: StoreQueryParams): Promise<ApiResponse<Store[]>> => {
+    // Simulasi delay jaringan
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    let stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, seedStores)
+    
+    if (params) {
+      if (params.search) {
+        const query = params.search.toLowerCase();
+        stores = stores.filter(s => 
+          s.name.toLowerCase().includes(query) || 
+          s.ownerName.toLowerCase().includes(query)
+        );
+      }
+      
+      if (params.status) {
+        if (params.status === 'lunas') {
+          stores = stores.filter(s => s.totalReceivable === 0);
+        } else if (params.status === 'piutang') {
+          stores = stores.filter(s => s.totalReceivable > 0);
+        }
+      }
+    }
+
     return { success: true, data: stores }
   },
 
