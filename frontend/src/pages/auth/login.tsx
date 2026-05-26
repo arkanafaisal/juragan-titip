@@ -10,20 +10,23 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
 
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
 
     const result = await login({ email, password });
     if (result.success) {
       navigate("/dashboard");
     } else {
-      alert(result.message || "Gagal masuk");
+      setError(result.message || "Gagal masuk");
     }
     setLoading(false);
   };
@@ -49,6 +52,12 @@ export default function LoginForm() {
             <p className="font-body text-body text-text-secondary">Sistem Manajemen Konsinyasi Terpadu</p>
           </div>
 
+          {error && (
+            <div className="mt-xs mb-md p-sm bg-error-container text-on-error-container font-body-sm text-body-sm rounded-lg flex items-center justify-center text-center">
+              {error}
+            </div>
+          )}
+
           {/* Form */}
           <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
             {/* Email Input */}
@@ -59,7 +68,7 @@ export default function LoginForm() {
                 <input
                   className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
                   id="email" name="email" placeholder="nama@perusahaan.com" type="email"
-                  value={email} onChange={(e) => setEmail(e.target.value)} required />
+                  value={email} onChange={(e) => { setEmail(e.target.value); if(error) setError(null); }} required />
               </div>
             </div>
 
@@ -71,7 +80,7 @@ export default function LoginForm() {
                 <input
                   className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
                   id="password" name="password" placeholder="••••••••" type={showPassword ? "text" : "password"}
-                  value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  value={password} onChange={(e) => { setPassword(e.target.value); if(error) setError(null); }} required />
                 <button
                   className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
                   type="button" onClick={handleTogglePassword}>

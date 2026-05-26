@@ -24,14 +24,19 @@ export default function RegisterForm() {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
-    const update = (field: string, value: string) =>
+    const [error, setError] = useState<string | null>(null);
+
+    const update = (field: string, value: string) => {
         setForm((prev) => ({ ...prev, [field]: value }));
+        if (error) setError(null);
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError(null); // Reset error saat submit ulang
 
         if (form.password !== form.confirmPassword) {
-            alert("Password tidak cocok");
+            setError("Password tidak cocok"); // Ganti alert dengan setError
             return;
         }
 
@@ -40,7 +45,7 @@ export default function RegisterForm() {
         if (result.success) {
             navigate("/dashboard");
         } else {
-            alert(result.message || "Gagal mendaftar");
+            setError(result.message || "Gagal mendaftar"); // Ganti alert dengan setError
         }
         setLoading(false);
     };
@@ -62,6 +67,12 @@ export default function RegisterForm() {
                         <h1 className="font-h1 text-h1 text-text-primary mb-xs">JuraganTitip</h1>
                         <p className="font-body text-body text-text-secondary">Daftar Akun Baru</p>
                     </div>
+
+                    {error && (
+                        <div className="mt-xs mb-md p-sm bg-error-container text-on-error-container font-body-sm text-body-sm rounded-lg flex items-center justify-center text-center">
+                            {error}
+                        </div>
+                    )}
 
                     {/* Form */}
                     <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
