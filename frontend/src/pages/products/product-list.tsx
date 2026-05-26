@@ -5,10 +5,10 @@ import {
   SlidersHorizontal, 
   Cookie, 
   Coffee, 
-  Cake, 
-  IceCream,
+  Utensils,
   Package,
   Pencil, 
+  Trash2,
   ChevronLeft, 
   ChevronRight 
 } from "lucide-react";
@@ -47,24 +47,25 @@ export default function ProductListPage() {
   };
 
   const getStockStatusColor = (stock: number) => {
-    if (stock === 0) return "bg-destructive";
+    if (stock === 0) return "bg-error";
     if (stock <= 20) return "bg-warning";
     return "bg-success";
   };
 
   const getStockTextColor = (stock: number) => {
-    if (stock === 0) return "text-destructive";
-    return "";
+    if (stock === 0) return "text-error font-bold";
+    if (stock <= 20) return "text-warning font-bold";
+    return "text-success font-medium";
   };
 
-  const renderIcon = (category: string) => {
-    const lowerCat = category.toLowerCase();
-    if (lowerCat.includes("minuman") || lowerCat.includes("kopi") || lowerCat.includes("coffee")) return <Coffee className="w-6 h-6" strokeWidth={1.5} />;
-    if (lowerCat.includes("kue") || lowerCat.includes("roti") || lowerCat.includes("cake")) return <Cake className="w-6 h-6" strokeWidth={1.5} />;
-    if (lowerCat.includes("es") || lowerCat.includes("dessert") || lowerCat.includes("ice cream")) return <IceCream className="w-6 h-6" strokeWidth={1.5} />;
-    if (lowerCat.includes("snack") || lowerCat.includes("makanan") || lowerCat.includes("keripik")) return <Cookie className="w-6 h-6" strokeWidth={1.5} />;
+  const getCategoryStyles = (category: string) => {
+    const cat = category?.toLowerCase() || "";
+    if (cat === "beverage") return { bg: "bg-blue-100", text: "text-blue-600", icon: <Coffee className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "food") return { bg: "bg-emerald-100", text: "text-emerald-600", icon: <Utensils className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "snack") return { bg: "bg-amber-100", text: "text-amber-600", icon: <Cookie className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "non-food") return { bg: "bg-purple-100", text: "text-purple-600", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
     
-    return <Package className="w-6 h-6" strokeWidth={1.5} />;
+    return { bg: "bg-surface-variant", text: "text-on-surface-variant", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
   };
 
   return (
@@ -87,18 +88,20 @@ export default function ProductListPage() {
         <div className="w-full md:w-1/3 relative">
           <Search className="absolute left-sm top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
           <input 
-            className="w-full pl-xl pr-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body text-body bg-surface-container-lowest outline-none" 
+            className="w-full pl-xl pr-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body text-body bg-surface-container-lowest outline-none transition-all" 
             placeholder="Cari nama produk..." 
             type="text" 
           />
         </div>
         <div className="flex gap-sm w-full md:w-auto">
-          <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+          <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
             <option value="">Semua Kategori</option>
-            <option value="Makanan Ringan">Makanan Ringan</option>
-            <option value="Minuman">Minuman</option>
+            <option value="snack">Snack</option>
+            <option value="food">Food</option>
+            <option value="beverage">Beverage</option>
+            <option value="non-food">Non-Food</option>
           </select>
-          <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+          <select className="flex-1 md:flex-none border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
             <option value="">Status Stok</option>
             <option value="in_stock">Tersedia</option>
             <option value="low_stock">Menipis</option>
@@ -111,9 +114,9 @@ export default function ProductListPage() {
       </div>
 
       {/* Data Table Card */}
-      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[700px]">
+      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-visible">
+        <div className="overflow-x-auto overflow-y-visible">
+          <table className="w-full text-left border-collapse min-w-[750px]">
             <thead>
               <tr className="bg-surface-container-low border-b border-border">
                 <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold">Nama Produk</th>
@@ -121,7 +124,7 @@ export default function ProductListPage() {
                 <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold">Stok</th>
                 <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-right">HPP</th>
                 <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-right">Harga Grosir</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-center">Aksi</th>
+                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="font-body text-body text-text-primary divide-y divide-border">
@@ -134,30 +137,66 @@ export default function ProductListPage() {
                   <td colSpan={6} className="py-lg text-center text-text-secondary">Tidak ada produk ditemukan.</td>
                 </tr>
               ) : (
-                products.map((product) => (
-                  <tr key={product.id} className="hover:bg-surface-container-lowest transition-colors group">
-                    <td className="py-md px-md flex items-center gap-md">
-                      <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-fixed-dim shrink-0">
-                        {renderIcon(product.category)}
-                      </div>
-                      <span className="font-medium whitespace-nowrap">{product.name}</span>
-                    </td>
-                    <td className="py-md px-md text-text-secondary whitespace-nowrap">{product.category}</td>
-                    <td className="py-md px-md">
-                      <div className="flex items-center gap-xs">
-                        <div className={`w-2 h-2 rounded-full ${getStockStatusColor(product.warehouseStock)}`}></div>
-                        <span className={`font-data-md text-data-md ${getStockTextColor(product.warehouseStock)}`}>{product.warehouseStock}</span>
-                      </div>
-                    </td>
-                    <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">{formatCurrency(product.costPrice)}</td>
-                    <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">{formatCurrency(product.wholesalePrice)}</td>
-                    <td className="py-md px-md text-center">
-                      <button className="text-text-muted hover:text-primary transition-colors p-xs lg:opacity-0 lg:group-hover:opacity-100 opacity-100 focus:opacity-100">
-                        <Pencil className="w-5 h-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                products.map((product) => {
+                  const catStyle = getCategoryStyles(product.category);
+                  
+                  return (
+                    <tr key={product.id} className="hover:bg-surface-container-lowest transition-colors">
+                      <td className="py-md px-md">
+                        <div className="flex items-center gap-md">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${catStyle.bg} ${catStyle.text}`}>
+                            {catStyle.icon}
+                          </div>
+                          
+                          {/* Nama Produk dengan Deskripsi Popup */}
+                          <div className="relative group/tooltip outline-none" tabIndex={0}>
+                            <span className="font-medium whitespace-nowrap cursor-help border-b border-dashed border-outline-variant pb-0.5">
+                              {product.name}
+                            </span>
+                            <div className="absolute z-50 left-0 top-full mt-2 hidden group-hover/tooltip:block group-focus/tooltip:block bg-surface-elevated text-on-surface p-sm rounded-lg shadow-md border border-outline-variant w-64 text-caption font-normal whitespace-normal break-words pointer-events-none">
+                              {product.description || "Tidak ada deskripsi untuk produk ini."}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-md px-md">
+                        <span className={`px-2 py-1 rounded text-caption font-medium ${catStyle.bg} ${catStyle.text} capitalize`}>
+                          {product.category}
+                        </span>
+                      </td>
+                      <td className="py-md px-md">
+                        <div className="flex items-center gap-xs">
+                          <div className={`w-2 h-2 rounded-full ${getStockStatusColor(product.warehouseStock)}`}></div>
+                          <span className={`font-data-md text-data-md ${getStockTextColor(product.warehouseStock)}`}>
+                            {product.warehouseStock}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">
+                        {formatCurrency(product.costPrice)}
+                      </td>
+                      <td className="py-md px-md text-right font-data-md text-data-md whitespace-nowrap">
+                        {formatCurrency(product.wholesalePrice)}
+                      </td>
+                      <td className="py-md px-md text-right">
+                        <div className="flex items-center justify-end gap-xs">
+                          <button 
+                            className="text-text-secondary hover:bg-primary-container hover:text-primary transition-colors p-sm rounded-md"
+                            title="Edit Produk"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button 
+                            className="text-text-secondary hover:bg-error-container hover:text-error transition-colors p-sm rounded-md"
+                            title="Hapus Produk"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -165,7 +204,9 @@ export default function ProductListPage() {
 
         {/* Pagination */}
         <div className="flex flex-col sm:flex-row items-center justify-between px-md py-sm border-t border-border bg-surface-container-lowest gap-sm">
-          <span className="font-caption text-caption text-text-secondary">Menampilkan 1-{products.length} dari {products.length} produk</span>
+          <span className="font-caption text-caption text-text-secondary">
+            Menampilkan 1-{products.length} dari {products.length} produk
+          </span>
           <div className="flex gap-xs">
             <button className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low disabled:opacity-50" disabled>
               <ChevronLeft className="w-5 h-5" />
