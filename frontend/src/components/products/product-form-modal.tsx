@@ -79,15 +79,22 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
 
   return createPortal(
     <div className={cn(
-      // Tambahan class tipografi di sini untuk mengembalikan warisan gaya teks
-      "fixed inset-0 z-50 flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md transition-all font-body text-body text-on-surface antialiased",
+      // Hapus inset-0, biarkan fixed dan right-0 sebagai tumpuan kanan
+      "fixed right-0 z-50 flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md transition-all font-body text-body text-on-surface antialiased",
+      
+      // 1. Batas Atas: Hindari Header (h-16 / 64px)
+      "top-16",
+      
+      // 2. Batas Bawah: Hindari Bottom Bar di Mobile (~72px), full di PC (0)
+      isMobile ? "bottom-[72px]" : "bottom-0",
+      
+      // 3. Batas Kiri: Hindari Sidebar di PC, full di Mobile
       isMobile 
-        ? "pt-16 pb-24" 
+        ? "left-0" 
         : isCollapsed 
-          ? "pt-16 pl-20" 
-          : "pt-16 pl-60" 
+          ? "left-20" 
+          : "left-60"
     )}>
-      {/* max-w-lg diganti ke max-w-[512px] dan max-h-[90vh] diganti ke max-h-full */}
       <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-[512px] overflow-hidden flex flex-col max-h-full">
         <div className="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-bright shrink-0">
           <h3 className="font-h3 text-h3 text-on-surface">
