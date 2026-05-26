@@ -27,12 +27,9 @@ export function PageHeader({
           <Menu className="w-6 h-6" />
         </button>
 
-        <div className="md:hidden font-h2 text-h2 font-bold text-primary-container tracking-tight">
-          {title}
-        </div>
-
-        <div className="hidden md:flex font-body-sm text-body-sm text-on-surface-variant ml-2">
-          {description}
+        <div className="font-h2 text-h2 font-bold text-primary-container tracking-tight">
+          <span className="md:hidden">{title}</span>
+          <span className="hidden md:inline">{description}</span>
         </div>
       </div>
 
