@@ -48,7 +48,7 @@ export const productApi = {
 
     // 2. Proses Pagination (Ambil 6 item untuk cek halaman selanjutnya)
     const page = params?.page || 1;
-    const limit = 5;
+    const limit = 6;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit + 1; // +1 untuk mengintip data halaman berikutnya
 

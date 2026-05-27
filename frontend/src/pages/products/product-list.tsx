@@ -103,8 +103,8 @@ export default function ProductListPage() {
   };
 
   // Helper Pagination Logic (Sistem Trik 6 Item)
-  const displayProducts = products.slice(0, 5); // Hanya tampilkan max 5
-  const hasNextPage = products.length > 5;      // Jika API mengembalikan 6 item, berarti ada Next
+  const displayProducts = products.slice(0, 6); // Hanya tampilkan max 5
+  const hasNextPage = products.length > 6;      // Jika API mengembalikan 6 item, berarti ada Next
   const hasPrevPage = currentPage > 1;
 
   const formatCurrency = (value: number) => {
@@ -273,7 +273,7 @@ export default function ProductListPage() {
       {!isLoading && displayProducts.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-md py-sm bg-surface rounded-xl border border-border shadow-sm gap-sm">
           <span className="font-caption text-caption text-text-secondary">
-            Menampilkan {(currentPage - 1) * 5 + 1}-{(currentPage - 1) * 5 + displayProducts.length} produk
+            Menampilkan {(currentPage - 1) * 6 + 1}-{(currentPage - 1) * 6 + displayProducts.length} produk
           </span>
           <div className="flex gap-xs">
             <button 
