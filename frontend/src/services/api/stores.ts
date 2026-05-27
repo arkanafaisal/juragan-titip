@@ -9,6 +9,7 @@ import { generateId } from "@/lib/utils"
 export interface StoreQueryParams {
   search?: string;
   status?: string;
+  page?: number;
 }
 
 export const storeApi = {
@@ -35,6 +36,14 @@ export const storeApi = {
         }
       }
     }
+
+    // Proses Pagination (Limit 6, ambil 7 item untuk cek halaman selanjutnya)
+    const page = params?.page || 1;
+    const limit = 6;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit + 1; // +1 untuk mengintip data halaman berikutnya
+
+    stores = stores.slice(startIndex, endIndex);
 
     return { success: true, data: stores }
   },
@@ -75,7 +84,6 @@ export const storeApi = {
     
     const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
 
-    // 1. Cek dulu apakah nama toko yang diinput ada atau tidak di database
     const isNameExists = stores.some((s) => s.name.toLowerCase() === storeNameConfirm.toLowerCase());
     
     if (!isNameExists) {
@@ -86,7 +94,6 @@ export const storeApi = {
       };
     }
 
-    // 2. Jika ada, cek double field (id dan name harus sinkron)
     const storeIndex = stores.findIndex(
       (s) => s.id === id && s.name.toLowerCase() === storeNameConfirm.toLowerCase()
     );
@@ -99,7 +106,6 @@ export const storeApi = {
       };
     }
 
-    // 3. Proses hapus
     stores.splice(storeIndex, 1);
     storageSet(STORAGE_KEYS.STORES, stores);
     
