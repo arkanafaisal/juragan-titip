@@ -1,7 +1,7 @@
 // frontend/src/services/api/stores.ts
 
 import type { Store, StoreFormData, ApiResponse } from "@/types"
-import { storageGetOrSeed, storageSet } from "@/lib/storage"
+import { storageGetOrSeed, storageSet, storageGet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
 import { seedStores } from "@/seed-data/stores"
 import { generateId } from "@/lib/utils"
@@ -16,7 +16,7 @@ export const storeApi = {
     // Simulasi delay jaringan
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    let stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, seedStores)
+    let stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
     
     if (params) {
       if (params.search) {
@@ -40,14 +40,14 @@ export const storeApi = {
   },
 
   getById: async (id: string): Promise<ApiResponse<Store>> => {
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, seedStores)
+    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
     const store = stores.find((s) => s.id === id)
     if (!store) return { success: false, data: null as unknown as Store, message: "Toko tidak ditemukan" }
     return { success: true, data: store }
   },
 
   create: async (data: StoreFormData): Promise<ApiResponse<Store>> => {
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, seedStores)
+    const stores = storageGet<Store[]>(STORAGE_KEYS.STORES) || []
     const newStore: Store = {
       id: generateId("store"),
       ...data,
@@ -61,7 +61,7 @@ export const storeApi = {
   },
 
   update: async (id: string, data: Partial<StoreFormData>): Promise<ApiResponse<Store>> => {
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, seedStores)
+    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
     const index = stores.findIndex((s) => s.id === id)
     if (index === -1) return { success: false, data: null as unknown as Store, message: "Toko tidak ditemukan" }
     stores[index] = { ...stores[index], ...data, updatedAt: new Date().toISOString() }
@@ -70,7 +70,7 @@ export const storeApi = {
   },
 
   delete: async (id: string): Promise<ApiResponse<null>> => {
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, seedStores)
+    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
     storageSet(STORAGE_KEYS.STORES, stores.filter((s) => s.id !== id))
     return { success: true, data: null }
   },

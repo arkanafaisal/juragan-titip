@@ -1,5 +1,5 @@
 import type { Product, ProductFormData, ApiResponse } from "@/types"
-import { storageGetOrSeed, storageSet } from "@/lib/storage"
+import { storageGet, storageGetOrSeed, storageSet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
 import { seedProducts } from "@/seed-data/products"
 import { generateId } from "@/lib/utils"
@@ -15,8 +15,8 @@ export const productApi = {
     // Simulasi delay jaringan
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const storedData = localStorage.getItem("jt_products"); // Sesuaikan dengan key localstorage-mu
-    let products = storedData ? JSON.parse(storedData) : [];
+    let products = storageGetOrSeed<Array<Product>>(STORAGE_KEYS.PRODUCTS, []) // localStorage.getItem("jt_products"); 
+    // let products = storedData ? JSON.parse(storedData) : [];
 
     // 1. Proses Filtering
     if (params) {
@@ -56,14 +56,14 @@ export const productApi = {
   },
 
   getById: async (id: string): Promise<ApiResponse<Product>> => {
-    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, seedProducts)
+    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
     const product = products.find((p) => p.id === id)
     if (!product) return { success: false, data: null as unknown as Product, message: "Produk tidak ditemukan" }
     return { success: true, data: product }
   },
 
   create: async (data: ProductFormData): Promise<ApiResponse<Product>> => {
-    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, seedProducts)
+    const products = storageGet<Product[]>(STORAGE_KEYS.PRODUCTS) || []
     const newProduct: Product = {
       id: generateId("prod"),
       ...data,
@@ -75,7 +75,7 @@ export const productApi = {
   },
 
   update: async (id: string, data: Partial<ProductFormData>): Promise<ApiResponse<Product>> => {
-    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, seedProducts)
+    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
     const index = products.findIndex((p) => p.id === id)
     if (index === -1) return { success: false, data: null as unknown as Product, message: "Produk tidak ditemukan" }
     products[index] = { ...products[index], ...data, updatedAt: new Date().toISOString() }
@@ -84,7 +84,7 @@ export const productApi = {
   },
 
   delete: async (id: string): Promise<ApiResponse<null>> => {
-    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, seedProducts)
+    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
     storageSet(STORAGE_KEYS.PRODUCTS, products.filter((p) => p.id !== id))
     return { success: true, data: null }
   },
