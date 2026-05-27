@@ -1,3 +1,5 @@
+// frontend/src/services/api/products.ts
+
 import type { Product, ProductFormData, ApiResponse } from "@/types"
 import { storageGet, storageGetOrSeed, storageSet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
@@ -83,9 +85,36 @@ export const productApi = {
     return { success: true, data: products[index] }
   },
 
-  delete: async (id: string): Promise<ApiResponse<null>> => {
+  delete: async (id: string, productNameConfirm: string): Promise<ApiResponse<null>> => {
+    // Simulasi delay
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    
     const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
-    storageSet(STORAGE_KEYS.PRODUCTS, products.filter((p) => p.id !== id))
-    return { success: true, data: null }
+    
+    const isNameExists = products.some((p) => p.name.toLowerCase() === productNameConfirm.toLowerCase());
+    
+    if (!isNameExists) {
+      return { 
+        success: false, 
+        data: null as unknown as null, 
+        message: "Nama produk tidak ditemukan di sistem" 
+      };
+    }
+
+    const productIndex = products.findIndex(
+      (p) => p.id === id && p.name.toLowerCase() === productNameConfirm.toLowerCase()
+    );
+
+    if (productIndex === -1) {
+      return { 
+        success: false, 
+        data: null as unknown as null, 
+        message: "Konfirmasi nama salah untuk ID produk ini" 
+      };
+    }
+
+    products.splice(productIndex, 1);
+    storageSet(STORAGE_KEYS.PRODUCTS, products);
+    return { success: true, data: null };
   },
 }

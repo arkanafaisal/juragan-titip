@@ -6,6 +6,7 @@ import {
 import { productApi } from "@/services/api/products";
 import type { Product } from "@/types";
 import { ProductFormModal } from "@/components/products/product-form-modal";
+import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,6 +24,11 @@ export default function ProductListPage() {
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Delete State
+  const [productToDelete, setProductToDelete] = useState<{ id: string, name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Debounce effect
   useEffect(() => {
@@ -76,14 +82,23 @@ export default function ProductListPage() {
     setEditingProduct(null);
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
-      try {
-        await productApi.delete(id);
+  const handleDeleteConfirm = async (typedName?: string) => {
+    if (!productToDelete || !typedName) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      const response = await productApi.delete(productToDelete.id, typedName);
+      if (response.success) {
+        setProductToDelete(null);
         fetchProducts();
-      } catch (error) {
-        console.error("Gagal menghapus produk:", error);
+      } else {
+        setDeleteError(response.message || "Gagal menghapus produk");
       }
+    } catch (error) {
+      setDeleteError("Terjadi kesalahan sistem saat menghapus produk.");
+      console.error("Gagal menghapus produk:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -259,7 +274,7 @@ export default function ProductListPage() {
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button 
-                            onClick={() => handleDelete(product.id)}
+                            onClick={() => setProductToDelete({ id: product.id, name: product.name })}
                             className="text-error hover:bg-error/20 transition-colors p-sm rounded-md"
                             title="Hapus Produk"
                           >
@@ -309,6 +324,26 @@ export default function ProductListPage() {
         onClose={handleCloseModal}
         onSuccess={fetchProducts}
         product={editingProduct}
+      />
+
+      <ConfirmationModal
+        isOpen={!!productToDelete}
+        onClose={() => {
+          setProductToDelete(null);
+          setDeleteError(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Hapus Produk"
+        description="Tindakan ini permanen. Histori barang ini di invoice sebelumnya tetap aman, namun Anda tidak bisa lagi menambahkannya ke kunjungan baru."
+        isDanger={true}
+        confirmText="Hapus Produk"
+        isLoading={isDeleting}
+        verificationText={productToDelete?.name}
+        verificationLabel={
+          <>Ketik persis <span className="font-bold text-text-primary select-none">{productToDelete?.name}</span> untuk konfirmasi:</>
+        }
+        errorMessage={deleteError}
+        onClearError={() => setDeleteError(null)}
       />
     </div>
   );
