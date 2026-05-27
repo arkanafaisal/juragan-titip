@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router";
+// frontend/src/pages/stores/store-detail.tsx
+
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import {
   ChevronRight,
   CheckCircle2,
@@ -12,25 +14,42 @@ import {
   Wallet,
   TrendingUp,
   History,
-  StickyNote
+  StickyNote,
+  Loader2
 } from "lucide-react";
 import { MapPicker } from "@/components/features/map-picker";
+import { storeApi } from "@/services/api/stores";
+import type { Store } from "@/types";
 
 export default function StoreDetailPage() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("titipan");
 
-  // Data Statis Dummy
-  const store = {
-    id: "1",
-    name: "Warkop Berkah Jaya",
-    owner: "Bpk. Budi Santoso",
-    phone: "0812-3456-7890",
-    address: "Jl. Sudirman No. 45, RT 02/RW 05, Kuningan, Jakarta Selatan. Patokan sebelah warteg Bahari.",
-    notes: "", // Bisa diisi string untuk tes kasus ada catatan
-    lat: -6.200000,
-    lng: 106.816666,
-  };
+  const [store, setStore] = useState<Store | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStore = async () => {
+      if (!id) return;
+      setIsLoading(true);
+      try {
+        const response = await storeApi.getById(id);
+        if (response.success && response.data) {
+          setStore(response.data);
+        } else {
+          setError(response.message || "Toko tidak ditemukan");
+        }
+      } catch (err) {
+        setError("Gagal memuat data toko.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStore();
+  }, [id]);
 
   // Komponen reusable untuk 3 Card Info (Struktur Responsif: Horizontal di Mobile, Vertikal di Tablet/PC)
   const StatCard = ({ 
@@ -68,6 +87,26 @@ export default function StoreDetailPage() {
       </div>
     </div>
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-24">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error || !store) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-text-secondary">
+        <Package className="w-12 h-12 mb-sm text-outline-variant" />
+        <p className="font-body text-body">{error || "Toko tidak ditemukan."}</p>
+        <button onClick={() => navigate("/stores")} className="mt-md text-primary font-medium hover:underline">
+          Kembali ke Daftar Toko
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-container-max mx-auto space-y-md md:space-y-lg pb-xl">
@@ -118,7 +157,7 @@ export default function StoreDetailPage() {
                 </div>
                 <div className="flex items-center gap-xs md:gap-sm text-text-secondary font-body-sm text-body-sm md:font-body md:text-body">
                   <User className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
-                  <p>{store.owner}</p>
+                  <p>{store.ownerName}</p>
                 </div>
                 <div className="flex items-center gap-xs md:gap-sm text-text-secondary font-body-sm text-body-sm md:font-body md:text-body">
                   <Phone className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
@@ -136,16 +175,16 @@ export default function StoreDetailPage() {
             <div className="mt-md md:mt-lg flex flex-col sm:flex-row gap-3">
               <button 
                 onClick={() => navigate(`/stores/${store.id}/visit`)}
-                className="w-full sm:w-auto bg-primary text-on-primary rounded-lg py-sm md:py-md px-lg md:px-xl flex items-center justify-center gap-sm font-body text-body md:font-h3 md:text-h3 font-semibold hover:bg-primary/90 transition-all shadow-md active:scale-[0.98]"
+                className="w-full sm:w-auto bg-primary text-on-primary rounded-lg py-sm md:py-md px-md lg:px-xl flex items-center justify-center gap-sm font-body text-body md:font-h3 md:text-h3 font-semibold hover:bg-primary/90 transition-all shadow-md active:scale-[0.98] whitespace-nowrap"
               >
-                <Navigation className="w-4 h-4 md:w-5 md:h-5" />
+                <Navigation className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
                 MULAI KUNJUNGAN
               </button>
               <button 
-                onClick={() => window.open(`https://maps.google.com/?q=${store.lat},${store.lng}`, '_blank')}
-                className="w-full sm:w-auto bg-surface text-text-secondary border border-outline-variant rounded-lg py-sm md:py-md px-lg md:px-xl flex items-center justify-center gap-sm font-body text-body md:font-h3 md:text-h3 font-semibold hover:text-primary hover:bg-surface-container-low transition-all active:scale-[0.98]"
+                onClick={() => window.open(`https://maps.google.com/?q=${store.latitude},${store.longitude}`, '_blank')}
+                className="w-full sm:w-auto bg-surface text-text-secondary border border-outline-variant rounded-lg py-sm md:py-md px-md lg:px-xl flex items-center justify-center gap-sm font-body text-body md:font-h3 md:text-h3 font-semibold hover:text-primary hover:bg-surface-container-low transition-all active:scale-[0.98] whitespace-nowrap"
               >
-                <MapPin className="w-4 h-4 md:w-5 md:h-5" />
+                <MapPin className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
                 MAPS
               </button>
             </div>
@@ -154,7 +193,7 @@ export default function StoreDetailPage() {
           {/* Map Section */}
           <div className="w-full md:w-[320px] lg:w-[400px] h-48 md:h-auto bg-surface-container relative border-t md:border-t-0 md:border-l border-border shrink-0 z-0">
             <MapPicker 
-              position={{ lat: store.lat, lng: store.lng }}
+              position={{ lat: store.latitude, lng: store.longitude }}
               readonly={true} 
             />
           </div>
