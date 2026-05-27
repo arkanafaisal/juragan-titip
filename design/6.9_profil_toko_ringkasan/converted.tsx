@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import {
@@ -140,7 +141,7 @@ export default function StoreDetailPage() {
               <div className="space-y-sm mt-md">
                 <div className="flex items-start gap-sm text-text-secondary font-body text-body">
                   <MapPin className="w-5 h-5 mt-0.5 shrink-0" />
-                  <p className="">{store.address}</p>
+                  <p className="max-w-md">{store.address}</p>
                 </div>
                 <div className="flex items-center gap-sm text-text-secondary font-body text-body">
                   <User className="w-5 h-5 shrink-0" />
