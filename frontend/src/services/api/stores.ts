@@ -69,9 +69,40 @@ export const storeApi = {
     return { success: true, data: stores[index] }
   },
 
-  delete: async (id: string): Promise<ApiResponse<null>> => {
+  delete: async (id: string, storeNameConfirm: string): Promise<ApiResponse<null>> => {
+    // Simulasi delay
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    
     const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
-    storageSet(STORAGE_KEYS.STORES, stores.filter((s) => s.id !== id))
-    return { success: true, data: null }
+
+    // 1. Cek dulu apakah nama toko yang diinput ada atau tidak di database
+    const isNameExists = stores.some((s) => s.name.toLowerCase() === storeNameConfirm.toLowerCase());
+    
+    if (!isNameExists) {
+      return { 
+        success: false, 
+        data: null as unknown as null, 
+        message: "Nama toko tidak ditemukan di sistem" 
+      };
+    }
+
+    // 2. Jika ada, cek double field (id dan name harus sinkron)
+    const storeIndex = stores.findIndex(
+      (s) => s.id === id && s.name.toLowerCase() === storeNameConfirm.toLowerCase()
+    );
+
+    if (storeIndex === -1) {
+      return { 
+        success: false, 
+        data: null as unknown as null, 
+        message: "Konfirmasi nama salah untuk ID toko ini" 
+      };
+    }
+
+    // 3. Proses hapus
+    stores.splice(storeIndex, 1);
+    storageSet(STORAGE_KEYS.STORES, stores);
+    
+    return { success: true, data: null as unknown as null };
   },
 }
