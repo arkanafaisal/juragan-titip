@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
+// frontend/src/pages/stores/store-form.tsx
+
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
 import { 
   Info, 
   StickyNote, 
@@ -13,7 +15,11 @@ import { MapPicker } from "@/components/features/map-picker";
 
 export default function StoreFormPage() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = Boolean(id);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
@@ -29,6 +35,36 @@ export default function StoreFormPage() {
     lat: -6.902481,
     lng: 107.61881,
   });
+
+  useEffect(() => {
+    if (isEditMode && id) {
+      const fetchStore = async () => {
+        try {
+          const response = await storeApi.getById(id);
+          if (response.success && response.data) {
+            setFormData({
+              name: response.data.name,
+              ownerName: response.data.ownerName,
+              phone: response.data.phone,
+              address: response.data.address,
+              notes: response.data.notes || "",
+            });
+            setLocation({
+              lat: response.data.latitude,
+              lng: response.data.longitude,
+            });
+          } else {
+            setError(response.message || "Gagal memuat data toko.");
+          }
+        } catch (err) {
+          setError("Terjadi kesalahan saat memuat data.");
+        } finally {
+          setIsLoadingData(false);
+        }
+      };
+      fetchStore();
+    }
+  }, [id, isEditMode]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -67,16 +103,25 @@ export default function StoreFormPage() {
     setError(null);
     
     try {
-      // Pemanggilan LocalStorage Mock API
-      const result = await storeApi.create({
+      const payload = {
         ...formData,
         latitude: location.lat,
         longitude: location.lng,
-      });
+      };
+
+      let result;
+      if (isEditMode && id) {
+        result = await storeApi.update(id, payload);
+      } else {
+        result = await storeApi.create(payload);
+      }
 
       if (result.success) {
-        // Otomatis pindah ke daftar toko setelah berhasil save
-        navigate("/stores"); 
+        if (isEditMode) {
+          navigate(`/stores/${id}`);
+        } else {
+          navigate("/stores"); 
+        }
       } else {
         setError(result.message || "Gagal menyimpan data toko.");
       }
@@ -88,12 +133,30 @@ export default function StoreFormPage() {
     }
   };
 
+  const handleCancel = () => {
+    if (isEditMode) {
+      navigate(`/stores/${id}`);
+    } else {
+      navigate("/stores");
+    }
+  };
+
+  if (isLoadingData) {
+    return (
+      <div className="flex justify-center items-center py-24">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-container-max mx-auto space-y-lg">
+    <div className="max-w-container-max mx-auto space-y-lg pb-xl">
       
-      {/* Header Halaman - Sekarang muncul di semua breakpoint (PC & Mobile) */}
+      {/* Header Halaman */}
       <div className="flex items-center justify-between mb-md">
-        <h2 className="font-h1 text-h1 font-bold text-on-surface">Tambah Toko Baru</h2>
+        <h2 className="font-h1 text-h1 font-bold text-on-surface">
+          {isEditMode ? "Edit Toko" : "Tambah Toko Baru"}
+        </h2>
       </div>
 
       {error && (
@@ -240,7 +303,7 @@ export default function StoreFormPage() {
               <MapPicker 
                 position={location}
                 onChange={handleLocationChange}
-                readonly={false} // Mode PICK
+                readonly={false}
               />
             </div>
 
@@ -280,7 +343,7 @@ export default function StoreFormPage() {
         <div className="col-span-1 lg:col-span-12 flex justify-end gap-md pt-lg border-t border-outline-variant mt-sm">
           <button 
             type="button" 
-            onClick={() => navigate("/stores")}
+            onClick={handleCancel}
             className="px-lg py-2 rounded-lg font-body text-body font-medium text-on-surface-variant bg-surface border border-outline-variant hover:bg-surface-container-low transition-colors active:scale-95 duration-100"
           >
             Batal
@@ -291,7 +354,7 @@ export default function StoreFormPage() {
             className="px-lg py-2 rounded-lg font-body text-body font-medium text-on-primary bg-primary hover:bg-primary/90 shadow-sm transition-all active:scale-95 duration-100 flex items-center gap-2 disabled:opacity-50"
           >
             {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            {isSubmitting ? "Memproses..." : "Simpan Toko"}
+            {isSubmitting ? "Memproses..." : isEditMode ? "Simpan Perubahan" : "Simpan Toko"}
           </button>
         </div>
 
