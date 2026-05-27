@@ -1,5 +1,19 @@
 
 
+27 May 2026
+<details>
+- added store detail page (UI)
+- updated map picker to allow scroll & zoom on view-only mode
+- updated store detail: reduce words, reduce vertical gap, show store note, add google maps button, add empty data UI
+- implemented localstorage service on store detail (GET store data)
+- added edit mode on store form
+- removed seed (default data) usage 
+- added confirmation modal component
+- updated product list: alert (removed), cards UI style (from table), pagination size (to 6)
+- added store visit form
+- updated store visit form into modular steps component
+- added number input component
+</details>
 
 26 May 2026
 <details>
