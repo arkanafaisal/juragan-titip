@@ -116,25 +116,19 @@ export default function ProductListPage() {
     }).format(value);
   };
 
-  const getStockStatusColor = (stock: number) => {
-    if (stock === 0) return "bg-error";
-    if (stock <= 20) return "bg-warning";
-    return "bg-success";
-  };
-
-  const getStockTextColor = (stock: number) => {
-    if (stock === 0) return "text-error font-bold";
-    if (stock <= 20) return "text-warning font-bold";
-    return "text-success font-medium";
+  const getStockBlockStyles = (stock: number) => {
+    if (stock === 0) return "bg-error/10 text-error border-error/20";
+    if (stock <= 20) return "bg-warning/10 text-warning-dark border-warning/20"; // warning text
+    return "bg-success/10 text-success border-success/20";
   };
 
   const getCategoryStyles = (category: string) => {
     const cat = category?.toLowerCase() || "";
-    if (cat === "minuman") return { bg: "bg-info/10", text: "text-info", icon: <Coffee className="w-5 h-5" strokeWidth={1.5} /> };
-    if (cat === "basah") return { bg: "bg-success/10", text: "text-success", icon: <Utensils className="w-5 h-5" strokeWidth={1.5} /> };
-    if (cat === "kering") return { bg: "bg-warning/10", text: "text-warning", icon: <Cookie className="w-5 h-5" strokeWidth={1.5} /> };
-    if (cat === "non-makanan") return { bg: "bg-secondary/10", text: "text-secondary", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
-    return { bg: "bg-surface-variant", text: "text-on-surface-variant", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "minuman") return { bg: "bg-info/10", text: "text-info", border: "border-info/40", icon: <Coffee className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "basah") return { bg: "bg-success/10", text: "text-success", border: "border-success/40", icon: <Utensils className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "kering") return { bg: "bg-warning/10", text: "text-warning", border: "border-warning/40", icon: <Cookie className="w-5 h-5" strokeWidth={1.5} /> };
+    if (cat === "non-makanan") return { bg: "bg-secondary/10", text: "text-secondary", border: "border-secondary/40", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
+    return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
   };
 
   return (
@@ -165,7 +159,6 @@ export default function ProductListPage() {
             type="text" 
           />
         </div>
-        {/* RESPONSIVITAS FILTER DIPERBAIKI DI SINI: flex-col sm:flex-row dan w-full */}
         <div className="flex flex-col sm:flex-row gap-sm w-full md:w-auto">
           <select 
             value={categoryFilter}
@@ -197,105 +190,90 @@ export default function ProductListPage() {
         </div>
       </div>
 
-      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden flex flex-col">
-        <div className="overflow-x-auto pb-32 -mb-32">
-          <table className="w-full text-left border-collapse min-w-[750px]">
-            <thead>
-              <tr className="bg-surface-container-low border-b border-border">
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Nama Produk</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Kategori</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Stok</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">HPP</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left">Harga Grosir</th>
-                <th className="font-caption text-caption text-text-secondary py-sm px-md font-semibold text-left w-[120px]">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="font-body text-body text-text-primary divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="py-lg text-center text-text-secondary">
-                    <div className="animate-pulse">Menyelaraskan data produk...</div>
-                  </td>
-                </tr>
-              ) : displayProducts.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-lg text-center text-text-secondary">
-                    Pencarian tidak menemukan produk.
-                  </td>
-                </tr>
-              ) : (
-                displayProducts.map((product) => {
-                  const catStyle = getCategoryStyles(product.category);
-                  
-                  return (
-                    <tr key={product.id} className="hover:bg-surface-container-lowest transition-colors">
-                      <td className="py-md px-md text-left">
-                        <div className="flex items-center gap-md">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${catStyle.bg} ${catStyle.text}`}>
-                            {catStyle.icon}
-                          </div>
-                          
-                          <div className="relative group/tooltip outline-none" tabIndex={0}>
-                            <span className="font-medium whitespace-nowrap cursor-help border-b border-dashed border-outline-variant pb-0.5">
-                              {product.name}
-                            </span>
-                            <div className="absolute z-50 left-0 top-full mt-2 hidden group-hover/tooltip:block group-focus/tooltip:block bg-surface-elevated text-on-surface p-sm rounded-lg shadow-md border border-outline-variant w-64 text-caption font-normal whitespace-normal break-words pointer-events-none">
-                              {product.description || "Tidak ada deskripsi untuk produk ini."}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-md px-md text-left">
-                        <span className={`px-2 py-1 rounded text-caption font-medium ${catStyle.bg} ${catStyle.text} capitalize`}>
-                          {product.category}
-                        </span>
-                      </td>
-                      <td className="py-md px-md text-left">
-                        <div className="flex items-center gap-xs">
-                          <div className={`w-2 h-2 rounded-full ${getStockStatusColor(product.warehouseStock)}`}></div>
-                          <span className={`font-data-md text-data-md ${getStockTextColor(product.warehouseStock)}`}>
-                            {product.warehouseStock}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-md px-md text-left font-data-md text-data-md whitespace-nowrap">
-                        {formatCurrency(product.costPrice)}
-                      </td>
-                      <td className="py-md px-md text-left font-data-md text-data-md whitespace-nowrap">
-                        {formatCurrency(product.wholesalePrice)}
-                      </td>
-                      <td className="py-md px-md text-left">
-                        <div className="flex items-center gap-xs">
-                          <button 
-                            onClick={() => handleOpenEdit(product)}
-                            className="text-warning hover:bg-warning/20 transition-colors p-sm rounded-md"
-                            title="Edit Produk"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => setProductToDelete({ id: product.id, name: product.name })}
-                            className="text-error hover:bg-error/20 transition-colors p-sm rounded-md"
-                            title="Hapus Produk"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+      {/* Grid Content Pengganti Tabel */}
+      {isLoading ? (
+        <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
+          <div className="animate-pulse text-text-secondary font-body text-body">Menyelaraskan data produk...</div>
         </div>
+      ) : displayProducts.length === 0 ? (
+        <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
+          <div className="text-text-secondary font-body text-body">Pencarian tidak menemukan produk.</div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+          {displayProducts.map((product) => {
+            const catStyle = getCategoryStyles(product.category);
+            const stockStyle = getStockBlockStyles(product.warehouseStock);
+            
+            return (
+              <div key={product.id} className={`bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden border-[1.5px] ${catStyle.border}`}>
+                <div className="p-md flex-1 flex flex-col">
+                  {/* Header: Icon, Name, Category */}
+                  <div className="flex items-start justify-between mb-md gap-3">
+                    <div className="flex items-start gap-sm">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${catStyle.bg} ${catStyle.text}`}>
+                        {catStyle.icon}
+                      </div>
+                      <div>
+                        <h3 className="font-h3 text-h3 text-text-primary line-clamp-1">{product.name}</h3>
+                        <p className="font-caption text-caption text-text-secondary mt-0.5 line-clamp-2">
+                          {product.description || "Tidak ada deskripsi."}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wide uppercase shrink-0 ${catStyle.bg} ${catStyle.text}`}>
+                      {product.category}
+                    </span>
+                  </div>
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-md py-sm border-t border-border bg-surface-container-lowest gap-sm">
+                  {/* Prices */}
+                  <div className="grid grid-cols-2 gap-sm mb-md mt-auto">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-caption text-caption text-text-secondary">HPP</span>
+                      <span className="font-data-md text-data-md text-text-primary">{formatCurrency(product.costPrice)}</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-caption text-caption text-text-secondary">Harga Grosir</span>
+                      <span className="font-data-md text-data-md text-text-primary">{formatCurrency(product.wholesalePrice)}</span>
+                    </div>
+                  </div>
+
+                  {/* Stock Block */}
+                  <div className={`rounded-lg p-sm flex items-center justify-between border ${stockStyle}`}>
+                    <div className="flex items-center gap-xs font-body-sm text-body-sm font-medium">
+                      <Package className="w-4 h-4 shrink-0" />
+                      Stok di Gudang
+                    </div>
+                    <span className="font-data-md text-data-md font-bold">{product.warehouseStock}</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="p-sm bg-surface-bright border-t border-outline-variant flex gap-sm">
+                  <button 
+                    onClick={() => handleOpenEdit(product)} 
+                    className="flex-1 border border-outline-variant text-text-secondary hover:text-warning hover:bg-warning/10 hover:border-warning/50 font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
+                  >
+                    <Pencil className="w-4 h-4" /> Edit
+                  </button>
+                  <button 
+                    onClick={() => setProductToDelete({ id: product.id, name: product.name })} 
+                    className="flex-1 border border-outline-variant text-text-secondary hover:text-error hover:bg-error/10 hover:border-error/50 font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
+                  >
+                    <Trash2 className="w-4 h-4" /> Hapus
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Pagination (Diletakkan di luar Grid) */}
+      {!isLoading && displayProducts.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between px-md py-sm bg-surface rounded-xl border border-border shadow-sm gap-sm">
           <span className="font-caption text-caption text-text-secondary">
-            {displayProducts.length > 0 
-              ? `Menampilkan ${(currentPage - 1) * 5 + 1}-${(currentPage - 1) * 5 + displayProducts.length} produk`
-              : "Menampilkan 0 produk"
-            }
+            Menampilkan {(currentPage - 1) * 5 + 1}-{(currentPage - 1) * 5 + displayProducts.length} produk
           </span>
           <div className="flex gap-xs">
             <button 
@@ -317,7 +295,7 @@ export default function ProductListPage() {
             </button>
           </div>
         </div>
-      </div>
+      )}
 
       <ProductFormModal 
         isOpen={isModalOpen}
