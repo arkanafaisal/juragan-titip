@@ -13,6 +13,7 @@ export interface StoreFormData {
   ownerName: string
   phone: string
   address: string
+  activeItemCount: number | 0
   latitude: number
   longitude: number
   notes: string

@@ -69,7 +69,6 @@ export interface Visit {
   restockItems: RestockItem[]
   totalBilled: number
   amountPaid: number
-  receivable: number
   previousReceivable: number
   documentNumber: string
   createdAt: string
