@@ -42,16 +42,20 @@ export function ConfirmationModal({
   const isMobile = useMobile();
   const [inputValue, setInputValue] = useState("");
 
-  // Mengunci scroll layar & reset input saat modal terbuka
+  // Mengunci scroll layar & reset input saat modal terbuka, 
+  // SETERTA memblokir seluruh interaksi (klik/hover) pada background
   useEffect(() => {
     if (isOpen) {
       setInputValue("");
       document.body.style.overflow = "hidden";
+      document.body.style.pointerEvents = "none";
     } else {
       document.body.style.overflow = "unset";
+      document.body.style.pointerEvents = "auto";
     }
     return () => {
       document.body.style.overflow = "unset";
+      document.body.style.pointerEvents = "auto";
     };
   }, [isOpen]);
 
@@ -69,13 +73,19 @@ export function ConfirmationModal({
   };
 
   return createPortal(
-    <div className={cn(
-      "fixed right-0 z-[60] flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md",
-      // Batas presisi agar tidak menutupi komponen layout utama
-      "top-16",
-      isMobile ? "bottom-[72px] left-0" : isCollapsed ? "bottom-0 left-20" : "bottom-0 left-60"
-    )}>
-      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full sm:w-[400px] min-w-[300px] shrink-0 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-full">
+    <div 
+      className={cn(
+        "fixed right-0 z-[60] flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md",
+        // Batas presisi agar tidak menutupi komponen layout utama
+        "top-16",
+        isMobile ? "bottom-[72px] left-0" : isCollapsed ? "bottom-0 left-20" : "bottom-0 left-60"
+      )}
+      style={{ pointerEvents: 'auto' }} // Membuka kembali interaksi khusus untuk layer modal ini ke atas
+    >
+      {/* Invisible backdrop catch untuk onClose saat area luar form modal diklik */}
+      <div className="absolute inset-0" onClick={() => !isLoading && onClose()} />
+
+      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full sm:w-[400px] min-w-[300px] shrink-0 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-full relative z-10">
         
         <div className="p-lg overflow-y-auto custom-scrollbar">
           <div className={`flex items-center gap-sm mb-sm ${isDanger ? 'text-error' : 'text-primary'}`}>
