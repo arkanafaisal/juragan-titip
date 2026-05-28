@@ -1,6 +1,6 @@
 // frontend/src/services/api/stores.ts
 
-import type { Store, StoreFormData, ApiResponse } from "@/types"
+import type { Store, StoreFormData, ApiResponse, Visit } from "@/types"
 import { storageGetOrSeed, storageSet, storageGet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
 import { generateId } from "@/lib/utils"
@@ -107,5 +107,35 @@ export const storeApi = {
     storageSet(STORAGE_KEYS.STORES, stores);
     
     return { success: true, data: null as unknown as null };
+  },
+
+  getAnalysis: async (storeId: string): Promise<ApiResponse<{
+    storeName: string;
+    activeItems: { productName: string; remained: number }[];
+    visitHistory: Visit[];
+  }>> => {
+    const allVisits = storageGetOrSeed<Visit[]>(STORAGE_KEYS.VISITS, []);
+    const storeVisits = allVisits.filter(v => v.storeId === storeId);
+
+    let activeItems: { productName: string; remained: number }[] = [];
+    let storeName = "";
+    
+    if (storeVisits.length > 0) {
+      const lastVisit = storeVisits[storeVisits.length - 1]; // Ambil data terakhir (paling baru)
+      storeName = lastVisit.storeName;
+      activeItems = lastVisit.items.map(item => ({
+        productName: item.productName,
+        remained: item.remained
+      }));
+    }
+
+    return {
+      success: true,
+      data: {
+        storeName,
+        activeItems,
+        visitHistory: storeVisits
+      }
+    };
   },
 }

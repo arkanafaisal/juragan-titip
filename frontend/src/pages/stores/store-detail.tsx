@@ -19,7 +19,7 @@ import {
 import { MapPicker } from "@/components/features/map-picker";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { storeApi } from "@/services/api/stores";
-import type { Store } from "@/types";
+import type { Store, Visit } from "@/types";
 
 export default function StoreDetailPage() {
   const navigate = useNavigate();
@@ -27,6 +27,10 @@ export default function StoreDetailPage() {
   const [activeTab, setActiveTab] = useState("titipan");
 
   const [store, setStore] = useState<Store | null>(null);
+  const [analysis, setAnalysis] = useState<{
+    activeItems: { productName: string; remained: number }[];
+    visitHistory: Visit[];
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,15 +40,26 @@ export default function StoreDetailPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStore = async () => {
+    const fetchStoreData = async () => {
       if (!id) return;
       setIsLoading(true);
       try {
-        const response = await storeApi.getById(id);
-        if (response.success && response.data) {
-          setStore(response.data);
+        const [storeRes, analysisRes] = await Promise.all([
+          storeApi.getById(id),
+          storeApi.getAnalysis(id)
+        ]);
+
+        if (storeRes.success && storeRes.data) {
+          setStore(storeRes.data);
+          
+          if (analysisRes.success && analysisRes.data) {
+            setAnalysis({
+              activeItems: analysisRes.data.activeItems,
+              visitHistory: analysisRes.data.visitHistory
+            });
+          }
         } else {
-          setError(response.message || "Toko tidak ditemukan");
+          setError(storeRes.message || "Toko tidak ditemukan");
         }
       } catch (err) {
         setError("Gagal memuat data toko.");
@@ -53,7 +68,7 @@ export default function StoreDetailPage() {
       }
     };
 
-    fetchStore();
+    fetchStoreData();
   }, [id]);
 
   const handleDeleteConfirm = async (typedName?: string) => {
@@ -205,15 +220,53 @@ export default function StoreDetailPage() {
           <button onClick={() => setActiveTab("riwayat")} className={`px-md py-3 font-body text-body md:font-h3 md:text-h3 whitespace-nowrap transition-colors border-b-2 relative top-[1px] ${activeTab === "riwayat" ? "font-bold text-primary border-primary" : "text-text-secondary hover:text-text-primary border-transparent"}`}>Riwayat</button>
         </div>
         {activeTab === "titipan" && (
-          <div className="py-12 md:py-16 px-md flex flex-col items-center justify-center text-text-secondary min-h-[200px]">
-            <Package className="w-12 h-12 mb-sm text-outline-variant" />
-            <p className="font-body text-body text-center max-w-[300px]">Data barang titipan aktif pada toko ini akan ditampilkan di sini.</p>
+          <div className="p-md md:p-lg">
+            {analysis?.activeItems && analysis.activeItems.length > 0 ? (
+              <div className="space-y-sm">
+                {analysis.activeItems.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-sm md:p-md border border-outline-variant rounded-lg bg-surface-container-lowest">
+                    <span className="font-body text-body text-text-primary font-medium">{item.productName}</span>
+                    <span className="font-body-sm text-body-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">
+                      Sisa: {item.remained}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 md:py-16 flex flex-col items-center justify-center text-text-secondary h-full">
+                <Package className="w-12 h-12 mb-sm text-outline-variant" />
+                <p className="font-body text-body text-center max-w-[300px]">Belum ada data barang titipan aktif pada toko ini.</p>
+              </div>
+            )}
           </div>
         )}
         {activeTab === "riwayat" && (
-          <div className="py-12 md:py-16 px-md flex flex-col items-center justify-center text-text-secondary min-h-[200px]">
-            <History className="w-12 h-12 mb-sm text-outline-variant" />
-            <p className="font-body text-body text-center max-w-[300px]">Data riwayat kunjungan toko ini akan ditampilkan di sini.</p>
+          <div className="p-md md:p-lg min-h-[200px]">
+            {analysis?.visitHistory && analysis.visitHistory.length > 0 ? (
+              <div className="space-y-sm">
+                {analysis.visitHistory.map((visit) => (
+                  <div key={visit.id} className="flex justify-between items-center p-md border border-outline-variant rounded-lg bg-surface-container-lowest">
+                    <div className="flex flex-col gap-1">
+                      <span className="font-body text-body text-text-primary font-medium">
+                        {new Date(visit.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
+                      <span className="font-caption text-caption text-text-secondary">Dokumen: {visit.documentNumber}</span>
+                    </div>
+                    <div className="text-right flex flex-col gap-1">
+                      <span className="font-body text-body text-text-primary font-bold">
+                        Rp {visit.amountPaid.toLocaleString("id-ID")}
+                      </span>
+                      <span className="font-caption text-caption text-text-secondary">Pembayaran</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 md:py-16 flex flex-col items-center justify-center text-text-secondary h-full">
+                <History className="w-12 h-12 mb-sm text-outline-variant" />
+                <p className="font-body text-body text-center max-w-[300px]">Belum ada riwayat kunjungan pada toko ini.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
