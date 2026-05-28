@@ -1,4 +1,4 @@
-// frontend/src/pages/stores/store-form.tsx
+
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -33,7 +33,7 @@ export default function StoreFormPage() {
     notes: "",
   });
 
-  // Default coordinate (Gedung Sate, Bandung as default fallback)
+  
   const [location, setLocation] = useState({
     lat: -6.902481,
     lng: 107.61881,
@@ -110,7 +110,7 @@ export default function StoreFormPage() {
     setIsSubmitting(true);
     setError(null);
     
-    // --- Validasi ---
+    
     const errorMsg = validateStoreForm(formData);
     if (errorMsg) {
       setError(errorMsg);
@@ -118,7 +118,7 @@ export default function StoreFormPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    // ----------------
+    
 
     try {
       const payload = {
@@ -179,10 +179,10 @@ export default function StoreFormPage() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-lg items-start">
         
-        {/* KOLOM KIRI: Form Teks */}
+        
         <div className="lg:col-span-7 flex flex-col gap-lg">
           
-          {/* Card: Informasi Dasar */}
+          
           <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden">
             <div className="px-md py-sm border-b border-outline-variant bg-surface-container-low">
               <h3 className="font-h3 text-h3 font-semibold flex items-center gap-sm text-text-primary">
@@ -278,7 +278,7 @@ export default function StoreFormPage() {
             </div>
           </div>
 
-          {/* Card: Catatan Tambahan */}
+          
           <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden">
             <div className="px-md py-sm border-b border-outline-variant bg-surface-container-low">
               <h3 className="font-h3 text-h3 font-semibold flex items-center gap-sm text-text-primary">
@@ -304,11 +304,11 @@ export default function StoreFormPage() {
           </div>
         </div>
 
-        {/* KOLOM KANAN: Peta & Koordinat */}
+        
         <div className="lg:col-span-5 flex flex-col gap-lg">
           <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden flex flex-col h-full">
             
-            {/* Map Header */}
+            
             <div className="px-md py-sm border-b border-outline-variant bg-surface-container-low flex justify-between items-center shrink-0">
               <h3 className="font-h3 text-h3 font-semibold flex items-center gap-sm text-text-primary">
                 <MapPin className="w-5 h-5 text-primary" />
@@ -337,7 +337,7 @@ export default function StoreFormPage() {
               />
             </div>
 
-            {/* Coordinates Fields (Readonly from Map) */}
+            
             <div className="p-md bg-surface mt-auto shrink-0 border-t border-outline-variant">
               <div className="grid grid-cols-2 gap-md">
                 <div className="flex flex-col gap-xs">
@@ -369,7 +369,7 @@ export default function StoreFormPage() {
           </div>
         </div>
 
-        {/* BOTTOM ACTION BUTTONS */}
+        
         <div className="col-span-1 lg:col-span-12 flex justify-end gap-md pt-lg border-t border-outline-variant mt-sm">
           <button 
             type="button" 

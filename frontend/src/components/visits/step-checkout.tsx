@@ -40,7 +40,7 @@ export function StepCheckout({
     <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-lg pb-xl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
         
-        {/* PANEL TAGIHAN */}
+        
         <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col h-full">
           <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant">
             <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold flex items-center gap-xs text-text-primary">
@@ -90,7 +90,7 @@ export function StepCheckout({
           </div>
         </div>
 
-        {/* PANEL STOK AKTIF */}
+        
         <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col h-full">
           <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant">
             <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold flex items-center gap-xs text-text-primary">
@@ -141,7 +141,7 @@ export function StepCheckout({
         </div>
       </div>
 
-      {/* ACTION SUBMIT */}
+      
       <div className="flex flex-col sm:flex-row gap-sm sm:gap-md justify-between items-center pt-md">
         <button onClick={onPrev} className="w-full sm:w-auto text-text-secondary hover:text-text-primary px-md py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium transition-colors border border-outline-variant hover:bg-surface-container-low bg-surface text-center">
           Kembali Edit

@@ -16,7 +16,7 @@ export const VALIDATION_RULES = {
     PRICE_MAX: 100000,
   },
   PHONE: {
-    // Standar WA Indonesia: awalan +62, 62, atau 08
+    
     MIN_LENGTH: 10,
     MAX_LENGTH: 15,
     REGEX: /^(^\+62|62|^08)(8|9|1|2|3|5)[0-9]{6,11}$/, 

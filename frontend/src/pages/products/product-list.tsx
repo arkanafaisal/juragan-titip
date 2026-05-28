@@ -12,25 +12,25 @@ export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Modal State
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  // Filter & Search State
+  
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
   
-  // Pagination State
+  
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Delete State
+  
   const [productToDelete, setProductToDelete] = useState<{ id: number, name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  // Debounce effect
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchInput);
@@ -38,7 +38,7 @@ export default function ProductListPage() {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  // Reset page kembali ke 1 setiap kali ada filter yang berubah
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch, categoryFilter, stockFilter]);
@@ -64,7 +64,7 @@ export default function ProductListPage() {
 
   useEffect(() => {
     fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [debouncedSearch, categoryFilter, stockFilter, currentPage]);
 
   const handleOpenAdd = () => {
@@ -102,9 +102,9 @@ export default function ProductListPage() {
     }
   };
 
-  // Helper Pagination Logic (Sistem Trik 6 Item)
-  const displayProducts = products.slice(0, 6); // Hanya tampilkan max 5
-  const hasNextPage = products.length > 6;      // Jika API mengembalikan 6 item, berarti ada Next
+  
+  const displayProducts = products.slice(0, 6); 
+  const hasNextPage = products.length > 6;      
   const hasPrevPage = currentPage > 1;
 
   const formatCurrency = (value: number) => {
@@ -118,7 +118,7 @@ export default function ProductListPage() {
 
   const getStockBlockStyles = (stock: number) => {
     if (stock === 0) return "bg-error/10 text-error border-error/20";
-    if (stock <= 20) return "bg-warning/10 text-warning-dark border-warning/20"; // warning text
+    if (stock <= 20) return "bg-warning/10 text-warning-dark border-warning/20"; 
     return "bg-success/10 text-success border-success/20";
   };
 
@@ -189,7 +189,7 @@ export default function ProductListPage() {
         </div>
       </div>
 
-      {/* Grid Content Pengganti Tabel */}
+      
       {isLoading ? (
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
           <div className="animate-pulse text-text-secondary font-body text-body">Menyelaraskan data produk...</div>
@@ -207,7 +207,7 @@ export default function ProductListPage() {
             return (
               <div key={product.id} className={`bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden border-[1.5px] ${catStyle.border}`}>
                 <div className="p-md flex-1 flex flex-col">
-                  {/* Header: Icon, Name, Category */}
+                  
                   <div className="flex items-start justify-between mb-md gap-3">
                     <div className="flex items-start gap-sm">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${catStyle.bg} ${catStyle.text}`}>
@@ -225,7 +225,7 @@ export default function ProductListPage() {
                     </span>
                   </div>
 
-                  {/* Prices */}
+                  
                   <div className="grid grid-cols-2 gap-sm mb-md mt-auto">
                     <div className="flex flex-col gap-0.5">
                       <span className="font-caption text-caption text-text-secondary">HPP</span>
@@ -237,7 +237,7 @@ export default function ProductListPage() {
                     </div>
                   </div>
 
-                  {/* Stock Block */}
+                  
                   <div className={`rounded-lg p-sm flex items-center justify-between border ${stockStyle}`}>
                     <div className="flex items-center gap-xs font-body-sm text-body-sm font-medium">
                       <Package className="w-4 h-4 shrink-0" />
@@ -247,7 +247,7 @@ export default function ProductListPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
+                
                 <div className="p-sm bg-surface-bright border-t border-outline-variant flex gap-sm">
                   <button 
                     onClick={() => handleOpenEdit(product)} 
@@ -268,7 +268,7 @@ export default function ProductListPage() {
         </div>
       )}
 
-      {/* Pagination (Diletakkan di luar Grid) */}
+      
       {!isLoading && displayProducts.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-md py-sm bg-surface rounded-xl border border-border shadow-sm gap-sm">
           <span className="font-caption text-caption text-text-secondary">

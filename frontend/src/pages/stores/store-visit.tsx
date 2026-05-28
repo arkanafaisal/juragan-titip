@@ -35,7 +35,7 @@ export default function StoreVisitPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
-  // States
+  
   const [opnameItems, setOpnameItems] = useState<(OpnameItem & { initialStock: number })[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [restockItems, setRestockItems] = useState<(RestockItem & { _warehouseStock: number })[]>([]);
@@ -63,7 +63,7 @@ export default function StoreVisitPage() {
             .filter(item => item.remained > 0)
             .map(item => ({
                ...item,
-               initialStock: item.remained, // Snapshot dari visit terakhir
+               initialStock: item.remained, 
                sold: 0,
                returned: 0,
                remained: item.remained
@@ -126,10 +126,10 @@ export default function StoreVisitPage() {
     setRestockItems(prev => prev.filter(i => i.productId !== productId));
   };
 
-  // VALIDASI KUNJUNGAN KOSONG: Cegah next step jika tidak ada barang titipan lama DAN tidak ada barang baru yang direstock.
+  
   const isVisitEmpty = opnameItems.length === 0 && restockItems.filter(i => i.quantity > 0).length === 0;
 
-  // CHECKOUT CALCULATION - Tagihan dipisah per Laku & Restock (harga bisa beda)
+  
   const billingItems = useMemo(() => {
     const items: any[] = [];
     opnameItems.forEach(item => {
@@ -197,7 +197,7 @@ export default function StoreVisitPage() {
     if (!id || !store || isVisitEmpty) return;
     setIsSubmitting(true);
     try {
-      // 1. Kurangi stok gudang concurrently terlebih dahulu
+      
       await Promise.all(
         restockItems.map(async (item) => {
           if (item.quantity > 0) {
@@ -209,7 +209,7 @@ export default function StoreVisitPage() {
         })
       );
 
-      // 2. Merge Logic final items record
+      
       const mergedItemsMap = new Map<number, OpnameItem>();
 
       opnameItems.forEach(item => {
@@ -228,7 +228,7 @@ export default function StoreVisitPage() {
           const existing = mergedItemsMap.get(item.productId);
           if (existing) {
             existing.remained += item.quantity;
-            existing.wholesalePrice = item.wholesalePrice; // Overwrite harga terbaru jika direstock
+            existing.wholesalePrice = item.wholesalePrice; 
           } else {
             mergedItemsMap.set(item.productId, {
               productId: item.productId,
@@ -242,17 +242,17 @@ export default function StoreVisitPage() {
         }
       });
 
-      // Hapus yang remained == 0 sesuai aturan
+      
       const finalItems = Array.from(mergedItemsMap.values()).filter(item => item.remained > 0);
 
-      // 3. Create Visit Record
+      
       await visitApi.create({
         storeId: Number(id), storeName: store.name, items: finalItems,
         totalBilled, amountPaid: totalBilled, previousReceivable: store.totalReceivable || 0,
         documentNumber: `VST-${Date.now()}`, createdAt: new Date().toISOString()
       });
 
-      // 4. Update toko
+      
       const totalActive = displayStockItems.reduce((acc, i) => acc + i.total, 0);
       await storeApi.update(id, { activeItemCount: totalActive });
       navigate(`/stores/${id}`);
@@ -288,7 +288,7 @@ export default function StoreVisitPage() {
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
           <div className="min-w-0">
-            {/* Lebar teks judul kini dihardcode px per breakpoint agar tidak konflik dengan spasi default v4 */}
+            
             <h2 className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary truncate max-w-[140px] sm:max-w-[320px] md:max-w-[448px]">{store.name}</h2>
           </div>
         </div>

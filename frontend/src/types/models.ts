@@ -2,7 +2,7 @@ export interface User {
   id: number
   name: string
   email: string
-  phone?: string  // <-- Tambahkan '?' di sini
+  phone?: string  
   createdAt: string
 }
 

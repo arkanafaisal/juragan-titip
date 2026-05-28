@@ -22,7 +22,6 @@ import ItemTrackingPage from "@/pages/reports/item-tracking"
 import FinancialReportPage from "@/pages/reports/financial-report"
 import ProfilePage from "@/pages/settings/profile"
 import PreferencesPage from "@/pages/settings/preferences"
-
 export const router = createBrowserRouter([
   {
     path: "/login",

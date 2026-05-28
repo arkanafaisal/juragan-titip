@@ -34,9 +34,9 @@ export default function RegisterForm() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null); // Reset error saat submit ulang
+        setError(null); 
 
-        // Validasi input
+        
         const errorMsg = validateRegisterForm(form);
         if (errorMsg) {
             setError(errorMsg);
@@ -48,21 +48,21 @@ export default function RegisterForm() {
         if (result.success) {
             navigate("/dashboard");
         } else {
-            setError(result.message || "Gagal mendaftar"); // Ganti alert dengan setError
+            setError(result.message || "Gagal mendaftar"); 
         }
         setLoading(false);
     };
 
     return (
         <div className="bg-background min-h-screen flex items-center justify-center p-md text-on-surface antialiased py-8">
-            {/* Register Canvas */}
+            
             <main className="w-full max-w-[400px]">
-                {/* Glassmorphism Card */}
+                
                 <div className="bg-surface rounded-xl shadow-sm border border-outline-variant p-5 flex flex-col gap-lg relative overflow-hidden">
-                    {/* Subtle Top Accent Line */}
+                    
                     <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
 
-                    {/* Branding Header */}
+                    
                     <div className="flex flex-col items-center text-center mt-sm">
                         <div className="w-12 h-12 rounded-lg bg-surface-container-high text-primary-container flex items-center justify-center mb-md shadow-sm">
                             <Package size={28} fill="currentColor" strokeWidth={1.5} />
@@ -77,9 +77,9 @@ export default function RegisterForm() {
                         </div>
                     )}
 
-                    {/* Form */}
+                    
                     <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
-                        {/* Nama Input */}
+                        
                         <div className="flex flex-col gap-xs">
                             <label className="font-data-md text-data-md text-text-primary" htmlFor="name">Nama Lengkap</label>
                             <div className="relative flex items-center">
@@ -91,7 +91,7 @@ export default function RegisterForm() {
                             </div>
                         </div>
 
-                        {/* Email Input */}
+                        
                         <div className="flex flex-col gap-xs">
                             <label className="font-data-md text-data-md text-text-primary" htmlFor="email">Email</label>
                             <div className="relative flex items-center">
@@ -103,7 +103,7 @@ export default function RegisterForm() {
                             </div>
                         </div>
 
-                        {/* Password Input */}
+                        
                         <div className="flex flex-col gap-xs">
                             <label className="font-data-md text-data-md text-text-primary" htmlFor="password">Password</label>
                             <div className="relative flex items-center">
@@ -120,7 +120,7 @@ export default function RegisterForm() {
                             </div>
                         </div>
 
-                        {/* Confirm Password Input */}
+                        
                         <div className="flex flex-col gap-xs">
                             <label className="font-data-md text-data-md text-text-primary" htmlFor="confirm-password">Konfirmasi Password</label>
                             <div className="relative flex items-center">
@@ -137,7 +137,7 @@ export default function RegisterForm() {
                             </div>
                         </div>
 
-                        {/* Primary Action */}
+                        
                         <button
                             className="mt-sm w-full py-2.5 bg-primary-container text-on-primary-container font-h3 text-h3 rounded-lg shadow-sm hover:opacity-90 active:scale-[0.97] transition-all duration-100 flex items-center justify-center gap-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-container"
                             type="submit" disabled={loading}>
@@ -146,7 +146,7 @@ export default function RegisterForm() {
                         </button>
                     </form>
 
-                    {/* Footer Link */}
+                    
                     <div className="text-center mt-xs pt-md border-t border-outline-variant border-opacity-50">
                         <p className="font-body-sm text-body-sm text-text-secondary">
                             Sudah punya akun?{" "}

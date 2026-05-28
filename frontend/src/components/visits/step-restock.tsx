@@ -30,9 +30,9 @@ export function StepRestock({
 
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-md">
-      {/* Card Gabungan Search & Table */}
+      
       <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
-        {/* Header / Search Area */}
+        
         <div className="p-md border-b border-outline-variant bg-surface-container-low">
           <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-primary mb-md">Cari atau pilih produk dari gudang utama yang akan dititipkan hari ini.</h3>
           
@@ -84,7 +84,7 @@ export function StepRestock({
             )}
           </div>
 
-          {/* Suggstions Pills */}
+          
           {suggestedProducts.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 mt-md">
               <span className="text-text-secondary font-caption text-caption">Saran produk:</span>
@@ -101,7 +101,7 @@ export function StepRestock({
           )}
         </div>
 
-        {/* Table Area */}
+        
         {restockItems.length === 0 ? (
           <div className="py-xl flex flex-col items-center justify-center bg-surface-bright text-text-secondary">
             <Package className="w-10 h-10 sm:w-12 sm:h-12 mb-sm text-outline-variant" />

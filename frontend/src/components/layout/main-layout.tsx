@@ -22,13 +22,13 @@ export function MainLayout() {
           isMobile
             ? "pb-safe"
             : isCollapsed
-              ? "pl-20"  /* Sidebar tertutup (80px) */
-              : "pl-60"  /* Sidebar terbuka (240px) */
+              ? "pl-20"  
+              : "pl-60"  
         )}
       >
         <PageHeader />
         
-        {/* Container Halaman */}
+        
         <div className="flex-1 overflow-y-auto p-md md:p-lg pb-24 md:pb-lg animate-fade-in">
             <Outlet />
         </div>

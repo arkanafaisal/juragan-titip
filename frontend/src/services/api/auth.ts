@@ -5,17 +5,17 @@ import { db, type DbUser } from "@/lib/db"
 
 export const authApi = {
   login: async (data: LoginFormData): Promise<ApiResponse<AuthResponse | null>> => {
-    // Pastikan email menjadi lowercase untuk mencegah case-sensitivity duplicate
+    
     const emailLower = data.email.toLowerCase();
     
-    // Cari user menggunakan IndexedDB (Dexie) berdasarkan email
+    
     const user = await db.users.where('email').equals(emailLower).first();
     
     if (user && user.password === data.password) {
       const { password: _, ...userData } = user
       const token = `mock-jwt-${Date.now()}`
       
-      // Simpan session (State kecil & sinkron) ke LocalStorage
+      
       storageSet(STORAGE_KEYS.AUTH_TOKEN, token)
       storageSet(STORAGE_KEYS.AUTH_USER, userData)
       
@@ -36,13 +36,13 @@ export const authApi = {
     }
 
     try {
-      // Insert user ke IndexedDB, Dexie akan otomatis membuatkan 'id' auto-increment
+      
       const id = await db.users.add(newUser as DbUser);
       
       const { password: _, ...userData } = { ...newUser, id } as DbUser;
       const token = `mock-jwt-${Date.now()}`
       
-      // Simpan session ke LocalStorage
+      
       storageSet(STORAGE_KEYS.AUTH_TOKEN, token)
       storageSet(STORAGE_KEYS.AUTH_USER, userData)
 

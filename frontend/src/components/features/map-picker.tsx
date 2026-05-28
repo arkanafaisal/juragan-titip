@@ -9,12 +9,9 @@ interface MapPickerProps {
   onChange?: (lat: number, lng: number) => void;
   readonly?: boolean;
 }
-
-// Sub-komponen untuk mendengarkan event drag/pan peta
 function MapEvents({ onChange, readonly }: { onChange?: (lat: number, lng: number) => void, readonly: boolean }) {
   const map = useMapEvents({
     moveend: () => {
-      // Hanya mengembalikan koordinat/mendeteksi pergeseran jika BUKAN mode readonly
       if (!readonly && onChange) {
         const center = map.getCenter();
         onChange(center.lat, center.lng);
@@ -23,8 +20,6 @@ function MapEvents({ onChange, readonly }: { onChange?: (lat: number, lng: numbe
   });
   return null;
 }
-
-// Ikon kustom menggunakan L.divIcon agar visualnya 100% identik dengan versi UI murni kita.
 const customViewIcon = L.divIcon({
   className: "custom-leaflet-marker",
   html: `
@@ -36,18 +31,17 @@ const customViewIcon = L.divIcon({
     </div>
   `,
   iconSize: [40, 52],
-  iconAnchor: [20, 52], // Titik tumpu persis di ujung bawah dot kecil
+  iconAnchor: [20, 52], 
 });
 
 export function MapPicker({ position, onChange, readonly = false }: MapPickerProps) {
   const [map, setMap] = useState<LeafletMap | null>(null);
 
-  // Jika di mode Pick dan ada perubahan koordinat dari luar (misal Deteksi GPS), pindahkan peta.
   useEffect(() => {
     if (map && !readonly) {
       const currentCenter = map.getCenter();
       const distance = currentCenter.distanceTo([position.lat, position.lng]);
-      if (distance > 10) { // Batas threshold toleransi pixel Leaflet
+      if (distance > 10) { 
         map.flyTo([position.lat, position.lng], map.getZoom());
       }
     }
@@ -58,8 +52,8 @@ export function MapPicker({ position, onChange, readonly = false }: MapPickerPro
       <MapContainer
         center={[position.lat, position.lng]}
         zoom={16}
-        zoomControl={true} // Peta sekarang selalu bisa dizoom
-        dragging={true} // Peta sekarang selalu bisa digeser
+        zoomControl={true} 
+        dragging={true} 
         scrollWheelZoom={true}
         doubleClickZoom={true}
         className="w-full h-full absolute inset-0 z-0"
@@ -72,13 +66,11 @@ export function MapPicker({ position, onChange, readonly = false }: MapPickerPro
         
         <MapEvents onChange={onChange} readonly={readonly} />
 
-        {/* MODE VIEW ONLY (Readonly): Menggunakan Marker titik paten */}
         {readonly && (
           <Marker position={[position.lat, position.lng]} icon={customViewIcon} />
         )}
       </MapContainer>
-
-      {/* MODE PICK (Bukan Readonly): Crosshair (Target) absolute mengambang di layar */}
+      
       {!readonly && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center drop-shadow-md pointer-events-none z-10 transition-transform">
           <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-on-primary shadow-lg border-2 border-surface">
@@ -87,8 +79,6 @@ export function MapPicker({ position, onChange, readonly = false }: MapPickerPro
           <div className="w-2 h-2 bg-primary rounded-full mt-1"></div>
         </div>
       )}
-
-      {/* Hint Overlay (Hanya muncul jika Pick Mode) */}
       {!readonly && (
         <div className="absolute bottom-2 left-2 right-2 bg-surface/90 backdrop-blur-sm rounded px-3 py-2 border border-outline-variant shadow-sm flex items-center gap-2 z-10">
           <Info className="w-4 h-4 text-text-secondary shrink-0" />

@@ -34,7 +34,7 @@ export default function StoreDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Delete States
+  
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -148,7 +148,7 @@ export default function StoreDetailPage() {
                   <h1 className="font-h2 text-h2 md:font-h1 md:text-h1 text-text-primary tracking-tight">{store.name}</h1>
                 </div>
                 
-                {/* ACTION BUTTONS */}
+                
                 <div className="flex items-center gap-xs md:gap-sm">
                   <button 
                     onClick={() => setIsDeleteModalOpen(true)}

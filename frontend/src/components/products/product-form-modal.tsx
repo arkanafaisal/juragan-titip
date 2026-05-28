@@ -67,7 +67,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
     setIsSaving(true);
     setError(null);
 
-    // --- Validasi ---
+    
     const errorMsg = validateProductForm(formData);
     if (errorMsg) {
       setError(errorMsg);
@@ -76,7 +76,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
       if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    // ----------------
+    
 
     try {
       if (product) {
@@ -95,16 +95,16 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
 
   return createPortal(
     <div className={cn(
-      // Hapus inset-0, biarkan fixed dan right-0 sebagai tumpuan kanan
+      
       "fixed right-0 z-50 flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md transition-all font-body text-body text-on-surface antialiased",
       
-      // 1. Batas Atas: Hindari Header (h-16 / 64px)
+      
       "top-16",
       
-      // 2. Batas Bawah: Hindari Bottom Bar di Mobile (~72px), full di PC (0)
+      
       isMobile ? "bottom-[72px]" : "bottom-0",
       
-      // 3. Batas Kiri: Hindari Sidebar di PC, full di Mobile
+      
       isMobile 
         ? "left-0" 
         : isCollapsed 

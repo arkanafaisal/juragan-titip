@@ -38,7 +38,7 @@ export const visitApi = {
   create: async (data: Omit<Visit, "id">): Promise<ApiResponse<Visit | null>> => {
     const newVisit: Omit<DbVisit, 'id'> = {
       ...data,
-      // pastikan storeId selalu berbentuk number jika disupply string
+      
       storeId: Number(data.storeId),
       createdAt: new Date().toISOString() 
     }

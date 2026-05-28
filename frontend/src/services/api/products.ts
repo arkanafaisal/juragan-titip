@@ -1,4 +1,4 @@
-// frontend/src/services/api/products.ts
+
 
 import type { Product, ProductFormData, ApiResponse } from "@/types"
 import { db, type DbProduct } from "@/lib/db"
@@ -17,7 +17,7 @@ export const productApi = {
     if (params) {
       if (params.search) {
         const query = params.search.toLowerCase();
-        // Pencarian string inklusif menggunakan filter di memori Dexie (lebih efisien daripada ambil ke RAM app)
+        
         collection = collection.filter(p => p.normalizedName.includes(query));
       }
       
@@ -37,12 +37,12 @@ export const productApi = {
       }
     }
 
-    // Pagination
+    
     const page = params?.page || 1;
     const limit = 6;
     const offset = (page - 1) * limit;
 
-    // offset & limit
+    
     const products = await collection.offset(offset).limit(limit + 1).toArray();
 
     return { success: true, data: products };

@@ -16,7 +16,7 @@ interface ConfirmationModalProps {
   isDanger?: boolean;
   isLoading?: boolean;
   
-  // Opsi Mode Verifikasi Teks (Seperti ketik nama toko untuk hapus)
+  
   verificationText?: string; 
   verificationLabel?: React.ReactNode;
   errorMessage?: string | null;
@@ -42,8 +42,8 @@ export function ConfirmationModal({
   const isMobile = useMobile();
   const [inputValue, setInputValue] = useState("");
 
-  // Mengunci scroll layar & reset input saat modal terbuka, 
-  // SETERTA memblokir seluruh interaksi (klik/hover) pada background
+  
+  
   useEffect(() => {
     if (isOpen) {
       setInputValue("");
@@ -76,13 +76,13 @@ export function ConfirmationModal({
     <div 
       className={cn(
         "fixed right-0 z-[60] flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md",
-        // Batas presisi agar tidak menutupi komponen layout utama
+        
         "top-16",
         isMobile ? "bottom-[72px] left-0" : isCollapsed ? "bottom-0 left-20" : "bottom-0 left-60"
       )}
-      style={{ pointerEvents: 'auto' }} // Membuka kembali interaksi khusus untuk layer modal ini ke atas
+      style={{ pointerEvents: 'auto' }} 
     >
-      {/* Invisible backdrop catch untuk onClose saat area luar form modal diklik */}
+      
       <div className="absolute inset-0" onClick={() => !isLoading && onClose()} />
 
       <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full sm:w-[400px] min-w-[300px] shrink-0 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-full relative z-10">
@@ -97,7 +97,7 @@ export function ConfirmationModal({
             {description}
           </p>
           
-          {/* Blok Verifikasi Teks (Opsional) */}
+          
           {verificationText && (
             <div className={`mt-md p-md rounded-lg border ${isDanger ? 'bg-error/5 border-error/20' : 'bg-primary/5 border-primary/20'}`}>
               <label className="font-caption text-caption text-text-secondary block mb-xs">

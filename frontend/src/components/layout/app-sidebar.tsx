@@ -28,7 +28,7 @@ export function AppSidebar() {
 
   const isActive = (path: string) => location.pathname.startsWith(path);
   
-  // Deteksi URL yang sedang aktif adalah form yang butuh konfirmasi
+  
   const isFormRoute = /^\/stores\/(new|[^/]+\/edit|[^/]+\/visit)$/.test(location.pathname);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function AppSidebar() {
           isCollapsed ? "w-20" : "w-60"
         )}
       >
-        {/* Bagian Logo: transition-none agar perataan teks langsung pindah seketika */}
+        
         <div className={cn("flex items-center px-md mb-lg transition-none", isCollapsed ? "justify-center" : "gap-sm justify-start")}>
           <div className="w-8 h-8 rounded-md bg-primary-container flex-shrink-0 flex items-center justify-center text-on-primary-container font-bold">
             <Box className="w-5 h-5" />
@@ -79,7 +79,7 @@ export function AppSidebar() {
           </div>
         </div>
 
-        {/* Navigasi Utama */}
+        
         <div className={cn("flex-1 flex flex-col gap-xs px-sm transition-none", isCollapsed ? "items-center" : "gap-sm items-start")}>
           <Link
             to="/dashboard"
@@ -155,7 +155,7 @@ export function AppSidebar() {
           </Link>
         </div>
 
-        {/* Bagian Bawah (Pengaturan & Profil) */}
+        
         <div className="border-t border-outline-variant pt-sm px-sm flex flex-col gap-xs">
           <Link
             to="/settings"
@@ -179,7 +179,7 @@ export function AppSidebar() {
               <div className="font-caption text-caption text-on-surface-variant truncate w-[130px]">{user?.email}</div>
             </div>
 
-            {/* LAYER DROPDOWN MELAYANG */}
+            
             {isProfileOpen && (
               <div 
                 onClick={(e) => e.stopPropagation()} 

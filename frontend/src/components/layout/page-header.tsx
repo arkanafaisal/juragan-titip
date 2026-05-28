@@ -13,11 +13,11 @@ export function PageHeader() {
   const { toggle } = useSidebar();
   const { user, logout } = useAuth();
   
-  // State & Ref untuk Dropdown Profil
+  
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Handle klik di luar untuk menutup dropdown
+  
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -28,7 +28,7 @@ export function PageHeader() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Fungsi Parser Dinamis URL
+  
   const getDynamicTitle = (pathname: string) => {
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 0) return "Dashboard";
@@ -47,7 +47,7 @@ export function PageHeader() {
 
     const subject = sectionMap[section] || section;
 
-    // Overrides spesifik halaman yang unik
+    
     if (section === "dashboard") return "Dashboard";
     if (section === "finance") {
       if (actionOrId === "receivables") return "Daftar Piutang";
@@ -68,7 +68,7 @@ export function PageHeader() {
       return "Pengaturan";
     }
 
-    // Pola CRUD umum (Daftar, Tambah, Detail, Edit)
+    
     if (!actionOrId) return `Daftar ${subject}`;
     if (actionOrId === "new") return `Tambah ${subject}`;
     if (!subAction) return `Detail ${subject}`;
@@ -79,13 +79,13 @@ export function PageHeader() {
   };
 
   const dynamicTitle = getDynamicTitle(location.pathname);
-  // Mengecilkan ukuran font untuk judul yang panjang di perangkat mobile
+  
   const isLongTitle = dynamicTitle.length > 15;
 
   return (
     <header className="bg-surface-container-lowest border-b border-outline-variant shadow-sm flex justify-between items-center w-full px-md h-16 shrink-0 z-30 sticky top-0">
       
-      {/* Wrapper min-w-0 penting agar teks bisa di-truncate jika mentok */}
+      
       <div className="flex items-center gap-sm min-w-0 pr-2">
         <button 
           onClick={toggle}
@@ -110,7 +110,7 @@ export function PageHeader() {
           <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
         </button>
         
-        {/* WRAPPER RELATIVE UNTUK USER ICON & DROPDOWN */}
+        
         <div className="md:hidden relative ml-1" ref={dropdownRef}>
           <button 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -119,7 +119,7 @@ export function PageHeader() {
             <User className="w-4 h-4" />
           </button>
 
-          {/* LAYER DROPDOWN MELAYANG */}
+          
           {isProfileOpen && (
             <div className="absolute top-[calc(100%+12px)] right-0 flex flex-col w-[240px] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg z-50 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="px-md py-sm border-b border-outline-variant flex flex-col">

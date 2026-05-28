@@ -1,4 +1,4 @@
-// frontend/src/services/api/stores.ts
+
 
 import type { Store, StoreFormData, ApiResponse, Visit } from "@/types"
 import { db, type DbStore } from "@/lib/db"
@@ -32,7 +32,7 @@ export const storeApi = {
       }
     }
 
-    // Proses Pagination (Limit 6, ambil 7 item untuk cek halaman selanjutnya)
+    
     const page = params?.page || 1;
     const limit = 6;
     const offset = (page - 1) * limit;
@@ -51,14 +51,14 @@ export const storeApi = {
     const store = await db.stores.get(numericId);
     if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
 
-    // Tarik Visit menggunakan API Visits agar lebih rapi & terpusat
+    
     const visitRes = await visitApi.getByStore(numericId);
     const storeVisits = visitRes.success && visitRes.data ? visitRes.data : [];
 
     let activeItems: { productName: string; remained: number }[] = [];
     
     if (storeVisits.length > 0) {
-      const lastVisit = storeVisits[storeVisits.length - 1]; // Ambil data terakhir (paling baru)
+      const lastVisit = storeVisits[storeVisits.length - 1]; 
       activeItems = lastVisit.items.map(item => ({
         productName: item.productName,
         remained: item.remained

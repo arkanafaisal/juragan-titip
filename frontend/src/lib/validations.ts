@@ -17,7 +17,7 @@ export const validateWhatsApp = (
   phone: string, 
   rules: { MIN_LENGTH: number; MAX_LENGTH: number; REGEX: RegExp }
 ): boolean => {
-  const cleanPhone = phone.replace(/[^0-9+]/g, ""); // Hanya sisakan angka dan plus
+  const cleanPhone = phone.replace(/[^0-9+]/g, ""); 
   if (cleanPhone.length < rules.MIN_LENGTH || cleanPhone.length > rules.MAX_LENGTH) {
     return false;
   }
@@ -34,7 +34,7 @@ export const validateRequired = (value: any): boolean => {
   return true;
 };
 
-// --- Spesifik per Form ---
+
 
 export const validateLoginForm = (data: any): string | null => {
   if (!validateRequired(data.email)) return "Email tidak boleh kosong";

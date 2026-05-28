@@ -1,7 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { User, Product, Store, Visit } from '@/types';
 
-// Tabel khusus yang menyimpan data user dan password-nya
+
 export type DbUser = User & { password: string };
 export type DbProduct = Product;
 export type DbStore = Store;
@@ -14,12 +14,12 @@ const db = new Dexie('JuraganTitipDB') as Dexie & {
   visits: EntityTable<DbVisit, 'id'>;
 };
 
-// Skema versi pertama
+
 db.version(1).stores({
-  users: 'id, email' // id = primary key, email = index biasa
+  users: 'id, email' 
 });
 
-// Skema versi 6: Menambahkan tabel visits dengan index pencarian storeId
+
 db.version(6).stores({
   users: '++id, &email',
   products: '++id, &normalizedName, category',
