@@ -9,20 +9,32 @@ interface BillingItem {
   price: number;
 }
 
+interface DisplayStockItem {
+  productId: string;
+  productName: string;
+  initialStock: number;
+  sold: number;
+  returned: number;
+  remained: number;
+  restock: number;
+  total: number;
+}
+
 interface StepCheckoutProps {
   billingItems: BillingItem[];
-  activeStockItems: { productId: string; productName: string; total: number; }[];
+  displayStockItems: DisplayStockItem[];
   subtotal: number;
   totalBilled: number;
   isSubmitting: boolean;
+  isNextDisabled: boolean;
   onPrev: () => void;
   onFinish: () => void;
   formatCurrency: (value: number) => string;
 }
 
 export function StepCheckout({ 
-  billingItems, activeStockItems, subtotal, 
-  totalBilled, isSubmitting, onPrev, onFinish, formatCurrency 
+  billingItems, displayStockItems, subtotal, 
+  totalBilled, isSubmitting, isNextDisabled, onPrev, onFinish, formatCurrency 
 }: StepCheckoutProps) {
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-lg pb-xl">
@@ -82,29 +94,47 @@ export function StepCheckout({
         <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col h-full">
           <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant">
             <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold flex items-center gap-xs text-text-primary">
-              <Package className="w-4 h-4 sm:w-5 sm:h-5 text-success"/> STOK AKTIF DI TOKO (Setelah Visit)
+              <Package className="w-4 h-4 sm:w-5 sm:h-5 text-success"/> BARANG DI TOKO (Setelah Visit)
             </h3>
           </div>
           <div className="p-md flex-1 flex flex-col">
             <div className="space-y-sm flex-1">
-              {activeStockItems.length === 0 ? (
-                 <div className="text-center text-text-secondary font-body-sm text-body-sm py-lg">Tidak ada stok aktif tertinggal di toko.</div>
+              {displayStockItems.length === 0 ? (
+                 <div className="text-center text-text-secondary font-body-sm text-body-sm py-lg">Tidak ada stok tertinggal di toko.</div>
               ) : (
-                activeStockItems.map(item => (
-                  <div key={item.productId} className="flex justify-between items-center border-b border-dashed border-outline-variant pb-sm last:border-0 last:pb-0">
-                    <p className="font-body text-body font-medium text-text-primary">{item.productName}</p>
-                    <p className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg font-bold text-success">
-                      {item.total}
-                    </p>
-                  </div>
-                ))
+                displayStockItems.map(item => {
+                  const mathParts = [];
+                  if (item.initialStock > 0) mathParts.push(`lama ${item.initialStock}`);
+                  if (item.returned > 0) mathParts.push(`- retur ${item.returned}`);
+                  if (item.sold > 0) mathParts.push(`- laku ${item.sold}`);
+                  if (item.restock > 0) mathParts.push(`+ restock ${item.restock}`);
+                  const mathExplanation = mathParts.join(' ');
+
+                  return (
+                    <div key={item.productId} className="flex justify-between items-center border-b border-dashed border-outline-variant pb-sm last:border-0 last:pb-0">
+                      <div>
+                        <p className={`font-body text-body font-medium ${item.total > 0 ? 'text-text-primary' : 'text-text-secondary line-through opacity-70'}`}>
+                          {item.productName}
+                        </p>
+                        {mathExplanation && (
+                          <p className="font-caption text-caption text-text-secondary mt-0.5">
+                            {mathExplanation}
+                          </p>
+                        )}
+                      </div>
+                      <p className={`font-data-md sm:font-data-lg text-data-md sm:text-data-lg font-bold ${item.total > 0 ? 'text-success' : 'text-text-muted'}`}>
+                        {item.total}
+                      </p>
+                    </div>
+                  );
+                })
               )}
             </div>
             
             <div className="mt-lg border-t-[1.5px] border-outline-variant pt-md flex justify-between items-center bg-surface-bright -mx-md -mb-md p-md">
               <span className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-secondary">Total Seluruh Item Aktif:</span>
               <span className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary bg-surface-container px-3 py-1 rounded-md">
-                 {activeStockItems.reduce((acc, i) => acc + i.total, 0)}
+                 {displayStockItems.reduce((acc, i) => acc + i.total, 0)}
               </span>
             </div>
           </div>
@@ -116,14 +146,21 @@ export function StepCheckout({
         <button onClick={onPrev} className="w-full sm:w-auto text-text-secondary hover:text-text-primary px-md py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium transition-colors border border-outline-variant hover:bg-surface-container-low bg-surface text-center">
           Kembali Edit
         </button>
-        <button 
-          onClick={onFinish} 
-          disabled={isSubmitting}
-          className="w-full sm:flex-1 max-w-[400px] bg-primary text-on-primary font-body sm:font-h3 text-body sm:text-h3 py-sm sm:py-md rounded-xl font-bold flex items-center justify-center gap-sm hover:bg-primary/90 transition-all shadow-md active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
-        >
-          {isSubmitting ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : <Save className="w-4 h-4 sm:w-5 sm:h-5" />}
-          {isSubmitting ? "Menyimpan Data..." : "SELESAIKAN KUNJUNGAN"}
-        </button>
+        <div className="w-full sm:flex-1 max-w-[400px] flex flex-col items-center sm:items-end gap-1">
+          {isNextDisabled && (
+            <span className="text-error font-caption text-caption text-center sm:text-right">
+              Tidak dapat diselesaikan (kunjungan masih kosong)
+            </span>
+          )}
+          <button 
+            onClick={onFinish} 
+            disabled={isSubmitting || isNextDisabled}
+            className="w-full bg-primary text-on-primary font-body sm:font-h3 text-body sm:text-h3 py-sm sm:py-md rounded-xl font-bold flex items-center justify-center gap-sm hover:bg-primary/90 transition-all shadow-md active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
+          >
+            {isSubmitting ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : <Save className="w-4 h-4 sm:w-5 sm:h-5" />}
+            {isSubmitting ? "Menyimpan Data..." : "SELESAIKAN KUNJUNGAN"}
+          </button>
+        </div>
       </div>
     </div>
   );

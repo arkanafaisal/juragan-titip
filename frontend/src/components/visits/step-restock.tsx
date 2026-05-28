@@ -7,6 +7,7 @@ interface StepRestockProps {
   allProducts: Product[];
   restockItems: (RestockItem & { _warehouseStock: number })[];
   suggestedProducts: Product[];
+  isNextDisabled: boolean;
   handleAddRestock: (product: Product) => void;
   handleRestockQuantity: (productId: string, qty: number) => void;
   handleRemoveRestock: (productId: string) => void;
@@ -16,7 +17,7 @@ interface StepRestockProps {
 }
 
 export function StepRestock({ 
-  allProducts, restockItems, suggestedProducts, handleAddRestock, 
+  allProducts, restockItems, suggestedProducts, isNextDisabled, handleAddRestock, 
   handleRestockQuantity, handleRemoveRestock, 
   onNext, onPrev, formatCurrency 
 }: StepRestockProps) {
@@ -87,7 +88,7 @@ export function StepRestock({
           {/* Suggstions Pills */}
           {suggestedProducts.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 mt-md">
-              <span className="text-text-secondary font-caption text-caption">Saran Titipan:</span>
+              <span className="text-text-secondary font-caption text-caption">Saran produk:</span>
               {suggestedProducts.map(p => (
                 <button 
                   key={p.id} 
@@ -160,9 +161,18 @@ export function StepRestock({
         <button onClick={onPrev} className="text-text-secondary hover:text-text-primary px-md py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium transition-colors border border-outline-variant hover:bg-surface-container-low bg-surface">
           Kembali
         </button>
-        <button onClick={onNext} className="bg-primary text-on-primary px-lg py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium flex items-center gap-xs hover:bg-primary/90 transition-colors shadow-sm">
-          Lanjut Checkout <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
+        <div className="flex flex-col items-end gap-1">
+          {isNextDisabled && (
+             <span className="text-error font-caption text-caption">Tidak dapat lanjut (kunjungan masih kosong)</span>
+          )}
+          <button 
+            onClick={onNext} 
+            disabled={isNextDisabled}
+            className="bg-primary text-on-primary px-lg py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium flex items-center gap-xs hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50"
+          >
+            Lanjut Checkout <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
+        </div>
       </div>
     </div>
   );

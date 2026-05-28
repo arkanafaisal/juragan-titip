@@ -102,7 +102,6 @@ export default function StoreVisitPage() {
   const suggestedProducts = useMemo(() => {
     const opnameIds = opnameItems.map(i => i.productId);
     const restockedIds = restockItems.map(i => i.productId);
-    // Munculkan produk dari riwayat yang BELUM ada di keranjang restock
     return allProducts.filter(p => opnameIds.includes(p.id) && !restockedIds.includes(p.id));
   }, [allProducts, opnameItems, restockItems]);
 
@@ -129,6 +128,9 @@ export default function StoreVisitPage() {
     setRestockItems(prev => prev.filter(i => i.productId !== productId));
   };
 
+  // VALIDASI KUNJUNGAN KOSONG: Cegah next step jika tidak ada barang titipan lama DAN tidak ada barang baru yang direstock.
+  const isVisitEmpty = opnameItems.length === 0 && restockItems.filter(i => i.quantity > 0).length === 0;
+
   // CHECKOUT CALCULATION - Tagihan dipisah per Laku & Restock (harga bisa beda)
   const billingItems = useMemo(() => {
     const items: any[] = [];
@@ -145,18 +147,44 @@ export default function StoreVisitPage() {
     return items;
   }, [opnameItems, restockItems]);
 
-  const activeStockItems = useMemo(() => {
-    const map = new Map<string, { productId: string; productName: string; total: number; }>();
+  // Merged Stock untuk tampilan Step 3, termasuk yang totalnya jadi 0
+  const displayStockItems = useMemo(() => {
+    const map = new Map<string, { productId: string; productName: string; initialStock: number; sold: number; returned: number; remained: number; restock: number; total: number; }>();
+    
     opnameItems.forEach(item => {
-      if (item.remained > 0) map.set(item.productId, { productId: item.productId, productName: item.productName, total: item.remained });
+      map.set(item.productId, { 
+        productId: item.productId, 
+        productName: item.productName, 
+        initialStock: item.initialStock,
+        sold: item.sold,
+        returned: item.returned,
+        remained: item.remained,
+        restock: 0,
+        total: item.remained
+      });
     });
+    
     restockItems.forEach(item => {
       if (item.quantity > 0) {
         const existing = map.get(item.productId);
-        if (existing) existing.total += item.quantity;
-        else map.set(item.productId, { productId: item.productId, productName: item.productName, total: item.quantity });
+        if (existing) {
+          existing.restock = item.quantity;
+          existing.total += item.quantity;
+        } else {
+          map.set(item.productId, { 
+            productId: item.productId, 
+            productName: item.productName, 
+            initialStock: 0,
+            sold: 0,
+            returned: 0,
+            remained: 0,
+            restock: item.quantity,
+            total: item.quantity
+          });
+        }
       }
     });
+    
     return Array.from(map.values());
   }, [opnameItems, restockItems]);
 
@@ -169,7 +197,7 @@ export default function StoreVisitPage() {
   };
 
   const handleFinish = async () => {
-    if (!id || !store) return;
+    if (!id || !store || isVisitEmpty) return;
     setIsSubmitting(true);
     try {
       // 1. Kurangi stok gudang concurrently terlebih dahulu
@@ -228,7 +256,7 @@ export default function StoreVisitPage() {
       });
 
       // 4. Update toko
-      const totalActive = activeStockItems.reduce((acc, i) => acc + i.total, 0);
+      const totalActive = displayStockItems.reduce((acc, i) => acc + i.total, 0);
       await storeApi.update(id, { activeItemCount: totalActive });
       navigate(`/stores/${id}`);
     } catch (e) {
@@ -263,7 +291,8 @@ export default function StoreVisitPage() {
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
           <div className="min-w-0">
-            <h2 className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary truncate max-w-[140px] sm:max-w-xs md:max-w-md">Kunjungan — {store.name}</h2>
+            {/* Lebar teks judul kini dihardcode px per breakpoint agar tidak konflik dengan spasi default v4 */}
+            <h2 className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary truncate max-w-[140px] sm:max-w-[320px] md:max-w-[448px]">Kunjungan — {store.name}</h2>
             <p className="font-caption sm:font-body-sm text-caption sm:text-body-sm text-text-secondary truncate">
               {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
@@ -292,6 +321,7 @@ export default function StoreVisitPage() {
           allProducts={allProducts}
           restockItems={restockItems}
           suggestedProducts={suggestedProducts}
+          isNextDisabled={isVisitEmpty}
           handleAddRestock={handleAddRestock}
           handleRestockQuantity={handleRestockQuantity}
           handleRemoveRestock={handleRemoveRestock}
@@ -304,10 +334,11 @@ export default function StoreVisitPage() {
       {step === 3 && (
         <StepCheckout 
           billingItems={billingItems}
-          activeStockItems={activeStockItems}
+          displayStockItems={displayStockItems}
           subtotal={subtotal}
           totalBilled={totalBilled}
           isSubmitting={isSubmitting}
+          isNextDisabled={isVisitEmpty}
           onPrev={() => setStep(2)}
           onFinish={handleFinish}
           formatCurrency={formatCurrency}
