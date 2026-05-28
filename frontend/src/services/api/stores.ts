@@ -3,7 +3,6 @@
 import type { Store, StoreFormData, ApiResponse } from "@/types"
 import { storageGetOrSeed, storageSet, storageGet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
-import { seedStores } from "@/seed-data/stores"
 import { generateId } from "@/lib/utils"
 
 export interface StoreQueryParams {

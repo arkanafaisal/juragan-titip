@@ -3,7 +3,6 @@
 import type { Product, ProductFormData, ApiResponse } from "@/types"
 import { storageGet, storageGetOrSeed, storageSet } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
-import { seedProducts } from "@/seed-data/products"
 import { generateId } from "@/lib/utils"
 export interface ProductQueryParams {
   search?: string;
