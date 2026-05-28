@@ -107,6 +107,7 @@ export default function StoreFormPage() {
         ...formData,
         latitude: location.lat,
         longitude: location.lng,
+        activeItemCount: 0
       };
 
       let result;
@@ -151,13 +152,6 @@ export default function StoreFormPage() {
 
   return (
     <div className="max-w-container-max mx-auto space-y-lg pb-xl">
-      
-      {/* Header Halaman */}
-      <div className="flex items-center justify-between mb-md">
-        <h2 className="font-h1 text-h1 font-bold text-on-surface">
-          {isEditMode ? "Edit Toko" : "Tambah Toko Baru"}
-        </h2>
-      </div>
 
       {error && (
         <div className="w-full bg-error-container text-on-error-container p-sm rounded-lg mb-md font-body-sm text-body-sm flex items-center justify-center">

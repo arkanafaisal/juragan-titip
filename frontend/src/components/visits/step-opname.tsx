@@ -15,8 +15,7 @@ export function StepOpname({ opnameItems, handleOpnameChange, onNext }: StepOpna
       <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant flex justify-between items-center">
           <div>
-            <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-primary">Step 1: Hitung Barang di Toko</h3>
-            <p className="font-caption sm:font-body-sm text-caption sm:text-body-sm text-text-secondary mt-0.5">Cek fisik barang sisa titipan kunjungan terakhir</p>
+            <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-primary">Cek fisik barang sisa titipan terakhir</h3>
           </div>
         </div>
         <div className="overflow-x-auto">

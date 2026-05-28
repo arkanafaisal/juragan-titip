@@ -34,10 +34,9 @@ export function StepRestock({
       <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
         {/* Header / Search Area */}
         <div className="p-md border-b border-outline-variant bg-surface-container-low">
-          <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-primary mb-1">Step 2: Tambah Barang Baru</h3>
-          <p className="font-caption sm:font-body-sm text-caption sm:text-body-sm text-text-secondary mb-md">Cari atau pilih produk dari gudang utama yang akan dititipkan hari ini.</p>
+          <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-primary mb-md">Cari atau pilih produk dari gudang utama yang akan dititipkan hari ini.</h3>
           
-          <div 
+          <div
             className="relative w-full max-w-[484px]" 
             tabIndex={-1} 
             onBlur={(e) => {

@@ -136,8 +136,7 @@ export default function ProductListPage() {
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
         <div>
-          <h2 className="font-h1 text-h1 text-text-primary">Daftar Produk</h2>
-          <p className="font-body text-body text-text-secondary mt-xs">Kelola inventaris dan harga produk Anda.</p>
+          <p className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary">Kelola inventaris dan harga produk Anda.</p>
         </div>
         <button 
           onClick={handleOpenAdd}

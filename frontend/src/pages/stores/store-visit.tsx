@@ -292,10 +292,7 @@ export default function StoreVisitPage() {
           </button>
           <div className="min-w-0">
             {/* Lebar teks judul kini dihardcode px per breakpoint agar tidak konflik dengan spasi default v4 */}
-            <h2 className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary truncate max-w-[140px] sm:max-w-[320px] md:max-w-[448px]">Kunjungan — {store.name}</h2>
-            <p className="font-caption sm:font-body-sm text-caption sm:text-body-sm text-text-secondary truncate">
-              {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </p>
+            <h2 className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary truncate max-w-[140px] sm:max-w-[320px] md:max-w-[448px]">{store.name}</h2>
           </div>
         </div>
         

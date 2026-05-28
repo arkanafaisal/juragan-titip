@@ -80,8 +80,7 @@ export default function StoreListPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
         <div>
-          <h2 className="font-h1 text-h1 text-text-primary">Toko Mitra</h2>
-          <p className="font-body text-body text-text-secondary mt-xs">Kelola data mitra dan pantau performa konsinyasi.</p>
+          <p className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary">Kelola data mitra dan pantau performa konsinyasi.</p>
         </div>
         <button 
           onClick={() => navigate("/stores/new")}
