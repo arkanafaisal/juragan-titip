@@ -8,8 +8,6 @@ import LoginPage from "@/pages/auth/login"
 import RegisterPage from "@/pages/auth/register"
 import DashboardPage from "@/pages/dashboard"
 import ProductListPage from "@/pages/products/product-list"
-import ProductDetailPage from "@/pages/products/product-detail"
-import ProductFormPage from "@/pages/products/product-form"
 import StoreListPage from "@/pages/stores/store-list"
 import StoreDetailPage from "@/pages/stores/store-detail"
 import StoreFormPage from "@/pages/stores/store-form"
@@ -44,9 +42,6 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", element: <DashboardPage /> },
       { path: "products", element: <ProductListPage /> },
-      { path: "products/new", element: <ProductFormPage /> },
-      { path: "products/:id", element: <ProductDetailPage /> },
-      { path: "products/:id/edit", element: <ProductFormPage /> },
       { path: "stores", element: <StoreListPage /> },
       { path: "stores/new", element: <StoreFormPage /> },
       { path: "stores/:id", element: <StoreDetailPage /> },
