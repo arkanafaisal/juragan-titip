@@ -13,8 +13,7 @@ export interface ProductQueryParams {
 
 export const productApi = {
   getAll: async (params?: ProductQueryParams) => {
-    // Simulasi delay jaringan
-    await new Promise((resolve) => setTimeout(resolve, 300));
+
 
     let products = storageGetOrSeed<Array<Product>>(STORAGE_KEYS.PRODUCTS, []) // localStorage.getItem("jt_products"); 
     // let products = storedData ? JSON.parse(storedData) : [];
@@ -85,8 +84,7 @@ export const productApi = {
   },
 
   delete: async (id: string, productNameConfirm: string): Promise<ApiResponse<null>> => {
-    // Simulasi delay
-    await new Promise((resolve) => setTimeout(resolve, 400));
+
     
     const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
     

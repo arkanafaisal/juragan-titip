@@ -10,8 +10,7 @@ export const visitApi = {
   },
 
   getByStore: async (storeId: string): Promise<ApiResponse<Visit[]>> => {
-    // Simulasi delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
+
     const visits = storageGetOrSeed<Visit[]>(STORAGE_KEYS.VISITS, [])
     return { success: true, data: visits.filter((v) => v.storeId === storeId) }
   },
@@ -24,8 +23,7 @@ export const visitApi = {
   },
 
   create: async (data: Omit<Visit, "id">): Promise<ApiResponse<Visit>> => {
-    // Simulasi delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
+
     const visits = storageGetOrSeed<Visit[]>(STORAGE_KEYS.VISITS, [])
     const newVisit: Visit = {
       id: generateId("visit"),

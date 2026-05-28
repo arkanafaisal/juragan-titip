@@ -13,8 +13,7 @@ export interface StoreQueryParams {
 
 export const storeApi = {
   getAll: async (params?: StoreQueryParams): Promise<ApiResponse<Store[]>> => {
-    // Simulasi delay jaringan
-    await new Promise((resolve) => setTimeout(resolve, 300));
+
 
     let stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
     
@@ -78,8 +77,7 @@ export const storeApi = {
   },
 
   delete: async (id: string, storeNameConfirm: string): Promise<ApiResponse<null>> => {
-    // Simulasi delay
-    await new Promise((resolve) => setTimeout(resolve, 400));
+
     
     const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
 
