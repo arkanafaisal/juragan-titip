@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Package, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
+import { validateLoginForm } from "@/lib/validations";
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -20,6 +21,14 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    // Validasi input
+    const errorMsg = validateLoginForm({ email, password });
+    if (errorMsg) {
+      setError(errorMsg);
+      return;
+    }
+
     setLoading(true);
 
     const result = await login({ email, password });

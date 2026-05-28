@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { storeApi } from "@/services/api/stores";
 import { MapPicker } from "@/components/features/map-picker";
+import { validateStoreForm } from "@/lib/validations";
 
 export default function StoreFormPage() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function StoreFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
+  const [gpsStatus, setGpsStatus] = useState<{ type: 'error' | 'success'; message: string } | null>(null);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -79,6 +81,7 @@ export default function StoreFormPage() {
   };
 
   const handleDetectGPS = () => {
+    setGpsStatus(null);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -86,14 +89,18 @@ export default function StoreFormPage() {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           });
+          setGpsStatus({ type: 'success', message: 'Lokasi berhasil diperbarui.' });
+          setTimeout(() => setGpsStatus(null), 3000);
         },
         (err) => {
           console.error("GPS Error:", err);
-          alert("Gagal mendapatkan lokasi. Pastikan izin GPS diaktifkan.");
+          setGpsStatus({ type: 'error', message: 'Gagal mendapatkan lokasi. Pastikan izin GPS diaktifkan.' });
+          setTimeout(() => setGpsStatus(null), 4000);
         }
       );
     } else {
-      alert("Browser Anda tidak mendukung deteksi lokasi (GPS).");
+      setGpsStatus({ type: 'error', message: 'Browser Anda tidak mendukung deteksi lokasi (GPS).' });
+      setTimeout(() => setGpsStatus(null), 4000);
     }
   };
 
@@ -102,6 +109,15 @@ export default function StoreFormPage() {
     setIsSubmitting(true);
     setError(null);
     
+    // --- Validasi ---
+    const errorMsg = validateStoreForm(formData);
+    if (errorMsg) {
+      setError(errorMsg);
+      setIsSubmitting(false);
+      return;
+    }
+    // ----------------
+
     try {
       const payload = {
         ...formData,
@@ -292,9 +308,13 @@ export default function StoreFormPage() {
               </button>
             </div>
 
-            {/* Map Component */}
             <div className="relative w-full h-[240px] lg:h-[300px] shrink-0">
-              <MapPicker 
+              {gpsStatus && (
+                <div className={`absolute top-md left-1/2 -translate-x-1/2 z-[400] px-md py-sm rounded-full shadow-lg font-body-sm text-body-sm font-medium text-center animate-in fade-in zoom-in-95 duration-300 ${gpsStatus.type === 'error' ? 'bg-error text-on-error' : 'bg-surface text-primary border border-primary/20'}`}>
+                  {gpsStatus.message}
+                </div>
+              )}
+              <MapPicker
                 position={location}
                 onChange={handleLocationChange}
                 readonly={false}

@@ -6,6 +6,7 @@ import type { Product } from "@/types";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { validateProductForm } from "@/lib/validations";
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -27,9 +28,10 @@ const initialFormData = {
 export function ProductFormModal({ isOpen, onClose, onSuccess, product }: ProductFormModalProps) {
   const [formData, setFormData] = useState(initialFormData);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const { isCollapsed } = useSidebar();
-  const isMobile = useMobile();
+  const isMobile = useMobile()
 
   useEffect(() => {
     if (isOpen) {
@@ -62,6 +64,17 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setError(null);
+
+    // --- Validasi ---
+    const errorMsg = validateProductForm(formData);
+    if (errorMsg) {
+      setError(errorMsg);
+      setIsSaving(false);
+      return;
+    }
+    // ----------------
+
     try {
       if (product) {
         await productApi.update(product.id, formData as any);
@@ -106,6 +119,11 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
         </div>
         
         <div className="p-lg overflow-y-auto custom-scrollbar">
+          {error && (
+            <div className="mb-md p-sm bg-error/10 text-error rounded-lg font-body-sm text-body-sm text-center border border-error/20">
+              {error}
+            </div>
+          )}
           <form id="product-form" onSubmit={handleSubmit} className="space-y-md">
             <div className="flex flex-col gap-xs">
               <label className="font-body-sm text-body-sm text-on-surface-variant font-medium">Nama Produk</label>

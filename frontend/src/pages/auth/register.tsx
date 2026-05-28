@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Package, Mail, Lock, Eye, EyeOff, ArrowRight, User } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
+import { validateRegisterForm } from "@/lib/validations";
 
 export default function RegisterForm() {
     const { register } = useAuth();
@@ -35,8 +36,10 @@ export default function RegisterForm() {
         e.preventDefault();
         setError(null); // Reset error saat submit ulang
 
-        if (form.password !== form.confirmPassword) {
-            setError("Password tidak cocok"); // Ganti alert dengan setError
+        // Validasi input
+        const errorMsg = validateRegisterForm(form);
+        if (errorMsg) {
+            setError(errorMsg);
             return;
         }
 
