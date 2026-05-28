@@ -65,8 +65,7 @@ export interface Visit {
   id: string
   storeId: string
   storeName: string
-  opnameItems: OpnameItem[]
-  restockItems: RestockItem[]
+  items: OpnameItem[]
   totalBilled: number
   amountPaid: number
   previousReceivable: number
@@ -77,19 +76,10 @@ export interface Visit {
 export interface OpnameItem {
   productId: string
   productName: string
-  previousStock: number
   sold: number
   returned: number
-  remaining: number
+  remained: number
   wholesalePrice: number
-}
-
-export interface RestockItem {
-  productId: string
-  productName: string
-  quantity: number
-  wholesalePrice: number
-  retailPrice: number
 }
 
 export interface Invoice {
