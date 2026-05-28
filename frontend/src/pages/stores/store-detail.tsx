@@ -194,8 +194,7 @@ export default function StoreDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-sm md:gap-md">
-        <StatCard icon={Package} title="Produk Aktif" value="0" bgClass="bg-primary/10" textClass="text-primary" valSizePC="font-h1 text-h1" valSizeMobile="font-h3 text-h3 font-bold" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-sm md:gap-md">
         <StatCard icon={Wallet} title="Piutang" value="Rp 0" bgClass="bg-error/10" textClass="text-error" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
         <StatCard icon={TrendingUp} title="Penjualan" value="Rp 0" bgClass="bg-success/10" textClass="text-success" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
       </div>
