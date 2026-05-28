@@ -6,6 +6,7 @@ import type { Product, RestockItem } from "@/types";
 interface StepRestockProps {
   allProducts: Product[];
   restockItems: (RestockItem & { _warehouseStock: number })[];
+  suggestedProducts: Product[];
   handleAddRestock: (product: Product) => void;
   handleRestockQuantity: (productId: string, qty: number) => void;
   handleRemoveRestock: (productId: string) => void;
@@ -15,7 +16,7 @@ interface StepRestockProps {
 }
 
 export function StepRestock({ 
-  allProducts, restockItems, handleAddRestock, 
+  allProducts, restockItems, suggestedProducts, handleAddRestock, 
   handleRestockQuantity, handleRemoveRestock, 
   onNext, onPrev, formatCurrency 
 }: StepRestockProps) {
@@ -82,6 +83,22 @@ export function StepRestock({
               </div>
             )}
           </div>
+
+          {/* Suggstions Pills */}
+          {suggestedProducts.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mt-md">
+              <span className="text-text-secondary font-caption text-caption">Saran Titipan:</span>
+              {suggestedProducts.map(p => (
+                <button 
+                  key={p.id} 
+                  onClick={() => handleAddRestock(p)} 
+                  className="px-3 py-1 bg-surface-container-highest text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20 rounded-full font-caption sm:font-body-sm text-caption sm:text-body-sm transition-colors flex items-center gap-1 active:scale-95"
+                >
+                  {p.name} <Plus className="w-3 h-3" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Table Area */}
@@ -89,7 +106,7 @@ export function StepRestock({
           <div className="py-xl flex flex-col items-center justify-center bg-surface-bright text-text-secondary">
             <Package className="w-10 h-10 sm:w-12 sm:h-12 mb-sm text-outline-variant" />
             <p className="font-body text-body font-medium text-text-primary">Keranjang Restock Kosong</p>
-            <p className="font-caption sm:font-body-sm text-caption sm:text-body-sm mt-1">Tambahkan produk melalui kolom di atas.</p>
+            <p className="font-caption sm:font-body-sm text-caption sm:text-body-sm mt-1">Tambahkan produk melalui pencarian atau saran di atas.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -98,7 +115,7 @@ export function StepRestock({
                 <tr className="bg-surface-container-lowest border-b border-outline-variant">
                   <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold">Produk</th>
                   <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center">Stok Gudang</th>
-                  <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-right">Harga Setor</th>
+                  <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-right">Harga Setor (Baru)</th>
                   <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-32 sm:w-40">Jumlah Dititip</th>
                 </tr>
               </thead>

@@ -4,7 +4,7 @@ import { NumberInput } from "@/components/shared/number-input";
 import type { OpnameItem } from "@/types";
 
 interface StepOpnameProps {
-  opnameItems: OpnameItem[];
+  opnameItems: (OpnameItem & { initialStock: number })[];
   handleOpnameChange: (productId: string, field: 'sold' | 'returned', value: number) => void;
   onNext: () => void;
 }
@@ -44,16 +44,16 @@ export function StepOpname({ opnameItems, handleOpnameChange, onNext }: StepOpna
                       <span className="font-body text-body font-medium text-text-primary">{item.productName}</span>
                     </td>
                     <td className="py-md px-md text-center">
-                      <span className="font-data-md text-data-md text-text-secondary font-medium bg-surface-container-high px-2 py-1 rounded-md">{item.previousStock}</span>
+                      <span className="font-data-md text-data-md text-text-secondary font-medium bg-surface-container-high px-2 py-1 rounded-md">{item.initialStock}</span>
                     </td>
                     <td className="py-md px-md flex justify-center">
-                      <NumberInput value={item.sold} max={item.previousStock - item.returned} onChange={(val: number) => handleOpnameChange(item.productId, 'sold', val)} />
+                      <NumberInput value={item.sold} max={item.initialStock - item.returned} onChange={(val: number) => handleOpnameChange(item.productId, 'sold', val)} />
                     </td>
                     <td className="py-md px-md text-center">
-                      <NumberInput className="mx-auto" value={item.returned} max={item.previousStock - item.sold} onChange={(val: number) => handleOpnameChange(item.productId, 'returned', val)} />
+                      <NumberInput className="mx-auto" value={item.returned} max={item.initialStock - item.sold} onChange={(val: number) => handleOpnameChange(item.productId, 'returned', val)} />
                     </td>
                     <td className="py-md px-md text-center">
-                      <span className={`font-data-md sm:font-data-lg text-data-md sm:text-data-lg font-bold ${item.remaining > 0 ? 'text-primary' : 'text-text-muted'}`}>{item.remaining}</span>
+                      <span className={`font-data-md sm:font-data-lg text-data-md sm:text-data-lg font-bold ${item.remained > 0 ? 'text-primary' : 'text-text-muted'}`}>{item.remained}</span>
                     </td>
                   </tr>
                 ))

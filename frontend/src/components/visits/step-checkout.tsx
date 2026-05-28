@@ -1,9 +1,17 @@
 import React from "react";
 import { ShoppingCart, Package, Save, Loader2 } from "lucide-react";
 
+interface BillingItem {
+  id: string;
+  name: string;
+  type: 'sold' | 'restock';
+  qty: number;
+  price: number;
+}
+
 interface StepCheckoutProps {
-  checkoutItems: any[];
-  activeStockItems: any[];
+  billingItems: BillingItem[];
+  activeStockItems: { productId: string; productName: string; total: number; }[];
   subtotal: number;
   totalBilled: number;
   isSubmitting: boolean;
@@ -13,7 +21,7 @@ interface StepCheckoutProps {
 }
 
 export function StepCheckout({ 
-  checkoutItems, activeStockItems, subtotal, 
+  billingItems, activeStockItems, subtotal, 
   totalBilled, isSubmitting, onPrev, onFinish, formatCurrency 
 }: StepCheckoutProps) {
   return (
@@ -24,29 +32,29 @@ export function StepCheckout({
         <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col h-full">
           <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant">
             <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold flex items-center gap-xs text-text-primary">
-              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-primary"/> TAGIHAN (Sesuai Aturan: Laku + Restock)
+              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-primary"/> TAGIHAN (Laku + Restock)
             </h3>
           </div>
           <div className="p-md flex-1 flex flex-col">
             <div className="space-y-sm flex-1">
-              {checkoutItems.length === 0 ? (
+              {billingItems.length === 0 ? (
                 <div className="text-center text-text-secondary font-body-sm text-body-sm py-lg">Tidak ada item tagihan kunjungan ini.</div>
               ) : (
-                checkoutItems.map(item => (
-                  <div key={item.productId} className="flex justify-between items-start border-b border-dashed border-outline-variant pb-sm last:border-0 last:pb-0">
+                billingItems.map(item => (
+                  <div key={item.id} className="flex justify-between items-start border-b border-dashed border-outline-variant pb-sm last:border-0 last:pb-0">
                     <div>
-                      <p className="font-body text-body font-medium text-text-primary">{item.productName}</p>
+                      <p className="font-body text-body font-medium text-text-primary flex items-center gap-2">
+                        {item.name}
+                        {item.type === 'restock' && (
+                          <span className="text-[10px] uppercase font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded">Baru</span>
+                        )}
+                      </p>
                       <p className="font-caption text-caption text-text-secondary mt-0.5">
-                        {item.sold > 0 && `Laku ${item.sold} `} 
-                        {item.sold > 0 && item.restock > 0 && ' | '}
-                        {item.restock > 0 && `Restock ${item.restock} `}
-                        <span className="font-medium text-text-primary block mt-0.5">
-                           Total {item.sold + item.restock} item × {formatCurrency(item.price)}
-                        </span>
+                        {item.type === 'sold' ? 'Laku' : 'Restock'} {item.qty} item × {formatCurrency(item.price)}
                       </p>
                     </div>
                     <p className="font-data-md text-data-md font-bold text-text-primary mt-1">
-                      {formatCurrency((item.sold + item.restock) * item.price)}
+                      {formatCurrency(item.qty * item.price)}
                     </p>
                   </div>
                 ))
@@ -86,7 +94,7 @@ export function StepCheckout({
                   <div key={item.productId} className="flex justify-between items-center border-b border-dashed border-outline-variant pb-sm last:border-0 last:pb-0">
                     <p className="font-body text-body font-medium text-text-primary">{item.productName}</p>
                     <p className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg font-bold text-success">
-                      {item.sisa + item.baru}
+                      {item.total}
                     </p>
                   </div>
                 ))
@@ -96,7 +104,7 @@ export function StepCheckout({
             <div className="mt-lg border-t-[1.5px] border-outline-variant pt-md flex justify-between items-center bg-surface-bright -mx-md -mb-md p-md">
               <span className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-secondary">Total Seluruh Item Aktif:</span>
               <span className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary bg-surface-container px-3 py-1 rounded-md">
-                 {activeStockItems.reduce((acc, i) => acc + i.sisa + i.baru, 0)}
+                 {activeStockItems.reduce((acc, i) => acc + i.total, 0)}
               </span>
             </div>
           </div>

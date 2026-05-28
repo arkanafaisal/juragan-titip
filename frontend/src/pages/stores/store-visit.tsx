@@ -8,7 +8,6 @@ import { storageGet } from "@/lib/storage";
 import { STORAGE_KEYS } from "@/lib/constants";
 import type { Store, Product, OpnameItem, RestockItem } from "@/types";
 
-// Import Modular Components
 import { StepOpname } from "@/components/visits/step-opname";
 import { StepRestock } from "@/components/visits/step-restock";
 import { StepCheckout } from "@/components/visits/step-checkout";
@@ -36,11 +35,10 @@ export default function StoreVisitPage() {
   const [store, setStore] = useState<Store | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
-  // Data States
-  const [opnameItems, setOpnameItems] = useState<OpnameItem[]>([]);
+  // States
+  const [opnameItems, setOpnameItems] = useState<(OpnameItem & { initialStock: number })[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [restockItems, setRestockItems] = useState<(RestockItem & { _warehouseStock: number })[]>([]);
 
@@ -62,46 +60,18 @@ export default function StoreVisitPage() {
         if (visitsRes.success && visitsRes.data.length > 0) {
           const sorted = visitsRes.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           const lastVisit = sorted[0];
-          const activeMap = new Map<string, OpnameItem>();
           
-          lastVisit.opnameItems.forEach(item => {
-            if (item.remaining > 0) {
-              activeMap.set(item.productId, { ...item, previousStock: item.remaining, sold: 0, returned: 0, remaining: item.remaining });
-            }
-          });
+          const initialOpname = lastVisit.items
+            .filter(item => item.remained > 0)
+            .map(item => ({
+               ...item,
+               initialStock: item.remained, // Snapshot dari visit terakhir
+               sold: 0,
+               returned: 0,
+               remained: item.remained
+            }));
           
-          lastVisit.restockItems.forEach(item => {
-            if (item.quantity > 0) {
-              const existing = activeMap.get(item.productId);
-              if (existing) {
-                existing.previousStock += item.quantity;
-                existing.remaining += item.quantity;
-              } else {
-                activeMap.set(item.productId, {
-                  productId: item.productId, productName: item.productName, previousStock: item.quantity,
-                  sold: 0, returned: 0, remaining: item.quantity, wholesalePrice: item.wholesalePrice
-                });
-              }
-            }
-          });
-          
-          const initialOpname = Array.from(activeMap.values());
           setOpnameItems(initialOpname);
-          
-          if (initialOpname.length > 0) {
-            const prefilledRestock = initialOpname.map(opItem => {
-              const matchedProd = productsFromStorage.find(p => p.id === opItem.productId);
-              return {
-                productId: opItem.productId,
-                productName: opItem.productName,
-                quantity: 0,
-                wholesalePrice: matchedProd ? matchedProd.wholesalePrice : opItem.wholesalePrice,
-                retailPrice: matchedProd ? matchedProd.retailPrice : 0,
-                _warehouseStock: matchedProd ? matchedProd.warehouseStock : 0
-              };
-            });
-            setRestockItems(prefilledRestock);
-          }
           
           if (initialOpname.length === 0) setStep(2); 
         } else {
@@ -121,13 +91,20 @@ export default function StoreVisitPage() {
       if (item.productId === productId) {
         const num = isNaN(value) || value < 0 ? 0 : value;
         const updated = { ...item, [field]: num };
-        if (updated.sold + updated.returned > updated.previousStock) return item; 
-        updated.remaining = updated.previousStock - updated.sold - updated.returned;
+        if (updated.sold + updated.returned > updated.initialStock) return item; 
+        updated.remained = updated.initialStock - updated.sold - updated.returned;
         return updated;
       }
       return item;
     }));
   };
+
+  const suggestedProducts = useMemo(() => {
+    const opnameIds = opnameItems.map(i => i.productId);
+    const restockedIds = restockItems.map(i => i.productId);
+    // Munculkan produk dari riwayat yang BELUM ada di keranjang restock
+    return allProducts.filter(p => opnameIds.includes(p.id) && !restockedIds.includes(p.id));
+  }, [allProducts, opnameItems, restockItems]);
 
   const handleAddRestock = (product: Product) => {
     if (restockItems.some(i => i.productId === product.id)) return;
@@ -152,37 +129,38 @@ export default function StoreVisitPage() {
     setRestockItems(prev => prev.filter(i => i.productId !== productId));
   };
 
-  const checkoutItems = useMemo(() => {
-    const map = new Map<string, { productId: string; productName: string; sold: number; restock: number; price: number; }>();
+  // CHECKOUT CALCULATION - Tagihan dipisah per Laku & Restock (harga bisa beda)
+  const billingItems = useMemo(() => {
+    const items: any[] = [];
     opnameItems.forEach(item => {
-      if (item.sold > 0) map.set(item.productId, { productId: item.productId, productName: item.productName, sold: item.sold, restock: 0, price: item.wholesalePrice });
+      if (item.sold > 0) {
+        items.push({ id: `${item.productId}_sold`, name: item.productName, type: 'sold', qty: item.sold, price: item.wholesalePrice });
+      }
     });
     restockItems.forEach(item => {
       if (item.quantity > 0) {
-        const existing = map.get(item.productId);
-        if (existing) existing.restock = item.quantity;
-        else map.set(item.productId, { productId: item.productId, productName: item.productName, sold: 0, restock: item.quantity, price: item.wholesalePrice });
+        items.push({ id: `${item.productId}_restock`, name: item.productName, type: 'restock', qty: item.quantity, price: item.wholesalePrice });
       }
     });
-    return Array.from(map.values());
+    return items;
   }, [opnameItems, restockItems]);
 
   const activeStockItems = useMemo(() => {
-    const map = new Map<string, { productId: string; productName: string; sisa: number; baru: number; }>();
+    const map = new Map<string, { productId: string; productName: string; total: number; }>();
     opnameItems.forEach(item => {
-      if (item.remaining > 0) map.set(item.productId, { productId: item.productId, productName: item.productName, sisa: item.remaining, baru: 0 });
+      if (item.remained > 0) map.set(item.productId, { productId: item.productId, productName: item.productName, total: item.remained });
     });
     restockItems.forEach(item => {
       if (item.quantity > 0) {
         const existing = map.get(item.productId);
-        if (existing) existing.baru = item.quantity;
-        else map.set(item.productId, { productId: item.productId, productName: item.productName, sisa: 0, baru: item.quantity });
+        if (existing) existing.total += item.quantity;
+        else map.set(item.productId, { productId: item.productId, productName: item.productName, total: item.quantity });
       }
     });
     return Array.from(map.values());
   }, [opnameItems, restockItems]);
 
-  const subtotal = checkoutItems.reduce((acc, item) => acc + ((item.sold + item.restock) * item.price), 0);
+  const subtotal = billingItems.reduce((acc, item) => acc + (item.qty * item.price), 0);
   const totalBilled = subtotal; 
 
   const handlePrevStepFromRestock = () => {
@@ -190,23 +168,11 @@ export default function StoreVisitPage() {
     else navigate(`/stores/${id}`);
   };
 
-  const handlePrevStepFromCheckout = () => {
-    setStep(2);
-  };
-
   const handleFinish = async () => {
     if (!id || !store) return;
     setIsSubmitting(true);
     try {
-      const totalActive = activeStockItems.reduce((acc, i) => acc + i.sisa + i.baru, 0);
-
-      await visitApi.create({
-        storeId: id, storeName: store.name, opnameItems: opnameItems,
-        restockItems: restockItems.map(({ _warehouseStock, ...rest }) => rest),
-        totalBilled, amountPaid: totalBilled, previousReceivable: store.totalReceivable || 0,
-        documentNumber: `VST-${Date.now()}`, createdAt: new Date().toISOString()
-      });
-
+      // 1. Kurangi stok gudang concurrently terlebih dahulu
       await Promise.all(
         restockItems.map(async (item) => {
           if (item.quantity > 0) {
@@ -218,6 +184,51 @@ export default function StoreVisitPage() {
         })
       );
 
+      // 2. Merge Logic final items record
+      const mergedItemsMap = new Map<string, OpnameItem>();
+
+      opnameItems.forEach(item => {
+        mergedItemsMap.set(item.productId, {
+          productId: item.productId,
+          productName: item.productName,
+          sold: item.sold,
+          returned: item.returned,
+          remained: item.remained,
+          wholesalePrice: item.wholesalePrice
+        });
+      });
+
+      restockItems.forEach(item => {
+        if (item.quantity > 0) {
+          const existing = mergedItemsMap.get(item.productId);
+          if (existing) {
+            existing.remained += item.quantity;
+            existing.wholesalePrice = item.wholesalePrice; // Overwrite harga terbaru jika direstock
+          } else {
+            mergedItemsMap.set(item.productId, {
+              productId: item.productId,
+              productName: item.productName,
+              sold: 0,
+              returned: 0,
+              remained: item.quantity,
+              wholesalePrice: item.wholesalePrice
+            });
+          }
+        }
+      });
+
+      // Hapus yang remained == 0 sesuai aturan
+      const finalItems = Array.from(mergedItemsMap.values()).filter(item => item.remained > 0);
+
+      // 3. Create Visit Record
+      await visitApi.create({
+        storeId: id, storeName: store.name, items: finalItems,
+        totalBilled, amountPaid: totalBilled, previousReceivable: store.totalReceivable || 0,
+        documentNumber: `VST-${Date.now()}`, createdAt: new Date().toISOString()
+      });
+
+      // 4. Update toko
+      const totalActive = activeStockItems.reduce((acc, i) => acc + i.total, 0);
       await storeApi.update(id, { activeItemCount: totalActive });
       navigate(`/stores/${id}`);
     } catch (e) {
@@ -246,8 +257,6 @@ export default function StoreVisitPage() {
 
   return (
     <div className="max-w-container-max mx-auto space-y-md md:space-y-lg pb-xl">
-      
-      {/* HEADER STEPPER */}
       <div className="flex items-center justify-between bg-surface rounded-xl p-md shadow-sm border border-border">
         <div className="flex items-center gap-2 sm:gap-md min-w-0">
           <button onClick={handleHeaderPrevStep} className="p-1 sm:p-xs hover:bg-surface-container-low rounded-lg transition-colors text-text-secondary shrink-0">
@@ -282,6 +291,7 @@ export default function StoreVisitPage() {
         <StepRestock 
           allProducts={allProducts}
           restockItems={restockItems}
+          suggestedProducts={suggestedProducts}
           handleAddRestock={handleAddRestock}
           handleRestockQuantity={handleRestockQuantity}
           handleRemoveRestock={handleRemoveRestock}
@@ -293,17 +303,16 @@ export default function StoreVisitPage() {
 
       {step === 3 && (
         <StepCheckout 
-          checkoutItems={checkoutItems}
+          billingItems={billingItems}
           activeStockItems={activeStockItems}
           subtotal={subtotal}
           totalBilled={totalBilled}
           isSubmitting={isSubmitting}
-          onPrev={handlePrevStepFromCheckout}
+          onPrev={() => setStep(2)}
           onFinish={handleFinish}
           formatCurrency={formatCurrency}
         />
       )}
-
     </div>
   );
 }
