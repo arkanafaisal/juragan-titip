@@ -12,9 +12,14 @@ import {
   CornerDownLeft
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
+import { id as idLocale } from "date-fns/locale";
+import { format } from "date-fns";
+
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const todayDate = format(new Date(), "dd MMM yyyy", { locale: idLocale });
+  
 
   return (
     <div className="max-w-container-max mx-auto space-y-lg">
@@ -23,7 +28,7 @@ export default function Dashboard() {
       <div className="flex flex-col gap-xs">
         <h1 className="font-h1 text-h1 text-on-surface">Selamat Siang, {user.name} 👋</h1>
         {/* Tanggal di mobile (di desktop pindah ke header) */}
-        <p className="font-body text-body text-on-surface-variant md:hidden">📅 26 Mei 2026</p>
+        <p className="font-body text-body text-on-surface-variant md:hidden">📅 {todayDate}</p>
       </div>
 
       {/* --- 4 Stat Cards Grid --- */}
@@ -36,10 +41,15 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 12.5jt</div>
+            {/* <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 12.5jt</div>
             <div className="flex items-center gap-1 mt-xs">
               <TrendingUp className="w-3 h-3 text-tertiary-container" />
               <span className="font-caption text-caption text-tertiary-container font-medium">↑ 12%</span>
+            </div> */}
+            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 0</div>
+            <div className="flex items-center gap-1 mt-xs">
+              <TrendingUp className="w-3 h-3 text-on-surface-variant" />
+              <span className="font-caption text-caption text-on-surface-variant font-medium">- 0%</span>
             </div>
           </div>
         </div>
@@ -52,10 +62,15 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">342 item</div>
+            {/* <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">342 item</div>
             <div className="flex items-center gap-1 mt-xs">
               <TrendingDown className="w-3 h-3 text-error" />
               <span className="font-caption text-caption text-error font-medium">↓ 8%</span>
+            </div> */}
+            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">0 item</div>
+            <div className="flex items-center gap-1 mt-xs">
+              <TrendingDown className="w-3 h-3 text-on-surface-variant" />
+              <span className="font-caption text-caption text-on-surface-variant font-medium">- 0%</span>
             </div>
           </div>
         </div>
@@ -68,10 +83,15 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">15 toko</div>
+            {/* <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">15 toko</div>
             <div className="flex items-center gap-1 mt-xs">
               <TrendingUp className="w-3 h-3 text-tertiary-container" />
               <span className="font-caption text-caption text-tertiary-container font-medium">↑ 2</span>
+            </div> */}
+            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">0 toko</div>
+            <div className="flex items-center gap-1 mt-xs">
+              <TrendingUp className="w-3 h-3 text-on-surface-variant" />
+              <span className="font-caption text-caption text-on-surface-variant font-medium">- 0</span>
             </div>
           </div>
         </div>
@@ -84,9 +104,13 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 3.2jt</div>
+            {/* <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 3.2jt</div>
             <div className="flex items-center gap-1 mt-xs">
               <span className="font-caption text-caption text-error font-medium">4 toko</span>
+            </div> */}
+            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 0</div>
+            <div className="flex items-center gap-1 mt-xs">
+              <span className="font-caption text-caption text-on-surface-variant font-medium">0 toko</span>
             </div>
           </div>
         </div>
@@ -108,6 +132,7 @@ export default function Dashboard() {
             </div>
             <div className="h-[200px] w-full chart-bg relative rounded-md border border-outline-variant/50 overflow-hidden flex items-end px-4 pb-0 pt-4">
               <div className="flex-1 flex items-end justify-around h-full gap-2 relative z-10 pb-6">
+                {/* 
                 <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "40%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "80%" }}></div></div>
                 <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "60%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "70%" }}></div></div>
                 <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "30%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "90%" }}></div></div>
@@ -115,6 +140,14 @@ export default function Dashboard() {
                 <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "50%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "60%" }}></div></div>
                 <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "90%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "95%" }}></div></div>
                 <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "70%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "75%" }}></div></div>
+                */}
+                <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "0%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "0%" }}></div></div>
+                <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "0%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "0%" }}></div></div>
+                <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "0%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "0%" }}></div></div>
+                <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "0%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "0%" }}></div></div>
+                <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "0%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "0%" }}></div></div>
+                <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "0%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "0%" }}></div></div>
+                <div className="w-full max-w-xl bg-primary-fixed rounded-t-sm relative group cursor-pointer" style={{ height: "0%" }}><div className="absolute bottom-0 w-full bg-primary-container rounded-t-sm" style={{ height: "0%" }}></div></div>
               </div>
               <div className="absolute bottom-0 left-0 w-full flex justify-around px-4 py-1 border-t border-outline-variant/30 bg-surface-container-lowest/80">
                 <span className="font-data-sm text-data-sm text-outline">Sen</span>
@@ -140,6 +173,7 @@ export default function Dashboard() {
 
             {/* Mobile View */}
             <div className="md:hidden flex flex-col p-md gap-sm bg-surface-container/50">
+              {/*
               <div className="bg-surface-container-lowest rounded-lg p-sm border border-outline-variant flex items-center gap-md">
                 <div className="w-10 h-10 rounded-lg bg-surface-container flex-shrink-0 flex items-center justify-center text-primary-container">
                   <Store className="w-5 h-5" />
@@ -164,6 +198,10 @@ export default function Dashboard() {
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
+              */}
+              <div className="p-md text-center text-on-surface-variant font-body-sm text-body-sm">
+                Belum ada toko yang perlu dikunjungi
+              </div>
             </div>
 
             {/* Desktop View */}
@@ -178,6 +216,7 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/50">
+                  {/*
                   <tr className="hover:bg-surface-container-low transition-colors">
                     <td className="px-5 py-sm">
                       <div className="font-body-sm text-body-sm font-medium text-on-surface">Toko Berkah</div>
@@ -198,6 +237,12 @@ export default function Dashboard() {
                       <button className="bg-primary-fixed text-primary-container px-3 py-1.5 rounded text-caption font-medium hover:bg-primary-container hover:text-surface-container-lowest transition-colors">Kunjungi</button>
                     </td>
                   </tr>
+                  */}
+                  <tr>
+                    <td colSpan={4} className="px-5 py-md text-center text-on-surface-variant font-body-sm text-body-sm">
+                      Belum ada toko yang perlu dikunjungi
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -212,6 +257,7 @@ export default function Dashboard() {
           <div className="flex-1 p-5">
             <div className="space-y-md">
               
+              {/*
               <div className="flex gap-md items-start">
                 <div className="w-8 h-8 rounded-full bg-on-tertiary-container text-tertiary-container flex items-center justify-center flex-shrink-0 mt-0.5">
                   <CheckCircle className="w-4 h-4" />
@@ -243,6 +289,11 @@ export default function Dashboard() {
                   <p className="font-caption text-caption text-on-surface-variant mt-0.5">dari Toko Jaya</p>
                 </div>
                 <span className="font-caption text-caption text-outline whitespace-nowrap">1 hari</span>
+              </div>
+              */}
+
+              <div className="flex justify-center items-center h-32">
+                <p className="font-body-sm text-body-sm text-on-surface-variant">Belum ada aktivitas terkini</p>
               </div>
 
             </div>
