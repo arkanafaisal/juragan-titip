@@ -1,8 +1,6 @@
 // frontend/src/services/api/stores.ts
 
 import type { Store, StoreFormData, ApiResponse, Visit } from "@/types"
-import { storageGetOrSeed } from "@/lib/storage"
-import { STORAGE_KEYS } from "@/lib/constants"
 import { db, type DbStore } from "@/lib/db"
 import { visitApi } from "@/services/api/visits"
 

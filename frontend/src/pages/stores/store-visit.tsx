@@ -4,8 +4,6 @@ import { ChevronLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { storeApi } from "@/services/api/stores";
 import { visitApi } from "@/services/api/visits";
 import { productApi } from "@/services/api/products";
-import { storageGet } from "@/lib/storage";
-import { STORAGE_KEYS } from "@/lib/constants";
 import type { Store, Product, OpnameItem, RestockItem } from "@/types";
 
 import { StepOpname } from "@/components/visits/step-opname";
@@ -51,8 +49,8 @@ export default function StoreVisitPage() {
       if (!id) return;
       setIsLoading(true);
       try {
-        const productsFromStorage = storageGet<Product[]>(STORAGE_KEYS.PRODUCTS) || [];
-        setAllProducts(productsFromStorage);
+        const productsFromStorage = await productApi.getAll()
+        setAllProducts(productsFromStorage.data);
 
         const [storeRes, visitsRes] = await Promise.all([ storeApi.getById(id), visitApi.getByStore(id) ]);
         if (storeRes.success && storeRes.data) setStore(storeRes.data.store);
