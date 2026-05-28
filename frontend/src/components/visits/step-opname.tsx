@@ -23,11 +23,11 @@ export function StepOpname({ opnameItems, handleOpnameChange, onNext }: StepOpna
           <table className="w-full text-left min-w-[500px] md:min-w-[600px]">
             <thead>
               <tr className="bg-surface-container-lowest border-b border-outline-variant">
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold w-[35%]">Produk</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[15%]">Titip</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%]">Laku</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%]">Retur (Rusak)</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[10%]">Sisa</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold w-[35%] md:w-[45%]">Produk</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[15%] md:w-[11%]">Titip</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%] md:w-[16%]">Laku</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%] md:w-[16%]">Retur (Rusak)</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[10%] md:w-[12%]">Sisa</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -46,11 +46,15 @@ export function StepOpname({ opnameItems, handleOpnameChange, onNext }: StepOpna
                     <td className="py-md px-md text-center">
                       <span className="font-data-md text-data-md text-text-secondary font-medium bg-surface-container-high px-2 py-1 rounded-md">{item.initialStock}</span>
                     </td>
-                    <td className="py-md px-md flex justify-center">
-                      <NumberInput value={item.sold} max={item.initialStock - item.returned} onChange={(val: number) => handleOpnameChange(item.productId, 'sold', val)} />
+                    <td className="py-md px-md">
+                      <div className="flex justify-center">
+                        <NumberInput value={item.sold} max={item.initialStock - item.returned} onChange={(val: number) => handleOpnameChange(item.productId, 'sold', val)} />
+                      </div>
                     </td>
-                    <td className="py-md px-md text-center">
-                      <NumberInput className="mx-auto" value={item.returned} max={item.initialStock - item.sold} onChange={(val: number) => handleOpnameChange(item.productId, 'returned', val)} />
+                    <td className="py-md px-md">
+                      <div className="flex justify-center">
+                        <NumberInput value={item.returned} max={item.initialStock - item.sold} onChange={(val: number) => handleOpnameChange(item.productId, 'returned', val)} />
+                      </div>
                     </td>
                     <td className="py-md px-md text-center">
                       <span className={`font-data-md sm:font-data-lg text-data-md sm:text-data-lg font-bold ${item.remained > 0 ? 'text-primary' : 'text-text-muted'}`}>{item.remained}</span>
