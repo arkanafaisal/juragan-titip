@@ -126,15 +126,6 @@ export default function StoreDetailPage() {
 
   return (
     <div className="max-w-container-max mx-auto space-y-md md:space-y-lg pb-xl">
-      <nav aria-label="Breadcrumb" className="flex text-text-secondary font-body-sm text-body-sm">
-        <ol className="inline-flex items-center space-x-1 md:space-x-2">
-          <li className="inline-flex items-center transition-colors">
-            <Link to="/stores" className="hover:text-primary transition-colors cursor-pointer">Toko</Link>
-          </li>
-          <li><ChevronRight className="w-4 h-4 text-text-muted" /></li>
-          <li aria-current="page" className="text-text-primary font-medium">{store.name}</li>
-        </ol>
-      </nav>
 
       <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
         <div className="flex flex-col md:flex-row">
