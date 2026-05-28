@@ -7,6 +7,7 @@ import { useSidebar } from "@/hooks/use-sidebar";
 import { useMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { validateProductForm } from "@/lib/validations";
+import { VALIDATION_RULES } from "@/lib/validation-rules";
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -71,6 +72,8 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
     if (errorMsg) {
       setError(errorMsg);
       setIsSaving(false);
+      const container = document.getElementById("product-form-scroll-container");
+      if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     // ----------------
@@ -118,7 +121,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
           </button>
         </div>
         
-        <div className="p-lg overflow-y-auto custom-scrollbar">
+        <div id="product-form-scroll-container" className="p-lg overflow-y-auto custom-scrollbar">
           {error && (
             <div className="mb-md p-sm bg-error/10 text-error rounded-lg font-body-sm text-body-sm text-center border border-error/20">
               {error}
@@ -135,6 +138,10 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                 onChange={handleChange} 
                 placeholder="Kripik Singkong Rasa Balado" 
                 className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
+                autoFocus
+                minLength={VALIDATION_RULES.PRODUCT.NAME_MIN}
+                maxLength={VALIDATION_RULES.PRODUCT.NAME_MAX}
+                autoComplete="off"
               />
             </div>
             
@@ -166,6 +173,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   onChange={handleChange} 
                   placeholder="100" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
+                  max={VALIDATION_RULES.PRODUCT.STOCK_MAX}
                 />
               </div>
             </div>
@@ -182,6 +190,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   onChange={handleChange} 
                   placeholder="15000" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
+                  max={VALIDATION_RULES.PRODUCT.PRICE_MAX}
                 />
               </div>
               <div className="flex flex-col gap-xs">
@@ -195,6 +204,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   onChange={handleChange} 
                   placeholder="18000" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
+                  max={VALIDATION_RULES.PRODUCT.PRICE_MAX}
                 />
               </div>
             </div>
@@ -208,6 +218,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                 rows={3} 
                 placeholder="Rasa balado pedas manis, kemasan 200g" 
                 className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all resize-none"
+                maxLength={VALIDATION_RULES.PRODUCT.DESC_MAX}
               ></textarea>
             </div>
           </form>

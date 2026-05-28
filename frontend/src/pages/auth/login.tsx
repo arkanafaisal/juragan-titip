@@ -3,6 +3,7 @@ import { Package, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
 import { validateLoginForm } from "@/lib/validations";
+import { VALIDATION_RULES } from "@/lib/validation-rules";
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -26,6 +27,7 @@ export default function LoginForm() {
     const errorMsg = validateLoginForm({ email, password });
     if (errorMsg) {
       setError(errorMsg);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -77,7 +79,10 @@ export default function LoginForm() {
                 <input
                   className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
                   id="email" name="email" placeholder="budi.santoso@gmail.com" type="email"
-                  value={email} onChange={(e) => { setEmail(e.target.value); if(error) setError(null); }} required />
+                  value={email} onChange={(e) => { setEmail(e.target.value); if(error) setError(null); }} required 
+                  autoFocus
+                  autoComplete="email"
+                />
               </div>
             </div>
 
@@ -89,7 +94,10 @@ export default function LoginForm() {
                 <input
                   className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
                   id="password" name="password" placeholder="P@ssw0rd123" type={showPassword ? "text" : "password"}
-                  value={password} onChange={(e) => { setPassword(e.target.value); if(error) setError(null); }} required />
+                  value={password} onChange={(e) => { setPassword(e.target.value); if(error) setError(null); }} required 
+                  minLength={VALIDATION_RULES.GENERAL.PASSWORD_MIN}
+                  autoComplete="current-password"
+                />
                 <button
                   className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
                   type="button" onClick={handleTogglePassword}>

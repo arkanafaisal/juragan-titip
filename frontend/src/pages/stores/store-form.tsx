@@ -13,6 +13,7 @@ import {
 import { storeApi } from "@/services/api/stores";
 import { MapPicker } from "@/components/features/map-picker";
 import { validateStoreForm } from "@/lib/validations";
+import { VALIDATION_RULES } from "@/lib/validation-rules";
 
 export default function StoreFormPage() {
   const navigate = useNavigate();
@@ -114,6 +115,7 @@ export default function StoreFormPage() {
     if (errorMsg) {
       setError(errorMsg);
       setIsSubmitting(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     // ----------------
@@ -204,6 +206,10 @@ export default function StoreFormPage() {
                     placeholder="Toko Berkah Jaya" 
                     type="text" 
                     required 
+                    autoFocus
+                    minLength={VALIDATION_RULES.STORE.NAME_MIN}
+                    maxLength={VALIDATION_RULES.STORE.NAME_MAX}
+                    autoComplete="organization"
                   />
                 </div>
                 
@@ -220,6 +226,9 @@ export default function StoreFormPage() {
                     placeholder="Budi Santoso" 
                     type="text" 
                     required 
+                    minLength={VALIDATION_RULES.STORE.OWNER_MIN}
+                    maxLength={VALIDATION_RULES.STORE.OWNER_MAX}
+                    autoComplete="name"
                   />
                 </div>
               </div>
@@ -241,6 +250,9 @@ export default function StoreFormPage() {
                     placeholder="081234567890" 
                     type="tel"
                     required
+                    minLength={VALIDATION_RULES.PHONE.MIN_LENGTH}
+                    maxLength={VALIDATION_RULES.PHONE.MAX_LENGTH}
+                    autoComplete="tel-national"
                   />
                 </div>
               </div>
@@ -258,6 +270,9 @@ export default function StoreFormPage() {
                   placeholder="Jl. Merdeka No. 123, patokan seberang pom bensin" 
                   rows={3} 
                   required 
+                  minLength={VALIDATION_RULES.STORE.ADDRESS_MIN}
+                  maxLength={VALIDATION_RULES.STORE.ADDRESS_MAX}
+                  autoComplete="street-address"
                 />
               </div>
             </div>
@@ -283,6 +298,7 @@ export default function StoreFormPage() {
                 className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
                 placeholder="Buka Senin-Sabtu, jam 08:00 - 17:00" 
                 rows={2} 
+                maxLength={VALIDATION_RULES.STORE.NOTES_MAX}
               />
             </div>
           </div>

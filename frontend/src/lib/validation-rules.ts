@@ -2,6 +2,8 @@ export const VALIDATION_RULES = {
   STORE: {
     NAME_MIN: 3,
     NAME_MAX: 30,
+    OWNER_MIN: 3,
+    OWNER_MAX: 20,
     ADDRESS_MIN: 10,
     ADDRESS_MAX: 60,
     NOTES_MAX: 200,
@@ -10,6 +12,8 @@ export const VALIDATION_RULES = {
     NAME_MIN: 3,
     NAME_MAX: 24,
     DESC_MAX: 200,
+    STOCK_MAX: 10000,
+    PRICE_MAX: 100000,
   },
   PHONE: {
     // Standar WA Indonesia: awalan +62, 62, atau 08
