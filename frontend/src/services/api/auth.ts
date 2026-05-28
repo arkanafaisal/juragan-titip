@@ -5,8 +5,11 @@ import { db, type DbUser } from "@/lib/db"
 
 export const authApi = {
   login: async (data: LoginFormData): Promise<ApiResponse<AuthResponse>> => {
+    // Pastikan email menjadi lowercase untuk mencegah case-sensitivity duplicate
+    const emailLower = data.email.toLowerCase();
+    
     // Cari user menggunakan IndexedDB (Dexie) berdasarkan email
-    const user = await db.users.where('email').equals(data.email).first();
+    const user = await db.users.where('email').equals(emailLower).first();
     
     if (user && user.password === data.password) {
       const { password: _, ...userData } = user
@@ -23,9 +26,11 @@ export const authApi = {
   },
 
   register: async (data: RegisterFormData): Promise<ApiResponse<AuthResponse>> => {
+    const emailLower = data.email.toLowerCase();
+    
     const newUser: Omit<DbUser, 'id'> = {
       name: data.name,
-      email: data.email,
+      email: emailLower,
       password: data.password,
       createdAt: new Date().toISOString(),
     }
