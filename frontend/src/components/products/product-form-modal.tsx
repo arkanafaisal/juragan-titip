@@ -133,7 +133,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                 name="name" 
                 value={formData.name} 
                 onChange={handleChange} 
-                placeholder="Masukkan nama produk" 
+                placeholder="Kripik Singkong Rasa Balado" 
                 className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
               />
             </div>
@@ -164,7 +164,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   name="warehouseStock" 
                   value={formData.warehouseStock === 0 && !product && !formData.warehouseStock.toString() ? '' : formData.warehouseStock} 
                   onChange={handleChange} 
-                  placeholder="0" 
+                  placeholder="100" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
                 />
               </div>
@@ -180,7 +180,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   name="costPrice" 
                   value={formData.costPrice === 0 && !product ? '' : formData.costPrice} 
                   onChange={handleChange} 
-                  placeholder="0" 
+                  placeholder="15000" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
                 />
               </div>
@@ -193,7 +193,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   name="wholesalePrice" 
                   value={formData.wholesalePrice === 0 && !product ? '' : formData.wholesalePrice} 
                   onChange={handleChange} 
-                  placeholder="0" 
+                  placeholder="18000" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
                 />
               </div>
@@ -206,7 +206,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                 value={formData.description} 
                 onChange={handleChange} 
                 rows={3} 
-                placeholder="Tambahkan deskripsi singkat..." 
+                placeholder="Rasa balado pedas manis, kemasan 200g" 
                 className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all resize-none"
               ></textarea>
             </div>

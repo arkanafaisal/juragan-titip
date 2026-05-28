@@ -201,7 +201,7 @@ export default function StoreFormPage() {
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
-                    placeholder="Contoh: Toko Berkah Jaya" 
+                    placeholder="Toko Berkah Jaya" 
                     type="text" 
                     required 
                   />
@@ -217,7 +217,7 @@ export default function StoreFormPage() {
                     value={formData.ownerName}
                     onChange={handleChange}
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
-                    placeholder="Nama lengkap pemilik" 
+                    placeholder="Budi Santoso" 
                     type="text" 
                     required 
                   />
@@ -238,7 +238,7 @@ export default function StoreFormPage() {
                     value={formData.phone}
                     onChange={handleChange}
                     className="flex-1 w-full bg-surface-container-lowest border border-outline-variant rounded-r-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
-                    placeholder="81234567890" 
+                    placeholder="081234567890" 
                     type="tel"
                     required
                   />
@@ -255,7 +255,7 @@ export default function StoreFormPage() {
                   value={formData.address}
                   onChange={handleChange}
                   className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
-                  placeholder="Masukkan alamat lengkap toko beserta patokan jika ada..." 
+                  placeholder="Jl. Merdeka No. 123, patokan seberang pom bensin" 
                   rows={3} 
                   required 
                 />
@@ -281,7 +281,7 @@ export default function StoreFormPage() {
                 value={formData.notes}
                 onChange={handleChange}
                 className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
-                placeholder="Jam buka, hari libur, atau instruksi khusus untuk kurir..." 
+                placeholder="Buka Senin-Sabtu, jam 08:00 - 17:00" 
                 rows={2} 
               />
             </div>

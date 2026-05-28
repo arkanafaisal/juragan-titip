@@ -86,7 +86,7 @@ export default function RegisterForm() {
                                 <User className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="name" name="name" placeholder="Nama Lengkap Anda" type="text"
+                                    id="name" name="name" placeholder="Budi Santoso" type="text"
                                     value={form.name} onChange={(e) => update("name", e.target.value)} required />
                             </div>
                         </div>
@@ -98,7 +98,7 @@ export default function RegisterForm() {
                                 <Mail className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="email" name="email" placeholder="nama@perusahaan.com" type="email"
+                                    id="email" name="email" placeholder="budi.santoso@gmail.com" type="email"
                                     value={form.email} onChange={(e) => update("email", e.target.value)} required />
                             </div>
                         </div>
@@ -110,7 +110,7 @@ export default function RegisterForm() {
                                 <Lock className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="password" name="password" placeholder="••••••••" type={showPassword ? "text" : "password"}
+                                    id="password" name="password" placeholder="P@ssw0rd123" type={showPassword ? "text" : "password"}
                                     value={form.password} onChange={(e) => update("password", e.target.value)} required />
                                 <button
                                     className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
@@ -127,7 +127,7 @@ export default function RegisterForm() {
                                 <Lock className="absolute left-md text-text-secondary" size={20} />
                                 <input
                                     className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                                    id="confirm-password" name="confirmPassword" placeholder="••••••••" type={showConfirmPassword ? "text" : "password"}
+                                    id="confirm-password" name="confirmPassword" placeholder="P@ssw0rd123" type={showConfirmPassword ? "text" : "password"}
                                     value={form.confirmPassword} onChange={(e) => update("confirmPassword", e.target.value)} required />
                                 <button
                                     className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"

@@ -154,7 +154,7 @@ export default function ProductListPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="w-full pl-xl pr-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body text-body bg-surface-container-lowest outline-none transition-all" 
-            placeholder="Cari nama produk..." 
+            placeholder="Kripik Singkong Balado..." 
             type="text" 
           />
         </div>

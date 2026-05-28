@@ -71,7 +71,7 @@ export default function RegisterPage() {
                 type="text"
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
-                placeholder="Masukkan nama lengkap"
+                placeholder="Budi Santoso"
                 required
                 className="block w-full pl-xl pr-sm py-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-body-sm text-body-sm placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all outline-none"
               />
@@ -90,7 +90,7 @@ export default function RegisterPage() {
                 type="email"
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
-                placeholder="nama@email.com"
+                placeholder="budi.santoso@gmail.com"
                 required
                 className="block w-full pl-xl pr-sm py-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-body-sm text-body-sm placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all outline-none"
               />
@@ -109,7 +109,7 @@ export default function RegisterPage() {
                 type="tel"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
-                placeholder="08xx-xxxx-xxxx"
+                placeholder="081234567890"
                 required
                 className="block w-full pl-xl pr-sm py-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg font-data-inventory text-data-inventory text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all outline-none"
               />
@@ -128,7 +128,7 @@ export default function RegisterPage() {
                 type={showPassword ? "text" : "password"}
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
-                placeholder="Minimal 8 karakter"
+                placeholder="P@ssw0rd123"
                 required
                 className="block w-full pl-xl pr-xl py-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-body-sm text-body-sm placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all outline-none"
               />
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                 type={showConfirmPassword ? "text" : "password"}
                 value={form.confirmPassword}
                 onChange={(e) => update("confirmPassword", e.target.value)}
-                placeholder="Ulangi password"
+                placeholder="P@ssw0rd123"
                 required
                 className="block w-full pl-xl pr-xl py-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-body-sm text-body-sm placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all outline-none"
               />

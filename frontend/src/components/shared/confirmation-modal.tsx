@@ -113,7 +113,7 @@ export function ConfirmationModal({
                     ? "border-outline-variant focus:ring-error focus:border-error" 
                     : "border-outline-variant focus:ring-primary focus:border-primary"
                 )}
-                placeholder="..."
+                placeholder="Ketik konfirmasi di sini..."
                 autoComplete="off"
               />
               {errorMessage && (

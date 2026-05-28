@@ -76,7 +76,7 @@ export default function LoginForm() {
                 <Mail className="absolute left-md text-text-secondary" size={20} />
                 <input
                   className="w-full pl-10 pr-md py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                  id="email" name="email" placeholder="nama@perusahaan.com" type="email"
+                  id="email" name="email" placeholder="budi.santoso@gmail.com" type="email"
                   value={email} onChange={(e) => { setEmail(e.target.value); if(error) setError(null); }} required />
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function LoginForm() {
                 <Lock className="absolute left-md text-text-secondary" size={20} />
                 <input
                   className="w-full pl-10 pr-10 py-2 bg-surface border border-outline-variant rounded-lg font-body text-body text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-sm"
-                  id="password" name="password" placeholder="••••••••" type={showPassword ? "text" : "password"}
+                  id="password" name="password" placeholder="P@ssw0rd123" type={showPassword ? "text" : "password"}
                   value={password} onChange={(e) => { setPassword(e.target.value); if(error) setError(null); }} required />
                 <button
                   className="absolute right-md text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"

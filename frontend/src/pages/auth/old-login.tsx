@@ -65,7 +65,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email@contoh.com"
+                    placeholder="budi.santoso@gmail.com"
                     required
                     className="w-full pl-xl pr-sm py-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg font-body-sm text-body-sm text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-all shadow-sm outline-none"
                   />
@@ -84,7 +84,7 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="P@ssw0rd123"
                     required
                     className="w-full pl-xl pr-xl py-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg font-body-sm text-body-sm text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-all shadow-sm outline-none"
                   />
