@@ -8,6 +8,7 @@ export type {
   ConsignmentItem,
   Visit,
   OpnameItem,
+  RestockItem,
   Invoice,
   BilledItem,
   ActiveStockItem,

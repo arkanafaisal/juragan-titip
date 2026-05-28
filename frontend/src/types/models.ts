@@ -82,6 +82,15 @@ export interface OpnameItem {
   wholesalePrice: number
 }
 
+export interface RestockItem {
+  productId: string
+  productName: string
+  quantity: number
+  wholesalePrice: number
+  retailPrice: number
+}
+
+
 export interface Invoice {
   id: string
   visitId: string
