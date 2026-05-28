@@ -43,14 +43,14 @@ export const storeApi = {
     return { success: true, data: stores }
   },
 
-  getById: async (id: number | string): Promise<ApiResponse<Store>> => {
-    const numericId = typeof id === 'string' ? Number(id) : id;
+  getById: async (id: number | string): Promise<ApiResponse<Store | null>> => {
+    const numericId = Number(id);
     const store = await db.stores.get(numericId);
-    if (!store) return { success: false, data: null as unknown as Store, message: "Toko tidak ditemukan" }
+    if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
     return { success: true, data: store }
   },
 
-  create: async (data: StoreFormData): Promise<ApiResponse<Store>> => {
+  create: async (data: StoreFormData): Promise<ApiResponse<Store | null>> => {
     const newStore: Omit<DbStore, 'id'> = {
       ...data,
       totalReceivable: 0,
@@ -61,15 +61,15 @@ export const storeApi = {
       return { success: true, data: { ...newStore, id } as Store }
     } catch (error: any) {
       console.error("Dexie Create Store Error:", error);
-      return { success: false, data: null as unknown as Store, message: "Gagal menyimpan toko" }
+      return { success: false, data: null, message: "Gagal menyimpan toko" }
     }
   },
 
-  update: async (id: number | string, data: Partial<StoreFormData>): Promise<ApiResponse<Store>> => {
-    const numericId = typeof id === 'string' ? Number(id) : id;
+  update: async (id: number | string, data: Partial<StoreFormData>): Promise<ApiResponse<Store | null>> => {
+    const numericId = Number(id);
     const store = await db.stores.get(numericId);
     
-    if (!store) return { success: false, data: null as unknown as Store, message: "Toko tidak ditemukan" }
+    if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
     
     try {
       await db.stores.update(numericId, data);
@@ -77,18 +77,18 @@ export const storeApi = {
       return { success: true, data: updatedStore! }
     } catch (error: any) {
       console.error("Dexie Update Store Error:", error);
-      return { success: false, data: null as unknown as Store, message: "Gagal memperbarui toko" }
+      return { success: false, data: null, message: "Gagal memperbarui toko" }
     }
   },
 
   delete: async (id: number | string, storeNameConfirm: string): Promise<ApiResponse<null>> => {
-    const numericId = typeof id === 'string' ? Number(id) : id;
+    const numericId = Number(id);
     const store = await db.stores.get(numericId);
 
     if (!store) {
       return { 
         success: false, 
-        data: null as unknown as null, 
+        data: null, 
         message: "Nama toko tidak ditemukan di sistem" 
       };
     }
@@ -96,25 +96,25 @@ export const storeApi = {
     if (store.name.toLowerCase() !== storeNameConfirm.toLowerCase()) {
       return { 
         success: false, 
-        data: null as unknown as null, 
+        data: null, 
         message: "Konfirmasi nama salah untuk ID toko ini" 
       };
     }
 
     await db.stores.delete(numericId);
-    return { success: true, data: null as unknown as null };
+    return { success: true, data: null };
   },
 
   getAnalysis: async (storeId: number | string): Promise<ApiResponse<{
     storeName: string;
     activeItems: { productName: string; remained: number }[];
     visitHistory: Visit[];
-  }>> => {
-    const numericId = typeof storeId === 'string' ? Number(storeId) : storeId;
+  } | null>> => {
+    const numericId = Number(storeId);
     const store = await db.stores.get(numericId);
 
     if (!store) {
-      return { success: false, data: null as any, message: "Toko tidak ditemukan" };
+      return { success: false, data: null, message: "Toko tidak ditemukan" };
     }
 
     // Karena Visit belum di migrate, kita tetap pakai LocalStorage untuk riwayat kunjungannya

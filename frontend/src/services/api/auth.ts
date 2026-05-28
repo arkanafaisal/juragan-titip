@@ -4,7 +4,7 @@ import { STORAGE_KEYS } from "@/lib/constants"
 import { db, type DbUser } from "@/lib/db"
 
 export const authApi = {
-  login: async (data: LoginFormData): Promise<ApiResponse<AuthResponse>> => {
+  login: async (data: LoginFormData): Promise<ApiResponse<AuthResponse | null>> => {
     // Pastikan email menjadi lowercase untuk mencegah case-sensitivity duplicate
     const emailLower = data.email.toLowerCase();
     
@@ -22,10 +22,10 @@ export const authApi = {
       return { success: true, data: { accessToken: token, user: userData } }
     }
     
-    return { success: false, data: null as unknown as AuthResponse, message: "Email atau password salah" }
+    return { success: false, data: null, message: "Email atau password salah" }
   },
 
-  register: async (data: RegisterFormData): Promise<ApiResponse<AuthResponse>> => {
+  register: async (data: RegisterFormData): Promise<ApiResponse<AuthResponse | null>> => {
     const emailLower = data.email.toLowerCase();
     
     const newUser: Omit<DbUser, 'id'> = {
@@ -49,10 +49,10 @@ export const authApi = {
       return { success: true, data: { accessToken: token, user: userData } }
     } catch (error: any) {
       if (error.name === 'ConstraintError') {
-        return { success: false, data: null as unknown as AuthResponse, message: "Email sudah terdaftar" }
+        return { success: false, data: null, message: "Email sudah terdaftar" }
       }
       console.error("Dexie Register Error:", error);
-      return { success: false, data: null as unknown as AuthResponse, message: "Gagal mendaftar ke database" }
+      return { success: false, data: null, message: "Gagal mendaftar ke database" }
     }
   },
 
