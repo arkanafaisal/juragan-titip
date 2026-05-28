@@ -1,15 +1,15 @@
 export const VALIDATION_RULES = {
   STORE: {
     NAME_MIN: 3,
-    NAME_MAX: 50,
+    NAME_MAX: 30,
     ADDRESS_MIN: 10,
-    ADDRESS_MAX: 200,
-    NOTES_MAX: 500,
+    ADDRESS_MAX: 60,
+    NOTES_MAX: 200,
   },
   PRODUCT: {
     NAME_MIN: 3,
-    NAME_MAX: 100,
-    DESC_MAX: 500,
+    NAME_MAX: 24,
+    DESC_MAX: 200,
   },
   PHONE: {
     // Standar WA Indonesia: awalan +62, 62, atau 08
@@ -19,6 +19,6 @@ export const VALIDATION_RULES = {
   },
   GENERAL: {
     EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    PASSWORD_MIN: 8,
+    PASSWORD_MIN: 6,
   }
 };
