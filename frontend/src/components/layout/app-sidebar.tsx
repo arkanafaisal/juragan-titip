@@ -80,7 +80,7 @@ export function AppSidebar() {
         </div>
 
         {/* Navigasi Utama */}
-        <div className="flex-1 flex flex-col gap-xs px-sm">
+        <div className={cn("flex-1 flex flex-col gap-xs px-sm transition-none", isCollapsed ? "items-center" : "gap-sm items-start")}>
           <Link
             to="/dashboard"
             onClick={(e) => handleNavClick(e, "/dashboard")}
