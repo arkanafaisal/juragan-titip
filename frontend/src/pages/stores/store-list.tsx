@@ -151,7 +151,7 @@ export default function StoreListPage() {
                       <Package className="w-4 h-4 shrink-0" />
                       <span className="font-caption text-caption">Stok Aktif</span>
                     </div>
-                    <span className="font-data-md text-data-md text-text-primary">{store.activeItemCount} item</span>
+                    <span className="font-data-md text-data-md text-text-primary">0 item</span>
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-xs text-text-secondary">

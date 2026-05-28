@@ -19,7 +19,7 @@ export interface Product {
 }
 
 export interface Store {
-  id: string
+  id: number
   name: string
   ownerName: string
   phone: string
@@ -27,10 +27,7 @@ export interface Store {
   latitude: number
   longitude: number
   notes: string
-  activeItemCount: number
   totalReceivable: number
-  createdAt: string
-  updatedAt: string
 }
 
 export interface StorePrice {
