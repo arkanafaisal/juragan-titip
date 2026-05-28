@@ -10,7 +10,7 @@ interface BillingItem {
 }
 
 interface DisplayStockItem {
-  productId: string;
+  productId: number;
   productName: string;
   initialStock: number;
   sold: number;

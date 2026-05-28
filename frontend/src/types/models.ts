@@ -58,8 +58,8 @@ export interface ConsignmentItem {
 }
 
 export interface Visit {
-  id: string
-  storeId: string
+  id: number
+  storeId: number
   storeName: string
   items: OpnameItem[]
   totalBilled: number
@@ -70,7 +70,7 @@ export interface Visit {
 }
 
 export interface OpnameItem {
-  productId: string
+  productId: number
   productName: string
   sold: number
   returned: number
@@ -79,7 +79,7 @@ export interface OpnameItem {
 }
 
 export interface RestockItem {
-  productId: string
+  productId: number
   productName: string
   quantity: number
   wholesalePrice: number

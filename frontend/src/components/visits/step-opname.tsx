@@ -5,7 +5,7 @@ import type { OpnameItem } from "@/types";
 
 interface StepOpnameProps {
   opnameItems: (OpnameItem & { initialStock: number })[];
-  handleOpnameChange: (productId: string, field: 'sold' | 'returned', value: number) => void;
+  handleOpnameChange: (productId: number, field: 'sold' | 'returned', value: number) => void;
   onNext: () => void;
 }
 

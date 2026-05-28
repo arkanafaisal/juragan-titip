@@ -86,7 +86,7 @@ export default function StoreVisitPage() {
     init();
   }, [id]);
 
-  const handleOpnameChange = (productId: string, field: 'sold' | 'returned', value: number) => {
+  const handleOpnameChange = (productId: number, field: 'sold' | 'returned', value: number) => {
     setOpnameItems(prev => prev.map(item => {
       if (item.productId === productId) {
         const num = isNaN(value) || value < 0 ? 0 : value;
@@ -113,7 +113,7 @@ export default function StoreVisitPage() {
     }]);
   };
 
-  const handleRestockQuantity = (productId: string, qty: number) => {
+  const handleRestockQuantity = (productId: number, qty: number) => {
     setRestockItems(prev => prev.map(item => {
       if (item.productId === productId) {
         let finalQty = isNaN(qty) || qty < 0 ? 0 : qty;
@@ -124,7 +124,7 @@ export default function StoreVisitPage() {
     }));
   };
 
-  const handleRemoveRestock = (productId: string) => {
+  const handleRemoveRestock = (productId: number) => {
     setRestockItems(prev => prev.filter(i => i.productId !== productId));
   };
 
@@ -147,9 +147,8 @@ export default function StoreVisitPage() {
     return items;
   }, [opnameItems, restockItems]);
 
-  // Merged Stock untuk tampilan Step 3, termasuk yang totalnya jadi 0
   const displayStockItems = useMemo(() => {
-    const map = new Map<string, { productId: string; productName: string; initialStock: number; sold: number; returned: number; remained: number; restock: number; total: number; }>();
+    const map = new Map<number, { productId: number; productName: string; initialStock: number; sold: number; returned: number; remained: number; restock: number; total: number; }>();
     
     opnameItems.forEach(item => {
       map.set(item.productId, { 
@@ -213,7 +212,7 @@ export default function StoreVisitPage() {
       );
 
       // 2. Merge Logic final items record
-      const mergedItemsMap = new Map<string, OpnameItem>();
+      const mergedItemsMap = new Map<number, OpnameItem>();
 
       opnameItems.forEach(item => {
         mergedItemsMap.set(item.productId, {
@@ -250,7 +249,7 @@ export default function StoreVisitPage() {
 
       // 3. Create Visit Record
       await visitApi.create({
-        storeId: id, storeName: store.name, items: finalItems,
+        storeId: Number(id), storeName: store.name, items: finalItems,
         totalBilled, amountPaid: totalBilled, previousReceivable: store.totalReceivable || 0,
         documentNumber: `VST-${Date.now()}`, createdAt: new Date().toISOString()
       });

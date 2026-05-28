@@ -4,6 +4,7 @@ import type { Store, StoreFormData, ApiResponse, Visit } from "@/types"
 import { storageGetOrSeed } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
 import { db, type DbStore } from "@/lib/db"
+import { visitApi } from "@/services/api/visits"
 
 export interface StoreQueryParams {
   search?: string;
@@ -52,9 +53,9 @@ export const storeApi = {
     const store = await db.stores.get(numericId);
     if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
 
-    const storeIdStr = String(id);
-    const allVisits = storageGetOrSeed<Visit[]>(STORAGE_KEYS.VISITS, []);
-    const storeVisits = allVisits.filter(v => v.storeId === storeIdStr || v.storeId === numericId as any);
+    // Tarik Visit menggunakan API Visits agar lebih rapi & terpusat
+    const visitRes = await visitApi.getByStore(numericId);
+    const storeVisits = visitRes.success && visitRes.data ? visitRes.data : [];
 
     let activeItems: { productName: string; remained: number }[] = [];
     

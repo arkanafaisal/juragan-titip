@@ -9,8 +9,8 @@ interface StepRestockProps {
   suggestedProducts: Product[];
   isNextDisabled: boolean;
   handleAddRestock: (product: Product) => void;
-  handleRestockQuantity: (productId: string, qty: number) => void;
-  handleRemoveRestock: (productId: string) => void;
+  handleRestockQuantity: (productId: number, qty: number) => void;
+  handleRemoveRestock: (productId: number) => void;
   onNext: () => void;
   onPrev: () => void;
   formatCurrency: (value: number) => string;
