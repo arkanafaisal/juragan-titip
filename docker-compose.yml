@@ -4,18 +4,24 @@ services:
   app:
     build:
       context: .
-      target: app
-      args:
-        VITE_API_URL: ${VITE_API_URL}
-        DATABASE_URL: ${DATABASE_URL}
-        SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
-    expose:
-      - "3001"
-    env_file:
-      - .env
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      target: frontend
+      # args:
+      #   VITE_API_URL: ${VITE_API_URL}
+      #   DATABASE_URL: ${DATABASE_URL}
+      #   SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    # expose:
+    #   - "3001"
+    # env_file:
+    #   - .env
+    restart: unless-stopped
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
 
 
   # caddy:
@@ -32,6 +38,6 @@ services:
 
 
 
-# volumes:
-#   caddy_data:
-#   caddy_config:
+volumes:
+  caddy_data:
+  caddy_config:

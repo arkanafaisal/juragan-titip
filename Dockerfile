@@ -5,27 +5,33 @@ COPY frontend/package*.json ./
 RUN npm install
 
 COPY frontend .
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+# ARG VITE_API_URL
+# ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
+FROM caddy:alpine
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=frontend-build /frontend/dist /srv
 
-FROM node:22 AS app
-WORKDIR /app
+EXPOSE 80 443
 
-COPY backend/package*.json ./
-RUN npm install
 
-COPY backend .
+# FROM node:22 AS app
+# WORKDIR /app
 
-COPY --from=frontend-build /frontend/dist ./public
+# COPY backend/package*.json ./
+# RUN npm install
 
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-ARG SHADOW_DATABASE_URL
-ENV SHADOW_DATABASE_URL=$SHADOW_DATABASE_URL
-RUN npx prisma generate
+# COPY backend .
 
-RUN npm run build
+# COPY --from=frontend-build /frontend/dist ./public
 
-CMD ["npm", "run", "start"]
+# ARG DATABASE_URL
+# ENV DATABASE_URL=$DATABASE_URL
+# ARG SHADOW_DATABASE_URL
+# ENV SHADOW_DATABASE_URL=$SHADOW_DATABASE_URL
+# RUN npx prisma generate
+
+# RUN npm run build
+
+# CMD ["npm", "run", "start"]
