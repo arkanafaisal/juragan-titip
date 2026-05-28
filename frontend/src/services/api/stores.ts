@@ -1,9 +1,9 @@
 // frontend/src/services/api/stores.ts
 
 import type { Store, StoreFormData, ApiResponse, Visit } from "@/types"
-import { storageGetOrSeed, storageSet, storageGet } from "@/lib/storage"
+import { storageGetOrSeed } from "@/lib/storage"
 import { STORAGE_KEYS } from "@/lib/constants"
-import { generateId } from "@/lib/utils"
+import { db, type DbStore } from "@/lib/db"
 
 export interface StoreQueryParams {
   search?: string;
@@ -13,14 +13,12 @@ export interface StoreQueryParams {
 
 export const storeApi = {
   getAll: async (params?: StoreQueryParams): Promise<ApiResponse<Store[]>> => {
-
-
-    let stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
+    let collection = db.stores.toCollection();
     
     if (params) {
       if (params.search) {
         const query = params.search.toLowerCase();
-        stores = stores.filter(s => 
+        collection = collection.filter(s => 
           s.name.toLowerCase().includes(query) || 
           s.ownerName.toLowerCase().includes(query)
         );
@@ -28,9 +26,9 @@ export const storeApi = {
       
       if (params.status) {
         if (params.status === 'lunas') {
-          stores = stores.filter(s => s.totalReceivable === 0);
+          collection = collection.filter(s => s.totalReceivable === 0);
         } else if (params.status === 'piutang') {
-          stores = stores.filter(s => s.totalReceivable > 0);
+          collection = collection.filter(s => s.totalReceivable > 0);
         }
       }
     }
@@ -38,52 +36,56 @@ export const storeApi = {
     // Proses Pagination (Limit 6, ambil 7 item untuk cek halaman selanjutnya)
     const page = params?.page || 1;
     const limit = 6;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit + 1; // +1 untuk mengintip data halaman berikutnya
+    const offset = (page - 1) * limit;
 
-    stores = stores.slice(startIndex, endIndex);
+    const stores = await collection.offset(offset).limit(limit + 1).toArray();
 
     return { success: true, data: stores }
   },
 
-  getById: async (id: string): Promise<ApiResponse<Store>> => {
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
-    const store = stores.find((s) => s.id === id)
+  getById: async (id: number | string): Promise<ApiResponse<Store>> => {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    const store = await db.stores.get(numericId);
     if (!store) return { success: false, data: null as unknown as Store, message: "Toko tidak ditemukan" }
     return { success: true, data: store }
   },
 
   create: async (data: StoreFormData): Promise<ApiResponse<Store>> => {
-    const stores = storageGet<Store[]>(STORAGE_KEYS.STORES) || []
-    const newStore: Store = {
-      id: generateId("store"),
+    const newStore: Omit<DbStore, 'id'> = {
       ...data,
-      activeItemCount: 0,
       totalReceivable: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     }
-    storageSet(STORAGE_KEYS.STORES, [...stores, newStore])
-    return { success: true, data: newStore }
+
+    try {
+      const id = await db.stores.add(newStore as DbStore);
+      return { success: true, data: { ...newStore, id } as Store }
+    } catch (error: any) {
+      console.error("Dexie Create Store Error:", error);
+      return { success: false, data: null as unknown as Store, message: "Gagal menyimpan toko" }
+    }
   },
 
-  update: async (id: string, data: Partial<StoreFormData>): Promise<ApiResponse<Store>> => {
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
-    const index = stores.findIndex((s) => s.id === id)
-    if (index === -1) return { success: false, data: null as unknown as Store, message: "Toko tidak ditemukan" }
-    stores[index] = { ...stores[index], ...data, updatedAt: new Date().toISOString() }
-    storageSet(STORAGE_KEYS.STORES, stores)
-    return { success: true, data: stores[index] }
+  update: async (id: number | string, data: Partial<StoreFormData>): Promise<ApiResponse<Store>> => {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    const store = await db.stores.get(numericId);
+    
+    if (!store) return { success: false, data: null as unknown as Store, message: "Toko tidak ditemukan" }
+    
+    try {
+      await db.stores.update(numericId, data);
+      const updatedStore = await db.stores.get(numericId);
+      return { success: true, data: updatedStore! }
+    } catch (error: any) {
+      console.error("Dexie Update Store Error:", error);
+      return { success: false, data: null as unknown as Store, message: "Gagal memperbarui toko" }
+    }
   },
 
-  delete: async (id: string, storeNameConfirm: string): Promise<ApiResponse<null>> => {
+  delete: async (id: number | string, storeNameConfirm: string): Promise<ApiResponse<null>> => {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    const store = await db.stores.get(numericId);
 
-    
-    const stores = storageGetOrSeed<Store[]>(STORAGE_KEYS.STORES, [])
-
-    const isNameExists = stores.some((s) => s.name.toLowerCase() === storeNameConfirm.toLowerCase());
-    
-    if (!isNameExists) {
+    if (!store) {
       return { 
         success: false, 
         data: null as unknown as null, 
@@ -91,11 +93,7 @@ export const storeApi = {
       };
     }
 
-    const storeIndex = stores.findIndex(
-      (s) => s.id === id && s.name.toLowerCase() === storeNameConfirm.toLowerCase()
-    );
-
-    if (storeIndex === -1) {
+    if (store.name.toLowerCase() !== storeNameConfirm.toLowerCase()) {
       return { 
         success: false, 
         data: null as unknown as null, 
@@ -103,26 +101,32 @@ export const storeApi = {
       };
     }
 
-    stores.splice(storeIndex, 1);
-    storageSet(STORAGE_KEYS.STORES, stores);
-    
+    await db.stores.delete(numericId);
     return { success: true, data: null as unknown as null };
   },
 
-  getAnalysis: async (storeId: string): Promise<ApiResponse<{
+  getAnalysis: async (storeId: number | string): Promise<ApiResponse<{
     storeName: string;
     activeItems: { productName: string; remained: number }[];
     visitHistory: Visit[];
   }>> => {
+    const numericId = typeof storeId === 'string' ? Number(storeId) : storeId;
+    const store = await db.stores.get(numericId);
+
+    if (!store) {
+      return { success: false, data: null as any, message: "Toko tidak ditemukan" };
+    }
+
+    // Karena Visit belum di migrate, kita tetap pakai LocalStorage untuk riwayat kunjungannya
+    // string comparison karena Visit masih menyimpan storeId sebagai string (jika belum di migrasi tipe datanya)
+    const storeIdStr = String(storeId);
     const allVisits = storageGetOrSeed<Visit[]>(STORAGE_KEYS.VISITS, []);
-    const storeVisits = allVisits.filter(v => v.storeId === storeId);
+    const storeVisits = allVisits.filter(v => v.storeId === storeIdStr || v.storeId === numericId as any);
 
     let activeItems: { productName: string; remained: number }[] = [];
-    let storeName = "";
     
     if (storeVisits.length > 0) {
       const lastVisit = storeVisits[storeVisits.length - 1]; // Ambil data terakhir (paling baru)
-      storeName = lastVisit.storeName;
       activeItems = lastVisit.items.map(item => ({
         productName: item.productName,
         remained: item.remained
@@ -132,7 +136,7 @@ export const storeApi = {
     return {
       success: true,
       data: {
-        storeName,
+        storeName: store.name,
         activeItems,
         visitHistory: storeVisits
       }
