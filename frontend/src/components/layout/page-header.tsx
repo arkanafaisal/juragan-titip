@@ -94,10 +94,7 @@ export function PageHeader() {
           <Menu className="w-6 h-6" />
         </button>
 
-        <div className={cn(
-          "font-bold text-primary-container tracking-tight truncate",
-          isLongTitle ? "font-h3 text-h3 sm:font-h2 sm:text-h2" : "font-h2 text-h2"
-        )}>
+        <div className="text-h1 font-bold text-primary-container tracking-tight truncate">
           {dynamicTitle}
         </div>
       </div>
