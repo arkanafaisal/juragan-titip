@@ -1,4 +1,21 @@
 
+28 May 2026
+<details>
+- deleted seed & old version files
+- updated Visit flow: restock option, bill calculation, wording, empty data validation, item details,  
+- removed all scrollbar & breadcrumbs
+- implemented switch page confirmation on menu navigation (form pages)
+- implemented dynamic header title (and removed all pages title)
+- implemented input validation (rules, util functions, input property)
+- removed setTimeout delay mock, comments & dashboard dummy data
+- updated input placeholder (to value example) 
+- added catch guard on localstorage JSON parse
+- implemented store data analysis extraction
+- added db config (indexedDB) & dexie package
+- migrated localstorage to indexedDB (product, store & visit services)
+- added database schema: primary key, indexing & unique constraint
+- updated docker prod config
+</details>
 
 27 May 2026
 <details>
