@@ -7,16 +7,15 @@ export interface User {
 }
 
 export interface Product {
-  id: string
+  id: number
   name: string
+  normalizedName: string
   category: string
   costPrice: number
   wholesalePrice: number
   retailPrice: number
   warehouseStock: number
   description: string
-  createdAt: string
-  updatedAt: string
 }
 
 export interface Store {

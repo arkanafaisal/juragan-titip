@@ -26,7 +26,7 @@ export default function ProductListPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Delete State
-  const [productToDelete, setProductToDelete] = useState<{ id: string, name: string } | null>(null);
+  const [productToDelete, setProductToDelete] = useState<{ id: number, name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
