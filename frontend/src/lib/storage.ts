@@ -1,6 +1,13 @@
 export function storageGet<T>(key: string): T | null {
   const raw = localStorage.getItem(key)
-  return raw ? (JSON.parse(raw) as T) : null
+  if (!raw) return null
+  
+  try {
+    return JSON.parse(raw) as T
+  } catch (error) {
+    console.error(`[storageGet] Data korup untuk key "${key}":`, error)
+    return [] as unknown as T
+  }
 }
 
 export function storageSet<T>(key: string, value: T): void {
