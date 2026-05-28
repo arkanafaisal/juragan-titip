@@ -44,20 +44,14 @@ export default function StoreDetailPage() {
       if (!id) return;
       setIsLoading(true);
       try {
-        const [storeRes, analysisRes] = await Promise.all([
-          storeApi.getById(id),
-          storeApi.getAnalysis(id)
-        ]);
+        const storeRes = await storeApi.getById(id);
 
         if (storeRes.success && storeRes.data) {
-          setStore(storeRes.data);
-          
-          if (analysisRes.success && analysisRes.data) {
-            setAnalysis({
-              activeItems: analysisRes.data.activeItems,
-              visitHistory: analysisRes.data.visitHistory
-            });
-          }
+          setStore(storeRes.data.store);
+          setAnalysis({
+            activeItems: storeRes.data.activeItems,
+            visitHistory: storeRes.data.visitHistory
+          });
         } else {
           setError(storeRes.message || "Toko tidak ditemukan");
         }

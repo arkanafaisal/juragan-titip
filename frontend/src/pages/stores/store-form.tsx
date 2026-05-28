@@ -45,15 +45,15 @@ export default function StoreFormPage() {
           const response = await storeApi.getById(id);
           if (response.success && response.data) {
             setFormData({
-              name: response.data.name,
-              ownerName: response.data.ownerName,
-              phone: response.data.phone,
-              address: response.data.address,
-              notes: response.data.notes || "",
+              name: response.data.store.name,
+              ownerName: response.data.store.ownerName,
+              phone: response.data.store.phone,
+              address: response.data.store.address,
+              notes: response.data.store.notes || "",
             });
             setLocation({
-              lat: response.data.latitude,
-              lng: response.data.longitude,
+              lat: response.data.store.latitude,
+              lng: response.data.store.longitude,
             });
           } else {
             setError(response.message || "Gagal memuat data toko.");

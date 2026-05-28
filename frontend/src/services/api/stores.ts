@@ -43,11 +43,37 @@ export const storeApi = {
     return { success: true, data: stores }
   },
 
-  getById: async (id: number | string): Promise<ApiResponse<Store | null>> => {
+  getById: async (id: number | string): Promise<ApiResponse<{
+    store: Store;
+    activeItems: { productName: string; remained: number }[];
+    visitHistory: Visit[];
+  } | null>> => {
     const numericId = Number(id);
     const store = await db.stores.get(numericId);
     if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
-    return { success: true, data: store }
+
+    const storeIdStr = String(id);
+    const allVisits = storageGetOrSeed<Visit[]>(STORAGE_KEYS.VISITS, []);
+    const storeVisits = allVisits.filter(v => v.storeId === storeIdStr || v.storeId === numericId as any);
+
+    let activeItems: { productName: string; remained: number }[] = [];
+    
+    if (storeVisits.length > 0) {
+      const lastVisit = storeVisits[storeVisits.length - 1]; // Ambil data terakhir (paling baru)
+      activeItems = lastVisit.items.map(item => ({
+        productName: item.productName,
+        remained: item.remained
+      }));
+    }
+
+    return { 
+      success: true, 
+      data: {
+        store,
+        activeItems,
+        visitHistory: storeVisits
+      } 
+    };
   },
 
   create: async (data: StoreFormData): Promise<ApiResponse<Store | null>> => {
@@ -105,41 +131,4 @@ export const storeApi = {
     return { success: true, data: null };
   },
 
-  getAnalysis: async (storeId: number | string): Promise<ApiResponse<{
-    storeName: string;
-    activeItems: { productName: string; remained: number }[];
-    visitHistory: Visit[];
-  } | null>> => {
-    const numericId = Number(storeId);
-    const store = await db.stores.get(numericId);
-
-    if (!store) {
-      return { success: false, data: null, message: "Toko tidak ditemukan" };
-    }
-
-    // Karena Visit belum di migrate, kita tetap pakai LocalStorage untuk riwayat kunjungannya
-    // string comparison karena Visit masih menyimpan storeId sebagai string (jika belum di migrasi tipe datanya)
-    const storeIdStr = String(storeId);
-    const allVisits = storageGetOrSeed<Visit[]>(STORAGE_KEYS.VISITS, []);
-    const storeVisits = allVisits.filter(v => v.storeId === storeIdStr || v.storeId === numericId as any);
-
-    let activeItems: { productName: string; remained: number }[] = [];
-    
-    if (storeVisits.length > 0) {
-      const lastVisit = storeVisits[storeVisits.length - 1]; // Ambil data terakhir (paling baru)
-      activeItems = lastVisit.items.map(item => ({
-        productName: item.productName,
-        remained: item.remained
-      }));
-    }
-
-    return {
-      success: true,
-      data: {
-        storeName: store.name,
-        activeItems,
-        visitHistory: storeVisits
-      }
-    };
-  },
 }
