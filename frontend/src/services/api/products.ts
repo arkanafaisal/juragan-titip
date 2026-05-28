@@ -1,9 +1,8 @@
 // frontend/src/services/api/products.ts
 
 import type { Product, ProductFormData, ApiResponse } from "@/types"
-import { storageGet, storageGetOrSeed, storageSet } from "@/lib/storage"
-import { STORAGE_KEYS } from "@/lib/constants"
-import { generateId } from "@/lib/utils"
+import { db, type DbProduct } from "@/lib/db"
+
 export interface ProductQueryParams {
   search?: string;
   category?: string;
@@ -12,97 +11,106 @@ export interface ProductQueryParams {
 }
 
 export const productApi = {
-  getAll: async (params?: ProductQueryParams) => {
+  getAll: async (params?: ProductQueryParams): Promise<ApiResponse<Product[]>> => {
+    let collection = db.products.toCollection();
 
-
-    let products = storageGetOrSeed<Array<Product>>(STORAGE_KEYS.PRODUCTS, []) // localStorage.getItem("jt_products"); 
-    // let products = storedData ? JSON.parse(storedData) : [];
-
-    // 1. Proses Filtering
     if (params) {
       if (params.search) {
         const query = params.search.toLowerCase();
-        products = products.filter((p: any) => 
-          p.name.toLowerCase().includes(query)
-        );
+        // Pencarian string inklusif menggunakan filter di memori Dexie (lebih efisien daripada ambil ke RAM app)
+        collection = collection.filter(p => p.normalizedName.includes(query));
       }
       
       if (params.category) {
-        products = products.filter((p: any) => 
-          p.category.toLowerCase() === params.category!.toLowerCase()
-        );
+        const categoryFilter = params.category.toLowerCase();
+        collection = collection.filter(p => p.category.toLowerCase() === categoryFilter);
       }
       
       if (params.stockStatus) {
         if (params.stockStatus === 'in_stock') {
-          products = products.filter((p: any) => p.warehouseStock > 20);
+          collection = collection.filter(p => p.warehouseStock > 20);
         } else if (params.stockStatus === 'low_stock') {
-          products = products.filter((p: any) => p.warehouseStock > 0 && p.warehouseStock <= 20);
+          collection = collection.filter(p => p.warehouseStock > 0 && p.warehouseStock <= 20);
         } else if (params.stockStatus === 'out_of_stock') {
-          products = products.filter((p: any) => p.warehouseStock === 0);
+          collection = collection.filter(p => p.warehouseStock === 0);
         }
       }
     }
 
-    // 2. Proses Pagination (Ambil 6 item untuk cek halaman selanjutnya)
+    // Pagination
     const page = params?.page || 1;
     const limit = 6;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit + 1; // +1 untuk mengintip data halaman berikutnya
+    const offset = (page - 1) * limit;
 
-    products = products.slice(startIndex, endIndex);
+    // offset & limit
+    const products = await collection.offset(offset).limit(limit + 1).toArray();
 
     return { success: true, data: products };
   },
 
-  getById: async (id: string): Promise<ApiResponse<Product>> => {
-    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
-    const product = products.find((p) => p.id === id)
+  getById: async (id: number | string): Promise<ApiResponse<Product>> => {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    const product = await db.products.get(numericId);
     if (!product) return { success: false, data: null as unknown as Product, message: "Produk tidak ditemukan" }
     return { success: true, data: product }
   },
 
   create: async (data: ProductFormData): Promise<ApiResponse<Product>> => {
-    const products = storageGet<Product[]>(STORAGE_KEYS.PRODUCTS) || []
-    const newProduct: Product = {
-      id: generateId("prod"),
+    const normalizedName = data.name.toLowerCase();
+    
+    const newProduct: Omit<DbProduct, 'id'> = {
       ...data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      normalizedName
     }
-    storageSet(STORAGE_KEYS.PRODUCTS, [...products, newProduct])
-    return { success: true, data: newProduct }
+
+    try {
+      const id = await db.products.add(newProduct as DbProduct);
+      return { success: true, data: { ...newProduct, id } as Product }
+    } catch (error: any) {
+      if (error.name === 'ConstraintError') {
+        return { success: false, data: null as unknown as Product, message: "Nama produk sudah ada di sistem" }
+      }
+      console.error("Dexie Create Product Error:", error);
+      return { success: false, data: null as unknown as Product, message: "Gagal menyimpan produk" }
+    }
   },
 
-  update: async (id: string, data: Partial<ProductFormData>): Promise<ApiResponse<Product>> => {
-    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
-    const index = products.findIndex((p) => p.id === id)
-    if (index === -1) return { success: false, data: null as unknown as Product, message: "Produk tidak ditemukan" }
-    products[index] = { ...products[index], ...data, updatedAt: new Date().toISOString() }
-    storageSet(STORAGE_KEYS.PRODUCTS, products)
-    return { success: true, data: products[index] }
+  update: async (id: number | string, data: Partial<ProductFormData>): Promise<ApiResponse<Product>> => {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    const product = await db.products.get(numericId);
+    
+    if (!product) return { success: false, data: null as unknown as Product, message: "Produk tidak ditemukan" }
+    
+    const updateData: Partial<DbProduct> = { ...data };
+    if (data.name) {
+      updateData.normalizedName = data.name.toLowerCase();
+    }
+
+    try {
+      await db.products.update(numericId, updateData);
+      const updatedProduct = await db.products.get(numericId);
+      return { success: true, data: updatedProduct! }
+    } catch (error: any) {
+      if (error.name === 'ConstraintError') {
+        return { success: false, data: null as unknown as Product, message: "Nama produk sudah digunakan oleh produk lain" }
+      }
+      return { success: false, data: null as unknown as Product, message: "Gagal memperbarui produk" }
+    }
   },
 
-  delete: async (id: string, productNameConfirm: string): Promise<ApiResponse<null>> => {
-
+  delete: async (id: number | string, productNameConfirm: string): Promise<ApiResponse<null>> => {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    const product = await db.products.get(numericId);
     
-    const products = storageGetOrSeed<Product[]>(STORAGE_KEYS.PRODUCTS, [])
-    
-    const isNameExists = products.some((p) => p.name.toLowerCase() === productNameConfirm.toLowerCase());
-    
-    if (!isNameExists) {
+    if (!product) {
       return { 
         success: false, 
         data: null as unknown as null, 
-        message: "Nama produk tidak ditemukan di sistem" 
+        message: "Produk tidak ditemukan" 
       };
     }
 
-    const productIndex = products.findIndex(
-      (p) => p.id === id && p.name.toLowerCase() === productNameConfirm.toLowerCase()
-    );
-
-    if (productIndex === -1) {
+    if (product.normalizedName !== productNameConfirm.toLowerCase()) {
       return { 
         success: false, 
         data: null as unknown as null, 
@@ -110,8 +118,7 @@ export const productApi = {
       };
     }
 
-    products.splice(productIndex, 1);
-    storageSet(STORAGE_KEYS.PRODUCTS, products);
+    await db.products.delete(numericId);
     return { success: true, data: null };
   },
 }
