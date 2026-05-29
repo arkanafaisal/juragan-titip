@@ -105,6 +105,10 @@ export default function StoreListPage() {
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
           <div className="animate-pulse text-text-secondary font-body text-body">Memuat data toko...</div>
         </div>
+      ) : stores.length === 0? (
+        <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
+          <div className="text-text-secondary font-body text-body">Pencarian tidak menemukan toko.</div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
           {stores.map((store, index) => {
