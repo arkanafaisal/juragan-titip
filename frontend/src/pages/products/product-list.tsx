@@ -41,9 +41,9 @@ export default function ProductListPage() {
       title: "level stock",
       options: [
         { label: "Semua", value: "" },
-        { label: "Habis", value: "habis" },
-        { label: "Menipis", value: "menipis" },
-        { label: "Banyak", value: "banyak" }
+        { label: "Habis", value: "out_of_stock" },
+        { label: "Menipis", value: "low_stock" },
+        { label: "Tersedia", value: "in_stock" }
       ]
     },
     // {
