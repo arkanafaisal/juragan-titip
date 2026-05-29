@@ -1,4 +1,4 @@
-juragantitip.arkanafaisal.my.id {
+:80 {
     root * /srv
     encode gzip zstd
 

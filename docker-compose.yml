@@ -1,19 +1,15 @@
-name: ${PROJECT_NAME}
 
 services:
   app:
+    container_name: app-juragantitip
     build:
       context: .
       # args:
       #   VITE_API_URL: ${VITE_API_URL}
       #   DATABASE_URL: ${DATABASE_URL}
       #   SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
-    ports:
-      - "81:80"
-      - "444:443"
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
+    networks:
+      - caddy_net
     # expose:
     #   - "3001"
     # env_file:
@@ -37,6 +33,6 @@ services:
 
 
 
-volumes:
-  caddy_data:
-  caddy_config:
+networks:
+  caddy_net:
+    external: true
