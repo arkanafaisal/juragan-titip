@@ -20,10 +20,10 @@ db.version(1).stores({
 });
 
 
-db.version(7).stores({
+db.version(8).stores({
   users: '++id, &email',
   products: '++id, &normalizedName, category',
-  stores: '++id, &normalizedName',
+  stores: '++id, &normalizedName, &phone',
   visits: '++id, storeId'
 });
 
