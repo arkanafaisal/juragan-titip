@@ -29,6 +29,9 @@ export const STOCK_THRESHOLDS = {
   LOW: 10,
 } as const
 
+export const LIMIT = 6
+
+
 export const ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
