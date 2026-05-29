@@ -79,11 +79,13 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
     
 
     try {
+      let result
       if (product) {
-        await productApi.update(product.id, formData as any);
+        result = await productApi.update(product.id, formData as any);
       } else {
-        await productApi.create(formData as any);
+        result = await productApi.create(formData as any);
       }
+      if(!result.success){return}
       onSuccess();
       onClose();
     } catch (error) {
