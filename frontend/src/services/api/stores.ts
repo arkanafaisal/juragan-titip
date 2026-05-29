@@ -3,6 +3,7 @@
 import type { Store, StoreFormData, ApiResponse, Visit } from "@/types"
 import { db, type DbStore } from "@/lib/db"
 import { visitApi } from "@/services/api/visits"
+import { toast } from "sonner"
 
 export interface StoreQueryParams {
   search?: string;
@@ -12,34 +13,38 @@ export interface StoreQueryParams {
 
 export const storeApi = {
   getAll: async (params?: StoreQueryParams): Promise<ApiResponse<Store[]>> => {
-    let collection = db.stores.toCollection();
-    
-    if (params) {
-      if (params.search) {
-        const query = params.search.toLowerCase();
-        collection = collection.filter(s => 
-          s.name.toLowerCase().includes(query) || 
-          s.ownerName.toLowerCase().includes(query)
-        );
-      }
+    try {
+      let collection = db.stores.toCollection();
       
-      if (params.status) {
-        if (params.status === 'lunas') {
-          collection = collection.filter(s => s.totalReceivable === 0);
-        } else if (params.status === 'piutang') {
-          collection = collection.filter(s => s.totalReceivable > 0);
+      if (params) {
+        if (params.search) {
+          const query = params.search.toLowerCase();
+          collection = collection.filter(s => 
+            s.name.toLowerCase().includes(query) || 
+            s.ownerName.toLowerCase().includes(query)
+          );
+        }
+        
+        if (params.status) {
+          if (params.status === 'lunas') {
+            collection = collection.filter(s => s.totalReceivable === 0);
+          } else if (params.status === 'piutang') {
+            collection = collection.filter(s => s.totalReceivable > 0);
+          }
         }
       }
+
+      const page = params?.page || 1;
+      const limit = 6;
+      const offset = (page - 1) * limit;
+
+      const stores = await collection.offset(offset).limit(limit + 1).toArray();
+
+      return { success: true, data: stores }
+    } catch (error) {
+      toast.error("Gagal memuat data toko")
+      return { success: false, data: [], message: "Gagal memuat data toko" }
     }
-
-    
-    const page = params?.page || 1;
-    const limit = 6;
-    const offset = (page - 1) * limit;
-
-    const stores = await collection.offset(offset).limit(limit + 1).toArray();
-
-    return { success: true, data: stores }
   },
 
   getById: async (id: number | string): Promise<ApiResponse<{
@@ -47,32 +52,39 @@ export const storeApi = {
     activeItems: { productName: string; remained: number }[];
     visitHistory: Visit[];
   } | null>> => {
-    const numericId = Number(id);
-    const store = await db.stores.get(numericId);
-    if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
+    try {
+      const numericId = Number(id);
+      const store = await db.stores.get(numericId);
+      if (!store) {
+        toast.error("Toko tidak ditemukan")
+        return { success: false, data: null, message: "Toko tidak ditemukan" }
+      }
 
-    
-    const visitRes = await visitApi.getByStore(numericId);
-    const storeVisits = visitRes.success && visitRes.data ? visitRes.data : [];
+      const visitRes = await visitApi.getByStore(numericId);
+      const storeVisits = visitRes.success && visitRes.data ? visitRes.data : [];
 
-    let activeItems: { productName: string; remained: number }[] = [];
-    
-    if (storeVisits.length > 0) {
-      const lastVisit = storeVisits[storeVisits.length - 1]; 
-      activeItems = lastVisit.items.map(item => ({
-        productName: item.productName,
-        remained: item.remained
-      }));
+      let activeItems: { productName: string; remained: number }[] = [];
+      
+      if (storeVisits.length > 0) {
+        const lastVisit = storeVisits[storeVisits.length - 1]; 
+        activeItems = lastVisit.items.map(item => ({
+          productName: item.productName,
+          remained: item.remained
+        }));
+      }
+
+      return { 
+        success: true, 
+        data: {
+          store,
+          activeItems,
+          visitHistory: storeVisits
+        } 
+      };
+    } catch (error) {
+      toast.error("Gagal memuat detail toko")
+      return { success: false, data: null, message: "Gagal memuat detail toko" }
     }
-
-    return { 
-      success: true, 
-      data: {
-        store,
-        activeItems,
-        visitHistory: storeVisits
-      } 
-    };
   },
 
   create: async (data: StoreFormData): Promise<ApiResponse<Store | null>> => {
@@ -83,9 +95,15 @@ export const storeApi = {
 
     try {
       const id = await db.stores.add(newStore as DbStore);
+      toast.success("Toko berhasil ditambahkan")
       return { success: true, data: { ...newStore, id } as Store }
     } catch (error: any) {
       console.error("Dexie Create Store Error:", error);
+      if (error.name === 'ConstraintError') {
+        toast.error("Nama toko sudah ada di sistem")
+      } else {
+        toast.error("Gagal menyimpan toko")
+      }
       return { success: false, data: null, message: "Gagal menyimpan toko" }
     }
   },
@@ -99,9 +117,15 @@ export const storeApi = {
     try {
       await db.stores.update(numericId, data);
       const updatedStore = await db.stores.get(numericId);
+      toast.success("Toko berhasil diperbarui")
       return { success: true, data: updatedStore! }
     } catch (error: any) {
       console.error("Dexie Update Store Error:", error);
+      if (error.name === 'ConstraintError') {
+        toast.error("Nama toko sudah digunakan oleh toko lain")
+      } else {
+        toast.error("Gagal memperbarui toko")
+      }
       return { success: false, data: null, message: "Gagal memperbarui toko" }
     }
   },
