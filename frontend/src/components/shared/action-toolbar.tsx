@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner"
 
 // --- Tipe Data untuk Filter Generic ---
 export interface FilterOption {
@@ -74,8 +75,9 @@ export function ActionToolbar({
       <Button
         variant="outline"
         size="icon"
-        onClick={onSettingClick}
-        disabled={isSettingDisabled}
+        // onClick={onSettingClick}
+        // disabled={isSettingDisabled}
+        onClick={()=>{toast.error("Fitur ini belum tersedia")}}
         className="shrink-0 bg-surface"
         title="Pengaturan"
       >

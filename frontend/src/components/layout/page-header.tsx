@@ -5,6 +5,7 @@ import { id as idLocale } from "date-fns/locale";
 import { Link, useLocation } from "react-router";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner"
 
 export function PageHeader() {
   const location = useLocation();
@@ -103,7 +104,7 @@ export function PageHeader() {
           <span className="font-data-md text-data-md">{todayDate}</span>
         </div>
 
-        <button className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low relative">
+        <button onClick={()=>{toast.error("Fitur ini belum tersedia")}} className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low relative">
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
         </button>
@@ -129,10 +130,14 @@ export function PageHeader() {
                 </span>
               </div>
               <div className="p-xs">
-                <Link to="/settings" className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full">
+                {/* <Link to="/settings" className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full">
                   <Settings className="w-4 h-4 shrink-0" />
                   <span className="font-body-sm text-body-sm">Pengaturan</span>
-                </Link>
+                </Link> */}
+                <button onClick={()=>toast.error("Fitur ini belum tersedia")} className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full">
+                  <Settings className="w-4 h-4 shrink-0" />
+                  <span className="font-body-sm text-body-sm">Pengaturan</span>
+                </button>
                 <button 
                   onClick={logout}
                   className="flex items-center gap-sm px-md py-sm text-error hover:bg-error/10 rounded-lg transition-colors text-left w-full"

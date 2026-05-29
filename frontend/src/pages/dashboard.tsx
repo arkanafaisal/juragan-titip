@@ -10,6 +10,7 @@ import {
 import { useAuth } from "@/contexts/auth-context";
 import { id as idLocale } from "date-fns/locale";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 
 export default function Dashboard() {
@@ -141,7 +142,7 @@ export default function Dashboard() {
                 <Store className="w-5 h-5 text-error" />
                 Toko Perlu Dikunjungi
               </h2>
-              <button className="text-primary-container font-body-sm text-body-sm font-medium hover:underline">Lihat Semua</button>
+              <button onClick={()=>{toast.error("Fitur ini belum tersedia")}} className="text-primary-container font-body-sm text-body-sm font-medium hover:underline">Lihat Semua</button>
             </div>
 
             
@@ -166,7 +167,7 @@ export default function Dashboard() {
                 <tbody className="divide-y divide-outline-variant/50">
                   
                   <tr>
-                    <td colSpan={4} className="px-5 py-md text-center text-on-surface-variant font-body-sm text-body-sm">
+                    <td colSpan={4} className="h-32 px-5 py-md text-center text-on-surface-variant font-body-sm text-body-sm">
                       Belum ada toko yang perlu dikunjungi
                     </td>
                   </tr>
@@ -177,19 +178,15 @@ export default function Dashboard() {
         </div>
 
         
-        <div className="lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant flex flex-col h-full md:min-h-[400px]">
+        <div className="lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant flex flex-col">
           <div className="px-5 py-md border-b border-outline-variant flex justify-between items-center">
             <h2 className="font-h3 text-h3 text-on-surface">Aktivitas Terkini</h2>
           </div>
-          <div className="flex-1 p-5">
+          <div className="flex-1">
             <div className="space-y-md">
-              
-              
-
               <div className="flex justify-center items-center h-32">
                 <p className="font-body-sm text-body-sm text-on-surface-variant">Belum ada aktivitas terkini</p>
               </div>
-
             </div>
           </div>
         </div>

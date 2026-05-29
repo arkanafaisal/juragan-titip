@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/use-sidebar.tsx";
 import { useAuth } from "@/contexts/auth-context";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
+import { toast } from "sonner"
 
 export function AppSidebar() {
   const { isCollapsed } = useSidebar();
@@ -126,9 +127,9 @@ export function AppSidebar() {
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Toko</span>
           </Link>
 
-          <Link
-            to="/finance"
-            onClick={(e) => handleNavClick(e, "/finance")}
+          <button
+            // to="/finance"
+            onClick={()=>{toast.error("Fitur ini belum tersedia")}}
             className={cn(
               "flex items-center gap-md px-md py-sm rounded-lg transition-all",
               isActive("/finance")
@@ -138,11 +139,11 @@ export function AppSidebar() {
           >
             <Banknote className="w-5 h-5 flex-shrink-0" />
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Keuangan</span>
-          </Link>
+          </button>
 
-          <Link
-            to="/reports"
-            onClick={(e) => handleNavClick(e, "/reports")}
+          <button
+            // to="/reports"
+            onClick={()=>{toast.error("Fitur ini belum tersedia")}}
             className={cn(
               "flex items-center gap-md px-md py-sm rounded-lg transition-all",
               isActive("/reports")
@@ -152,19 +153,19 @@ export function AppSidebar() {
           >
             <BarChart3 className="w-5 h-5 flex-shrink-0" />
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Laporan</span>
-          </Link>
+          </button>
         </div>
 
         
-        <div className="border-t border-outline-variant pt-sm px-sm flex flex-col gap-xs">
-          <Link
-            to="/settings"
-            onClick={(e) => handleNavClick(e, "/settings")}
+        <div className="border-t border-outline-variant pt-sm px-sm flex flex-col gap-xs items-center">
+          <button
+            // to="/settings"
+            onClick={()=>{toast.error("Fitur ini belum tersedia")}}
             className="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all rounded-lg"
           >
             <Settings className="w-5 h-5 flex-shrink-0" />
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Pengaturan</span>
-          </Link>
+          </button>
 
           <div 
             ref={dropdownRef}
@@ -194,17 +195,18 @@ export function AppSidebar() {
                   </span>
                 </div>
                 <div className="p-xs">
-                  <Link 
-                    to="/settings" 
+                  <button 
+                    // to="/settings" 
                     onClick={(e) => {
-                      setIsProfileOpen(false);
-                      handleNavClick(e, "/settings");
+                      // setIsProfileOpen(false);
+                      // handleNavClick(e, "/settings");
+                      toast.error("Fitur ini belum tersedia")
                     }}
                     className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full"
                   >
                     <Settings className="w-4 h-4 shrink-0" />
                     <span className="font-body-sm text-body-sm">Pengaturan</span>
-                  </Link>
+                  </button>
                   <button 
                     onClick={logout}
                     className="flex items-center gap-sm px-md py-sm text-error hover:bg-error/10 rounded-lg transition-colors text-left w-full"
