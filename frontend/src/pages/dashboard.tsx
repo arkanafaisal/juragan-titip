@@ -22,7 +22,7 @@ export default function Dashboard() {
       
       
       <div className="flex flex-col gap-xs">
-        <h1 className="font-h1 text-h1 text-on-surface">Selamat Siang, {user.name} 👋</h1>
+        <h1 className="font-h1 text-h1 text-on-surface">Selamat Siang, {user?.name} 👋</h1>
         
         <p className="font-body text-body text-on-surface-variant md:hidden">📅 {todayDate}</p>
       </div>

@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (data: LoginFormData) => {
     const response = await authApi.login(data)
-    if (response.success) {
+    if (response.success && response.data) {
       setUser(response.data.user)
       return { success: true }
     }
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(async (data: RegisterFormData) => {
     const response = await authApi.register(data)
-    if (response.success) {
+    if (response.success && response.data) {
       setUser(response.data.user)
       return { success: true }
     }

@@ -55,7 +55,7 @@ export default function StoreVisitPage() {
         const [storeRes, visitsRes] = await Promise.all([ storeApi.getById(id), visitApi.getByStore(id) ]);
         if (storeRes.success && storeRes.data) setStore(storeRes.data.store);
         
-        if (visitsRes.success && visitsRes.data.length > 0) {
+        if (visitsRes.success && visitsRes.data && visitsRes.data.length > 0) {
           const sorted = visitsRes.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           const lastVisit = sorted[0];
           
