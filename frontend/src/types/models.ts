@@ -21,6 +21,7 @@ export interface Product {
 export interface Store {
   id: number
   name: string
+  normalizedName: string
   ownerName: string
   phone: string
   address: string

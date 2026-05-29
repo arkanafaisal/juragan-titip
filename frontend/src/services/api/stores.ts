@@ -88,8 +88,10 @@ export const storeApi = {
   },
 
   create: async (data: StoreFormData): Promise<ApiResponse<Store | null>> => {
+    const normalizedName = data.name.toLowerCase();
     const newStore: Omit<DbStore, 'id'> = {
       ...data,
+      normalizedName,
       totalReceivable: 0,
     }
 
@@ -114,8 +116,13 @@ export const storeApi = {
     
     if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
     
+    const updateData: Partial<DbStore> = { ...data };
+    if (data.name) {
+      updateData.normalizedName = data.name.toLowerCase();
+    }
+
     try {
-      await db.stores.update(numericId, data);
+      await db.stores.update(numericId, updateData);
       const updatedStore = await db.stores.get(numericId);
       toast.success("Toko berhasil diperbarui")
       return { success: true, data: updatedStore! }

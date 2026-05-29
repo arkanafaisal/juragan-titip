@@ -141,13 +141,13 @@ export default function StoreFormPage() {
         } else {
           navigate("/stores"); 
         }
+        setIsSubmitting(false);
       } else {
         setError(result.message || "Gagal menyimpan data toko.");
       }
     } catch (err) {
       setError("Terjadi kesalahan sistem saat memproses permintaan.");
       console.error(err);
-    } finally {
       setIsSubmitting(false);
     }
   };
