@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Search, ChevronDown, Plus, Package, Trash2, ArrowRight } from "lucide-react";
 import { NumberInput } from "@/components/shared/number-input";
 import type { Product, RestockItem } from "@/types";

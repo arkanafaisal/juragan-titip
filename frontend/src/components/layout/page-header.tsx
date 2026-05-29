@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, Calendar, Bell, User, Settings, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { Link, useLocation } from "react-router";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useAuth } from "@/contexts/auth-context";
-import { cn } from "@/lib/utils";
 
 export function PageHeader() {
   const location = useLocation();
@@ -80,7 +79,6 @@ export function PageHeader() {
 
   const dynamicTitle = getDynamicTitle(location.pathname);
   
-  const isLongTitle = dynamicTitle.length > 15;
 
   return (
     <header className="bg-surface-container-lowest border-b border-outline-variant shadow-sm flex justify-between items-center w-full px-md h-16 shrink-0 z-30 sticky top-0">

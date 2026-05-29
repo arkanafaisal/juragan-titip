@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMapEvents, Marker } from "react-leaflet";
 import { Store, Info } from "lucide-react";
 import L, { Map as LeafletMap } from "leaflet";

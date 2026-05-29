@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Plus, Minus } from "lucide-react";
 
 export const NumberInput = ({ value, max, onChange, className = "" }: any) => {

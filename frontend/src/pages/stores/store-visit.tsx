@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ChevronLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { storeApi } from "@/services/api/stores";

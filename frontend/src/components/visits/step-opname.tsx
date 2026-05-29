@@ -1,4 +1,4 @@
-import React from "react";
+
 import { ArrowRight } from "lucide-react";
 import { NumberInput } from "@/components/shared/number-input";
 import type { OpnameItem } from "@/types";

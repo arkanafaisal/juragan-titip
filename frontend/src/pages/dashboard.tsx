@@ -1,15 +1,11 @@
-import React from "react";
+
 import {
   Box,
   Store,
   Banknote,
   TrendingUp,
   TrendingDown,
-  ReceiptText,
-  ChevronRight,
-  CheckCircle,
-  Truck,
-  CornerDownLeft
+  ReceiptText
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { id as idLocale } from "date-fns/locale";
