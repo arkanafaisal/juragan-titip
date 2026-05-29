@@ -3,7 +3,7 @@ import { MainLayout } from "@/components/layout/main-layout"
 import { AuthGuard } from "@/components/layout/auth-guard"
 import { SidebarProvider } from '@/hooks/use-sidebar.tsx'
 
-
+import NotFoundPage from "@/pages/not-found"
 import LoginPage from "@/pages/auth/login"
 import RegisterPage from "@/pages/auth/register"
 import DashboardPage from "@/pages/dashboard"
@@ -55,6 +55,8 @@ export const router = createBrowserRouter([
       // { path: "reports/financial", element: <FinancialReportPage /> },
       // { path: "settings/profile", element: <ProfilePage /> },
       // { path: "settings/preferences", element: <PreferencesPage /> },
+
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ])
