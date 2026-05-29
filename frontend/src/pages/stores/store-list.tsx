@@ -2,21 +2,52 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Plus, Search } from "lucide-react";
 import { StoreCard } from "@/components/stores/store-card";
 import type { Store } from "@/types";
 import { storeApi } from "@/services/api/stores";
 import { Pagination } from "@/components/shared/pagination";
 import { LIMIT } from "@/lib/constants";
+import { ActionToolbar, type FilterGroup } from "@/components/shared/action-toolbar";
 
 export default function StoreListPage() {
   const navigate = useNavigate();
   const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
   const [searchInput, setSearchInput] = useState("");
+  
+  const [filters, setFilters] = useState<Record<string, string>>({
+    status: "",
+    // sortBy: "name_asc"
+  });
+  const storeFilterConfig: FilterGroup[] = [
+    {
+      id: "status",
+      title: "Status Operasional",
+      options: [
+        { label: "Semua", value: "" },
+        { label: "Lunas", value: "lunas" },
+        { label: "Piutang", value: "piutang" }
+      ]
+    },
+    // {
+    //   id: "sortBy",
+    //   title: "Urutkan Berdasarkan",
+    //   options: [
+    //     { label: "Nama (A-Z)", value: "name_asc" },
+    //     { label: "Terbaru Ditambahkan", value: "newest" }
+    //   ]
+    // }
+  ];
+
+  const handleFilterChange = (groupId: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [groupId]: value
+    }))
+  };
+
+
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -29,7 +60,7 @@ export default function StoreListPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, statusFilter]);
+  }, [debouncedSearch, filters]);
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -37,7 +68,7 @@ export default function StoreListPage() {
       try {
         const response = await storeApi.getAll({
           search: debouncedSearch,
-          status: statusFilter,
+          status: filters.status,
           page: currentPage
         });
         if (response.success) {
@@ -51,47 +82,24 @@ export default function StoreListPage() {
     };
 
     fetchStores();
-  }, [debouncedSearch, statusFilter, currentPage]);
+  }, [debouncedSearch, filters, currentPage]);
 
   // const displayStores = stores.slice(0, 6);
 
   return (
-    <div className="max-w-container-max mx-auto space-y-lg">
+    <div className="flex flex-col">
+      <ActionToolbar
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        searchPlaceholder="Cari toko mitra..."
+        onAddClick={() => navigate("/stores/new")}
+        
+        // Cukup passing 3 baris ini, Boom! Filter beres.
+        filterGroups={storeFilterConfig}
+        activeFilters={filters}
+        onFilterChange={handleFilterChange}
+      />
       
-      
-      <div className="bg-surface rounded-xl shadow-sm p-md border border-border flex flex-col md:flex-row gap-md items-center justify-between">
-        <div className="w-full md:w-1/2 relative">
-          <Search className="absolute left-sm top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
-          <input 
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-xl pr-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary font-body text-body bg-surface-container-lowest outline-none transition-all" 
-            placeholder="Toko Berkah Jaya..." 
-            type="text" 
-          />
-        </div>
-        <div className="flex w-full md:w-auto">
-          <select 
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full border border-outline-variant rounded-lg px-md py-sm font-body text-body bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer"
-          >
-            <option value="">Semua Status</option>
-            <option value="piutang">Ada Piutang</option>
-            <option value="lunas">Lunas</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
-        <button 
-          onClick={() => navigate("/stores/new")}
-          className="bg-primary text-on-primary font-body text-body px-md py-sm rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs w-full md:w-auto justify-center"
-        >
-          <Plus className="w-5 h-5" />
-          Tambah Toko
-        </button>
-      </div>
 
       {isLoading ? (
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
