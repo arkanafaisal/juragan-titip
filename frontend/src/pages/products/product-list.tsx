@@ -7,6 +7,8 @@ import { productApi } from "@/services/api/products";
 import type { Product } from "@/types";
 import { ProductFormModal } from "@/components/products/product-form-modal";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
+import { Pagination } from "@/components/shared/pagination";
+import { LIMIT } from "@/lib/constants";
 
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -103,9 +105,7 @@ export default function ProductListPage() {
   };
 
   
-  const displayProducts = products.slice(0, 6); 
-  const hasNextPage = products.length > 6;      
-  const hasPrevPage = currentPage > 1;
+  // const displayProducts = products.slice(0, LIMIT); 
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -194,13 +194,14 @@ export default function ProductListPage() {
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
           <div className="animate-pulse text-text-secondary font-body text-body">Menyelaraskan data produk...</div>
         </div>
-      ) : displayProducts.length === 0 ? (
+      ) : products.length === 0? (
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
           <div className="text-text-secondary font-body text-body">Pencarian tidak menemukan produk.</div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
-          {displayProducts.map((product) => {
+          {products.map((product, index) => {
+            if(index >= LIMIT){return}
             const catStyle = getCategoryStyles(product.category);
             const stockStyle = getStockBlockStyles(product.warehouseStock);
             
@@ -269,31 +270,12 @@ export default function ProductListPage() {
       )}
 
       
-      {!isLoading && displayProducts.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between px-md py-sm bg-surface rounded-xl border border-border shadow-sm gap-sm">
-          <span className="font-caption text-caption text-text-secondary">
-            Menampilkan {(currentPage - 1) * 6 + 1}-{(currentPage - 1) * 6 + displayProducts.length} produk
-          </span>
-          <div className="flex gap-xs">
-            <button 
-              onClick={() => setCurrentPage(p => p - 1)}
-              disabled={!hasPrevPage}
-              className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low disabled:opacity-50 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button className="px-sm py-xs rounded bg-primary-container text-on-primary-container font-body-sm text-body-sm font-medium">
-              {currentPage}
-            </button>
-            <button 
-              onClick={() => setCurrentPage(p => p + 1)}
-              disabled={!hasNextPage}
-              className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low disabled:opacity-50 transition-colors"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+      {!isLoading && products.length > 0 && (
+        <Pagination 
+          currentPage={currentPage}
+          hasNextPage={products.length > LIMIT}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       )}
 
       <ProductFormModal 

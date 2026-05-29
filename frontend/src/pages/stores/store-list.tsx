@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import type { Store } from "@/types";
 import { storeApi } from "@/services/api/stores";
+import { Pagination } from "@/components/shared/pagination";
+import { LIMIT } from "@/lib/constants";
 
 export default function StoreListPage() {
   const navigate = useNavigate();
@@ -69,9 +71,7 @@ export default function StoreListPage() {
   };
 
   
-  const displayStores = stores.slice(0, 6);
-  const hasNextPage = stores.length > 6;
-  const hasPrevPage = currentPage > 1;
+  // const displayStores = stores.slice(0, 6);
 
   return (
     <div className="max-w-container-max mx-auto space-y-lg">
@@ -122,7 +122,10 @@ export default function StoreListPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
-          {displayStores.map((store) => (
+          {stores.map((store, index) => {
+            if(index >= LIMIT){return}
+          
+            return (
             <div key={store.id} className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
               <div className="p-md flex-1 flex flex-col cursor-pointer" onClick={() => navigate(`/stores/${store.id}`)}>
                 
@@ -192,7 +195,7 @@ export default function StoreListPage() {
                 </button>
               </div>
             </div>
-          ))}
+          )})}
 
           
           <div 
@@ -213,33 +216,11 @@ export default function StoreListPage() {
 
       
       {!isLoading && (
-        <div className="flex flex-col sm:flex-row items-center justify-between px-md py-sm bg-surface rounded-xl border border-border shadow-sm gap-sm">
-          <span className="font-caption text-caption text-text-secondary">
-            {displayStores.length > 0 
-              ? `Menampilkan ${(currentPage - 1) * 6 + 1}-${(currentPage - 1) * 6 + displayStores.length} toko`
-              : "Menampilkan 0 toko"
-            }
-          </span>
-          <div className="flex gap-xs">
-            <button 
-              onClick={() => setCurrentPage(p => p - 1)}
-              disabled={!hasPrevPage}
-              className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low disabled:opacity-50 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button className="px-sm py-xs rounded bg-primary-container text-on-primary-container font-body-sm text-body-sm font-medium">
-              {currentPage}
-            </button>
-            <button 
-              onClick={() => setCurrentPage(p => p + 1)}
-              disabled={!hasNextPage}
-              className="p-xs rounded border border-outline-variant text-text-secondary hover:bg-surface-container-low disabled:opacity-50 transition-colors"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+        <Pagination
+        currentPage={currentPage}
+        hasNextPage={stores.length > LIMIT}
+        onPageChange={(page) => {setCurrentPage(page)}}
+        />
       )}
     </div>
   );
