@@ -197,7 +197,7 @@ export function AppSidebar() {
                 <div className="p-xs">
                   <button 
                     // to="/settings" 
-                    onClick={(e) => {
+                    onClick={() => {
                       // setIsProfileOpen(false);
                       // handleNavClick(e, "/settings");
                       toast.error("Fitur ini belum tersedia")

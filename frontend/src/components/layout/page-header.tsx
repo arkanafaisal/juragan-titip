@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Menu, Calendar, Bell, User, Settings, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { Link, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner"

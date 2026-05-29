@@ -1,4 +1,3 @@
-import React from "react";
 import { Search, SlidersHorizontal, Plus, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,8 +48,8 @@ export function ActionToolbar({
   onFilterChange,
   onAddClick,
   addLabel = "Tambah",
-  onSettingClick,
-  isSettingDisabled = true,
+  // onSettingClick,
+  // isSettingDisabled = true,
   className,
 }: ActionToolbarProps) {
   const isMobile = useMobile();
