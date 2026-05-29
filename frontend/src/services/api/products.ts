@@ -3,6 +3,7 @@
 import type { Product, ProductFormData, ApiResponse } from "@/types"
 import { db, type DbProduct } from "@/lib/db"
 import { toast } from "sonner"
+import Dexie from "dexie";
 
 export interface ProductQueryParams {
   search?: string;
@@ -107,7 +108,7 @@ export const productApi = {
       toast.success("Produk berhasil diperbarui")
       return { success: true, data: updatedProduct! }
     } catch (error: any) {
-      if (error.name === 'ConstraintError') {
+      if (error instanceof Dexie.ModifyError) {
         toast.error("Nama produk sudah digunakan oleh produk lain")
         return { success: false, data: null, message: "Nama produk sudah digunakan oleh produk lain" }
       }
