@@ -1,3 +1,17 @@
+29 May 2026
+<details>
+- cleaned TypeScript errors (unused, null possibility)
+- updated docker configs (caddy network, command)
+- fixed mobile global load animation
+- cleaned up UI & wording 
+- refactored pagination navigation; product & store card; action toolbar into separate components
+- added & implemented sonner notification (service responses context, in-progress feature)
+- added store list empty state
+- updated store phone number pattern
+- added store owner name & phone number unique constraints (& duplicate handling)
+- added not found route fallback
+- fixed unique constraint error type on modify action
+</details>
 
 28 May 2026
 <details>
