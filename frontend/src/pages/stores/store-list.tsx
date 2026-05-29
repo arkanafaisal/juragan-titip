@@ -77,20 +77,6 @@ export default function StoreListPage() {
     <div className="max-w-container-max mx-auto space-y-lg">
       
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
-        <div>
-          <p className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary">Kelola data mitra dan pantau performa konsinyasi.</p>
-        </div>
-        <button 
-          onClick={() => navigate("/stores/new")}
-          className="bg-primary text-on-primary font-body text-body px-md py-sm rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs w-full md:w-auto justify-center"
-        >
-          <Plus className="w-5 h-5" />
-          Tambah Toko
-        </button>
-      </div>
-
-      
       <div className="bg-surface rounded-xl shadow-sm p-md border border-border flex flex-col md:flex-row gap-md items-center justify-between">
         <div className="w-full md:w-1/2 relative">
           <Search className="absolute left-sm top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
@@ -115,7 +101,16 @@ export default function StoreListPage() {
         </div>
       </div>
 
-      
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+        <button 
+          onClick={() => navigate("/stores/new")}
+          className="bg-primary text-on-primary font-body text-body px-md py-sm rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs w-full md:w-auto justify-center"
+        >
+          <Plus className="w-5 h-5" />
+          Tambah Toko
+        </button>
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
           <div className="animate-pulse text-text-secondary font-body text-body">Memuat data toko...</div>
@@ -196,20 +191,6 @@ export default function StoreListPage() {
               </div>
             </div>
           )})}
-
-          
-          <div 
-            onClick={() => navigate('/stores/new')}
-            className="bg-surface-bright rounded-xl border-2 border-dashed border-outline-variant p-md flex flex-col items-center justify-center gap-sm text-center min-h-[220px] hover:bg-surface-container-low transition-colors cursor-pointer group"
-          >
-            <div className="w-12 h-12 rounded-full bg-surface-container-high text-primary flex items-center justify-center mb-xs group-hover:scale-110 transition-transform">
-              <Plus className="w-6 h-6" />
-            </div>
-            <h3 className="font-h3 text-h3 text-on-surface">Tambah Toko Baru</h3>
-            <p className="font-body-sm text-body-sm text-on-surface-variant max-w-[200px]">
-              Daftarkan mitra toko baru untuk mulai menitipkan barang.
-            </p>
-          </div>
 
         </div>
       )}

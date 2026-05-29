@@ -134,18 +134,6 @@ export default function ProductListPage() {
   return (
     <div className="max-w-container-max mx-auto space-y-lg">
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
-        <div>
-          <p className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary">Kelola inventaris dan harga produk Anda.</p>
-        </div>
-        <button 
-          onClick={handleOpenAdd}
-          className="bg-primary text-on-primary font-body text-body px-md py-sm rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs"
-        >
-          <Plus className="w-5 h-5" />
-          Tambah Produk
-        </button>
-      </div>
 
       <div className="bg-surface rounded-xl shadow-sm p-md border border-border flex flex-col md:flex-row gap-md items-center justify-between">
         <div className="w-full md:w-1/3 relative">
@@ -189,6 +177,16 @@ export default function ProductListPage() {
         </div>
       </div>
 
+      
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+        <button 
+          onClick={handleOpenAdd}
+          className="bg-primary text-on-primary font-body text-body px-md py-sm rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs w-full md:w-auto justify-center"
+        >
+          <Plus className="w-5 h-5" />
+          Tambah Produk
+        </button>
+      </div>
       
       {isLoading ? (
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
