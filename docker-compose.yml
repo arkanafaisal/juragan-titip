@@ -10,8 +10,8 @@ services:
       #   DATABASE_URL: ${DATABASE_URL}
       #   SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
     ports:
-      - "80:80"
-      - "443:443"
+      - "81:80"
+      - "444:443"
     volumes:
       - caddy_data:/data
       - caddy_config:/config
