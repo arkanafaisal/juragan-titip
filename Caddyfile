@@ -1,4 +1,4 @@
-juragantitip.arkanafaisal.mmy.id {
+juragantitip.arkanafaisal.my.id {
     root * /srv
     encode gzip zstd
 
