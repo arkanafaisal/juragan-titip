@@ -162,7 +162,7 @@ export default function ProductListPage() {
       
       {isLoading ? (
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
-          <div className="animate-pulse text-text-secondary font-body text-body">Menyelaraskan data produk...</div>
+          <div className="animate-pulse text-text-secondary font-body text-body">Memuat data produk...</div>
         </div>
       ) : products.length === 0? (
         <div className="flex justify-center py-xl bg-surface rounded-xl border border-border">
