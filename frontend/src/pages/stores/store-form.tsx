@@ -238,15 +238,16 @@ export default function StoreFormPage() {
                   Nomor Telepon <span className="text-error">*</span>
                 </label>
                 <div className="flex">
-                  <span className="inline-flex items-center px-md rounded-l-lg border border-r-0 border-outline-variant bg-surface-container-low text-text-secondary font-body-sm text-body-sm font-medium">
-                    +62
-                  </span>
                   <input 
                     id="phone"
                     name="phone"
                     value={formData.phone}
-                    onChange={handleChange}
-                    className="flex-1 w-full bg-surface-container-lowest border border-outline-variant rounded-r-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      if (val.length > 0 && !val.startsWith("0")) return;
+                      handleChange({ target: { name: "phone", value: val } } as any);
+                    }}
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
                     placeholder="081234567890" 
                     type="tel"
                     required

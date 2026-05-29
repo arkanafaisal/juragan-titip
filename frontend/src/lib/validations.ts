@@ -17,11 +17,12 @@ export const validateWhatsApp = (
   phone: string, 
   rules: { MIN_LENGTH: number; MAX_LENGTH: number; REGEX: RegExp }
 ): boolean => {
-  const cleanPhone = phone.replace(/[^0-9+]/g, ""); 
-  if (cleanPhone.length < rules.MIN_LENGTH || cleanPhone.length > rules.MAX_LENGTH) {
+  if (/[^0-9]/.test(phone)) return false; 
+  if (!phone.startsWith("0")) return false; 
+  if (phone.length < rules.MIN_LENGTH || phone.length > rules.MAX_LENGTH) {
     return false;
   }
-  return rules.REGEX.test(cleanPhone);
+  return rules.REGEX.test(phone);
 };
 
 export const validatePriceMargin = (costPrice: number, sellingPrice: number): boolean => {
@@ -54,7 +55,7 @@ export const validateRegisterForm = (data: any): string | null => {
 export const validateStoreForm = (data: any): string | null => {
   if (!validateRequired(data.name) || !validateLength(data.name, VALIDATION_RULES.STORE.NAME_MIN, VALIDATION_RULES.STORE.NAME_MAX)) return `Nama toko harus antara ${VALIDATION_RULES.STORE.NAME_MIN}-${VALIDATION_RULES.STORE.NAME_MAX} karakter.`;
   if (!validateRequired(data.ownerName) || !validateLength(data.ownerName, VALIDATION_RULES.STORE.OWNER_MIN, VALIDATION_RULES.STORE.OWNER_MAX)) return `Nama pemilik harus antara ${VALIDATION_RULES.STORE.OWNER_MIN}-${VALIDATION_RULES.STORE.OWNER_MAX} karakter.`;
-  if (!validateWhatsApp(data.phone, VALIDATION_RULES.PHONE)) return "Format nomor WhatsApp tidak valid (Gunakan 08x atau +62x, min 10 digit).";
+  if (!validateWhatsApp(data.phone, VALIDATION_RULES.PHONE)) return "Format nomor telepon tidak valid (Harus diawali 0, full angka, tanpa spasi/+, min 10 digit).";
   if (!validateRequired(data.address) || !validateLength(data.address, VALIDATION_RULES.STORE.ADDRESS_MIN, VALIDATION_RULES.STORE.ADDRESS_MAX)) return `Alamat harus antara ${VALIDATION_RULES.STORE.ADDRESS_MIN}-${VALIDATION_RULES.STORE.ADDRESS_MAX} karakter.`;
   if (data.notes && data.notes.length > VALIDATION_RULES.STORE.NOTES_MAX) return `Catatan maksimal ${VALIDATION_RULES.STORE.NOTES_MAX} karakter.`;
   return null;

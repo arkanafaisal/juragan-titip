@@ -16,10 +16,9 @@ export const VALIDATION_RULES = {
     PRICE_MAX: 100000,
   },
   PHONE: {
-    
     MIN_LENGTH: 10,
     MAX_LENGTH: 15,
-    REGEX: /^(^\+62|62|^08)(8|9|1|2|3|5)[0-9]{6,11}$/, 
+    REGEX: /^0[0-9]{9,14}$/, 
   },
   GENERAL: {
     EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
