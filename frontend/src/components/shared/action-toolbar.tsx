@@ -48,8 +48,8 @@ export function ActionToolbar({
   onFilterChange,
   onAddClick,
   addLabel = "Tambah",
-  // onSettingClick,
-  // isSettingDisabled = true,
+  onSettingClick,
+  isSettingDisabled = false,
   className,
 }: ActionToolbarProps) {
   const isMobile = useMobile();
@@ -75,9 +75,8 @@ export function ActionToolbar({
       <Button
         variant="outline"
         size="icon"
-        // onClick={onSettingClick}
-        // disabled={isSettingDisabled}
-        onClick={()=>{toast.error("Fitur ini belum tersedia")}}
+        onClick={onSettingClick}
+        disabled={isSettingDisabled}
         className="shrink-0 bg-surface"
         title="Pengaturan"
       >

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { 
   Settings as GearIcon, 
@@ -17,8 +18,25 @@ import { settingsApi } from "@/services/api/settings";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 
 export default function SettingsPage() {
+  const [searchParams] = useSearchParams();
+
   // --- ACCORDION STATE ---
-  const [openSection, setOpenSection] = useState<string>('tampilan');
+  const [openSection, setOpenSection] = useState<string>(searchParams.get("section") || 'tampilan');
+
+  useEffect(() => {
+    const section = searchParams.get("section");
+    if (section) {
+      setOpenSection(section);
+      // Tunggu DOM merender accordion yang baru terbuka
+      setTimeout(() => {
+        const el = document.getElementById(`section-${section}`);
+        if (el) {
+          const y = el.getBoundingClientRect().top + window.scrollY - 100; // offset 100px agar judul tab tidak tertutup header
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [searchParams]);
 
   const toggleSection = (section: string) => {
     setOpenSection(prev => prev === section ? '' : section);
@@ -80,7 +98,7 @@ export default function SettingsPage() {
       <div className="space-y-sm">
 
         {/* SECTION 1: TAMPILAN APLIKASI */}
-        <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        <div id="section-tampilan" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
           <button 
             onClick={() => toggleSection('tampilan')}
             className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
@@ -121,7 +139,7 @@ export default function SettingsPage() {
         </div>
 
         {/* SECTION 2: OPERASIONAL & STOK */}
-        <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        <div id="section-operasional" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
           <button 
             onClick={() => toggleSection('operasional')}
             className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
@@ -200,7 +218,7 @@ export default function SettingsPage() {
         </div>
 
         {/* SECTION 3: NOTA & WHATSAPP */}
-        <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        <div id="section-whatsapp" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
           <button 
             onClick={() => toggleSection('whatsapp')}
             className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"

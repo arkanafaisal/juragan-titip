@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { productApi } from "@/services/api/products";
 import { ProductCard } from "@/components/products/product-card";
 import type { Product } from "@/types";
@@ -10,6 +11,7 @@ import { ActionToolbar, type FilterGroup } from "@/components/shared/action-tool
 import { settingsApi } from "@/services/api/settings";
 
 export default function ProductListPage() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -156,6 +158,7 @@ export default function ProductListPage() {
           onSearchChange={setSearchInput}
           searchPlaceholder="Cari toko mitra..."
           onAddClick={handleOpenAdd}
+          onSettingClick={() => navigate("/settings?section=operasional")}
           
           // Cukup passing 3 baris ini, Boom! Filter beres.
           filterGroups={storeFilterConfig}
