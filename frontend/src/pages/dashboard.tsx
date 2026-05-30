@@ -7,14 +7,14 @@ import {
   TrendingDown,
   ReceiptText
 } from "lucide-react";
-import { useAuth } from "@/contexts/auth-context";
+import { useProfile } from "@/hooks/use-profile";
 import { id as idLocale } from "date-fns/locale";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
 
 export default function Dashboard() {
-  const { user } = useAuth()
+  const { profile } = useProfile()
   const todayDate = format(new Date(), "dd MMM yyyy", { locale: idLocale });
   
 
@@ -23,7 +23,7 @@ export default function Dashboard() {
       
       
       <div className="flex flex-col gap-xs">
-        <h1 className="font-h1 text-h1 text-on-surface">Selamat Siang, {user?.name} 👋</h1>
+        <h1 className="font-h1 text-h1 text-on-surface">Selamat Siang, {profile?.name || "Pengguna"} 👋</h1>
         
         <p className="font-body text-body text-on-surface-variant md:hidden">📅 {todayDate}</p>
       </div>

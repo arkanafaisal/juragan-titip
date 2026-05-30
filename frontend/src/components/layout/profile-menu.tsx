@@ -1,5 +1,5 @@
 // File: frontend/src/components/layout/profile-menu.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { User, Building2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/use-profile";
 
 interface ProfileMenuProps {
   variant?: "icon" | "sidebar";
@@ -15,23 +16,16 @@ interface ProfileMenuProps {
 
 export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: ProfileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { profile: savedProfile, updateProfile } = useProfile();
+  
   const [profile, setProfile] = useState({
-    name: "",
-    phone: "",
-    email: ""
+    name: savedProfile?.name || "",
+    phone: savedProfile?.phone || "",
+    email: savedProfile?.email || ""
   });
 
-  // Muat data profil dari Local Storage saat komponen dimuat
-  useEffect(() => {
-    const savedProfile = localStorage.getItem("juragan_profile");
-    if (savedProfile) {
-      setProfile(JSON.parse(savedProfile));
-    }
-  }, []);
-
-  // Handler untuk menyimpan profil
   const handleSaveProfile = () => {
-    localStorage.setItem("juragan_profile", JSON.stringify(profile));
+    updateProfile(profile);
     toast.success("Profil Usaha berhasil disimpan!");
     setIsOpen(false);
   };
@@ -52,11 +46,11 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
             className={cn("mt-sm bg-surface-container-low hover:bg-surface-container rounded-lg p-2.5 flex items-center gap-sm mx-xs border border-outline-variant w-[calc(100%-1rem)] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary text-left", isSidebarCollapsed ? "justify-center" : "justify-start")}
           >
             <div className="w-8 h-8 rounded-md bg-surface-container-high text-text-secondary flex items-center justify-center flex-shrink-0 border border-outline-variant font-bold text-body-sm">
-              {profile.name ? getInitials(profile.name) : <Building2 className="w-4 h-4" />}
+              {savedProfile?.name ? getInitials(savedProfile.name) : <Building2 className="w-4 h-4" />}
             </div>
             <div className={cn("transition-opacity flex-1 min-w-0", isSidebarCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>
-              <div className="font-body-sm font-medium text-on-surface truncate">{profile.name || "Profil Usaha"}</div>
-              <div className="font-caption text-text-muted truncate">{profile.phone || "Belum diatur"}</div>
+              <div className="font-body-sm font-medium text-on-surface truncate">{savedProfile?.name || "Profil Usaha"}</div>
+              <div className="font-caption text-text-muted truncate">{savedProfile?.phone || "Belum diatur"}</div>
             </div>
           </button>
         ) : (
@@ -64,9 +58,9 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
             className="w-9 h-9 rounded-full bg-primary-fixed text-primary-container flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary transition-all hover:bg-primary-fixed-dim border border-primary/20 cursor-pointer"
             aria-label="Profil Usaha"
           >
-            {profile.name ? (
+            {savedProfile?.name ? (
               <span className="text-body-sm font-bold tracking-wider">
-                {getInitials(profile.name)}
+                {getInitials(savedProfile.name)}
               </span>
             ) : (
               <User className="w-4 h-4" />
@@ -89,7 +83,7 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
             </div>
             <div className="flex flex-col overflow-hidden">
               <span className="font-semibold text-body text-text-primary truncate">
-                {profile.name || "Profil Belum Diatur"}
+                {savedProfile?.name || "Profil Belum Diatur"}
               </span>
               <span className="text-caption text-text-muted truncate">
                 Data ini digunakan untuk kop struk/faktur
