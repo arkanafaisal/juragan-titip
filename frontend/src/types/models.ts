@@ -23,7 +23,7 @@ export interface Store {
   name: string
   normalizedName: string
   ownerName: string
-  phone: string
+  phone?: string
   address: string
   latitude: number
   longitude: number
