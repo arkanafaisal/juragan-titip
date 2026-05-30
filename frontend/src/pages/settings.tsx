@@ -13,7 +13,7 @@ import {
   Save
 } from "lucide-react";
 
-export function SettingsPage() {
+export default function SettingsPage() {
   // --- ACCORDION STATE ---
   const [openSection, setOpenSection] = useState<string>('tampilan');
 

@@ -126,31 +126,36 @@ export function AppSidebar() {
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Keuangan</span>
           </Link>
 
-          <button
-            // to="/reports"
-            onClick={()=>{toast.error("Fitur ini belum tersedia")}}
+          <Link
+            to="/settings"
+            onClick={(e) => handleNavClick(e, "/settings")}
             className={cn(
               "flex items-center gap-md px-md py-sm rounded-lg transition-all",
-              isActive("/reports")
+              isActive("/settings")
                 ? "bg-primary-fixed text-primary-container font-bold"
                 : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
             )}
           >
-            <BarChart3 className="w-5 h-5 flex-shrink-0" />
-            <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Laporan</span>
-          </button>
+            <Settings className="w-5 h-5 flex-shrink-0" />
+            <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Pengaturan</span>
+          </Link>
         </div>
 
         
         <div className="border-t border-outline-variant pt-sm px-sm flex flex-col gap-xs items-center">
-          <button
-            // to="/settings"
-            onClick={()=>{toast.error("Fitur ini belum tersedia")}}
-            className="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all rounded-lg"
+          {/* <Link
+            to="/settings"
+            onClick={(e) => handleNavClick(e, "/settings")}
+            className={cn(
+              "flex items-center gap-md px-md py-sm transition-all rounded-lg",
+              isActive("/settings")
+                ? "bg-primary-fixed text-primary-container font-bold"
+                : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
+            )}
           >
             <Settings className="w-5 h-5 flex-shrink-0" />
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Pengaturan</span>
-          </button>
+          </Link> */}
 
           <ProfileMenu variant="sidebar" isSidebarCollapsed={isCollapsed} />
         </div>

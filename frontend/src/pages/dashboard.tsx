@@ -40,27 +40,6 @@ export default function Dashboard() {
           <div>
             
             <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 0</div>
-            <div className="flex items-center gap-1 mt-xs">
-              <TrendingUp className="w-3 h-3 text-on-surface-variant" />
-              <span className="font-caption text-caption text-on-surface-variant font-medium">- 0%</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface-container-lowest rounded-xl p-md md:p-5 shadow-sm border border-outline-variant flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-sm">
-            <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">Stok Gudang</span>
-            <div className="w-7 h-7 rounded-md bg-primary-fixed flex items-center justify-center text-primary-container">
-              <Box className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            
-            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">0 item</div>
-            <div className="flex items-center gap-1 mt-xs">
-              <TrendingDown className="w-3 h-3 text-on-surface-variant" />
-              <span className="font-caption text-caption text-on-surface-variant font-medium">- 0%</span>
-            </div>
           </div>
         </div>
 
@@ -75,24 +54,8 @@ export default function Dashboard() {
             
             <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">0 toko</div>
             <div className="flex items-center gap-1 mt-xs">
-              <TrendingUp className="w-3 h-3 text-on-surface-variant" />
-              <span className="font-caption text-caption text-on-surface-variant font-medium">- 0</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface-container-lowest rounded-xl p-md md:p-5 shadow-sm border border-outline-variant flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-sm">
-            <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">Piutang</span>
-            <div className="w-7 h-7 rounded-md bg-error-container flex items-center justify-center text-error">
-              <ReceiptText className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            
-            <div className="font-data-lg text-data-lg text-on-surface text-lg md:text-h1">Rp 0</div>
-            <div className="flex items-center gap-1 mt-xs">
-              <span className="font-caption text-caption text-on-surface-variant font-medium">0 toko</span>
+              {/* <TrendingUp className="w-3 h-3 text-on-surface-variant" /> */}
+              <span className="font-caption text-caption text-on-surface-variant font-medium">0</span>
             </div>
           </div>
         </div>
@@ -178,7 +141,7 @@ export default function Dashboard() {
         </div>
 
         
-        <div className="lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant flex flex-col">
+        {/* <div className="lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant flex flex-col">
           <div className="px-5 py-md border-b border-outline-variant flex justify-between items-center">
             <h2 className="font-h3 text-h3 text-on-surface">Aktivitas Terkini</h2>
           </div>
@@ -189,11 +152,11 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <style>{`
-        /* Pattern untuk grafik dummy - Tetap disimpan di sini agar file rapi */
+        /* Pattern untuk grafik dummy Tetap disimpan di sini agar file rapi */
         .chart-bg {
           background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
                             linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);

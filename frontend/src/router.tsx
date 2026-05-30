@@ -20,6 +20,8 @@ import FinancePage from "@/pages/finance.tsx"
 // import FinancialReportPage from "@/pages/reports/financial-report"
 // import ProfilePage from "@/pages/settings/profile"
 // import PreferencesPage from "@/pages/settings/preferences"
+import SettingsPage from "@/pages/settings"
+
 export const router = createBrowserRouter([
   // {
   //   path: "/login",
@@ -54,6 +56,7 @@ export const router = createBrowserRouter([
       // { path: "reports/financial", element: <FinancialReportPage /> },
       // { path: "settings/profile", element: <ProfilePage /> },
       // { path: "settings/preferences", element: <PreferencesPage /> },
+      { path: "settings", element: <SettingsPage /> },
 
       { path: "*", element: <NotFoundPage /> },
     ],

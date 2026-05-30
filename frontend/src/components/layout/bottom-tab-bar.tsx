@@ -1,4 +1,4 @@
-import { Home, Package, Store, Banknote, Menu } from "lucide-react";
+import { Home, Package, Store, Banknote, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import React, { useState } from "react";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -61,12 +61,12 @@ export function BottomTabBar() {
           <span className={`font-caption text-[10px] truncate w-full text-center px-1 ${isActive("/finance") ? "font-medium text-primary-container" : ""}`}>Uang</span>
         </Link>
 
-        <button onClick={() => {toast.error("Fitur ini belum tersedia")}} className="flex flex-col items-center justify-center flex-1 shrink-0 min-w-0 py-1 text-on-surface-variant hover:text-primary-container transition-colors">
-          <div className="w-12 h-8 flex items-center justify-center mb-1">
-            <Menu className="w-5 h-5" />
+        <Link to="/settings" onClick={(e) => handleNavClick(e, "/settings")} className="flex flex-col items-center justify-center flex-1 shrink-0 min-w-0 py-1 text-on-surface-variant hover:text-primary-container transition-colors">
+          <div className={`w-12 h-8 rounded-full flex items-center justify-center mb-1 ${isActive("/settings") ? "bg-primary-fixed text-primary-container" : ""}`}>
+            <Settings className="w-5 h-5" />
           </div>
-          <span className="font-caption text-[10px] truncate w-full text-center px-1">Lainnya</span>
-        </button>
+          <span className={`font-caption text-[10px] truncate w-full text-center px-1 ${isActive("/settings") ? "font-medium text-primary-container" : ""}`}>Pengaturan</span>
+        </Link>
       </nav>
 
       <ConfirmationModal
