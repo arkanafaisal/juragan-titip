@@ -1,5 +1,6 @@
 import { Pencil, Trash2, Package, Coffee, Utensils, Cookie } from "lucide-react";
 import type { Product } from "@/types";
+import { settingsApi } from "@/services/api/settings";
 
 interface ProductCardProps {
   product: Product;
@@ -16,8 +17,9 @@ const formatCurrency = (value: number) => {
 };
 
 const getStockBlockStyles = (stock: number) => {
+  const threshold = settingsApi.getLowStockThreshold();
   if (stock === 0) return "bg-error/10 text-error border-error/20";
-  if (stock <= 20) return "bg-warning/10 text-warning-dark border-warning/20"; 
+  if (stock <= threshold) return "bg-warning/10 text-warning-dark border-warning/20"; 
   return "bg-success/10 text-success border-success/20";
 };
 

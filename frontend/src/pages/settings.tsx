@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { 
   Settings as GearIcon, 
   ChevronDown, 
@@ -12,6 +13,7 @@ import {
   Trash2, 
   Save
 } from "lucide-react";
+import { settingsApi } from "@/services/api/settings";
 
 export default function SettingsPage() {
   // --- ACCORDION STATE ---
@@ -24,22 +26,22 @@ export default function SettingsPage() {
   // --- FORM SETTINGS STATE (Local) ---
   // Nantinya bisa Anda hubungkan ke localStorage atau tabel 'settings' di Dexie
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
-  const [lowStockThreshold, setLowStockThreshold] = useState<number>(10);
+  const [lowStockThreshold, setLowStockThreshold] = useState<number>(settingsApi.getLowStockThreshold());
   const [quickPayNominals, setQuickPayNominals] = useState<string>("20000, 50000, 100000");
   const [waFooterMsg, setWaFooterMsg] = useState<string>("Terima kasih! Pembayaran via transfer bisa ke BCA 12345678 a.n Juragan Titip.");
 
   // --- HANDLERS (Mock) ---
   const handleSaveSettings = () => {
-    alert("Pengaturan berhasil disimpan!");
-    // TODO: Simpan state ke database
+    settingsApi.updateLowStockThreshold(lowStockThreshold);
+    toast.success("Pengaturan berhasil disimpan!");
   };
 
   const handleExportBackup = () => {
-    alert("Mendownload file backup.csv...");
+    toast.info("Mendownload file backup.csv...");
   };
 
   const handleImportBackup = () => {
-    alert("Membuka file picker untuk restore...");
+    toast.info("Membuka file picker untuk restore...");
   };
 
   const handleResetData = () => {

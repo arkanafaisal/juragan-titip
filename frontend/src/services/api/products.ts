@@ -4,6 +4,7 @@ import type { Product, ProductFormData, ApiResponse } from "@/types"
 import { db, type DbProduct } from "@/lib/db"
 import { toast } from "sonner"
 import Dexie from "dexie";
+import { settingsApi } from "@/services/api/settings";
 
 export interface ProductQueryParams {
   search?: string;
@@ -30,10 +31,11 @@ export const productApi = {
         }
         
         if (params.stockStatus) {
+          const threshold = settingsApi.getLowStockThreshold();
           if (params.stockStatus === 'in_stock') {
-            collection = collection.filter(p => p.warehouseStock > 20);
+            collection = collection.filter(p => p.warehouseStock > threshold);
           } else if (params.stockStatus === 'low_stock') {
-            collection = collection.filter(p => p.warehouseStock > 0 && p.warehouseStock <= 20);
+            collection = collection.filter(p => p.warehouseStock > 0 && p.warehouseStock <= threshold);
           } else if (params.stockStatus === 'out_of_stock') {
             collection = collection.filter(p => p.warehouseStock === 0);
           }
