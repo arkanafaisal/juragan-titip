@@ -1,11 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router"
 import { MainLayout } from "@/components/layout/main-layout"
-import { AuthGuard } from "@/components/layout/auth-guard"
 import { SidebarProvider } from '@/hooks/use-sidebar.tsx'
 
 import NotFoundPage from "@/pages/not-found"
-import LoginPage from "@/pages/auth/login"
-import RegisterPage from "@/pages/auth/register"
+// import LoginPage from "@/pages/auth/login"
+// import RegisterPage from "@/pages/auth/register"
 import DashboardPage from "@/pages/dashboard"
 import ProductListPage from "@/pages/products/product-list"
 import StoreListPage from "@/pages/stores/store-list"
@@ -21,22 +20,20 @@ import StoreVisitPage from "@/pages/stores/store-visit"
 // import ProfilePage from "@/pages/settings/profile"
 // import PreferencesPage from "@/pages/settings/preferences"
 export const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
+  // {
+  //   path: "/login",
+  //   element: <LoginPage />,
+  // },
+  // {
+  //   path: "/register",
+  //   element: <RegisterPage />,
+  // },
   {
     path: "/",
     element: (
-      <AuthGuard>
-        <SidebarProvider>
-          <MainLayout />
-        </SidebarProvider>
-      </AuthGuard>
+      <SidebarProvider>
+        <MainLayout />
+      </SidebarProvider>
     ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
