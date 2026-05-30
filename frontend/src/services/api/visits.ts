@@ -4,7 +4,6 @@ import { toast } from "sonner"
 
 export interface CreateVisitPayload extends Omit<Visit, "id" | "createdAt"> {
   restockItems: { productId: number; quantity: number }[];
-  storeActiveItemCount: number;
 }
 
 export const visitApi = {

@@ -27,4 +27,11 @@ db.version(8).stores({
   visits: '++id, storeId'
 });
 
+db.version(9).stores({
+  users: '++id, &email',
+  products: '++id, &normalizedName, category',
+  stores: '++id, normalizedName, phone',
+  visits: '++id, storeId, createdAt'
+});
+
 export { db };

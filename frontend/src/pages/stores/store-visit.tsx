@@ -229,7 +229,6 @@ export default function StoreVisitPage() {
 
       
       const finalItems = Array.from(mergedItemsMap.values()).filter(item => item.remained > 0);
-      const totalActive = displayStockItems.reduce((acc, i) => acc + i.total, 0);
 
       const restockData = restockItems
         .filter(item => item.quantity > 0)
@@ -245,8 +244,7 @@ export default function StoreVisitPage() {
         items: finalItems,
         amountPaid: amountPaidNum, 
         currentDebt: remainingDebt,
-        restockItems: restockData,
-        storeActiveItemCount: totalActive
+        restockItems: restockData
       });
 
       if (result.success) {
