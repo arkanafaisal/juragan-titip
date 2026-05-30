@@ -35,6 +35,7 @@ export default function StoreVisitPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  let currentDebt = 0
 
   
   const [opnameItems, setOpnameItems] = useState<(OpnameItem & { initialStock: number })[]>([]);
@@ -57,8 +58,9 @@ export default function StoreVisitPage() {
         if (storeRes.success && storeRes.data) setStore(storeRes.data.store);
         
         if (visitsRes.success && visitsRes.data && visitsRes.data.length > 0) {
-          const sorted = visitsRes.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          const sorted = visitsRes.data.sort((a, b) => b.id - a.id);
           const lastVisit = sorted[0];
+          currentDebt = lastVisit.currentDebt
           
           const initialOpname = lastVisit.items
             .filter(item => item.remained > 0)
@@ -183,7 +185,6 @@ export default function StoreVisitPage() {
   }, [opnameItems, restockItems]);
 
   const subtotal = billingItems.reduce((acc, item) => acc + (item.qty * item.price), 0);
-  const totalBilled = subtotal; 
 
   const handlePrevStepFromRestock = () => {
     if (opnameItems.length > 0) setStep(1);
@@ -245,7 +246,7 @@ export default function StoreVisitPage() {
       
       await visitApi.create({
         storeId: Number(id), storeName: store.name, items: finalItems,
-        totalBilled, amountPaid: totalBilled, previousReceivable: store.debt || 0,
+        amountPaid: subtotal, currentDebt: store.debt || 0,
         documentNumber: `VST-${Date.now()}`, createdAt: new Date().toISOString()
       });
 
@@ -329,7 +330,7 @@ export default function StoreVisitPage() {
           billingItems={billingItems}
           displayStockItems={displayStockItems}
           subtotal={subtotal}
-          totalBilled={totalBilled}
+          currentDebt={currentDebt}
           isSubmitting={isSubmitting}
           isNextDisabled={isVisitEmpty}
           onPrev={() => setStep(2)}

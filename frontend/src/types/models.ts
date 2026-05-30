@@ -66,7 +66,7 @@ export interface Visit {
   items: OpnameItem[]
   totalBilled: number
   amountPaid: number
-  previousReceivable: number
+  currentDebt: number
   documentNumber: string
   createdAt: string
 }

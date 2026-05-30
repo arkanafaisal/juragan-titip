@@ -24,7 +24,7 @@ interface StepCheckoutProps {
   billingItems: BillingItem[];
   displayStockItems: DisplayStockItem[];
   subtotal: number;
-  totalBilled: number;
+  currentDebt: number;
   isSubmitting: boolean;
   isNextDisabled: boolean;
   onPrev: () => void;
@@ -34,7 +34,7 @@ interface StepCheckoutProps {
 
 export function StepCheckout({ 
   billingItems, displayStockItems, subtotal, 
-  totalBilled, isSubmitting, isNextDisabled, onPrev, onFinish, formatCurrency 
+  currentDebt, isSubmitting, isNextDisabled, onPrev, onFinish, formatCurrency 
 }: StepCheckoutProps) {
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-lg pb-xl">
@@ -80,11 +80,11 @@ export function StepCheckout({
               </div>
               <div className="flex justify-between font-body text-body">
                 <span className="text-text-secondary">Piutang Sebelumnya:</span>
-                <span className="font-data-md text-data-md font-medium text-text-primary">{formatCurrency(0)}</span>
+                <span className="font-data-md text-data-md font-medium text-text-primary">{formatCurrency(currentDebt)}</span>
               </div>
               <div className="flex justify-between font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold mt-sm bg-primary/10 p-sm rounded-lg text-primary items-center">
                 <span>TOTAL TAGIHAN:</span>
-                <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">{formatCurrency(totalBilled)}</span>
+                <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">{formatCurrency(currentDebt + subtotal)}</span>
               </div>
             </div>
           </div>
