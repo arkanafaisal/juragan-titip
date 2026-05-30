@@ -61,6 +61,28 @@ export const validateStoreForm = (data: any): string | null => {
   return null;
 };
 
+export const validateProfileForm = (data: any): { name?: string, phone?: string, email?: string } => {
+  const errors: { name?: string, phone?: string, email?: string } = {};
+
+  if (!validateRequired(data.name)) {
+    errors.name = "Nama Usaha / Pemilik harus diisi";
+  } else if (!validateLength(data.name, VALIDATION_RULES.STORE.NAME_MIN, VALIDATION_RULES.STORE.NAME_MAX)) {
+    errors.name = `Nama Usaha / Pemilik harus antara ${VALIDATION_RULES.STORE.NAME_MIN}-${VALIDATION_RULES.STORE.NAME_MAX} karakter`;
+  }
+
+  if (!validateRequired(data.phone)) {
+    errors.phone = "No. WhatsApp harus diisi";
+  } else if (!validateWhatsApp(data.phone, VALIDATION_RULES.PHONE)) {
+    errors.phone = "Format nomor WhatsApp tidak valid (Harus diawali 0, full angka, tanpa spasi/+)";
+  }
+
+  if (data.email && data.email.trim() && !validateRegex(data.email, VALIDATION_RULES.GENERAL.EMAIL_REGEX)) {
+    errors.email = "Format email tidak valid";
+  }
+
+  return errors;
+};
+
 export const validateProductForm = (data: any): string | null => {
   if (!validateRequired(data.name) || !validateLength(data.name, VALIDATION_RULES.PRODUCT.NAME_MIN, VALIDATION_RULES.PRODUCT.NAME_MAX)) return `Nama produk harus antara ${VALIDATION_RULES.PRODUCT.NAME_MIN}-${VALIDATION_RULES.PRODUCT.NAME_MAX} karakter.`;
   if (!validateRequired(data.category)) return "Kategori produk wajib dipilih.";

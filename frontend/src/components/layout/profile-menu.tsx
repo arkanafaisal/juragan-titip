@@ -1,5 +1,4 @@
-// File: frontend/src/components/layout/profile-menu.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, Building2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/use-profile";
+import { validateProfileForm } from "@/lib/validations";
+import { VALIDATION_RULES } from "@/lib/validation-rules";
 
 interface ProfileMenuProps {
   variant?: "icon" | "sidebar";
@@ -23,8 +24,29 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
     phone: savedProfile?.phone || "",
     email: savedProfile?.email || ""
   });
+  const [errors, setErrors] = useState<{name?: string, phone?: string, email?: string}>({});
+
+  useEffect(() => {
+    if (isOpen) {
+      setProfile({
+        name: savedProfile?.name || "",
+        phone: savedProfile?.phone || "",
+        email: savedProfile?.email || ""
+      });
+      setErrors({});
+    }
+  }, [isOpen, savedProfile]);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+  };
 
   const handleSaveProfile = () => {
+    const newErrors = validateProfileForm(profile);
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) return;
+    
     updateProfile(profile);
     toast.success("Profil Usaha berhasil disimpan!");
     setIsOpen(false);
@@ -39,7 +61,7 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         {variant === "sidebar" ? (
           <button 
@@ -74,6 +96,7 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
         sideOffset={12} 
         collisionPadding={16}
         className="w-[calc(100vw-2rem)] sm:w-[340px] p-5 rounded-2xl bg-surface border border-border shadow-xl z-50"
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className="flex flex-col space-y-4">
           
@@ -93,20 +116,26 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="profile-name" className="text-text-secondary text-body-sm">
+              <Label htmlFor="profile-name" className={cn("text-body-sm", errors.name ? "text-error" : "text-text-secondary")}>
                 Nama Usaha / Pemilik
               </Label>
               <Input 
                 id="profile-name" 
                 placeholder="Misal: Budi Santoso"
                 value={profile.name}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className="bg-surface"
+                onChange={(e) => {
+                  setProfile({ ...profile, name: e.target.value });
+                  if (errors.name) setErrors({ ...errors, name: undefined });
+                }}
+                className={cn("bg-surface", errors.name && "border-error focus-visible:ring-error")}
+                minLength={VALIDATION_RULES.STORE.NAME_MIN}
+                maxLength={VALIDATION_RULES.STORE.NAME_MAX}
               />
+              {errors.name && <p className="text-caption text-error">{errors.name}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="profile-phone" className="text-text-secondary text-body-sm">
+              <Label htmlFor="profile-phone" className={cn("text-body-sm", errors.phone ? "text-error" : "text-text-secondary")}>
                 No. WhatsApp
               </Label>
               <Input 
@@ -114,13 +143,21 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
                 placeholder="0812-3456-7890"
                 type="tel"
                 value={profile.phone}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                className="bg-surface"
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  if (val.length > 0 && !val.startsWith("0")) return;
+                  setProfile({ ...profile, phone: val });
+                  if (errors.phone) setErrors({ ...errors, phone: undefined });
+                }}
+                className={cn("bg-surface", errors.phone && "border-error focus-visible:ring-error")}
+                minLength={VALIDATION_RULES.PHONE.MIN_LENGTH}
+                maxLength={VALIDATION_RULES.PHONE.MAX_LENGTH}
               />
+              {errors.phone && <p className="text-caption text-error">{errors.phone}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="profile-email" className="text-text-secondary text-body-sm">
+              <Label htmlFor="profile-email" className={cn("text-body-sm", errors.email ? "text-error" : "text-text-secondary")}>
                 Email (Opsional)
               </Label>
               <Input 
@@ -128,9 +165,13 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
                 placeholder="budi@juragantitip.com"
                 type="email"
                 value={profile.email}
-                onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                className="bg-surface"
+                onChange={(e) => {
+                  setProfile({ ...profile, email: e.target.value });
+                  if (errors.email) setErrors({ ...errors, email: undefined });
+                }}
+                className={cn("bg-surface", errors.email && "border-error focus-visible:ring-error")}
               />
+              {errors.email && <p className="text-caption text-error">{errors.email}</p>}
             </div>
           </div>
 
@@ -138,7 +179,7 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
             <Button 
               variant="outline" 
               className="flex-1 rounded-xl shadow-none border-outline-variant text-text-primary bg-surface"
-              onClick={() => setIsOpen(false)}
+              onClick={() => handleOpenChange(false)}
             >
               Batal
             </Button>
