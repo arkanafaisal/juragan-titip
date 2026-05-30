@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { 
   Banknote, 
   Wallet, 
   Package, 
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
 import { Link } from "react-router";
 import { 
@@ -12,36 +13,37 @@ import {
   ResponsiveContainer 
 } from "recharts";
 import { cn, formatRupiah } from "@/lib/utils";
-
-// --- DUMMY DATA ---
-const dummyChartData = [
-  { date: "1", amount: 150000 },
-  { date: "5", amount: 450000 },
-  { date: "10", amount: 300000 },
-  { date: "15", amount: 1200000 },
-  { date: "20", amount: 800000 },
-  { date: "24", amount: 1350000 },
-];
-
-const dummyIncome = [
-  { id: "VIS-001", storeName: "Toko Makmur", date: "24 Mei 2026 (Hari ini)", amount: 450000 },
-  { id: "VIS-002", storeName: "Warung Barokah", date: "23 Mei 2026 (1 hari lalu)", amount: 300000 },
-  { id: "VIS-003", storeName: "Toko Sinar Jaya", date: "23 Mei 2026 (1 hari lalu)", amount: 210000 },
-];
-
-const dummyReceivables = [
-  { id: "VIS-004", storeName: "Toko Makmur", date: "20 Mei 2026 (4 hari lalu)", debt: 800000, status: "merah" },
-  { id: "VIS-005", storeName: "Toko Berkah", date: "22 Mei 2026 (2 hari lalu)", debt: 135000, status: "kuning" },
-];
-
-const dummyAssets = [
-  { storeId: "S-01", storeName: "Warung Barokah", date: "23 Mei 2026", itemCount: 60, assetValue: 950000 },
-  { storeId: "S-02", storeName: "Toko Makmur", date: "20 Mei 2026", itemCount: 30, assetValue: 420000 },
-  { storeId: "S-03", storeName: "Toko Sinar Jaya", date: "18 Mei 2026", itemCount: 25, assetValue: 320000 },
-];
+import { financeApi, type FinanceDashboardData } from "@/services/api/finance";
 
 export default function FinancePage() {
   const [activeTab, setActiveTab] = useState<"income" | "receivables" | "assets">("income");
+  const [data, setData] = useState<FinanceDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const result = await financeApi.getDashboardData();
+        setData(result);
+      } catch (error) {
+        console.error("Failed to load finance data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  if (loading || !data) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-text-secondary font-body">Memuat data keuangan...</p>
+      </div>
+    );
+  }
+
+  console.log(data.summary.income.chartData)
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-background animate-fade-in">
@@ -50,7 +52,10 @@ export default function FinancePage() {
       <div className="px-[24px] py-[24px] space-y-[24px]">
         
         {/* 1. Card Pemasukan (Besar + Chart) */}
-        <div className="bg-primary text-on-primary rounded-[20px] p-[24px] shadow-lg relative overflow-hidden flex flex-col justify-between min-h-[180px]">
+        <div className={cn(
+          "bg-primary text-on-primary rounded-[20px] p-[24px] shadow-lg relative overflow-hidden flex flex-col justify-between transition-all duration-300",
+          data.summary.income.chartData.length > 1 ? "min-h-[180px]" : ""
+        )}>
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2 opacity-90">
               <Banknote className="w-5 h-5" />
@@ -59,31 +64,33 @@ export default function FinancePage() {
               </h3>
             </div>
             <div className="text-display font-bold tracking-tight">
-              {formatRupiah(4250000)}
+              {formatRupiah(data.summary.income.totalThisMonth)}
             </div>
           </div>
           
           {/* Recharts Area - Absolute di background */}
-          <div className="absolute bottom-0 left-0 right-0 h-[100px] opacity-40 pointer-events-none">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dummyChartData}>
-                <defs>
-                  <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ffffff" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <Area 
-                  type="monotone" 
-                  dataKey="amount" 
-                  stroke="#ffffff" 
-                  strokeWidth={3}
-                  fillOpacity={1} 
-                  fill="url(#colorAmount)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {data.summary.income.chartData.length > 1 && (
+            <div className="absolute bottom-0 left-0 right-0 h-[100px] opacity-40 pointer-events-none">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data.summary.income.chartData}>
+                  <defs>
+                    <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <Area 
+                    type="monotone" 
+                    dataKey="amount" 
+                    stroke="#ffffff" 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorAmount)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
 
         {/* 2. Dua Baris terpisah untuk Piutang & Aset */}
@@ -100,11 +107,11 @@ export default function FinancePage() {
                   Total Piutang
                 </p>
                 <span className="text-[10px] sm:text-caption font-medium bg-error/10 text-error px-2 py-1 rounded-md shrink-0">
-                  4 Toko
+                  {data.summary.receivables.storeCount} Toko
                 </span>
               </div>
               <h4 className="text-h3 sm:text-h2 font-bold text-text-primary truncate">
-                {formatRupiah(1350000)}
+                {formatRupiah(data.summary.receivables.totalDebt)}
               </h4>
             </div>
           </div>
@@ -120,11 +127,11 @@ export default function FinancePage() {
                   Nilai Item Aktif
                 </p>
                 <span className="text-[10px] sm:text-caption font-medium bg-primary/10 text-primary px-2 py-1 rounded-md shrink-0">
-                  15 Toko
+                  {data.summary.assets.storeCount} Toko
                 </span>
               </div>
               <h4 className="text-h3 sm:text-h2 font-bold text-text-primary truncate">
-                {formatRupiah(8500000)}
+                {formatRupiah(data.summary.assets.totalAssetValue)}
               </h4>
             </div>
           </div>
@@ -175,7 +182,11 @@ export default function FinancePage() {
               Riwayat pemasukan uang tunai dari kunjungan toko.
             </p>
             
-            {dummyIncome.map((item, idx) => (
+            {data.lists.incomes.length === 0 && (
+              <div className="text-center py-8 text-text-secondary">Belum ada data pemasukan bulan ini.</div>
+            )}
+            
+            {data.lists.incomes.map((item, idx) => (
               <div key={idx} className="bg-surface p-[16px] rounded-[16px] border border-outline-variant shadow-sm border-l-4 border-l-primary">
                 <div className="mb-3">
                   <h4 className="font-semibold text-body text-text-primary">
@@ -196,7 +207,7 @@ export default function FinancePage() {
                     </span>
                   </div>
                   <Link 
-                    to={`/finance/invoices/${item.id}`} 
+                    to={`/finance/invoices/${item.visitId}`} 
                     className="flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-hover transition-colors"
                   >
                     Lihat Nota <ArrowRight className="w-4 h-4" />
@@ -214,15 +225,16 @@ export default function FinancePage() {
               Daftar tagihan aktif. Sisa hutang selalu berpindah dan diakumulasikan ke riwayat kunjungan paling akhir.
             </p>
             
-            {dummyReceivables.map((item, idx) => (
+            {data.lists.receivables.length === 0 && (
+              <div className="text-center py-8 text-text-secondary">Tidak ada tagihan aktif. Mantap! 🎉</div>
+            )}
+            
+            {data.lists.receivables.map((item, idx) => (
               <div key={idx} className="bg-surface p-[16px] rounded-[16px] border border-outline-variant shadow-sm border-l-4 border-l-error">
                 <div className="mb-3">
                   <h4 className="font-semibold text-body text-text-primary">
                     {item.storeName}
                   </h4>
-                  <span className="text-caption text-text-secondary">
-                    📅 {item.date}
-                  </span>
                 </div>
                 
                 <div className="border-t border-outline-variant border-dashed my-3"></div>
@@ -238,10 +250,10 @@ export default function FinancePage() {
                     </span>
                   </div>
                   <Link 
-                    to={`/finance/invoices/${item.id}`} 
+                    to={`/stores/${item.storeId}`} 
                     className="flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-hover transition-colors bg-primary/10 px-3 py-1.5 rounded-lg"
                   >
-                    Tagih <ArrowRight className="w-4 h-4" />
+                    Detail Toko <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
@@ -256,31 +268,34 @@ export default function FinancePage() {
               Sebaran data nilai dan barang titipan terakhir di masing-masing toko.
             </p>
             
-            {dummyAssets.map((item, idx) => (
+            {data.lists.assets.length === 0 && (
+              <div className="text-center py-8 text-text-secondary">Belum ada aset titipan yang tercatat.</div>
+            )}
+            
+            {data.lists.assets.map((item, idx) => (
               <div key={idx} className="bg-surface p-[16px] rounded-[16px] border border-outline-variant shadow-sm border-l-4 border-l-primary">
                 <div className="mb-3">
                   <h4 className="font-semibold text-body text-text-primary">
                     {item.storeName}
                   </h4>
-                  <span className="text-caption text-text-secondary">
-                    📅 Kunjungan Terakhir: {item.date}
-                  </span>
                 </div>
                 
                 <div className="border-t border-outline-variant border-dashed my-3"></div>
                 
                 <div className="flex justify-between items-end">
                   <div>
-                    <span className="text-caption text-text-secondary block mb-0.5">Jumlah Barang:</span>
-                    <span className="font-bold text-body text-text-primary">
-                      {item.itemCount} Pcs
-                    </span>
-                  </div>
-                  <div className="text-right">
-                     <span className="text-caption text-text-secondary block mb-0.5">Estimasi Aset:</span>
+                    <span className="text-caption text-text-secondary block mb-0.5">Estimasi Aset:</span>
                     <span className="font-bold text-body text-primary">
                       {formatRupiah(item.assetValue)}
                     </span>
+                  </div>
+                  <div className="text-right">
+                    <Link 
+                      to={`/stores/${item.storeId}`} 
+                      className="flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-hover transition-colors bg-primary/10 px-3 py-1.5 rounded-lg"
+                    >
+                      Cek Stok <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
                 </div>
               </div>
