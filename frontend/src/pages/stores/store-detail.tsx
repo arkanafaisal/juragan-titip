@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { MapPicker } from "@/components/features/map-picker";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
+import { InvoiceDetail } from "@/components/features/invoice-detail";
 import { storeApi } from "@/services/api/stores";
 import type { Store, Visit } from "@/types";
 
@@ -24,6 +25,7 @@ export default function StoreDetailPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("titipan");
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null);
 
   const [store, setStore] = useState<Store | null>(null);
   const [analysis, setAnalysis] = useState<{
@@ -132,6 +134,10 @@ export default function StoreDetailPage() {
     );
   }
 
+  if (selectedInvoiceId !== null) {
+    return <InvoiceDetail id={selectedInvoiceId} onBack={() => setSelectedInvoiceId(null)} />;
+  }
+
   return (
     <div className="max-w-container-max mx-auto space-y-md md:space-y-lg pb-xl">
 
@@ -238,7 +244,11 @@ export default function StoreDetailPage() {
             {analysis?.visitHistory && analysis.visitHistory.length > 0 ? (
               <div className="space-y-sm">
                 {analysis.visitHistory.map((visit) => (
-                  <div key={visit.id} className="flex justify-between items-center p-md border border-outline-variant rounded-lg bg-surface-container-lowest">
+                  <button 
+                    key={visit.id} 
+                    onClick={() => setSelectedInvoiceId(visit.id)}
+                    className="w-full flex justify-between items-center p-md border border-outline-variant rounded-lg bg-surface-container-lowest hover:bg-surface-container-low transition-colors text-left"
+                  >
                     <div className="flex flex-col gap-1">
                       <span className="font-body text-body text-text-primary font-medium">
                         {new Date(visit.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -251,7 +261,7 @@ export default function StoreDetailPage() {
                       </span>
                       <span className="font-caption text-caption text-text-secondary">Pembayaran</span>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             ) : (
