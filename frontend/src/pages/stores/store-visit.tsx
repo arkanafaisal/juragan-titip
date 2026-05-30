@@ -41,6 +41,7 @@ export default function StoreVisitPage() {
   const [opnameItems, setOpnameItems] = useState<(OpnameItem & { initialStock: number })[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [restockItems, setRestockItems] = useState<(RestockItem & { _warehouseStock: number })[]>([]);
+  const [amountPaidStr, setAmountPaidStr] = useState("");
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
@@ -235,12 +236,16 @@ export default function StoreVisitPage() {
         .filter(item => item.quantity > 0)
         .map(item => ({ productId: item.productId, quantity: item.quantity }));
 
+      const amountPaidNum = parseInt(amountPaidStr.replace(/\D/g, '')) || 0;
+      const totalBilled = (store.debt || 0) + subtotal;
+      const remainingDebt = Math.max(0, totalBilled - amountPaidNum);
+
       const result = await visitApi.create({
         storeId: Number(id), 
         storeName: store.name, 
         items: finalItems,
-        amountPaid: subtotal, 
-        currentDebt: store.debt || 0,
+        amountPaid: amountPaidNum, 
+        currentDebt: remainingDebt,
         documentNumber: `VST-${Date.now()}`,
         restockItems: restockData,
         storeActiveItemCount: totalActive
@@ -328,6 +333,8 @@ export default function StoreVisitPage() {
           currentDebt={currentDebt}
           isSubmitting={isSubmitting}
           isNextDisabled={isVisitEmpty}
+          localAmountPaid={amountPaidStr}
+          setLocalAmountPaid={setAmountPaidStr}
           onPrev={() => setStep(2)}
           onFinish={handleFinish}
           formatCurrency={formatCurrency}

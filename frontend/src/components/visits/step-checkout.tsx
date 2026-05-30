@@ -1,5 +1,4 @@
 import { ShoppingCart, Package, Save, Loader2 } from "lucide-react";
-import { useState } from "react";
 
 interface BillingItem {
   id: string;
@@ -27,6 +26,8 @@ interface StepCheckoutProps {
   currentDebt: number;
   isSubmitting: boolean;
   isNextDisabled: boolean;
+  localAmountPaid: string;
+  setLocalAmountPaid: (val: string) => void;
   onPrev: () => void;
   onFinish: () => void;
   formatCurrency: (value: number) => string;
@@ -34,19 +35,18 @@ interface StepCheckoutProps {
 
 export function StepCheckout({ 
   billingItems, displayStockItems, subtotal, 
-  currentDebt, isSubmitting, isNextDisabled, onPrev, onFinish, formatCurrency 
+  currentDebt, isSubmitting, isNextDisabled, 
+  localAmountPaid, setLocalAmountPaid,
+  onPrev, onFinish, formatCurrency 
 }: StepCheckoutProps) {
   
-  // TODO: Pindahkan state ini ke parent component saat Anda menghubungkannya
-  const [localAmountPaid, setLocalAmountPaid] = useState("");
-
   const totalBilled = currentDebt + subtotal;
   const amountPaidNum = parseInt(localAmountPaid.replace(/\D/g, '')) || 0;
   const diff = totalBilled - amountPaidNum;
   
   const isChange = diff < 0;
   const isFullyPaid = diff === 0;
-  const remainingDebt = isFullyPaid? 0 : diff;
+  const remainingDebt = Math.max(0, diff);
 
   // Fungsi untuk membatasi input hanya angka murni
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
