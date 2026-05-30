@@ -173,5 +173,12 @@ export const storeApi = {
     await db.stores.delete(numericId);
     return { success: true, data: null };
   },
-
+  getPhoneNumber: async (id: number | string): Promise<ApiResponse<string | undefined>> => {
+    try {
+      const store = await db.stores.get(Number(id));
+      return { success: true, data: store?.phone };
+    } catch (error) {
+      return { success: false, data: undefined, message: "Gagal mengambil nomor telepon toko" };
+    }
+  }
 }

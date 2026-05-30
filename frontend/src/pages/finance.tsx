@@ -14,11 +14,13 @@ import {
 } from "recharts";
 import { cn, formatRupiah } from "@/lib/utils";
 import { financeApi, type FinanceDashboardData } from "@/services/api/finance";
+import { InvoiceDetail } from "@/components/features/invoice-detail";
 
 export default function FinancePage() {
   const [activeTab, setActiveTab] = useState<"income" | "receivables" | "assets">("income");
   const [data, setData] = useState<FinanceDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,6 +43,10 @@ export default function FinancePage() {
         <p className="text-text-secondary font-body">Memuat data keuangan...</p>
       </div>
     );
+  }
+
+  if (selectedInvoiceId !== null) {
+    return <InvoiceDetail id={selectedInvoiceId} onBack={() => setSelectedInvoiceId(null)} />;
   }
 
   console.log(data.summary.income.chartData)
@@ -206,12 +212,12 @@ export default function FinancePage() {
                       + {formatRupiah(item.amount)}
                     </span>
                   </div>
-                  <Link 
-                    to={`/finance/invoices/${item.visitId}`} 
+                  <button 
+                    onClick={() => setSelectedInvoiceId(item.visitId)}
                     className="flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-hover transition-colors"
                   >
                     Lihat Nota <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
