@@ -112,9 +112,9 @@ export function AppSidebar() {
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Toko</span>
           </Link>
 
-          <button
-            // to="/finance"
-            onClick={()=>{toast.error("Fitur ini belum tersedia")}}
+          <Link
+            to="/finance"
+            onClick={(e) => handleNavClick(e, "/finance")}
             className={cn(
               "flex items-center gap-md px-md py-sm rounded-lg transition-all",
               isActive("/finance")
@@ -124,7 +124,7 @@ export function AppSidebar() {
           >
             <Banknote className="w-5 h-5 flex-shrink-0" />
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Keuangan</span>
-          </button>
+          </Link>
 
           <button
             // to="/reports"

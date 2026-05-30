@@ -54,12 +54,12 @@ export function BottomTabBar() {
           <span className={`font-caption text-[10px] truncate w-full text-center px-1 ${isActive("/stores") ? "font-medium text-primary-container" : ""}`}>Toko</span>
         </Link>
 
-        <button onClick={() => {toast.error("Fitur ini belum tersedia")}} className="flex flex-col items-center justify-center flex-1 shrink-0 min-w-0 py-1 text-on-surface-variant hover:text-primary-container transition-colors">
+        <Link to="/finance" onClick={(e) => handleNavClick(e, "/finance")} className="flex flex-col items-center justify-center flex-1 shrink-0 min-w-0 py-1 text-on-surface-variant hover:text-primary-container transition-colors">
           <div className={`w-12 h-8 rounded-full flex items-center justify-center mb-1 ${isActive("/finance") ? "bg-primary-fixed text-primary-container" : ""}`}>
             <Banknote className="w-5 h-5" />
           </div>
           <span className={`font-caption text-[10px] truncate w-full text-center px-1 ${isActive("/finance") ? "font-medium text-primary-container" : ""}`}>Uang</span>
-        </button>
+        </Link>
 
         <button onClick={() => {toast.error("Fitur ini belum tersedia")}} className="flex flex-col items-center justify-center flex-1 shrink-0 min-w-0 py-1 text-on-surface-variant hover:text-primary-container transition-colors">
           <div className="w-12 h-8 flex items-center justify-center mb-1">

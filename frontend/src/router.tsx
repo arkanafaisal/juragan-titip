@@ -11,6 +11,7 @@ import StoreListPage from "@/pages/stores/store-list"
 import StoreDetailPage from "@/pages/stores/store-detail"
 import StoreFormPage from "@/pages/stores/store-form"
 import StoreVisitPage from "@/pages/stores/store-visit"
+import FinancePage from "@/pages/finance.tsx"
 // import InvoiceListPage from "@/pages/finance/invoice-list"
 // import InvoiceDetailPage from "@/pages/finance/invoice-detail"
 // import ReceivablesPage from "@/pages/finance/receivables"
@@ -44,6 +45,7 @@ export const router = createBrowserRouter([
       { path: "stores/:id", element: <StoreDetailPage /> },
       { path: "stores/:id/edit", element: <StoreFormPage /> },
       { path: "stores/:id/visit", element: <StoreVisitPage /> },
+      { path: "finance", element: <FinancePage /> },
       // { path: "finance/invoices", element: <InvoiceListPage /> },
       // { path: "finance/invoices/:id", element: <InvoiceDetailPage /> },
       // { path: "finance/receivables", element: <ReceivablesPage /> },

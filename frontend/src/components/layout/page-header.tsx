@@ -33,13 +33,7 @@ export function PageHeader() {
 
     
     if (section === "dashboard") return "Dashboard";
-    if (section === "finance") {
-      if (actionOrId === "receivables") return "Daftar Piutang";
-      if (actionOrId === "invoices") {
-          if (!subAction) return "Daftar Faktur";
-          return "Detail Faktur";
-      }
-    }
+    if (section === "finance") return "Keuangan"
     if (section === "reports") {
       if (actionOrId === "stores") return "Performa Toko";
       if (actionOrId === "tracking") return "Lacak Barang";
