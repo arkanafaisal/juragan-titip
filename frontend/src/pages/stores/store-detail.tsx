@@ -203,8 +203,8 @@ export default function StoreDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-sm md:gap-md">
-        <StatCard icon={Wallet} title="Piutang" value="Rp 0" bgClass="bg-error/10" textClass="text-error" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
-        <StatCard icon={TrendingUp} title="Penjualan" value="Rp 0" bgClass="bg-success/10" textClass="text-success" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
+        <StatCard icon={Wallet} title="Piutang" value={store.debt > 0 ? `Rp ${store.debt.toLocaleString("id-ID")}` : "Rp 0"} bgClass="bg-error/10" textClass="text-error" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
+        <StatCard icon={TrendingUp} title="Nilai Aset" value={store.assetValue > 0 ? `Rp ${store.assetValue.toLocaleString("id-ID")}` : "Rp 0"} bgClass="bg-success/10" textClass="text-success" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
       </div>
 
       <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden flex flex-col">
