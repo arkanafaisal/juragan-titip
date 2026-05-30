@@ -278,7 +278,7 @@ export default function StoreVisitPage() {
   }
 
   return (
-    <div className="max-w-container-max mx-auto space-y-md md:space-y-lg pb-xl">
+    <div className="max-w-container-max mx-auto space-y-md md:space-y-lg">
       <div className="flex items-center justify-between bg-surface rounded-xl p-md shadow-sm border border-border">
         <div className="flex items-center gap-2 sm:gap-md min-w-0">
           <button onClick={handleHeaderPrevStep} className="p-1 sm:p-xs hover:bg-surface-container-low rounded-lg transition-colors text-text-secondary shrink-0">
