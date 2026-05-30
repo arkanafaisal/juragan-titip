@@ -76,15 +76,6 @@ export default function SettingsPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-300 pb-20">
-      {/* HEADER */}
-      <div className="mb-md">
-        <h1 className="font-h1 text-h1 font-bold text-text-primary flex items-center gap-xs">
-          <GearIcon className="w-6 h-6 text-primary" /> Pengaturan
-        </h1>
-        <p className="font-body text-body text-text-secondary mt-1">
-          Sesuaikan aplikasi Juragan Titip dengan gaya kerja Anda.
-        </p>
-      </div>
 
       <div className="space-y-sm">
 
