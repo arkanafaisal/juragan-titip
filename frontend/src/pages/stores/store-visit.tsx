@@ -137,13 +137,9 @@ export default function StoreVisitPage() {
         items.push({ id: `${item.productId}_sold`, name: item.productName, type: 'sold', qty: item.sold, price: item.wholesalePrice });
       }
     });
-    restockItems.forEach(item => {
-      if (item.quantity > 0) {
-        items.push({ id: `${item.productId}_restock`, name: item.productName, type: 'restock', qty: item.quantity, price: item.wholesalePrice });
-      }
-    });
+    // Tidak memasukkan restockItems ke billingItems karena sistem titipan (bayar belakangan)
     return items;
-  }, [opnameItems, restockItems]);
+  }, [opnameItems]);
 
   const displayStockItems = useMemo(() => {
     const map = new Map<number, { productId: number; productName: string; initialStock: number; sold: number; returned: number; remained: number; restock: number; total: number; }>();
