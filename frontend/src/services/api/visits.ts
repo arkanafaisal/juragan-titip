@@ -23,7 +23,8 @@ export const visitApi = {
     const numericId = Number(storeId);
     try {
       const visits = await db.visits.where('storeId').equals(numericId).toArray();
-      return { success: true, data: visits }
+      const sortedVisits = visits.sort((a, b) => b.id - a.id);
+      return { success: true, data: sortedVisits }
     } catch (error) {
       console.error("Dexie Get Visits by Store Error:", error);
       toast.error("Gagal memuat kunjungan toko")
@@ -79,7 +80,6 @@ export const visitApi = {
         }
 
         await db.stores.update(Number(data.storeId), {
-          activeItemCount: data.storeActiveItemCount,
           debt: data.currentDebt,
           assetValue: assetValue
         });

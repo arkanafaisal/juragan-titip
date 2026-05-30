@@ -59,8 +59,7 @@ export default function StoreVisitPage() {
         if (storeRes.success && storeRes.data) setStore(storeRes.data.store);
         
         if (visitsRes.success && visitsRes.data && visitsRes.data.length > 0) {
-          const sorted = visitsRes.data.sort((a, b) => b.id - a.id);
-          const lastVisit = sorted[0];
+          const lastVisit = visitsRes.data[0];
           currentDebt = lastVisit.currentDebt
           
           const initialOpname = lastVisit.items

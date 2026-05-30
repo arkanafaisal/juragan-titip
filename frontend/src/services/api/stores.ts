@@ -67,7 +67,7 @@ export const storeApi = {
       let activeItems: { productName: string; remained: number }[] = [];
       
       if (storeVisits.length > 0) {
-        const lastVisit = storeVisits[storeVisits.length - 1]; 
+        const lastVisit = storeVisits[0];
         activeItems = lastVisit.items.map(item => ({
           productName: item.productName,
           remained: item.remained
