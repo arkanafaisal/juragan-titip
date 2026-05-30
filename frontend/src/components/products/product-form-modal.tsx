@@ -176,6 +176,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   placeholder="100" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
                   max={VALIDATION_RULES.PRODUCT.STOCK_MAX}
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -193,6 +194,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   placeholder="15000" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
                   max={VALIDATION_RULES.PRODUCT.PRICE_MAX}
+                  autoComplete="off"
                 />
               </div>
               <div className="flex flex-col gap-xs">
@@ -207,6 +209,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   placeholder="18000" 
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
                   max={VALIDATION_RULES.PRODUCT.PRICE_MAX}
+                  autoComplete="off"
                 />
               </div>
             </div>

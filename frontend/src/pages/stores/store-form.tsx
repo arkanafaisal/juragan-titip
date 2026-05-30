@@ -205,7 +205,7 @@ export default function StoreFormPage() {
                     autoFocus
                     minLength={VALIDATION_RULES.STORE.NAME_MIN}
                     maxLength={VALIDATION_RULES.STORE.NAME_MAX}
-                    autoComplete="organization"
+                    autoComplete="off"
                   />
                 </div>
                 
@@ -224,7 +224,7 @@ export default function StoreFormPage() {
                     required 
                     minLength={VALIDATION_RULES.STORE.OWNER_MIN}
                     maxLength={VALIDATION_RULES.STORE.OWNER_MAX}
-                    autoComplete="name"
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function StoreFormPage() {
                     required
                     minLength={VALIDATION_RULES.PHONE.MIN_LENGTH}
                     maxLength={VALIDATION_RULES.PHONE.MAX_LENGTH}
-                    autoComplete="tel-national"
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -269,7 +269,7 @@ export default function StoreFormPage() {
                   required 
                   minLength={VALIDATION_RULES.STORE.ADDRESS_MIN}
                   maxLength={VALIDATION_RULES.STORE.ADDRESS_MAX}
-                  autoComplete="street-address"
+                  autoComplete="off"
                 />
               </div>
             </div>

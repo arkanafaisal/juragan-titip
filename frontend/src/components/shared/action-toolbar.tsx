@@ -67,6 +67,7 @@ export function ActionToolbar({
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={searchPlaceholder}
           className="pl-9 w-full bg-surface"
+          autoComplete="off"
         />
       </div>
 

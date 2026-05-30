@@ -53,6 +53,7 @@ export function StepRestock({
                 }}
                 placeholder="Kripik Singkong Pedas..."
                 className="w-full pl-xl pr-10 py-sm sm:py-md bg-surface-container-lowest border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body text-body transition-all"
+                autoComplete="off"
               />
               <ChevronDown className="absolute right-sm top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-text-muted pointer-events-none" />
             </div>
