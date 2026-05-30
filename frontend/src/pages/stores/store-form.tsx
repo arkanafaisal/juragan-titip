@@ -14,6 +14,7 @@ import { storeApi } from "@/services/api/stores";
 import { MapPicker } from "@/components/features/map-picker";
 import { validateStoreForm } from "@/lib/validations";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
+import { toast } from "sonner";
 
 export default function StoreFormPage() {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ export default function StoreFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
-  const [gpsStatus, setGpsStatus] = useState<{ type: 'error' | 'success'; message: string } | null>(null);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -82,7 +82,6 @@ export default function StoreFormPage() {
   };
 
   const handleDetectGPS = () => {
-    setGpsStatus(null);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -90,18 +89,15 @@ export default function StoreFormPage() {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           });
-          setGpsStatus({ type: 'success', message: 'Lokasi berhasil diperbarui.' });
-          setTimeout(() => setGpsStatus(null), 3000);
+          toast.success("Lokasi berhasil diperbarui.");
         },
         (err) => {
           console.error("GPS Error:", err);
-          setGpsStatus({ type: 'error', message: 'Gagal mendapatkan lokasi. Pastikan izin GPS diaktifkan.' });
-          setTimeout(() => setGpsStatus(null), 4000);
+          toast.error("Gagal mendapatkan lokasi. Pastikan izin GPS diaktifkan.");
         }
       );
     } else {
-      setGpsStatus({ type: 'error', message: 'Browser Anda tidak mendukung deteksi lokasi (GPS).' });
-      setTimeout(() => setGpsStatus(null), 4000);
+      toast.error("Browser Anda tidak mendukung deteksi lokasi (GPS).");
     }
   };
 
@@ -326,11 +322,6 @@ export default function StoreFormPage() {
             </div>
 
             <div className="relative w-full h-[240px] lg:h-[300px] shrink-0">
-              {gpsStatus && (
-                <div className={`absolute top-md left-1/2 -translate-x-1/2 z-[400] px-md py-sm rounded-full shadow-lg font-body-sm text-body-sm font-medium text-center animate-in fade-in zoom-in-95 duration-300 ${gpsStatus.type === 'error' ? 'bg-error text-on-error' : 'bg-surface text-primary border border-primary/20'}`}>
-                  {gpsStatus.message}
-                </div>
-              )}
               <MapPicker
                 position={location}
                 onChange={handleLocationChange}
