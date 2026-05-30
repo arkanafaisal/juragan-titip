@@ -1,5 +1,5 @@
-
 import { ShoppingCart, Package, Save, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface BillingItem {
   id: string;
@@ -36,11 +36,35 @@ export function StepCheckout({
   billingItems, displayStockItems, subtotal, 
   currentDebt, isSubmitting, isNextDisabled, onPrev, onFinish, formatCurrency 
 }: StepCheckoutProps) {
+  
+  // TODO: Pindahkan state ini ke parent component saat Anda menghubungkannya
+  const [localAmountPaid, setLocalAmountPaid] = useState("");
+
+  const totalBilled = currentDebt + subtotal;
+  const amountPaidNum = parseInt(localAmountPaid.replace(/\D/g, '')) || 0;
+  const diff = totalBilled - amountPaidNum;
+  
+  const isChange = diff < 0;
+  const isFullyPaid = diff === 0;
+  const remainingDebt = isFullyPaid? 0 : diff;
+
+  // Fungsi untuk membatasi input hanya angka murni
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const numericValue = e.target.value.replace(/\D/g, '');
+    setLocalAmountPaid(numericValue);
+  };
+
+  // Fungsi untuk memformat angka menjadi format ribuan (1.500.000) di dalam input
+  const formatInputCurrency = (val: string) => {
+    if (!val) return "";
+    return parseInt(val).toLocaleString('id-ID');
+  };
+
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-lg pb-xl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
         
-        
+        {/* KARTU KIRI: TAGIHAN & PEMBAYARAN */}
         <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col h-full">
           <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant">
             <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold flex items-center gap-xs text-text-primary">
@@ -82,15 +106,45 @@ export function StepCheckout({
                 <span className="text-text-secondary">Piutang Sebelumnya:</span>
                 <span className="font-data-md text-data-md font-medium text-text-primary">{formatCurrency(currentDebt)}</span>
               </div>
+              
               <div className="flex justify-between font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold mt-sm bg-primary/10 p-sm rounded-lg text-primary items-center">
                 <span>TOTAL TAGIHAN:</span>
-                <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">{formatCurrency(currentDebt + subtotal)}</span>
+                <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">{formatCurrency(totalBilled)}</span>
               </div>
+
+              {/* INPUT PEMBAYARAN */}
+              <div className="pt-sm">
+                <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
+                  Jumlah Dibayar (Tunai):
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-data-md text-text-secondary">Rp</span>
+                  <input 
+                    type="text" 
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={formatInputCurrency(localAmountPaid)}
+                    onChange={handleAmountChange}
+                    className="w-full pl-10 pr-3 py-2 sm:py-3 bg-surface border border-outline text-text-primary font-data-md sm:font-data-lg font-bold focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all shadow-sm"
+                  />
+                </div>
+              </div>
+
+              {/* SISA HUTANG DINAMIS */}
+              <div className={`flex justify-between font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold mt-sm p-sm rounded-lg items-center transition-colors ${
+                isChange ? 'bg-warning/10 text-warning' : (isFullyPaid ? 'bg-success/10 text-success' : 'bg-error/10 text-error')
+              }`}>
+                <span>{isChange ? 'KEMBALIAN:' : (isFullyPaid ? 'LUNAS:' : 'SISA HUTANG:')}</span>
+                <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">
+                  {formatCurrency(remainingDebt)}
+                </span>
+              </div>
+
             </div>
           </div>
         </div>
 
-        
+        {/* KARTU KANAN: BARANG DI TOKO */}
         <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col h-full">
           <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant">
             <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold flex items-center gap-xs text-text-primary">
@@ -141,7 +195,7 @@ export function StepCheckout({
         </div>
       </div>
 
-      
+      {/* AKSI TOMBOL */}
       <div className="flex flex-col sm:flex-row gap-sm sm:gap-md justify-between items-center pt-md">
         <button onClick={onPrev} className="w-full sm:w-auto text-text-secondary hover:text-text-primary px-md py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium transition-colors border border-outline-variant hover:bg-surface-container-low bg-surface text-center">
           Kembali Edit
