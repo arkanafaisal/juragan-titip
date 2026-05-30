@@ -102,20 +102,6 @@ export const storeApi = {
       return { success: true, data: { ...newStore, id } as Store }
     } catch (error: any) {
       console.error("Dexie Create Store Error:", error);
-      if (error.name === 'ConstraintError') {
-        const existingName = await db.stores.where('normalizedName').equals(newStore.normalizedName).first();
-        if (existingName) {
-          toast.error("Nama toko sudah ada di sistem")
-          return { success: false, data: null, message: "Nama toko sudah ada di sistem" }
-        }
-        const existingPhone = await db.stores.where('phone').equals(newStore.phone).first();
-        if (existingPhone) {
-          toast.error("Nomor telepon sudah terdaftar di toko lain")
-          return { success: false, data: null, message: "Nomor telepon sudah terdaftar di toko lain" }
-        }
-        toast.error("Data toko duplikat")
-        return { success: false, data: null, message: "Data toko duplikat" }
-      }
       toast.error("Gagal menyimpan toko")
       return { success: false, data: null, message: "Gagal menyimpan toko" }
     }
@@ -139,27 +125,28 @@ export const storeApi = {
       return { success: true, data: updatedStore! }
     } catch (error: any) {
       console.error("Dexie Update Store Error:", error);
-      if (error instanceof Dexie.ModifyError) {
-        if (updateData.normalizedName) {
-          const existingName = await db.stores.where('normalizedName').equals(updateData.normalizedName).first();
-          if (existingName && existingName.id !== numericId) {
-            toast.error("Nama toko sudah digunakan oleh toko lain")
-            return { success: false, data: null, message: "Nama toko sudah digunakan oleh toko lain" }
-          }
-        }
-        if (updateData.phone) {
-          const existingPhone = await db.stores.where('phone').equals(updateData.phone).first();
-          if (existingPhone && existingPhone.id !== numericId) {
-            toast.error("Nomor telepon sudah digunakan oleh toko lain")
-            return { success: false, data: null, message: "Nomor telepon sudah digunakan oleh toko lain" }
-          }
-        }
-        toast.error("Data toko duplikat")
-        return { success: false, data: null, message: "Data toko duplikat" }
-      }
       toast.error("Gagal memperbarui toko")
       return { success: false, data: null, message: "Gagal memperbarui toko" }
     }
+  },
+
+  checkDuplicateName: async (name: string, excludeId?: number): Promise<boolean> => {
+    const normalizedName = name.toLowerCase();
+    const existingStore = await db.stores.where('normalizedName').equals(normalizedName).first();
+    if (existingStore) {
+      if (excludeId !== undefined && existingStore.id === excludeId) return false;
+      return true;
+    }
+    return false;
+  },
+
+  checkDuplicatePhone: async (phone: string, excludeId?: number): Promise<boolean> => {
+    const existingStore = await db.stores.where('phone').equals(phone).first();
+    if (existingStore) {
+      if (excludeId !== undefined && existingStore.id === excludeId) return false;
+      return true;
+    }
+    return false;
   },
 
   delete: async (id: number | string, storeNameConfirm: string): Promise<ApiResponse<null>> => {

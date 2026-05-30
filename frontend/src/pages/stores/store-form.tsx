@@ -15,6 +15,7 @@ import { MapPicker } from "@/components/features/map-picker";
 import { validateStoreForm } from "@/lib/validations";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
 import { toast } from "sonner";
+import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 
 export default function StoreFormPage() {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ export default function StoreFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateMessage, setDuplicateMessage] = useState<React.ReactNode | null>(null);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -48,7 +51,7 @@ export default function StoreFormPage() {
             setFormData({
               name: response.data.store.name,
               ownerName: response.data.store.ownerName,
-              phone: response.data.store.phone,
+              phone: response.data.store.phone || "",
               address: response.data.store.address,
               notes: response.data.store.notes || "",
             });
@@ -114,11 +117,37 @@ export default function StoreFormPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    
+    try {
+      const isDuplicateName = await storeApi.checkDuplicateName(formData.name, isEditMode ? Number(id) : undefined);
+      const isDuplicatePhone = formData.phone ? await storeApi.checkDuplicatePhone(formData.phone, isEditMode ? Number(id) : undefined) : false;
 
+      if (isDuplicateName || isDuplicatePhone) {
+        if (isDuplicateName && isDuplicatePhone) {
+          setDuplicateMessage(<>Terdapat toko dengan nama (<strong>{formData.name}</strong>) dan nomor telepon (<strong>{formData.phone}</strong>) yang sama. Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
+        } else if (isDuplicateName) {
+          setDuplicateMessage(<>Terdapat toko dengan nama yang sama (<strong>{formData.name}</strong>). Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
+        } else {
+          setDuplicateMessage(<>Terdapat toko dengan nomor telepon yang sama (<strong>{formData.phone}</strong>). Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
+        }
+        setShowDuplicateModal(true);
+        setIsSubmitting(false);
+        return;
+      }
+
+      await performSave();
+    } catch (err) {
+      setError("Terjadi kesalahan sistem saat mengecek data.");
+      setIsSubmitting(false);
+    }
+  };
+
+  const performSave = async () => {
+    setIsSubmitting(true);
+    setShowDuplicateModal(false);
     try {
       const payload = {
         ...formData,
+        ...(formData.phone? { phone: formData.phone } : {}),
         latitude: location.lat,
         longitude: location.lng,
         activeItemCount: 0
@@ -231,7 +260,7 @@ export default function StoreFormPage() {
 
               <div className="flex flex-col gap-xs">
                 <label className="font-caption text-caption text-text-secondary" htmlFor="phone">
-                  Nomor Telepon <span className="text-error">*</span>
+                  Nomor Telepon (Opsional)
                 </label>
                 <div className="flex">
                   <input 
@@ -246,7 +275,6 @@ export default function StoreFormPage() {
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
                     placeholder="081234567890" 
                     type="tel"
-                    required
                     minLength={VALIDATION_RULES.PHONE.MIN_LENGTH}
                     maxLength={VALIDATION_RULES.PHONE.MAX_LENGTH}
                     autoComplete="off"
@@ -381,6 +409,18 @@ export default function StoreFormPage() {
         </div>
 
       </form>
+
+      <ConfirmationModal
+        isOpen={showDuplicateModal}
+        onClose={() => setShowDuplicateModal(false)}
+        onConfirm={performSave}
+        title="Toko Duplikat Ditemukan"
+        description={duplicateMessage || <>Terdapat toko dengan nama yang sama (<strong>{formData.name}</strong>). Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>}
+        confirmText="Ya, Simpan"
+        cancelText="Batal"
+        isDanger={true}
+        isLoading={isSubmitting}
+      />
     </div>
   );
 }
