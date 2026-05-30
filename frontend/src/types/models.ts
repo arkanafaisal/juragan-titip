@@ -64,7 +64,6 @@ export interface Visit {
   storeId: number
   storeName: string
   items: OpnameItem[]
-  totalBilled: number
   amountPaid: number
   currentDebt: number
   documentNumber: string
