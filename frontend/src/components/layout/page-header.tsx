@@ -1,32 +1,16 @@
-import { useState, useRef, useEffect } from "react";
-import { Menu, Calendar, Bell, User, Settings, LogOut } from "lucide-react";
+import { Menu, Calendar, Bell } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { useLocation } from "react-router";
 import { useSidebar } from "@/hooks/use-sidebar";
-import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner"
+import { ProfileMenu } from "@/components/layout/profile-menu";
 
 export function PageHeader() {
   const location = useLocation();
   const todayDate = format(new Date(), "dd MMM yyyy", { locale: idLocale });
   const { toggle } = useSidebar();
-  const { user, logout } = useAuth();
   
-  
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsProfileOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   
   const getDynamicTitle = (pathname: string) => {
@@ -110,44 +94,8 @@ export function PageHeader() {
         </button>
         
         
-        <div className="md:hidden relative ml-1" ref={dropdownRef}>
-          <button 
-            onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="w-8 h-8 rounded-full bg-primary-fixed text-primary-container flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-container transition-all"
-          >
-            <User className="w-4 h-4" />
-          </button>
-
-          
-          {isProfileOpen && (
-            <div className="absolute top-[calc(100%+12px)] right-0 flex flex-col w-[240px] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="px-md py-sm border-b border-outline-variant flex flex-col">
-                <span className="font-body text-body font-medium text-on-surface truncate">
-                  {user?.name}
-                </span>
-                <span className="font-caption text-caption text-on-surface-variant truncate">
-                  {user?.email}
-                </span>
-              </div>
-              <div className="p-xs">
-                {/* <Link to="/settings" className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full">
-                  <Settings className="w-4 h-4 shrink-0" />
-                  <span className="font-body-sm text-body-sm">Pengaturan</span>
-                </Link> */}
-                <button onClick={()=>toast.error("Fitur ini belum tersedia")} className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full">
-                  <Settings className="w-4 h-4 shrink-0" />
-                  <span className="font-body-sm text-body-sm">Pengaturan</span>
-                </button>
-                <button 
-                  onClick={logout}
-                  className="flex items-center gap-sm px-md py-sm text-error hover:bg-error/10 rounded-lg transition-colors text-left w-full"
-                >
-                  <LogOut className="w-4 h-4 shrink-0" />
-                  <span className="font-body-sm text-body-sm">Keluar</span>
-                </button>
-              </div>
-            </div>
-          )}
+        <div className="md:hidden relative ml-1 flex items-center">
+          <ProfileMenu />
         </div>
 
       </div>

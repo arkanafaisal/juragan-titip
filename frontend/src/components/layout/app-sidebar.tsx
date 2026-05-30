@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   LayoutDashboard,
@@ -7,40 +7,25 @@ import {
   Banknote,
   BarChart3,
   Settings,
-  User,
-  LogOut,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/use-sidebar.tsx";
-import { useAuth } from "@/contexts/auth-context";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { toast } from "sonner"
+import { ProfileMenu } from "@/components/layout/profile-menu";
 
 export function AppSidebar() {
   const { isCollapsed } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
 
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
   
   
   const isFormRoute = /^\/stores\/(new|[^/]+\/edit|[^/]+\/visit)$/.test(location.pathname);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsProfileOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleNavClick = (e: React.MouseEvent, path: string) => {
     if (path === location.pathname) {
@@ -167,57 +152,7 @@ export function AppSidebar() {
             <span className={cn("whitespace-nowrap transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>Pengaturan</span>
           </button>
 
-          <div 
-            ref={dropdownRef}
-            onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className={cn("relative mt-sm bg-surface-container-low rounded-lg p-sm flex items-center gap-sm cursor-pointer mx-xs border border-outline-variant", isCollapsed ? "justify-center" : "justify-start")}
-          >
-            <div className="w-8 h-8 rounded-full bg-primary-fixed text-primary-container flex items-center justify-center flex-shrink-0">
-              <User className="w-4 h-4" />
-            </div>
-            <div className={cn("transition-opacity", isCollapsed ? "opacity-0 hidden" : "opacity-100 block")}>
-              <div className="font-body-sm text-body-sm font-medium text-on-surface truncate w-[130px]">{user?.name}</div>
-              <div className="font-caption text-caption text-on-surface-variant truncate w-[130px]">{user?.email}</div>
-            </div>
-
-            
-            {isProfileOpen && (
-              <div 
-                onClick={(e) => e.stopPropagation()} 
-                className="absolute bottom-0 left-[calc(100%+12px)] flex flex-col w-[240px] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg z-50 animate-in fade-in slide-in-from-bottom-2 duration-200 cursor-default"
-              >
-                <div className="px-md py-sm border-b border-outline-variant flex flex-col">
-                  <span className="font-body text-body font-medium text-on-surface truncate">
-                    {user?.name}
-                  </span>
-                  <span className="font-caption text-caption text-on-surface-variant truncate">
-                    {user?.email}
-                  </span>
-                </div>
-                <div className="p-xs">
-                  <button 
-                    // to="/settings" 
-                    onClick={() => {
-                      // setIsProfileOpen(false);
-                      // handleNavClick(e, "/settings");
-                      toast.error("Fitur ini belum tersedia")
-                    }}
-                    className="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors text-left w-full"
-                  >
-                    <Settings className="w-4 h-4 shrink-0" />
-                    <span className="font-body-sm text-body-sm">Pengaturan</span>
-                  </button>
-                  <button 
-                    onClick={logout}
-                    className="flex items-center gap-sm px-md py-sm text-error hover:bg-error/10 rounded-lg transition-colors text-left w-full"
-                  >
-                    <LogOut className="w-4 h-4 shrink-0" />
-                    <span className="font-body-sm text-body-sm">Keluar</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          <ProfileMenu variant="sidebar" isSidebarCollapsed={isCollapsed} />
         </div>
       </nav>
 
