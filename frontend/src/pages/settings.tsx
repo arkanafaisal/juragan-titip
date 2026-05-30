@@ -26,13 +26,20 @@ export default function SettingsPage() {
   // --- FORM SETTINGS STATE (Local) ---
   // Nantinya bisa Anda hubungkan ke localStorage atau tabel 'settings' di Dexie
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
-  const [lowStockThreshold, setLowStockThreshold] = useState<number>(settingsApi.getLowStockThreshold());
+  const [lowStockThreshold, setLowStockThreshold] = useState<number | string>(settingsApi.getLowStockThreshold());
+  const [categoryLabels, setCategoryLabels] = useState(settingsApi.getCategoryLabels());
   const [quickPayNominals, setQuickPayNominals] = useState<string>("20000, 50000, 100000");
   const [waFooterMsg, setWaFooterMsg] = useState<string>("Terima kasih! Pembayaran via transfer bisa ke BCA 12345678 a.n Juragan Titip.");
 
   // --- HANDLERS (Mock) ---
   const handleSaveSettings = () => {
-    settingsApi.updateLowStockThreshold(lowStockThreshold);
+    let threshold = Number(lowStockThreshold);
+    if (isNaN(threshold) || threshold < 0) {
+      threshold = 0;
+    }
+    settingsApi.updateLowStockThreshold(threshold);
+    settingsApi.updateCategoryLabels(categoryLabels);
+    setLowStockThreshold(threshold);
     toast.success("Pengaturan berhasil disimpan!");
   };
 
@@ -128,8 +135,9 @@ export default function SettingsPage() {
                 </label>
                 <input 
                   type="number" 
+                  min="0"
                   value={lowStockThreshold}
-                  onChange={(e) => setLowStockThreshold(parseInt(e.target.value) || 0)}
+                  onChange={(e) => setLowStockThreshold(e.target.value)}
                   className="w-full px-3 py-3 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
                 />
                 <p className="font-caption text-caption text-text-secondary mt-1">
@@ -137,8 +145,34 @@ export default function SettingsPage() {
                 </p>
               </div>
 
+              {/* Input: Category Labels */}
+              <div className="pt-2 border-t border-outline-variant">
+                <label className="font-body-sm text-body-sm font-bold text-text-primary block mb-3">
+                  Label Kategori Produk (1 - 5)
+                </label>
+                <div className="space-y-3">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <div key={num} className="flex items-center gap-3">
+                      <span className="font-mono bg-surface-container-low px-3 py-2 rounded-lg text-text-secondary font-bold w-12 text-center border border-outline-variant">
+                        {num}
+                      </span>
+                      <input 
+                        type="text" 
+                        value={categoryLabels[num.toString() as keyof typeof categoryLabels]}
+                        onChange={(e) => setCategoryLabels(prev => ({...prev, [num.toString()]: e.target.value}))}
+                        placeholder={`Kategori ${num}`}
+                        className="flex-1 px-3 py-2 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="font-caption text-caption text-text-secondary mt-2">
+                  *Ubah nama kategori di atas sesuai dengan lini bisnis toko Anda. Nama ini akan muncul di form Produk.
+                </p>
+              </div>
+
               {/* Input: String (Comma Separated) */}
-              <div className="pt-2">
+              <div className="pt-2 border-t border-outline-variant">
                 <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
                   Saran Nominal Cepat (Pisahkan dengan koma)
                 </label>
