@@ -1,4 +1,5 @@
 import { storageGet, storageSet } from "@/lib/storage";
+import { db } from "@/lib/db";
 
 const LOW_STOCK_THRESHOLD_KEY = "juragan_titip_low_stock_threshold";
 const CATEGORY_LABELS_KEY = "juragan_titip_category_labels";
@@ -34,7 +35,16 @@ export const settingsApi = {
     return val !== null ? val : DEFAULT_CATEGORY_LABELS;
   },
   
+  
   updateCategoryLabels: (labels: CategoryLabels): void => {
     storageSet(CATEGORY_LABELS_KEY, labels);
+  },
+
+  clearAllData: async (): Promise<void> => {
+    await db.transaction('rw', db.products, db.stores, db.visits, async () => {
+      await db.products.clear();
+      await db.stores.clear();
+      await db.visits.clear();
+    });
   }
 };

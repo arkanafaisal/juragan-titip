@@ -14,6 +14,7 @@ import {
   Save
 } from "lucide-react";
 import { settingsApi } from "@/services/api/settings";
+import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 
 export default function SettingsPage() {
   // --- ACCORDION STATE ---
@@ -30,6 +31,10 @@ export default function SettingsPage() {
   const [categoryLabels, setCategoryLabels] = useState(settingsApi.getCategoryLabels());
   const [quickPayNominals, setQuickPayNominals] = useState<string>("20000, 50000, 100000");
   const [waFooterMsg, setWaFooterMsg] = useState<string>("Terima kasih! Pembayaran via transfer bisa ke BCA 12345678 a.n Juragan Titip.");
+
+  // --- MODAL STATE ---
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   // --- HANDLERS (Mock) ---
   const handleSaveSettings = () => {
@@ -51,10 +56,21 @@ export default function SettingsPage() {
     toast.info("Membuka file picker untuk restore...");
   };
 
-  const handleResetData = () => {
-    const isConfirmed = window.confirm("PERINGATAN! Semua data toko, kunjungan, dan produk akan dihapus permanen. Lanjutkan?");
-    if (isConfirmed) {
-      alert("Mereset database...");
+  const handleResetDataClick = () => {
+    setIsResetModalOpen(true);
+  };
+
+  const handleResetDataConfirm = async () => {
+    setIsResetting(true);
+    try {
+      await settingsApi.clearAllData();
+      toast.success("Semua data berhasil dihapus permanen");
+      setIsResetModalOpen(false);
+    } catch (error) {
+      console.error("Gagal mereset data:", error);
+      toast.error("Terjadi kesalahan saat menghapus data");
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -261,7 +277,7 @@ export default function SettingsPage() {
                 Aksi ini akan menghapus permanen seluruh riwayat toko, hutang, dan produk dari HP ini. Pastikan Anda sudah melakukan Backup.
               </p>
               <button 
-                onClick={handleResetData}
+                onClick={handleResetDataClick}
                 className="w-full bg-surface border border-error text-error hover:bg-error hover:text-on-error font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
               >
                 <Trash2 className="w-5 h-5" /> Reset & Hapus Semua Data
@@ -271,6 +287,21 @@ export default function SettingsPage() {
         </div>
 
       </div>
+
+      <ConfirmationModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={() => handleResetDataConfirm()}
+        title="Reset & Hapus Semua Data"
+        description="Peringatan keras! Tindakan ini akan menghapus PERMANEN seluruh riwayat toko, hutang, produk, dan riwayat kunjungan dari perangkat ini. Pastikan Anda sudah membackup data Anda."
+        isDanger={true}
+        confirmText="Ya, Hapus Semua"
+        isLoading={isResetting}
+        verificationText="SAYA YAKIN HAPUS SEMUA DATA"
+        verificationLabel={
+          <>Ketik persis <span className="font-bold text-text-primary select-none">SAYA YAKIN HAPUS SEMUA DATA</span> untuk konfirmasi hapus total:</>
+        }
+      />
     </div>
   );
 }
