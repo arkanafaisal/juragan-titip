@@ -4,17 +4,13 @@ import {
   X, MapPin, Map, Play, ChevronDown, ChevronUp, 
   ChevronLeft, ChevronRight, Navigation 
 } from "lucide-react";
-import { db, DbStore } from "@/lib/db";
+import { db, type DbStore } from "@/lib/db";
 import { toast } from "sonner";
 
 // Extend tipe Store dengan properti jarak sementara
 type StoreWithDistance = DbStore & { distance: number };
 
-interface FocusModeProps {
-  onClose: () => void;
-}
-
-export function FocusMode({ onClose }: FocusModeProps) {
+export default function JourneyPage() {
   const navigate = useNavigate();
   const [stores, setStores] = useState<StoreWithDistance[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,8 +23,8 @@ export function FocusMode({ onClose }: FocusModeProps) {
 
   // Helper: Rumus Haversine untuk menghitung jarak (dalam KM)
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    if (!lat1 || !lon1 || !lat2 || !lon2) return 9999; // Fallback jika tidak ada kordinat
-    const R = 6371; // Radius bumi dalam KM
+    if (!lat1 || !lon1 || !lat2 || !lon2) return 9999; 
+    const R = 6371; 
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a =
@@ -36,16 +32,14 @@ export function FocusMode({ onClose }: FocusModeProps) {
       Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return Number((R * c).toFixed(1)); // 1 angka di belakang koma (misal: 1.2)
+    return Number((R * c).toFixed(1)); 
   };
 
-  // 1. Muat toko dari IndexedDB (Hanya yang tidak diarsipkan)
+  // 1. Muat toko dari IndexedDB
   useEffect(() => {
     const loadStores = async () => {
       try {
-        const allStores = await db.stores.toArray(); // Bisa tambahkan filter isArchived jika schema sudah update
-        
-        // Default distance 9999 sebelum lokasi diketahui
+        const allStores = await db.stores.toArray();
         const initialStores = allStores.map(s => ({ ...s, distance: 9999 }));
         setStores(initialStores);
         
@@ -56,6 +50,7 @@ export function FocusMode({ onClose }: FocusModeProps) {
       }
     };
     loadStores();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2. Fungsi Perbarui Lokasi GPS
@@ -69,15 +64,13 @@ export function FocusMode({ onClose }: FocusModeProps) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        
-        // Kalkulasi jarak dan urutkan
         const sorted = storeList.map(s => ({
           ...s,
           distance: calculateDistance(latitude, longitude, s.latitude, s.longitude)
         })).sort((a, b) => a.distance - b.distance);
 
         setStores(sorted);
-        setCurrentIndex(0); // Reset ke toko terdekat (urutan 1)
+        setCurrentIndex(0); 
         setIsLocating(false);
         toast.success("Lokasi diperbarui! Menampilkan toko terdekat.");
       },
@@ -90,7 +83,7 @@ export function FocusMode({ onClose }: FocusModeProps) {
     );
   };
 
-  // 3. Efek Auto-Scroll pada Mini Menu saat Index Berubah
+  // 3. Efek Auto-Scroll pada Mini Menu
   useEffect(() => {
     if (miniMenuRef.current) {
       const activeEl = miniMenuRef.current.children[currentIndex] as HTMLElement;
@@ -100,13 +93,29 @@ export function FocusMode({ onClose }: FocusModeProps) {
     }
   }, [currentIndex]);
 
-  if (stores.length === 0) return null;
+  const handleClose = () => {
+    navigate('/dashboard'); // Balik ke Dashboard jika tombol silang ditekan
+  };
+
+  if (stores.length === 0) {
+    return (
+      <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center">
+        <MapPin className="w-12 h-12 text-neutral-500 mb-4" />
+        <h2 className="font-h2 text-h2 font-bold mb-2">Belum Ada Toko</h2>
+        <p className="text-neutral-400 mb-6 font-body text-body">
+          Tambahkan data toko terlebih dahulu untuk menggunakan Mode Keliling.
+        </p>
+        <button onClick={handleClose} className="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold">
+          Kembali ke Dashboard
+        </button>
+      </div>
+    );
+  }
 
   const currentStore = stores[currentIndex];
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < stores.length - 1;
 
-  // Aksi Tombol
   const goPrev = () => { if (hasPrev) setCurrentIndex(prev => prev - 1); };
   const goNext = () => { if (hasNext) setCurrentIndex(prev => prev + 1); };
   
@@ -115,17 +124,16 @@ export function FocusMode({ onClose }: FocusModeProps) {
   };
 
   const startVisit = () => {
-    navigate(`/stores/${currentStore.id}/visit`);
-    onClose(); // Tutup mode fokus saat mulai kunjungan
+    navigate(`/stores/${currentStore.id}/visit`); 
   };
 
   return (
     // FULLSCREEN OVERLAY
-    <div className="fixed inset-0 z-[100] bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300">
+    <div className="min-h-screen w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300">
       
       {/* HEADER BAR */}
       <div className="flex justify-between items-center p-4 text-white shrink-0">
-        <button onClick={onClose} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
+        <button onClick={handleClose} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
           <X className="w-5 h-5" />
         </button>
         <button 
@@ -140,7 +148,6 @@ export function FocusMode({ onClose }: FocusModeProps) {
 
       {/* MAIN CAROUSEL AREA */}
       <div className="flex-1 flex items-center justify-center relative overflow-hidden pb-20">
-        
         <div className="relative w-full max-w-[360px] flex items-center justify-center">
           
           {/* FAKE BORDER LEFT (Klik Mundur) */}
@@ -165,8 +172,6 @@ export function FocusMode({ onClose }: FocusModeProps) {
                 title="Map"
               />
               <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-surface/50 to-transparent pointer-events-none" />
-              
-              {/* Badge Jarak di Atas Peta */}
               <div className="absolute bottom-3 right-3 bg-neutral-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-lg border border-white/10">
                 <MapPin className="w-4 h-4 text-primary-fixed" />
                 {currentStore.distance === 9999 ? '?' : currentStore.distance} km
@@ -264,7 +269,6 @@ export function FocusMode({ onClose }: FocusModeProps) {
           ))}
         </div>
       </div>
-
     </div>
   );
 }
