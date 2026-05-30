@@ -9,6 +9,7 @@ import type { Store, Product, OpnameItem, RestockItem } from "@/types";
 import { StepOpname } from "@/components/visits/step-opname";
 import { StepRestock } from "@/components/visits/step-restock";
 import { StepCheckout } from "@/components/visits/step-checkout";
+import { toast } from "sonner";
 
 const StepIndicator = ({ current, target, label, num }: any) => {
   const isPast = current > target;
@@ -311,11 +312,13 @@ export default function StoreVisitPage() {
           allProducts={allProducts}
           restockItems={restockItems}
           suggestedProducts={suggestedProducts}
-          isNextDisabled={isVisitEmpty}
           handleAddRestock={handleAddRestock}
           handleRestockQuantity={handleRestockQuantity}
           handleRemoveRestock={handleRemoveRestock}
-          onNext={() => setStep(3)}
+          onNext={() =>{
+            if(isVisitEmpty){return toast.error("Tidak dapat lanjut (kunjungan masih kosong)")}
+            setStep(3)
+          }}
           onPrev={handlePrevStepFromRestock}
           formatCurrency={formatCurrency}
         />

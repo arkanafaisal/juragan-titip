@@ -7,7 +7,6 @@ interface StepRestockProps {
   allProducts: Product[];
   restockItems: (RestockItem & { _warehouseStock: number })[];
   suggestedProducts: Product[];
-  isNextDisabled: boolean;
   handleAddRestock: (product: Product) => void;
   handleRestockQuantity: (productId: number, qty: number) => void;
   handleRemoveRestock: (productId: number) => void;
@@ -17,7 +16,7 @@ interface StepRestockProps {
 }
 
 export function StepRestock({ 
-  allProducts, restockItems, suggestedProducts, isNextDisabled, handleAddRestock, 
+  allProducts, restockItems, suggestedProducts, handleAddRestock, 
   handleRestockQuantity, handleRemoveRestock, 
   onNext, onPrev, formatCurrency 
 }: StepRestockProps) {
@@ -162,12 +161,8 @@ export function StepRestock({
           Kembali
         </button>
         <div className="flex flex-col items-end gap-1">
-          {isNextDisabled && (
-             <span className="text-error font-caption text-caption">Tidak dapat lanjut (kunjungan masih kosong)</span>
-          )}
           <button 
             onClick={onNext} 
-            disabled={isNextDisabled}
             className="bg-primary text-on-primary px-lg py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium flex items-center gap-xs hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50"
           >
             Lanjut Checkout <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
