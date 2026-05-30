@@ -28,7 +28,7 @@ export interface Store {
   latitude: number
   longitude: number
   notes: string
-  totalReceivable: number
+  debt: number
 }
 
 export interface StorePrice {

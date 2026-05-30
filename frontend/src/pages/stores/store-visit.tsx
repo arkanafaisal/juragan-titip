@@ -245,7 +245,7 @@ export default function StoreVisitPage() {
       
       await visitApi.create({
         storeId: Number(id), storeName: store.name, items: finalItems,
-        totalBilled, amountPaid: totalBilled, previousReceivable: store.totalReceivable || 0,
+        totalBilled, amountPaid: totalBilled, previousReceivable: store.debt || 0,
         documentNumber: `VST-${Date.now()}`, createdAt: new Date().toISOString()
       });
 

@@ -28,9 +28,9 @@ export const storeApi = {
         
         if (params.status) {
           if (params.status === 'lunas') {
-            collection = collection.filter(s => s.totalReceivable === 0);
+            collection = collection.filter(s => s.debt === 0);
           } else if (params.status === 'piutang') {
-            collection = collection.filter(s => s.totalReceivable > 0);
+            collection = collection.filter(s => s.debt > 0);
           }
         }
       }
@@ -93,7 +93,7 @@ export const storeApi = {
     const newStore: Omit<DbStore, 'id'> = {
       ...data,
       normalizedName,
-      totalReceivable: 0,
+      debt: 0,
     }
 
     try {

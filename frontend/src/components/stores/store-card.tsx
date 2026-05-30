@@ -50,11 +50,11 @@ export function StoreCard({ store }: StoreCardProps) {
               <span className="font-caption text-caption">Piutang</span>
             </div>
             <span className={`font-data-md text-data-md ${
-              store.totalReceivable === 0 
+              store.debt === 0 
                 ? 'text-success' 
-                : store.totalReceivable > 1000000 ? 'text-error' : 'text-warning'
+                : store.debt > 1000000 ? 'text-error' : 'text-warning'
             }`}>
-              {store.totalReceivable === 0 ? "Rp 0" : formatCurrency(store.totalReceivable)}
+              {store.debt === 0 ? "Rp 0" : formatCurrency(store.debt)}
             </span>
           </div>
         </div>
