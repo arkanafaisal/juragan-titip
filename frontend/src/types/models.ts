@@ -66,7 +66,6 @@ export interface Visit {
   items: OpnameItem[]
   amountPaid: number
   currentDebt: number
-  documentNumber: string
   createdAt: string
 }
 
@@ -93,7 +92,6 @@ export interface Invoice {
   visitId: string
   storeId: string
   storeName: string
-  documentNumber: string
   billedItems: BilledItem[]
   subtotal: number
   previousReceivable: number

@@ -61,7 +61,6 @@ export const visitApi = {
           items: data.items,
           amountPaid: data.amountPaid,
           currentDebt: data.currentDebt,
-          documentNumber: data.documentNumber,
           createdAt: new Date().toISOString()
         };
 

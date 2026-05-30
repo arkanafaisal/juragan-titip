@@ -245,7 +245,6 @@ export default function StoreVisitPage() {
         items: finalItems,
         amountPaid: amountPaidNum, 
         currentDebt: remainingDebt,
-        documentNumber: `VST-${Date.now()}`,
         restockItems: restockData,
         storeActiveItemCount: totalActive
       });

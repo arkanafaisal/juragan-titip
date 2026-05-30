@@ -243,7 +243,7 @@ export default function StoreDetailPage() {
                       <span className="font-body text-body text-text-primary font-medium">
                         {new Date(visit.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
                       </span>
-                      <span className="font-caption text-caption text-text-secondary">Dokumen: {visit.documentNumber}</span>
+                      <span className="font-caption text-caption text-text-secondary">Dokumen: VST-{visit.id.toString().padStart(5, '0')}</span>
                     </div>
                     <div className="text-right flex flex-col gap-1">
                       <span className="font-body text-body text-text-primary font-bold">
