@@ -94,6 +94,7 @@ export const storeApi = {
       ...data,
       normalizedName,
       debt: 0,
+      assetValue: 0
     }
 
     try {

@@ -29,6 +29,7 @@ export interface Store {
   longitude: number
   notes: string
   debt: number
+  assetValue: number
 }
 
 export interface StorePrice {
