@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { productApi } from "@/services/api/products";
 import type { Product } from "@/types";
+import { settingsApi } from "@/services/api/settings";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
   
   const { isCollapsed } = useSidebar();
   const isMobile = useMobile()
+  const categoryLabels = settingsApi.getCategoryLabels();
 
   useEffect(() => {
     if (isOpen) {
@@ -158,10 +160,11 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all cursor-pointer capitalize"
                 >
                   <option value="" disabled>Pilih Kategori</option>
-                  <option value="kering">Kering</option>
-                  <option value="basah">Basah</option>
-                  <option value="minuman">Minuman</option>
-                  <option value="non-makanan">Non-Makanan</option>
+                  <option value="1">{categoryLabels["1"]}</option>
+                  <option value="2">{categoryLabels["2"]}</option>
+                  <option value="3">{categoryLabels["3"]}</option>
+                  <option value="4">{categoryLabels["4"]}</option>
+                  <option value="5">{categoryLabels["5"]}</option>
                 </select>
               </div>
               <div className="flex flex-col gap-xs">

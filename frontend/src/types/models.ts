@@ -10,7 +10,7 @@ export interface Product {
   id: number
   name: string
   normalizedName: string
-  category: string
+  category: "1" | "2" | "3" | "4" | "5" 
   costPrice: number
   wholesalePrice: number
   retailPrice: number

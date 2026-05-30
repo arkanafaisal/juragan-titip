@@ -1,4 +1,4 @@
-import { Pencil, Trash2, Package, Coffee, Utensils, Cookie } from "lucide-react";
+import { Pencil, Trash2, Package } from "lucide-react";
 import type { Product } from "@/types";
 import { settingsApi } from "@/services/api/settings";
 
@@ -24,26 +24,31 @@ const getStockBlockStyles = (stock: number) => {
 };
 
 const getCategoryStyles = (category: string) => {
+  if (category === "1") return { bg: "bg-info/10", text: "text-info", border: "border-info/40" };
+  if (category === "2") return { bg: "bg-success/10", text: "text-success", border: "border-success/40" };
+  if (category === "3") return { bg: "bg-warning/10", text: "text-warning", border: "border-warning/40" };
+  if (category === "4") return { bg: "bg-secondary/10", text: "text-secondary", border: "border-secondary/40" };
+  if (category === "5") return { bg: "bg-primary/10", text: "text-primary", border: "border-primary/40" };
+  
   const cat = category?.toLowerCase() || "";
-  if (cat === "minuman") return { bg: "bg-info/10", text: "text-info", border: "border-info/40", icon: <Coffee className="w-5 h-5" strokeWidth={1.5} /> };
-  if (cat === "basah") return { bg: "bg-success/10", text: "text-success", border: "border-success/40", icon: <Utensils className="w-5 h-5" strokeWidth={1.5} /> };
-  if (cat === "kering") return { bg: "bg-warning/10", text: "text-warning", border: "border-warning/40", icon: <Cookie className="w-5 h-5" strokeWidth={1.5} /> };
-  if (cat === "non-makanan") return { bg: "bg-secondary/10", text: "text-secondary", border: "border-secondary/40", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
-  return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant", icon: <Package className="w-5 h-5" strokeWidth={1.5} /> };
+  if (cat === "minuman") return { bg: "bg-info/10", text: "text-info", border: "border-info/40" };
+  if (cat === "basah") return { bg: "bg-success/10", text: "text-success", border: "border-success/40" };
+  if (cat === "kering") return { bg: "bg-warning/10", text: "text-warning", border: "border-warning/40" };
+  if (cat === "non-makanan") return { bg: "bg-secondary/10", text: "text-secondary", border: "border-secondary/40" };
+  return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant" };
 };
 
 export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
   const catStyle = getCategoryStyles(product.category);
   const stockStyle = getStockBlockStyles(product.warehouseStock);
+  const categoryLabels = settingsApi.getCategoryLabels();
+  const displayCategory = categoryLabels[product.category as keyof typeof categoryLabels] || product.category;
 
   return (
     <div className={`bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden border-[1.5px] ${catStyle.border}`}>
       <div className="p-md flex-1 flex flex-col">
         <div className="flex items-start justify-between mb-md gap-3">
           <div className="flex items-start gap-sm">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${catStyle.bg} ${catStyle.text}`}>
-              {catStyle.icon}
-            </div>
             <div>
               <h3 className="font-h3 text-h3 text-text-primary line-clamp-1">{product.name}</h3>
               <p className="font-caption text-caption text-text-secondary mt-0.5 line-clamp-2">
@@ -52,7 +57,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
             </div>
           </div>
           <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wide uppercase shrink-0 ${catStyle.bg} ${catStyle.text}`}>
-            {product.category}
+            {displayCategory}
           </span>
         </div>
 

@@ -7,6 +7,7 @@ import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Pagination } from "@/components/shared/pagination";
 import { LIMIT } from "@/lib/constants";
 import { ActionToolbar, type FilterGroup } from "@/components/shared/action-toolbar";
+import { settingsApi } from "@/services/api/settings";
 
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -24,16 +25,19 @@ export default function ProductListPage() {
     category: "",
     // sortBy: "name_asc"
   });
+  const categoryLabels = settingsApi.getCategoryLabels();
+
   const storeFilterConfig: FilterGroup[] = [
     {
       id: "category",
       title: "Kategori Produk",
       options: [
         { label: "Semua", value: "" },
-        { label: "Kering", value: "kering" },
-        { label: "Basah", value: "basah" },
-        { label: "Minuman", value: "minuman" },
-        { label: "Non-Makanan", value: "non-makanan" }
+        { label: categoryLabels["1"], value: "1" },
+        { label: categoryLabels["2"], value: "2" },
+        { label: categoryLabels["3"], value: "3" },
+        { label: categoryLabels["4"], value: "4" },
+        { label: categoryLabels["5"], value: "5" }
       ]
     },
     {
