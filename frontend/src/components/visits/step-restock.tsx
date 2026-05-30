@@ -105,8 +105,8 @@ export function StepRestock({
         {restockItems.length === 0 ? (
           <div className="py-xl flex flex-col items-center justify-center bg-surface-bright text-text-secondary">
             <Package className="w-10 h-10 sm:w-12 sm:h-12 mb-sm text-outline-variant" />
-            <p className="font-body text-body font-medium text-text-primary">Keranjang Restock Kosong</p>
-            <p className="font-caption sm:font-body-sm text-caption sm:text-body-sm mt-1">Tambahkan produk melalui pencarian atau saran di atas.</p>
+            <p className="px-6 text-center font-body text-body font-medium text-text-primary">Keranjang Restock Kosong</p>
+            <p className="px-6 text-center font-caption sm:font-body-sm text-caption sm:text-body-sm mt-1">Tambahkan produk melalui pencarian atau saran di atas.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
