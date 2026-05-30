@@ -4,7 +4,7 @@ export const VALIDATION_RULES = {
     NAME_MAX: 30,
     OWNER_MIN: 3,
     OWNER_MAX: 20,
-    ADDRESS_MIN: 10,
+    ADDRESS_MIN: 6,
     ADDRESS_MAX: 60,
     NOTES_MAX: 200,
   },
@@ -17,8 +17,8 @@ export const VALIDATION_RULES = {
   },
   PHONE: {
     MIN_LENGTH: 10,
-    MAX_LENGTH: 15,
-    REGEX: /^0[0-9]{9,14}$/, 
+    MAX_LENGTH: 13,
+    REGEX: /^0[0-9]{9,12}$/, 
   },
   GENERAL: {
     EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
