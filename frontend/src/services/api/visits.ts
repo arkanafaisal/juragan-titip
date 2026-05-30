@@ -2,6 +2,11 @@ import type { Visit, ApiResponse } from "@/types"
 import { db, type DbVisit } from "@/lib/db"
 import { toast } from "sonner"
 
+export interface CreateVisitPayload extends Omit<Visit, "id" | "createdAt"> {
+  restockItems: { productId: number; quantity: number }[];
+  storeActiveItemCount: number;
+}
+
 export const visitApi = {
   getAll: async (): Promise<ApiResponse<Visit[] | null>> => {
     try {
@@ -42,22 +47,50 @@ export const visitApi = {
     }
   },
 
-  create: async (data: Omit<Visit, "id">): Promise<ApiResponse<Visit | null>> => {
-    const newVisit: Omit<DbVisit, 'id'> = {
-      ...data,
-      
-      storeId: Number(data.storeId),
-      createdAt: new Date().toISOString() 
-    }
-
+  create: async (data: CreateVisitPayload): Promise<ApiResponse<Visit | null>> => {
     try {
-      const id = await db.visits.add(newVisit as DbVisit);
-      toast.success("Kunjungan berhasil disimpan")
-      return { success: true, data: { ...newVisit, id } as Visit }
+      let createdVisit: Visit | null = null;
+
+      await db.transaction('rw', db.visits, db.products, db.stores, async () => {
+        const assetValue = data.items.reduce((acc, item) => acc + (item.remained * item.wholesalePrice), 0);
+        
+        const newVisit: Omit<DbVisit, 'id'> = {
+          storeId: Number(data.storeId),
+          storeName: data.storeName,
+          items: data.items,
+          amountPaid: data.amountPaid,
+          currentDebt: data.currentDebt,
+          documentNumber: data.documentNumber,
+          createdAt: new Date().toISOString()
+        };
+
+        const id = await db.visits.add(newVisit as DbVisit);
+        createdVisit = { ...newVisit, id } as Visit;
+
+        for (const item of data.restockItems) {
+          if (item.quantity > 0) {
+            const product = await db.products.get(item.productId);
+            if (product) {
+              await db.products.update(item.productId, { 
+                warehouseStock: Math.max(0, product.warehouseStock - item.quantity) 
+              });
+            }
+          }
+        }
+
+        await db.stores.update(Number(data.storeId), {
+          activeItemCount: data.storeActiveItemCount,
+          debt: data.currentDebt,
+          assetValue: assetValue
+        });
+      });
+
+      toast.success("Kunjungan berhasil disimpan");
+      return { success: true, data: createdVisit };
     } catch (error) {
-      console.error("Dexie Create Visit Error:", error);
-      toast.error("Gagal menyimpan kunjungan")
-      return { success: false, data: null, message: "Gagal menyimpan kunjungan" }
+      console.error("Dexie Create Visit Transaction Error:", error);
+      toast.error("Gagal menyimpan kunjungan");
+      return { success: false, data: null, message: "Gagal menyimpan kunjungan" };
     }
   },
 }

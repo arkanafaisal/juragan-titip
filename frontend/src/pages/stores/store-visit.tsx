@@ -195,19 +195,6 @@ export default function StoreVisitPage() {
     if (!id || !store || isVisitEmpty) return;
     setIsSubmitting(true);
     try {
-      
-      await Promise.all(
-        restockItems.map(async (item) => {
-          if (item.quantity > 0) {
-            const pRes = await productApi.getById(item.productId);
-            if (pRes.success && pRes.data) {
-               await productApi.update(item.productId, { warehouseStock: Math.max(0, pRes.data.warehouseStock - item.quantity) });
-            }
-          }
-        })
-      );
-
-      
       const mergedItemsMap = new Map<number, OpnameItem>();
 
       opnameItems.forEach(item => {
@@ -242,18 +229,26 @@ export default function StoreVisitPage() {
 
       
       const finalItems = Array.from(mergedItemsMap.values()).filter(item => item.remained > 0);
+      const totalActive = displayStockItems.reduce((acc, i) => acc + i.total, 0);
 
-      
-      await visitApi.create({
-        storeId: Number(id), storeName: store.name, items: finalItems,
-        amountPaid: subtotal, currentDebt: store.debt || 0,
-        documentNumber: `VST-${Date.now()}`, createdAt: new Date().toISOString()
+      const restockData = restockItems
+        .filter(item => item.quantity > 0)
+        .map(item => ({ productId: item.productId, quantity: item.quantity }));
+
+      const result = await visitApi.create({
+        storeId: Number(id), 
+        storeName: store.name, 
+        items: finalItems,
+        amountPaid: subtotal, 
+        currentDebt: store.debt || 0,
+        documentNumber: `VST-${Date.now()}`,
+        restockItems: restockData,
+        storeActiveItemCount: totalActive
       });
 
-      
-      const totalActive = displayStockItems.reduce((acc, i) => acc + i.total, 0);
-      await storeApi.update(id, { activeItemCount: totalActive });
-      navigate(`/stores/${id}`);
+      if (result.success) {
+        navigate(`/stores/${id}`);
+      }
     } catch (e) {
       console.error(e);
     } finally {
