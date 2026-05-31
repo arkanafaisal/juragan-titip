@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
-  CheckCircle2,
   Pencil,
   Trash2,
   MapPin,
@@ -147,8 +146,8 @@ export default function StoreDetailPage() {
             <div>
               <div className="flex justify-between items-start mb-sm">
                 <div>
-                  <div className="inline-flex items-center gap-xs px-2 py-0.5 md:py-1 rounded-full bg-success/10 text-success font-caption text-caption mb-sm font-medium">
-                    <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4" /> Aktif
+                  <div className={`inline-flex items-center gap-xs px-2 py-0.5 md:py-1 mr-2 rounded-full font-caption text-caption mb-sm font-small ${store.lastVisitAt ? 'bg-primary/10 text-primary' : 'bg-surface-container-high text-text-secondary'}`}>
+                    <History className="w-3 h-3 md:w-4 md:h-4" /> {store.lastVisitAt ? `Terakhir dikunjungi: ${new Date(store.lastVisitAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}` : "Belum pernah dikunjungi"}
                   </div>
                   <h1 className="font-h2 text-h2 md:font-h1 md:text-h1 text-text-primary tracking-tight">{store.name}</h1>
                 </div>
