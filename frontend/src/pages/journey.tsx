@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Navigation, LocateFixed 
 } from "lucide-react";
 import { journeyApi, type StoreWithDistance } from "@/services/api/journey";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, CircleMarker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -32,7 +32,6 @@ export default function JourneyPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLocating, setIsLocating] = useState(false);
   const [hasGpsAccess, setHasGpsAccess] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   
   const [notification, setNotification] = useState<{ message: string, type: 'error' | 'info' } | null>(null);
@@ -260,6 +259,15 @@ export default function JourneyPage() {
                   <Marker position={[currentStore.latitude, currentStore.longitude]}>
                     <Popup>{currentStore.name}</Popup>
                   </Marker>
+                )}
+                {userLocation && (
+                  <CircleMarker 
+                    center={userLocation} 
+                    radius={7} 
+                    pathOptions={{ color: 'white', fillColor: '#3b82f6', fillOpacity: 1, weight: 2 }}
+                  >
+                    <Popup>Posisi Anda (terakhir diperbarui)</Popup>
+                  </CircleMarker>
                 )}
                 {/* Komponen pembantu untuk memindahkan kamera */}
                 <ChangeView center={[currentStore.latitude || -6.2, currentStore.longitude || 106.8]} zoom={16} />
