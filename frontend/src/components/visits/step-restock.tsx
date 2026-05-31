@@ -7,8 +7,8 @@ import { productApi } from "@/services/api/products";
 interface StepRestockProps {
   allProducts: Product[];
   restockItems: (RestockItem & { _warehouseStock: number })[];
-  suggestedProducts: Product[];
-  handleAddRestock: (product: Product) => void;
+  suggestedProducts: ({ id: number; name: string } | Product)[];
+  handleAddRestock: (product: Product | { id: number; name: string }) => void;
   handleRestockQuantity: (productId: number, qty: number) => void;
   handleRemoveRestock: (productId: number) => void;
   onNext: () => void;
@@ -26,6 +26,24 @@ export function StepRestock({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchedProducts, setSearchedProducts] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  const handleSearchSubmit = async () => {
+    if (!searchProduct.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const response = await productApi.getById(searchProduct);
+      if (response.success && response.data) {
+        handleAddRestock(response.data);
+        setSearchProduct("");
+        setIsDropdownOpen(false);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   useEffect(() => {
     if (!searchProduct) {
@@ -80,13 +98,13 @@ export function StepRestock({
           <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-primary mb-md">Cari atau pilih produk dari gudang utama yang akan dititipkan hari ini.</h3>
           
           <div
-            className="relative w-full max-w-[484px]" 
+            className="relative w-full max-w-[484px] flex gap-2" 
             tabIndex={-1} 
             onBlur={(e) => {
               if (!e.currentTarget.contains(e.relatedTarget)) setIsDropdownOpen(false);
             }}
           >
-            <div className="relative cursor-pointer" onClick={() => setIsDropdownOpen(true)}>
+            <div className="relative flex-1 cursor-pointer" onClick={() => setIsDropdownOpen(true)}>
               <Search className="absolute left-sm top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-text-muted pointer-events-none" />
               <input 
                 value={searchProduct}
@@ -94,12 +112,22 @@ export function StepRestock({
                   setSearchProduct(e.target.value);
                   setIsDropdownOpen(true);
                 }}
-                placeholder="Kripik Singkong Pedas..."
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
+                placeholder="Nama Produk..."
                 className="w-full pl-xl pr-10 py-sm sm:py-md bg-surface-container-lowest border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body text-body transition-all"
                 autoComplete="off"
               />
               <ChevronDown className="absolute right-sm top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-text-muted pointer-events-none" />
             </div>
+
+            <button
+              onClick={handleSearchSubmit}
+              disabled={isSearching || !searchProduct.trim()}
+              className="bg-primary hover:bg-primary/90 text-on-primary px-4 py-2 rounded-lg font-body font-semibold transition-colors disabled:opacity-50 flex items-center gap-2 shrink-0"
+            >
+              {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              Tambah
+            </button>
 
             {isDropdownOpen && (
               <div className="absolute top-full mt-1 w-full bg-surface-elevated border border-border rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-100">

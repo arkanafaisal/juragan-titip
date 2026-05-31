@@ -101,16 +101,22 @@ export default function StoreVisitPage() {
   };
 
   const suggestedProducts = useMemo(() => {
-    const opnameIds = opnameItems.map(i => i.productId);
     const restockedIds = restockItems.map(i => i.productId);
-    return allProducts.filter(p => opnameIds.includes(p.id) && !restockedIds.includes(p.id));
-  }, [allProducts, opnameItems, restockItems]);
+    return opnameItems
+      .filter(i => !restockedIds.includes(i.productId))
+      .map(i => ({ id: i.productId, name: i.productName }));
+  }, [opnameItems, restockItems]);
 
-  const handleAddRestock = (product: Product) => {
+  const handleAddRestock = async (product: Product | { id: number; name: string }) => {
     if (restockItems.some(i => i.productId === product.id)) return;
+    
+    const res = await productApi.getById(product.id);
+    if (!res.success || !res.data) { return }
+    
+    const fullProduct = res.data;
     setRestockItems(prev => [...prev, {
-      productId: product.id, productName: product.name, quantity: 1, 
-      wholesalePrice: product.wholesalePrice, retailPrice: product.retailPrice, _warehouseStock: product.warehouseStock 
+      productId: fullProduct.id, productName: fullProduct.name, quantity: 1, 
+      wholesalePrice: fullProduct.wholesalePrice, retailPrice: fullProduct.retailPrice, _warehouseStock: fullProduct.warehouseStock 
     }]);
   };
 
