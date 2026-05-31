@@ -5,6 +5,7 @@ import { db, type DbStore } from "@/lib/db"
 import { visitApi } from "@/services/api/visits"
 import { settingsApi } from "@/services/api/settings"
 import { toast } from "sonner"
+import { LIMIT } from "@/lib/constants"
 
 export interface StoreQueryParams {
   search?: string;
@@ -49,11 +50,10 @@ export const storeApi = {
       }
 
       const page = params?.page || 1;
-      const limit = 6;
-      const offset = (page - 1) * limit;
+      const offset = (page - 1) * LIMIT;
 
       if (!params?.sortBy) {
-        const stores = await collection.offset(offset).limit(limit + 1).toArray();
+        const stores = await collection.offset(offset).limit(LIMIT + 1).toArray();
         return { success: true, data: stores };
       }
 

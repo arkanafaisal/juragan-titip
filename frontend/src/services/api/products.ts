@@ -5,6 +5,7 @@ import { db, type DbProduct } from "@/lib/db"
 import { toast } from "sonner"
 import Dexie from "dexie";
 import { settingsApi } from "@/services/api/settings";
+import { LIMIT } from "@/lib/constants";
 
 export interface ProductQueryParams {
   search?: string;
@@ -43,10 +44,9 @@ export const productApi = {
       }
 
       const page = params?.page || 1;
-      const limit = 6;
-      const offset = (page - 1) * limit;
+      const offset = (page - 1) * LIMIT;
 
-      const products = await collection.offset(offset).limit(limit + 1).toArray();
+      const products = await collection.offset(offset).limit(LIMIT + 1).toArray();
 
       return { success: true, data: products };
     } catch (error) {
