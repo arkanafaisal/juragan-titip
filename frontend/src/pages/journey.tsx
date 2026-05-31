@@ -24,7 +24,12 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
   return null;
 }
 
-
+const getDaysAgoText = (dateString?: string) => {
+  if (!dateString) return "Belum Pernah";
+  const diffTime = Math.abs(new Date().getTime() - new Date(dateString).getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return `${diffDays} Hari Lalu`;
+};
 
 export default function JourneyPage() {
   const navigate = useNavigate();
@@ -157,7 +162,7 @@ export default function JourneyPage() {
         <LocateFixed className="w-16 h-16 text-primary mb-6 animate-pulse" />
         <h2 className="font-h2 text-h2 font-bold mb-3">Akses Lokasi Dibutuhkan</h2>
         <p className="text-neutral-400 mb-8 font-body text-body max-w-[300px]">
-          Mode keliling memerlukan akses GPS untuk mengurutkan rute dari toko prioritas (lama tidak dikunjungi) dan toko terdekat.
+          Mode keliling memerlukan akses GPS untuk mencarikan rute toko prioritas yang wajib Anda kunjungi (mulai dari yang terdekat).
         </p>
         <button 
           onClick={handleUpdateLocation} 
@@ -287,11 +292,9 @@ export default function JourneyPage() {
               <div>
                 <h2 className="font-h2 text-h2 font-bold text-text-primary line-clamp-1 flex items-center gap-2">
                   {currentStore.name}
-                  {currentStore.isOverdue && (
-                    <span className="px-2 py-0.5 bg-error text-on-error text-[10px] uppercase rounded-full tracking-wider animate-pulse">
-                      Overdue
-                    </span>
-                  )}
+                  <span className="px-2 py-0.5 bg-error text-on-error text-[10px] uppercase rounded-full tracking-wider whitespace-nowrap">
+                    {getDaysAgoText(currentStore.lastVisitAt)}
+                  </span>
                 </h2>
                 <p className="font-body-sm text-body-sm text-text-secondary mt-1 flex items-start gap-1">
                   <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />
@@ -372,9 +375,7 @@ export default function JourneyPage() {
                   : 'bg-neutral-900/50 text-white/60 border border-white/5 hover:bg-neutral-800'
               }`}
             >
-              {store.isOverdue && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-error rounded-full ring-2 ring-neutral-900"></span>
-              )}
+
               <span className="font-bold text-lg leading-none">
                 {store.distance === 9999 ? '?' : store.distance}
               </span>
