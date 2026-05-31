@@ -13,8 +13,6 @@ FROM caddy:alpine
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY --from=frontend-build /frontend/dist /srv
 
-EXPOSE 80
-
 
 # FROM node:22 AS app
 # WORKDIR /app
