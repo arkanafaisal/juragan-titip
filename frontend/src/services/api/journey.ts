@@ -18,10 +18,24 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return Number((R * c).toFixed(1)); 
 };
 
+// Helper: Cek apakah toko overdue
+const isStoreOverdue = (store: DbStore, overdueDays: number, now: Date) => {
+  if (!store.lastVisitAt) return true;
+  const lastVisit = new Date(store.lastVisitAt);
+  const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays > overdueDays;
+};
+
 export const journeyApi = {
   getInitialStores: async (): Promise<StoreWithDistance[]> => {
     const allStores = await db.stores.toArray();
-    return allStores.map(s => ({ ...s, distance: 9999 }));
+    const overdueDays = settingsApi.getStoreOverdueDays();
+    const now = new Date();
+    
+    return allStores
+      .filter(s => isStoreOverdue(s, overdueDays, now))
+      .map(s => ({ ...s, distance: 9999, isOverdue: true }));
   },
   
   getOptimalRoute: async (latitude: number, longitude: number): Promise<StoreWithDistance[]> => {
@@ -29,29 +43,14 @@ export const journeyApi = {
     const overdueDays = settingsApi.getStoreOverdueDays();
     const now = new Date();
     
-    // Klasifikasi dan hitung jarak
-    const processedStores = allStores.map(s => {
+    const overdueStores = allStores.filter(s => isStoreOverdue(s, overdueDays, now));
+    
+    const processedStores = overdueStores.map(s => {
       const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
-      
-      let isOverdue = false;
-      if (!s.lastVisitAt) {
-        isOverdue = true;
-      } else {
-        const lastVisit = new Date(s.lastVisitAt);
-        const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays > overdueDays) {
-          isOverdue = true;
-        }
-      }
-      
-      return { ...s, distance, isOverdue };
+      return { ...s, distance, isOverdue: true };
     });
 
-    // Urutkan masing-masing grup berdasarkan jarak terdekat
-    const overdueGroup = processedStores.filter(s => s.isOverdue).sort((a, b) => a.distance - b.distance);
-    const normalGroup = processedStores.filter(s => !s.isOverdue).sort((a, b) => a.distance - b.distance);
-
-    return [...overdueGroup, ...normalGroup];
+    // Urutkan berdasarkan jarak terdekat
+    return processedStores.sort((a, b) => a.distance - b.distance);
   }
 };
