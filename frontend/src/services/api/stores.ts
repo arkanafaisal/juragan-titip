@@ -73,7 +73,7 @@ export const storeApi = {
         });
       }
 
-      const paginatedStores = stores.slice(offset, offset + limit + 1);
+      const paginatedStores = stores.slice(offset, offset + LIMIT + 1);
 
       return { success: true, data: paginatedStores }
     } catch (error) {
