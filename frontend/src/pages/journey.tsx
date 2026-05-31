@@ -103,13 +103,15 @@ export default function JourneyPage() {
 
   // 3. Efek Auto-Scroll pada Mini Menu
   useEffect(() => {
-    if (miniMenuRef.current && hasGpsAccess) {
+    if (miniMenuRef.current && hasGpsAccess && showMiniMenu) {
       const activeEl = miniMenuRef.current.children[currentIndex] as HTMLElement;
       if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        const container = miniMenuRef.current;
+        const scrollPos = activeEl.offsetLeft - (container.clientWidth / 2) + (activeEl.clientWidth / 2);
+        container.scrollTo({ left: scrollPos, behavior: 'smooth' });
       }
     }
-  }, [currentIndex, hasGpsAccess]);
+  }, [currentIndex, hasGpsAccess, showMiniMenu]);
 
   const handleClose = () => {
     navigate('/dashboard'); 
@@ -117,7 +119,7 @@ export default function JourneyPage() {
 
   if (stores.length === 0) {
     return (
-      <div className="min-h-dvh bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
+      <div className="h-dvh overflow-hidden bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -142,7 +144,7 @@ export default function JourneyPage() {
   // STATUS: Minta GPS
   if (!hasGpsAccess) {
     return (
-      <div className="min-h-dvh bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
+      <div className="h-dvh overflow-hidden bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -198,7 +200,7 @@ export default function JourneyPage() {
 
   return (
     // FULLSCREEN OVERLAY
-    <div className="min-h-dvh w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
+    <div className="h-dvh overflow-hidden w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
       
       {/* CUSTOM NOTIFICATION */}
       {notification && (
@@ -227,7 +229,7 @@ export default function JourneyPage() {
       </div>
 
       {/* MAIN CAROUSEL AREA */}
-      <div className="flex-1 flex items-center justify-center relative overflow-hidden pb-20">
+      <div className="flex-1 flex items-center justify-center relative overflow-hidden">
         <div className="relative w-full max-w-[360px] flex items-center justify-center">
           
           {/* FAKE BORDER LEFT (Klik Mundur) */}
@@ -358,7 +360,7 @@ export default function JourneyPage() {
         {/* Scrollable Mini Cards */}
         <div 
           ref={miniMenuRef}
-          className="flex overflow-x-auto gap-3 px-4 pb-6 pt-2 snap-x snap-mandatory no-scrollbar"
+          className="flex overflow-x-auto gap-3 px-4 pb-6 pt-2 snap-x snap-mandatory no-scrollbar relative"
         >
           {stores.map((store, idx) => (
             <button
