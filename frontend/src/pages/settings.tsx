@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { 
@@ -18,6 +18,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { settingsApi } from "@/services/api/settings";
+import { backupApi } from "@/services/api/backup";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
 
@@ -63,6 +64,9 @@ export default function SettingsPage() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isResetSettingsModalOpen, setIsResetSettingsModalOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isBackupLoading, setIsBackupLoading] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // --- HANDLERS (Mock) ---
   const handleSaveSettings = () => {
@@ -112,12 +116,47 @@ export default function SettingsPage() {
     setIsResetSettingsModalOpen(false);
   };
 
-  const handleExportBackup = () => {
-    toast.info("Mendownload file backup.csv...");
+  const handleExportBackup = async () => {
+    setIsBackupLoading(true);
+    toast.info("Mempersiapkan file backup...");
+    try {
+      await backupApi.exportToJson();
+      toast.success("Backup berhasil diunduh!");
+    } catch (error) {
+      toast.error("Gagal melakukan backup data.");
+    } finally {
+      setIsBackupLoading(false);
+    }
   };
 
   const handleImportBackup = () => {
-    toast.info("Membuka file picker untuk restore...");
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (window.confirm("Restore akan MENIMPA semua data saat ini. Apakah Anda yakin?")) {
+      setIsBackupLoading(true);
+      toast.info("Memproses file backup...");
+      try {
+        await backupApi.importFromJson(file);
+        toast.success("Data berhasil direstore! Memuat ulang...");
+        setTimeout(() => window.location.reload(), 1500);
+      } catch (error) {
+        toast.error("Gagal melakukan restore. Pastikan file backup valid.");
+      } finally {
+        setIsBackupLoading(false);
+      }
+    }
+    
+    // Reset input agar bisa pilih file yang sama lagi
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleResetDataClick = () => {
@@ -139,7 +178,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-300 pb-20">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
 
       <div className="space-y-sm">
 
@@ -395,17 +434,26 @@ export default function SettingsPage() {
 
             <button 
               onClick={handleExportBackup}
-              className="w-full bg-surface border border-primary text-primary hover:bg-primary/10 font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
+              disabled={isBackupLoading}
+              className="w-full bg-surface border border-primary text-primary hover:bg-primary/10 font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
-              <Download className="w-5 h-5" /> Backup Data ke File (CSV)
+              <Download className="w-5 h-5" /> Backup Data ke File (JSON)
             </button>
             
             <button 
               onClick={handleImportBackup}
-              className="w-full bg-surface border border-outline-variant text-text-primary hover:bg-surface-container-low font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
+              disabled={isBackupLoading}
+              className="w-full bg-surface border border-outline-variant text-text-primary hover:bg-surface-container-low font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
-              <Upload className="w-5 h-5" /> Restore dari File Backup
+              <Upload className="w-5 h-5" /> Pulihkan dari File Backup
             </button>
+            <input 
+              type="file" 
+              accept=".json,application/json" 
+              className="hidden" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+            />
 
             {/* ZONA BERBAHAYA */}
             <div className="bg-error/10 border border-error/30 rounded-xl p-md mt-md">
