@@ -4,7 +4,7 @@ import { storeApi } from "@/services/api/stores";
 import type { Visit } from "@/types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { authApi } from "@/services/api/auth";
+import { profileService } from "@/services/profile";
 
 
 interface InvoiceDetailProps {
@@ -16,7 +16,7 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
     const [visit, setVisit] = useState<Visit | null>(null);
     const [storePhoneNumber, setStorePhoneNumber] = useState<string>("");
     
-    const currentUser = authApi.getCurrentUser();
+    const currentUser = profileService.getProfile();
 
     useEffect(() => {
         let isMounted = true;
