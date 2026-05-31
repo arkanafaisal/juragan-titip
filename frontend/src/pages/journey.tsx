@@ -4,9 +4,7 @@ import {
   X, MapPin, Map as MapIcon, Play, ChevronDown, ChevronUp, 
   ChevronLeft, ChevronRight, Navigation, LocateFixed 
 } from "lucide-react";
-import { db, type DbStore } from "@/lib/db";
-import { toast } from "sonner";
-import { settingsApi } from "@/services/api/settings";
+import { journeyApi, type StoreWithDistance } from "@/services/api/journey";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -26,8 +24,7 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
   return null;
 }
 
-// Extend tipe Store dengan properti jarak sementara
-type StoreWithDistance = DbStore & { distance: number; isOverdue?: boolean };
+
 
 export default function JourneyPage() {
   const navigate = useNavigate();
@@ -58,26 +55,11 @@ export default function JourneyPage() {
   // Helper: Format Rupiah
   const formatRp = (num: number) => `Rp ${num.toLocaleString('id-ID')}`;
 
-  // Helper: Rumus Haversine untuk menghitung jarak lurus (dalam KM)
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    if (!lat1 || !lon1 || !lat2 || !lon2) return 9999; 
-    const R = 6371; 
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return Number((R * c).toFixed(1)); 
-  };
-
   // 1. Muat toko dari IndexedDB
   useEffect(() => {
     const loadStores = async () => {
       try {
-        const allStores = await db.stores.toArray();
-        const initialStores = allStores.map(s => ({ ...s, distance: 9999 }));
+        const initialStores = await journeyApi.getInitialStores();
         setStores(initialStores);
       } catch (error) {
         showNotif("Gagal memuat data toko.", 'error');
@@ -95,40 +77,21 @@ export default function JourneyPage() {
 
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords;
         setUserLocation([latitude, longitude]);
         
-        const overdueDays = settingsApi.getStoreOverdueDays();
-        const now = new Date();
-        
-        // Klasifikasi dan hitung jarak
-        const processedStores = stores.map(s => {
-          const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
-          
-          let isOverdue = false;
-          if (!s.lastVisitAt) {
-            isOverdue = true;
-          } else {
-            const lastVisit = new Date(s.lastVisitAt);
-            const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            if (diffDays > overdueDays) {
-              isOverdue = true;
-            }
-          }
-          
-          return { ...s, distance, isOverdue };
-        });
-
-        const overdueGroup = processedStores.filter(s => s.isOverdue).sort((a, b) => a.distance - b.distance);
-        const normalGroup = processedStores.filter(s => !s.isOverdue).sort((a, b) => a.distance - b.distance);
-
-        setStores([...overdueGroup, ...normalGroup]);
-        setHasGpsAccess(true);
-        setCurrentIndex(0); 
-        setIsLocating(false);
-        showNotif("Lokasi diperbarui! Menampilkan rute optimal.", 'info');
+        try {
+          const optimalRoute = await journeyApi.getOptimalRoute(latitude, longitude);
+          setStores(optimalRoute);
+          setHasGpsAccess(true);
+          setCurrentIndex(0); 
+          setIsLocating(false);
+          showNotif("Lokasi diperbarui! Menampilkan rute optimal.", 'info');
+        } catch (error) {
+          showNotif("Gagal menghitung rute optimal.", 'error');
+          setIsLocating(false);
+        }
       },
       (err) => {
         showNotif(`Gagal mendapatkan lokasi: ${err.message}`, 'error');
