@@ -55,7 +55,7 @@ export default function FinancePage() {
     <div className="flex flex-col w-full min-h-screen bg-background animate-fade-in">
       
       {/* --- DASHBOARD SECTION --- */}
-      <div className="px-[24px] py-[24px] space-y-[24px]">
+      <div className="pb-[24px] space-y-[24px]">
         
         {/* 1. Card Pemasukan (Besar + Chart) */}
         <div className={cn(
