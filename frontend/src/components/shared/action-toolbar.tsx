@@ -106,7 +106,7 @@ export function ActionToolbar({
             align={isMobile ? "end" : "center"}
             sideOffset={8}
             collisionPadding={16}
-            className="w-[calc(100vw-2rem)] sm:w-[320px] p-5 rounded-2xl bg-surface border border-border shadow-lg"
+            className="w-[calc(100vw-2rem)] sm:w-[320px] p-5 rounded-2xl bg-surface border border-border shadow-lg max-h-[60vh] overflow-y-auto custom-scrollbar"
           >
             <div className="flex flex-col space-y-6">
               {filterGroups.map((group) => (
