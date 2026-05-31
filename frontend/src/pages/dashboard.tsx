@@ -86,7 +86,7 @@ export default function Dashboard() {
             <Wallet className="w-4 h-4" />
           </div>
           <span className="font-body-sm text-body-sm font-semibold text-text-secondary">
-            Pendapatan Minggu Ini
+            Margin Minggu Ini
           </span>
         </div>
         <div className="mt-1">

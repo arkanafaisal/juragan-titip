@@ -64,7 +64,7 @@ export default function FinancePage() {
             <div className="flex items-center gap-2 mb-2 opacity-90">
               <Banknote className="w-5 h-5" />
               <h3 className="font-body text-body-sm font-medium uppercase tracking-wider">
-                Pemasukan (Bulan Ini)
+                Margin (Bulan Ini)
               </h3>
             </div>
             <div className="text-display font-bold tracking-tight">
@@ -183,11 +183,11 @@ export default function FinancePage() {
         {activeTab === "income" && (
           <div className="space-y-[16px] animate-fade-in">
             <p className="text-body-sm text-text-secondary leading-snug">
-              Riwayat pemasukan uang tunai dari kunjungan toko.
+              Riwayat pembayaran uang tunai dari kunjungan toko.
             </p>
             
             {data.lists.incomes.length === 0 && (
-              <div className="text-center py-8 text-text-secondary">Belum ada data pemasukan bulan ini.</div>
+              <div className="text-center py-8 text-text-secondary">Belum ada data pembayaran bulan ini.</div>
             )}
             
             {data.lists.incomes.map((item, idx) => (
