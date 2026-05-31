@@ -5,7 +5,6 @@ import { db, type DbStore } from "@/lib/db"
 import { visitApi } from "@/services/api/visits"
 import { settingsApi } from "@/services/api/settings"
 import { toast } from "sonner"
-import Dexie from "dexie"
 
 export interface StoreQueryParams {
   search?: string;

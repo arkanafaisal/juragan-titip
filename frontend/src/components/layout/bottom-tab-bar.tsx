@@ -2,7 +2,6 @@ import { Home, Package, Store, Banknote, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import React, { useState } from "react";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
-import { toast } from "sonner";
 
 export function BottomTabBar() {
   const location = useLocation();

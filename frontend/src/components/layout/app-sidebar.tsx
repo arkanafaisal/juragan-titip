@@ -5,14 +5,12 @@ import {
   Package,
   Store,
   Banknote,
-  BarChart3,
   Settings,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/use-sidebar.tsx";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
-import { toast } from "sonner"
 import { ProfileMenu } from "@/components/layout/profile-menu";
 
 export function AppSidebar() {

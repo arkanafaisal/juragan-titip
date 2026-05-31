@@ -1,20 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
-import { 
-  Settings as GearIcon, 
+import {
   ChevronDown, 
   ChevronUp, 
-  Palette, 
   Package, 
-  MessageCircle, 
   Database, 
   Download, 
   Upload, 
   Trash2, 
   Save,
   Store,
-  CircleDollarSign,
   RefreshCw
 } from "lucide-react";
 import { settingsApi } from "@/services/api/settings";

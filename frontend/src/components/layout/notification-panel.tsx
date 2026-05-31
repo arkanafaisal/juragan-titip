@@ -6,7 +6,6 @@ import {
   Package, 
   Store, 
   CheckCircle2, 
-  ChevronRight,
   ShieldAlert
 } from "lucide-react";
 import { db } from "@/lib/db";

@@ -1,6 +1,6 @@
 export interface ProductFormData {
   name: string
-  category: string
+  category: "1" | "2" | "3" | "4" | "5" 
   costPrice: number
   wholesalePrice: number
   retailPrice: number

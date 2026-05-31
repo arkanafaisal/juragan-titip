@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { useLocation } from "react-router";
 import { useSidebar } from "@/hooks/use-sidebar";
-import { toast } from "sonner"
 import { ProfileMenu } from "@/components/layout/profile-menu";
 import { NotificationPanel } from "./notification-panel";
 import { useState } from "react";
