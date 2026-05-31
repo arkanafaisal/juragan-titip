@@ -102,8 +102,12 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
     ${stokItemsText || 'Tidak ada sisa barang.'}
 
     Terima kasih atas kerjasamanya! 🙏`;
-
-        const phone = targetPhone !== undefined ? targetPhone : (storePhoneNumber || "");
+        let phone = targetPhone !== undefined ? targetPhone : (storePhoneNumber || "");
+        phone = phone.replace(/\D/g, "");
+        if (phone.startsWith("0")) {
+            phone = "62" + phone.substring(1);
+        }
+        
         const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(waText)}`;
         window.open(waUrl, '_blank');
     };
