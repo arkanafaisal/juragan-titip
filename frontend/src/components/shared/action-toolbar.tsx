@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Search, SlidersHorizontal, Plus, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,7 @@ export function ActionToolbar({
   className,
 }: ActionToolbarProps) {
   const isMobile = useMobile();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   // Mengecek apakah ada filter yang tidak menggunakan nilai default (asumsi "" adalah default/Semua)
   const hasActiveFilter = Object.values(activeFilters).some(val => val !== "" && val !== "name_asc");
 
@@ -85,7 +87,7 @@ export function ActionToolbar({
 
       {/* 3. Tombol Filter (Berubah menjadi Popover Trigger) */}
       {filterGroups.length > 0 ? (
-        <Popover>
+        <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -119,7 +121,10 @@ export function ActionToolbar({
                       return (
                         <button
                           key={opt.value}
-                          onClick={() => onFilterChange?.(group.id, opt.value)}
+                          onClick={() => {
+                            onFilterChange?.(group.id, opt.value);
+                            setIsFilterOpen(false);
+                          }}
                           className={cn(
                             "px-3 py-1.5 rounded-xl text-body-sm font-medium transition-colors cursor-pointer",
                             isActive
