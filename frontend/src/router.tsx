@@ -2,7 +2,8 @@ import { createBrowserRouter, Navigate } from "react-router"
 import { MainLayout } from "@/components/layout/main-layout"
 import { SidebarProvider } from '@/hooks/use-sidebar.tsx'
 
-import { lazy } from "react"
+import { lazy, Suspense } from "react"
+import { Loader2 } from "lucide-react"
 
 const NotFoundPage = lazy(() => import("@/pages/not-found"))
 // const LoginPage = lazy(() => import("@/pages/auth/login"))
@@ -35,6 +36,14 @@ export const router = createBrowserRouter([
   //   element: <RegisterPage />,
   // },
   {
+    path: "/journey",
+    element: (
+      <Suspense fallback={<div className="flex items-center justify-center w-full h-screen bg-neutral-900"><Loader2 className="w-8 h-8 animate-spin text-primary/50" /></div>}>
+        <JourneyPage />
+      </Suspense>
+    )
+  },
+  {
     path: "/",
     element: (
       <SidebarProvider>
@@ -51,7 +60,6 @@ export const router = createBrowserRouter([
       { path: "stores/:id/edit", element: <StoreFormPage /> },
       { path: "stores/:id/visit", element: <StoreVisitPage /> },
       { path: "finance", element: <FinancePage /> },
-      { path: "journey", element: <JourneyPage /> },
       // { path: "finance/invoices", element: <InvoiceListPage /> },
       // { path: "finance/invoices/:id", element: <InvoiceDetailPage /> },
       // { path: "finance/receivables", element: <ReceivablesPage /> },
