@@ -16,6 +16,7 @@ export interface StoreFormData {
   latitude: number
   longitude: number
   notes: string
+  category: "1" | "2" | "3" | "4" | "5"
 }
 
 export interface OpnameFormData {

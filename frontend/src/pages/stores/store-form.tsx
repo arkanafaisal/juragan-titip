@@ -11,6 +11,7 @@ import {
   Loader2
 } from "lucide-react";
 import { storeApi } from "@/services/api/stores";
+import { settingsApi } from "@/services/api/settings";
 import { MapPicker } from "@/components/features/map-picker";
 import { validateStoreForm } from "@/lib/validations";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
@@ -28,12 +29,15 @@ export default function StoreFormPage() {
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateMessage, setDuplicateMessage] = useState<React.ReactNode | null>(null);
   
+  const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
+
   const [formData, setFormData] = useState({
     name: "",
     ownerName: "",
     phone: "",
     address: "",
     notes: "",
+    category: "",
   });
 
   
@@ -54,6 +58,7 @@ export default function StoreFormPage() {
               phone: response.data.store.phone || "",
               address: response.data.store.address,
               notes: response.data.store.notes || "",
+              category: response.data.store.category || "",
             });
             setLocation({
               lat: response.data.store.latitude,
@@ -73,7 +78,7 @@ export default function StoreFormPage() {
   }, [id, isEditMode]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -148,6 +153,7 @@ export default function StoreFormPage() {
       const payload = {
         ...formData,
         ...(formData.phone? { phone: formData.phone } : {}),
+        category: formData.category as "1" | "2" | "3" | "4" | "5",
         latitude: location.lat,
         longitude: location.lng,
         activeItemCount: 0
@@ -258,27 +264,50 @@ export default function StoreFormPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-xs">
-                <label className="font-caption text-caption text-text-secondary" htmlFor="phone">
-                  Nomor Telepon (Opsional)
-                </label>
-                <div className="flex">
-                  <input 
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      if (val.length > 0 && !val.startsWith("0")) return;
-                      handleChange({ target: { name: "phone", value: val } } as any);
-                    }}
-                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
-                    placeholder="081234567890" 
-                    type="tel"
-                    minLength={VALIDATION_RULES.PHONE.MIN_LENGTH}
-                    maxLength={VALIDATION_RULES.PHONE.MAX_LENGTH}
-                    autoComplete="off"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <div className="flex flex-col gap-xs">
+                  <label className="font-caption text-caption text-text-secondary" htmlFor="phone">
+                    Nomor Telepon (Opsional)
+                  </label>
+                  <div className="flex">
+                    <input 
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        if (val.length > 0 && !val.startsWith("0")) return;
+                        handleChange({ target: { name: "phone", value: val } } as any);
+                      }}
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
+                      placeholder="081234567890" 
+                      type="tel"
+                      minLength={VALIDATION_RULES.PHONE.MIN_LENGTH}
+                      maxLength={VALIDATION_RULES.PHONE.MAX_LENGTH}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-xs">
+                  <label className="font-caption text-caption text-text-secondary" htmlFor="category">
+                    Kategori Toko <span className="text-error">*</span>
+                  </label>
+                  <select 
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Pilih Kategori...</option>
+                    <option value="1">{storeCategoryLabels["1"]}</option>
+                    <option value="2">{storeCategoryLabels["2"]}</option>
+                    <option value="3">{storeCategoryLabels["3"]}</option>
+                    <option value="4">{storeCategoryLabels["4"]}</option>
+                    <option value="5">{storeCategoryLabels["5"]}</option>
+                  </select>
                 </div>
               </div>
 

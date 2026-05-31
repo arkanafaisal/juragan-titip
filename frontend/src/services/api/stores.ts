@@ -9,6 +9,7 @@ import Dexie from "dexie"
 export interface StoreQueryParams {
   search?: string;
   status?: string;
+  category?: string;
   sortBy?: string;
   page?: number;
 }
@@ -33,6 +34,10 @@ export const storeApi = {
           } else if (params.status === 'piutang') {
             collection = collection.filter(s => s.debt > 0);
           }
+        }
+
+        if (params.category) {
+          collection = collection.filter(s => s.category === params.category);
         }
       }
 

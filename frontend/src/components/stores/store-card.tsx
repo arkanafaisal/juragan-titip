@@ -1,6 +1,16 @@
 import { useNavigate } from "react-router";
 import { MapPin, Store as StoreIcon, Package, CircleDollarSign, History } from "lucide-react";
 import type { Store } from "@/types";
+import { settingsApi } from "@/services/api/settings";
+
+const getCategoryStyles = (category?: string) => {
+  if (category === "1") return { bg: "bg-info/10", text: "text-info", border: "border-info/40" };
+  if (category === "2") return { bg: "bg-success/10", text: "text-success", border: "border-success/40" };
+  if (category === "3") return { bg: "bg-warning/10", text: "text-warning", border: "border-warning/40" };
+  if (category === "4") return { bg: "bg-secondary/10", text: "text-secondary", border: "border-secondary/40" };
+  if (category === "5") return { bg: "bg-primary/10", text: "text-primary", border: "border-primary/40" };
+  return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant" };
+};
 
 interface StoreCardProps {
   store: Store;
@@ -16,9 +26,12 @@ const formatCurrency = (value: number) => {
 
 export function StoreCard({ store }: StoreCardProps) {
   const navigate = useNavigate();
+  const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
+  const catStyle = getCategoryStyles(store.category);
+  const displayCategory = store.category ? storeCategoryLabels[store.category as keyof typeof storeCategoryLabels] || store.category : null;
 
   return (
-    <div className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+    <div className={`bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden border-[1.5px] ${store.category ? catStyle.border : 'border-outline-variant'}`}>
       <div className="p-md flex-1 flex flex-col cursor-pointer" onClick={() => navigate(`/stores/${store.id}`)}>
         <div className="flex items-start justify-between mb-sm">
           <div className="flex items-center gap-sm flex-1 min-w-0 pr-2">
@@ -27,9 +40,16 @@ export function StoreCard({ store }: StoreCardProps) {
               <p className="font-body-sm text-body-sm text-text-secondary line-clamp-1">{store.ownerName} • {store.phone}</p>
             </div>
           </div>
-          <div className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 mt-0.5 rounded-md font-caption text-[10px] ${store.lastVisitAt ? 'bg-primary/10 text-primary' : 'bg-surface-container-high text-text-secondary'}`}>
-            <History className="w-3 h-3" />
-            <span>{store.lastVisitAt ? new Date(store.lastVisitAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : "Belum dikunjungi"}</span>
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            {displayCategory && (
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${catStyle.bg} ${catStyle.text}`}>
+                {displayCategory}
+              </span>
+            )}
+            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-caption text-[10px] ${store.lastVisitAt ? 'bg-primary/10 text-primary' : 'bg-surface-container-high text-text-secondary'}`}>
+              <History className="w-3 h-3" />
+              <span>{store.lastVisitAt ? new Date(store.lastVisitAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : "Belum dikunjungi"}</span>
+            </div>
           </div>
         </div>
         

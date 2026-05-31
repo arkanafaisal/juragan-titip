@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 
 const LOW_STOCK_THRESHOLD_KEY = "juragan_titip_low_stock_threshold";
 const CATEGORY_LABELS_KEY = "juragan_titip_category_labels";
+const STORE_CATEGORY_LABELS_KEY = "juragan_titip_store_category_labels";
 
 export type CategoryLabels = {
   "1": string;
@@ -17,6 +18,14 @@ export const DEFAULT_CATEGORY_LABELS: CategoryLabels = {
   "2": "Makanan Basah",
   "3": "Makanan Kering",
   "4": "Non-Makanan",
+  "5": "Lainnya"
+};
+
+export const DEFAULT_STORE_CATEGORY_LABELS: CategoryLabels = {
+  "1": "Kelontong",
+  "2": "Warkop / Burjo",
+  "3": "Grosir",
+  "4": "Apotek",
   "5": "Lainnya"
 };
 
@@ -38,6 +47,15 @@ export const settingsApi = {
   
   updateCategoryLabels: (labels: CategoryLabels): void => {
     storageSet(CATEGORY_LABELS_KEY, labels);
+  },
+
+  getStoreCategoryLabels: (): CategoryLabels => {
+    const val = storageGet<CategoryLabels>(STORE_CATEGORY_LABELS_KEY);
+    return val !== null ? val : DEFAULT_STORE_CATEGORY_LABELS;
+  },
+  
+  updateStoreCategoryLabels: (labels: CategoryLabels): void => {
+    storageSet(STORE_CATEGORY_LABELS_KEY, labels);
   },
 
   clearAllData: async (): Promise<void> => {

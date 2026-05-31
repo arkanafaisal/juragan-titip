@@ -12,7 +12,9 @@ import {
   Download, 
   Upload, 
   Trash2, 
-  Save
+  Save,
+  Store,
+  CircleDollarSign
 } from "lucide-react";
 import { settingsApi } from "@/services/api/settings";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -25,11 +27,14 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const section = searchParams.get("section");
+    const focusId = searchParams.get("focus");
     if (section) {
       setOpenSection(section);
       // Tunggu DOM merender accordion yang baru terbuka
       setTimeout(() => {
-        const el = document.getElementById(`section-${section}`);
+        let elId = `section-${section}`;
+        if (focusId) elId = focusId;
+        const el = document.getElementById(elId);
         if (el) {
           const y = el.getBoundingClientRect().top + window.scrollY - 100; // offset 100px agar judul tab tidak tertutup header
           window.scrollTo({ top: y, behavior: 'smooth' });
@@ -47,6 +52,7 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [lowStockThreshold, setLowStockThreshold] = useState<number | string>(settingsApi.getLowStockThreshold());
   const [categoryLabels, setCategoryLabels] = useState(settingsApi.getCategoryLabels());
+  const [storeCategoryLabels, setStoreCategoryLabels] = useState(settingsApi.getStoreCategoryLabels());
   const [quickPayNominals, setQuickPayNominals] = useState<string>("20000, 50000, 100000");
   const [waFooterMsg, setWaFooterMsg] = useState<string>("Terima kasih! Pembayaran via transfer bisa ke BCA 12345678 a.n Juragan Titip.");
 
@@ -62,6 +68,7 @@ export default function SettingsPage() {
     }
     settingsApi.updateLowStockThreshold(threshold);
     settingsApi.updateCategoryLabels(categoryLabels);
+    settingsApi.updateStoreCategoryLabels(storeCategoryLabels);
     setLowStockThreshold(threshold);
     toast.success("Pengaturan berhasil disimpan!");
   };
@@ -138,22 +145,21 @@ export default function SettingsPage() {
           )}
         </div>
 
-        {/* SECTION 2: OPERASIONAL & STOK */}
-        <div id="section-operasional" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        {/* SECTION: PENGATURAN PRODUK */}
+        <div id="section-produk" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
           <button 
-            onClick={() => toggleSection('operasional')}
+            onClick={() => toggleSection('produk')}
             className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
           >
             <span className="font-h3 text-h3 font-bold text-text-primary flex items-center gap-sm">
-              <Package className="w-5 h-5 text-primary" /> Operasional & Stok
+              <Package className="w-5 h-5 text-primary" /> Pengaturan Produk
             </span>
-            {openSection === 'operasional' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
+            {openSection === 'produk' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
           </button>
           
-          {openSection === 'operasional' && (
+          {openSection === 'produk' && (
             <div className="p-md border-t border-outline-variant bg-surface space-y-md animate-in slide-in-from-top-2">
               
-              {/* Input: Number */}
               <div>
                 <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
                   Batas Peringatan Stok Menipis (Gudang)
@@ -170,7 +176,6 @@ export default function SettingsPage() {
                 </p>
               </div>
 
-              {/* Input: Category Labels */}
               <div className="pt-2 border-t border-outline-variant">
                 <label className="font-body-sm text-body-sm font-bold text-text-primary block mb-3">
                   Label Kategori Produk (1 - 5)
@@ -195,9 +200,67 @@ export default function SettingsPage() {
                   *Ubah nama kategori di atas sesuai dengan lini bisnis toko Anda. Nama ini akan muncul di form Produk.
                 </p>
               </div>
+            </div>
+          )}
+        </div>
 
-              {/* Input: String (Comma Separated) */}
-              <div className="pt-2 border-t border-outline-variant">
+        {/* SECTION: PENGATURAN TOKO */}
+        <div id="section-toko" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+          <button 
+            onClick={() => toggleSection('toko')}
+            className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
+          >
+            <span className="font-h3 text-h3 font-bold text-text-primary flex items-center gap-sm">
+              <Store className="w-5 h-5 text-primary" /> Pengaturan Toko
+            </span>
+            {openSection === 'toko' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
+          </button>
+          
+          {openSection === 'toko' && (
+            <div className="p-md border-t border-outline-variant bg-surface space-y-md animate-in slide-in-from-top-2">
+              <div>
+                <label className="font-body-sm text-body-sm font-bold text-text-primary block mb-3">
+                  Label Kategori Toko (1 - 5)
+                </label>
+                <div className="space-y-3">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <div key={num} className="flex items-center gap-3">
+                      <span className="font-mono bg-surface-container-low px-3 py-2 rounded-lg text-text-secondary font-bold w-12 text-center border border-outline-variant">
+                        {num}
+                      </span>
+                      <input 
+                        type="text" 
+                        value={storeCategoryLabels[num.toString() as keyof typeof storeCategoryLabels]}
+                        onChange={(e) => setStoreCategoryLabels(prev => ({...prev, [num.toString()]: e.target.value}))}
+                        placeholder={`Kategori Toko ${num}`}
+                        className="flex-1 px-3 py-2 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="font-caption text-caption text-text-secondary mt-2">
+                  *Ubah nama kategori toko untuk mempermudah filter di daftar toko.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* SECTION: KASIR & TRANSAKSI */}
+        <div id="section-transaksi" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+          <button 
+            onClick={() => toggleSection('transaksi')}
+            className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
+          >
+            <span className="font-h3 text-h3 font-bold text-text-primary flex items-center gap-sm">
+              <CircleDollarSign className="w-5 h-5 text-primary" /> Kasir & Transaksi
+            </span>
+            {openSection === 'transaksi' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
+          </button>
+          
+          {openSection === 'transaksi' && (
+            <div className="p-md border-t border-outline-variant bg-surface space-y-md animate-in slide-in-from-top-2">
+              <div>
                 <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
                   Saran Nominal Cepat (Pisahkan dengan koma)
                 </label>
@@ -212,7 +275,6 @@ export default function SettingsPage() {
                   *Akan muncul sebagai tombol bantuan saat Checkout Tagihan.
                 </p>
               </div>
-
             </div>
           )}
         </div>

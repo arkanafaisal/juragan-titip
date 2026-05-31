@@ -8,6 +8,7 @@ import { storeApi } from "@/services/api/stores";
 import { Pagination } from "@/components/shared/pagination";
 import { LIMIT } from "@/lib/constants";
 import { ActionToolbar, type FilterGroup } from "@/components/shared/action-toolbar";
+import { settingsApi } from "@/services/api/settings";
 
 export default function StoreListPage() {
   const navigate = useNavigate();
@@ -15,11 +16,26 @@ export default function StoreListPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   
+  const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
+
   const [filters, setFilters] = useState<Record<string, string>>({
     status: "",
+    category: "",
     sortBy: ""
   });
   const storeFilterConfig: FilterGroup[] = [
+    {
+      id: "category",
+      title: "Kategori Toko",
+      options: [
+        { label: "Semua", value: "" },
+        { label: storeCategoryLabels["1"], value: "1" },
+        { label: storeCategoryLabels["2"], value: "2" },
+        { label: storeCategoryLabels["3"], value: "3" },
+        { label: storeCategoryLabels["4"], value: "4" },
+        { label: storeCategoryLabels["5"], value: "5" }
+      ]
+    },
     {
       id: "status",
       title: "Status Operasional",
@@ -70,6 +86,7 @@ export default function StoreListPage() {
         const response = await storeApi.getAll({
           search: debouncedSearch,
           status: filters.status,
+          category: filters.category,
           sortBy: filters.sortBy,
           page: currentPage
         });
@@ -95,6 +112,7 @@ export default function StoreListPage() {
         onSearchChange={setSearchInput}
         searchPlaceholder="Cari toko mitra..."
         onAddClick={() => navigate("/stores/new")}
+        onSettingClick={() => navigate("/settings?section=toko")}
         
         // Cukup passing 3 baris ini, Boom! Filter beres.
         filterGroups={storeFilterConfig}
