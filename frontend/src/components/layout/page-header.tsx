@@ -1,19 +1,41 @@
-import { Menu, Calendar, Bell } from "lucide-react";
+// import { Menu, Calendar, Bell, Maximize, Minimize } from "lucide-react";
+import { Menu, Calendar, Maximize, Minimize } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { useLocation } from "react-router";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { ProfileMenu } from "@/components/layout/profile-menu";
-import { NotificationPanel } from "./notification-panel";
-import { useState } from "react";
+// import { NotificationPanel } from "./notification-panel";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export function PageHeader() {
   const location = useLocation();
   const todayDate = format(new Date(), "dd MMM yyyy", { locale: idLocale });
-  const [isAlertPanelOpen, setIsAlertPanelOpen] = useState(false)
+  // const [isAlertPanelOpen, setIsAlertPanelOpen] = useState(false)
   const { toggle } = useSidebar();
   
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {
+        toast.error("Gagal mengaktifkan mode layar penuh");
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
   
   const getDynamicTitle = (pathname: string) => {
     const parts = pathname.split('/').filter(Boolean);
@@ -84,7 +106,15 @@ export function PageHeader() {
           <span className="font-data-md text-data-md">{todayDate}</span>
         </div>
 
-        <button onClick={()=>{setIsAlertPanelOpen((prev)=>{return !prev})}} className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low relative">
+        <button 
+          onClick={toggleFullscreen} 
+          className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors"
+          title={isFullscreen ? "Keluar Layar Penuh" : "Layar Penuh"}
+        >
+          {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+        </button>
+
+        {/* <button onClick={()=>{setIsAlertPanelOpen((prev)=>{return !prev})}} className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low relative">
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
         </button>
@@ -92,10 +122,11 @@ export function PageHeader() {
         <NotificationPanel 
           isOpen={isAlertPanelOpen} 
           onClose={() => setIsAlertPanelOpen(false)} 
-        />
+        /> */}
         
         
-        <div onClick={()=>{setIsAlertPanelOpen(false)}} className="md:hidden relative ml-1 flex items-center">
+        {/* <div onClick={()=>{setIsAlertPanelOpen(false)}} className="md:hidden relative ml-1 flex items-center"> */}
+        <div className="md:hidden relative ml-1 flex items-center">
           <ProfileMenu />
         </div>
 
