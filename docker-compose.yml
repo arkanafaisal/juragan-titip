@@ -4,6 +4,7 @@ services:
     container_name: app-juragantitip
     build:
       context: .
+      dockerfile: Dockerfile2
       # args:
       #   VITE_API_URL: ${VITE_API_URL}
       #   DATABASE_URL: ${DATABASE_URL}
