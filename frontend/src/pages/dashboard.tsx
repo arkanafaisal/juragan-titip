@@ -17,32 +17,57 @@ import {
   ResponsiveContainer, 
   Cell
 } from "recharts";
-
-// --- DUMMY DATA ---
-const DUMMY_CHART_DATA = [
-  { name: 'Sen', visits: 4 },
-  { name: 'Sel', visits: 7 },
-  { name: 'Rab', visits: 2 },
-  { name: 'Kam', visits: 5 },
-  { name: 'Jum', visits: 8 },
-  { name: 'Sab', visits: 3 },
-  { name: 'Min', visits: 0 },
-];
-
-const DUMMY_HISTORY = [
-  { id: 1, time: '10:30', store: 'Toko Makmur', amount: 150000, isDebt: false },
-  { id: 2, time: '09:15', store: 'Warung Bu Tejo', amount: 0, isDebt: true },
-];
+import { useState, useEffect } from "react";
+import { dashboardApi, type DashboardData } from "@/services/api/dashboard";
+import { Loader2, Inbox } from "lucide-react";
+import { toast } from "sonner";
+import { InvoiceDetail } from "@/components/features/invoice-detail";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const todayDate = format(new Date(), "EEEE, dd MMM yyyy", { locale: idLocale });
   
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await dashboardApi.getDashboardData();
+        setData(result);
+      } catch (error) {
+        console.error("Gagal memuat data dashboard:", error);
+        toast.error("Gagal memuat data dashboard");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   // Fungsi Helper untuk format Rupiah
   const formatRp = (num: number) => `Rp ${num.toLocaleString('id-ID')}`;
 
+  if (isLoading || !data) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary/50 mb-4" />
+        <p className="text-text-secondary font-body text-body">Memuat ringkasan...</p>
+      </div>
+    );
+  }
+
+  if (selectedVisitId) {
+    return (
+      <div className="fixed inset-0 z-50 bg-surface overflow-y-auto">
+        <InvoiceDetail id={selectedVisitId} onBack={() => setSelectedVisitId(null)} />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-container-max mx-auto space-y-md pb-20 animate-in fade-in duration-300">
+    <div className="max-w-container-max mx-auto space-y-md animate-in fade-in duration-300">
       
       {/* 1. HEADER & GREETING */}
       <div className="flex flex-col gap-1 px-1">
@@ -65,8 +90,8 @@ export default function Dashboard() {
           </span>
         </div>
         <div className="mt-1">
-          <h2 className="text-3xl font-bold tracking-tight text-text-primary truncate" title="Rp 12.450.000">
-            {formatRp(12450000)}
+          <h2 className="text-3xl font-bold tracking-tight text-text-primary truncate" title={formatRp(data.weeklyRevenue)}>
+            {formatRp(data.weeklyRevenue)}
           </h2>
         </div>
       </div>
@@ -99,7 +124,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="font-h3 text-h3 font-bold text-text-primary">Kunjungan</h3>
-            <p className="font-caption text-caption text-text-secondary">Minggu ini (Total: 29)</p>
+            <p className="font-caption text-caption text-text-secondary">Minggu ini (Total: {data.totalVisitsThisWeek})</p>
           </div>
           <div className="p-2 bg-surface-container-low rounded-lg text-primary">
             <TrendingUp className="w-4 h-4" />
@@ -108,29 +133,36 @@ export default function Dashboard() {
         
         {/* Recharts Area */}
         <div className="h-[180px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={DUMMY_CHART_DATA} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-              <XAxis 
-                dataKey="name" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }}
-                dy={10}
-              />
-              <Tooltip 
-                cursor={{ fill: 'var(--color-surface-container-low)' }}
-                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-              />
-              <Bar dataKey="visits" radius={[6, 6, 6, 6]} maxBarSize={40}>
-                {DUMMY_CHART_DATA.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={entry.visits > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)'} 
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          {data.totalVisitsThisWeek === 0 ? (
+            <div className="flex flex-col items-center justify-center w-full h-full text-text-secondary opacity-70">
+              <Inbox className="w-8 h-8 mb-2" />
+              <p className="font-caption text-caption">Belum ada kunjungan minggu ini</p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }}
+                  dy={10}
+                />
+                <Tooltip 
+                  cursor={{ fill: 'var(--color-surface-container-low)' }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Bar dataKey="visits" radius={[6, 6, 6, 6]} maxBarSize={40}>
+                  {data.chartData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.visits > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)'} 
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
@@ -144,10 +176,11 @@ export default function Dashboard() {
         </div>
         
         <div className="flex flex-col divide-y divide-outline-variant/50">
-          {DUMMY_HISTORY.length > 0 ? (
-            DUMMY_HISTORY.map((item) => (
+          {data.todayHistory.length > 0 ? (
+            data.todayHistory.map((item) => (
               <button 
                 key={item.id}
+                onClick={() => setSelectedVisitId(item.id)}
                 className="flex items-center justify-between p-4 hover:bg-surface-container-lowest transition-colors text-left"
               >
                 <div className="flex items-start gap-3">
@@ -161,7 +194,7 @@ export default function Dashboard() {
                     <p className="font-caption text-caption text-text-secondary mt-0.5 flex items-center gap-1">
                       ↳ Masuk: 
                       <span className={`font-semibold ${item.isDebt ? 'text-warning' : 'text-success'}`}>
-                        {item.isDebt ? 'Rp 0 (Piutang)' : formatRp(item.amount)}
+                        {item.isDebt ? `Rp ${item.amount.toLocaleString('id-ID')} (Piutang)` : formatRp(item.amount)}
                       </span>
                     </p>
                   </div>
@@ -170,8 +203,11 @@ export default function Dashboard() {
               </button>
             ))
           ) : (
-            <div className="p-6 text-center text-text-secondary font-body-sm text-body-sm">
-              Belum ada kunjungan hari ini.
+            <div className="flex flex-col items-center justify-center py-8 text-text-secondary opacity-70">
+              <Inbox className="w-8 h-8 mb-2" />
+              <span className="font-body-sm text-body-sm">
+                Belum ada kunjungan hari ini.
+              </span>
             </div>
           )}
         </div>
