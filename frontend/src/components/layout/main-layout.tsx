@@ -1,4 +1,6 @@
 import { Outlet } from "react-router"
+import { Suspense } from "react"
+import { Loader2 } from "lucide-react"
 import { AppSidebar } from "./app-sidebar"
 import { BottomTabBar } from "./bottom-tab-bar"
 import { PageHeader } from "./page-header"
@@ -30,7 +32,13 @@ export function MainLayout() {
         
         
         <div className="flex-1 overflow-y-auto p-md md:p-lg pb-24 md:pb-lg animate-fade-in">
+          <Suspense fallback={
+            <div className="flex items-center justify-center w-full h-full min-h-[200px]">
+              <Loader2 className="w-8 h-8 animate-spin text-primary/50" />
+            </div>
+          }>
             <Outlet />
+          </Suspense>
         </div>
       </main>
 

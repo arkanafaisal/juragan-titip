@@ -2,25 +2,28 @@ import { createBrowserRouter, Navigate } from "react-router"
 import { MainLayout } from "@/components/layout/main-layout"
 import { SidebarProvider } from '@/hooks/use-sidebar.tsx'
 
-import NotFoundPage from "@/pages/not-found"
-// import LoginPage from "@/pages/auth/login"
-// import RegisterPage from "@/pages/auth/register"
-import DashboardPage from "@/pages/dashboard"
-import ProductListPage from "@/pages/products/product-list"
-import StoreListPage from "@/pages/stores/store-list"
-import StoreDetailPage from "@/pages/stores/store-detail"
-import StoreFormPage from "@/pages/stores/store-form"
-import StoreVisitPage from "@/pages/stores/store-visit"
-import FinancePage from "@/pages/finance.tsx"
-// import InvoiceListPage from "@/pages/finance/invoice-list"
-// import InvoiceDetailPage from "@/pages/finance/invoice-detail"
-// import ReceivablesPage from "@/pages/finance/receivables"
-// import StorePerformancePage from "@/pages/reports/store-performance"
-// import ItemTrackingPage from "@/pages/reports/item-tracking"
-// import FinancialReportPage from "@/pages/reports/financial-report"
-// import ProfilePage from "@/pages/settings/profile"
-// import PreferencesPage from "@/pages/settings/preferences"
-import SettingsPage from "@/pages/settings"
+import { lazy } from "react"
+
+const NotFoundPage = lazy(() => import("@/pages/not-found"))
+// const LoginPage = lazy(() => import("@/pages/auth/login"))
+// const RegisterPage = lazy(() => import("@/pages/auth/register"))
+const DashboardPage = lazy(() => import("@/pages/dashboard"))
+const ProductListPage = lazy(() => import("@/pages/products/product-list"))
+const StoreListPage = lazy(() => import("@/pages/stores/store-list"))
+const StoreDetailPage = lazy(() => import("@/pages/stores/store-detail"))
+const StoreFormPage = lazy(() => import("@/pages/stores/store-form"))
+const StoreVisitPage = lazy(() => import("@/pages/stores/store-visit"))
+const FinancePage = lazy(() => import("@/pages/finance.tsx"))
+const JourneyPage = lazy(() => import("./pages/journey"))
+// const InvoiceListPage = lazy(() => import("@/pages/finance/invoice-list"))
+// const InvoiceDetailPage = lazy(() => import("@/pages/finance/invoice-detail"))
+// const ReceivablesPage = lazy(() => import("@/pages/finance/receivables"))
+// const StorePerformancePage = lazy(() => import("@/pages/reports/store-performance"))
+// const ItemTrackingPage = lazy(() => import("@/pages/reports/item-tracking"))
+// const FinancialReportPage = lazy(() => import("@/pages/reports/financial-report"))
+// const ProfilePage = lazy(() => import("@/pages/settings/profile"))
+// const PreferencesPage = lazy(() => import("@/pages/settings/preferences"))
+const SettingsPage = lazy(() => import("@/pages/settings"))
 
 export const router = createBrowserRouter([
   // {
@@ -48,6 +51,7 @@ export const router = createBrowserRouter([
       { path: "stores/:id/edit", element: <StoreFormPage /> },
       { path: "stores/:id/visit", element: <StoreVisitPage /> },
       { path: "finance", element: <FinancePage /> },
+      { path: "journey", element: <JourneyPage /> },
       // { path: "finance/invoices", element: <InvoiceListPage /> },
       // { path: "finance/invoices/:id", element: <InvoiceDetailPage /> },
       // { path: "finance/receivables", element: <ReceivablesPage /> },
