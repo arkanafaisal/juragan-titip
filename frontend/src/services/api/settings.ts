@@ -68,6 +68,13 @@ export const settingsApi = {
     storageSet(STORE_OVERDUE_DAYS_KEY, days);
   },
 
+  resetSettings: (): void => {
+    localStorage.removeItem(LOW_STOCK_THRESHOLD_KEY);
+    localStorage.removeItem(CATEGORY_LABELS_KEY);
+    localStorage.removeItem(STORE_CATEGORY_LABELS_KEY);
+    localStorage.removeItem(STORE_OVERDUE_DAYS_KEY);
+  },
+
   clearAllData: async (): Promise<void> => {
     await db.transaction('rw', db.products, db.stores, db.visits, async () => {
       await db.products.clear();

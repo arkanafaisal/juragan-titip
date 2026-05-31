@@ -14,7 +14,8 @@ import {
   Trash2, 
   Save,
   Store,
-  CircleDollarSign
+  CircleDollarSign,
+  RefreshCw
 } from "lucide-react";
 import { settingsApi } from "@/services/api/settings";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -59,6 +60,7 @@ export default function SettingsPage() {
 
   // --- MODAL STATE ---
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isResetSettingsModalOpen, setIsResetSettingsModalOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
   // --- HANDLERS (Mock) ---
@@ -82,6 +84,20 @@ export default function SettingsPage() {
     setLowStockThreshold(threshold);
     setStoreOverdueDays(overdueDays);
     toast.success("Pengaturan berhasil disimpan!");
+  };
+
+  const handleResetSettings = () => {
+    setIsResetSettingsModalOpen(true);
+  };
+
+  const handleResetSettingsConfirm = () => {
+    settingsApi.resetSettings();
+    setLowStockThreshold(settingsApi.getLowStockThreshold());
+    setCategoryLabels(settingsApi.getCategoryLabels());
+    setStoreCategoryLabels(settingsApi.getStoreCategoryLabels());
+    setStoreOverdueDays(settingsApi.getStoreOverdueDays());
+    toast.success("Pengaturan berhasil dikembalikan ke bawaan!");
+    setIsResetSettingsModalOpen(false);
   };
 
   const handleExportBackup = () => {
@@ -116,7 +132,7 @@ export default function SettingsPage() {
       <div className="space-y-sm">
 
         {/* SECTION 1: TAMPILAN APLIKASI */}
-        <div id="section-tampilan" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        {/* <div id="section-tampilan" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
           <button 
             onClick={() => toggleSection('tampilan')}
             className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
@@ -132,7 +148,6 @@ export default function SettingsPage() {
               <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-2">
                 Pilih Tema:
               </label>
-              {/* Segmented Control untuk Radio Button */}
               <div className="flex p-1 bg-surface-container-low rounded-lg border border-outline-variant">
                 {['terang', 'gelap', 'sistem'].map((mode) => {
                   const val = mode === 'terang' ? 'light' : mode === 'gelap' ? 'dark' : 'system';
@@ -154,7 +169,7 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* SECTION: PENGATURAN PRODUK */}
         <div id="section-produk" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
@@ -275,7 +290,7 @@ export default function SettingsPage() {
         </div>
 
         {/* SECTION: KASIR & TRANSAKSI */}
-        <div id="section-transaksi" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        {/* <div id="section-transaksi" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
           <button 
             onClick={() => toggleSection('transaksi')}
             className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
@@ -305,10 +320,10 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* SECTION 3: NOTA & WHATSAPP */}
-        <div id="section-whatsapp" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        {/* <div id="section-whatsapp" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
           <button 
             onClick={() => toggleSection('whatsapp')}
             className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
@@ -321,7 +336,6 @@ export default function SettingsPage() {
           
           {openSection === 'whatsapp' && (
             <div className="p-md border-t border-outline-variant bg-surface animate-in slide-in-from-top-2">
-              {/* Input: Textarea */}
               <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
                 Pesan Penutup Struk WA
               </label>
@@ -337,7 +351,7 @@ export default function SettingsPage() {
               </p>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* TOMBOL SIMPAN PENGATURAN UMUM */}
         <button 
@@ -355,6 +369,13 @@ export default function SettingsPage() {
           </h2>
           
           <div className="space-y-sm">
+            <button 
+              onClick={handleResetSettings}
+              className="w-full bg-surface border border-outline-variant text-text-primary hover:bg-surface-container-low font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors mb-4"
+            >
+              <RefreshCw className="w-5 h-5" /> Kembalikan Pengaturan ke Bawaan
+            </button>
+
             <button 
               onClick={handleExportBackup}
               className="w-full bg-surface border border-primary text-primary hover:bg-primary/10 font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
@@ -400,6 +421,16 @@ export default function SettingsPage() {
         verificationLabel={
           <>Ketik persis <span className="font-bold text-text-primary select-none">SAYA YAKIN HAPUS SEMUA DATA</span> untuk konfirmasi hapus total:</>
         }
+      />
+
+      <ConfirmationModal
+        isOpen={isResetSettingsModalOpen}
+        onClose={() => setIsResetSettingsModalOpen(false)}
+        onConfirm={() => handleResetSettingsConfirm()}
+        title="Kembalikan Pengaturan"
+        description="Apakah Anda yakin ingin mengembalikan semua preferensi dan pengaturan ke nilai bawaan pabrik?"
+        confirmText="Ya, Kembalikan"
+        isDanger={false}
       />
     </div>
   );
