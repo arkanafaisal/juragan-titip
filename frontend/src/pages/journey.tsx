@@ -1,27 +1,64 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { 
-  X, MapPin, Map, Play, ChevronDown, ChevronUp, 
-  ChevronLeft, ChevronRight, Navigation 
+  X, MapPin, Map as MapIcon, Play, ChevronDown, ChevronUp, 
+  ChevronLeft, ChevronRight, Navigation, LocateFixed 
 } from "lucide-react";
 import { db, type DbStore } from "@/lib/db";
 import { toast } from "sonner";
+import { settingsApi } from "@/services/api/settings";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Fix Leaflet icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Component to dynamically change map view
+function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
+  const map = useMap();
+  map.setView(center, zoom);
+  return null;
+}
 
 // Extend tipe Store dengan properti jarak sementara
-type StoreWithDistance = DbStore & { distance: number };
+type StoreWithDistance = DbStore & { distance: number; isOverdue?: boolean };
 
 export default function JourneyPage() {
   const navigate = useNavigate();
   const [stores, setStores] = useState<StoreWithDistance[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLocating, setIsLocating] = useState(false);
+  const [hasGpsAccess, setHasGpsAccess] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  
+  const [notification, setNotification] = useState<{ message: string, type: 'error' | 'info' } | null>(null);
+
+  // Auto-hide notification
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  const showNotif = (message: string, type: 'error' | 'info' = 'info') => {
+    setNotification({ message, type });
+  };
+
   const [showMiniMenu, setShowMiniMenu] = useState(true);
   const miniMenuRef = useRef<HTMLDivElement>(null);
 
   // Helper: Format Rupiah
   const formatRp = (num: number) => `Rp ${num.toLocaleString('id-ID')}`;
 
-  // Helper: Rumus Haversine untuk menghitung jarak (dalam KM)
+  // Helper: Rumus Haversine untuk menghitung jarak lurus (dalam KM)
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     if (!lat1 || !lon1 || !lat2 || !lon2) return 9999; 
     const R = 6371; 
@@ -42,21 +79,17 @@ export default function JourneyPage() {
         const allStores = await db.stores.toArray();
         const initialStores = allStores.map(s => ({ ...s, distance: 9999 }));
         setStores(initialStores);
-        
-        // Auto fetch lokasi saat pertama buka
-        handleUpdateLocation(initialStores);
       } catch (error) {
-        toast.error("Gagal memuat data toko.");
+        showNotif("Gagal memuat data toko.", 'error');
       }
     };
     loadStores();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2. Fungsi Perbarui Lokasi GPS
-  const handleUpdateLocation = (storeList = stores) => {
+  const handleUpdateLocation = () => {
     if (!navigator.geolocation) {
-      toast.error("GPS tidak didukung di perangkat ini.");
+      showNotif("GPS tidak didukung di perangkat ini.", 'error');
       return;
     }
 
@@ -64,19 +97,42 @@ export default function JourneyPage() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        const sorted = storeList.map(s => ({
-          ...s,
-          distance: calculateDistance(latitude, longitude, s.latitude, s.longitude)
-        })).sort((a, b) => a.distance - b.distance);
+        setUserLocation([latitude, longitude]);
+        
+        const overdueDays = settingsApi.getStoreOverdueDays();
+        const now = new Date();
+        
+        // Klasifikasi dan hitung jarak
+        const processedStores = stores.map(s => {
+          const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
+          
+          let isOverdue = false;
+          if (!s.lastVisitAt) {
+            isOverdue = true;
+          } else {
+            const lastVisit = new Date(s.lastVisitAt);
+            const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays > overdueDays) {
+              isOverdue = true;
+            }
+          }
+          
+          return { ...s, distance, isOverdue };
+        });
 
-        setStores(sorted);
+        const overdueGroup = processedStores.filter(s => s.isOverdue).sort((a, b) => a.distance - b.distance);
+        const normalGroup = processedStores.filter(s => !s.isOverdue).sort((a, b) => a.distance - b.distance);
+
+        setStores([...overdueGroup, ...normalGroup]);
+        setHasGpsAccess(true);
         setCurrentIndex(0); 
         setIsLocating(false);
-        toast.success("Lokasi diperbarui! Menampilkan toko terdekat.");
+        showNotif("Lokasi diperbarui! Menampilkan rute optimal.", 'info');
       },
       (err) => {
+        showNotif(`Gagal mendapatkan lokasi: ${err.message}`, 'error');
         setIsLocating(false);
-        toast.error("Gagal mendapatkan lokasi GPS.");
         console.error(err);
       },
       { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
@@ -85,21 +141,30 @@ export default function JourneyPage() {
 
   // 3. Efek Auto-Scroll pada Mini Menu
   useEffect(() => {
-    if (miniMenuRef.current) {
+    if (miniMenuRef.current && hasGpsAccess) {
       const activeEl = miniMenuRef.current.children[currentIndex] as HTMLElement;
       if (activeEl) {
         activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       }
     }
-  }, [currentIndex]);
+  }, [currentIndex, hasGpsAccess]);
 
   const handleClose = () => {
-    navigate('/dashboard'); // Balik ke Dashboard jika tombol silang ditekan
+    navigate('/dashboard'); 
   };
 
   if (stores.length === 0) {
     return (
-      <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center">
+      <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
+        {notification && (
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
+            <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
+              notification.type === 'error' ? 'bg-error text-on-error' : 'bg-primary text-on-primary'
+            }`}>
+              {notification.message}
+            </div>
+          </div>
+        )}
         <MapPin className="w-12 h-12 text-neutral-500 mb-4" />
         <h2 className="font-h2 text-h2 font-bold mb-2">Belum Ada Toko</h2>
         <p className="text-neutral-400 mb-6 font-body text-body">
@@ -107,6 +172,48 @@ export default function JourneyPage() {
         </p>
         <button onClick={handleClose} className="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold">
           Kembali ke Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  // STATUS: Minta GPS
+  if (!hasGpsAccess) {
+    return (
+      <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
+        {notification && (
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
+            <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
+              notification.type === 'error' ? 'bg-error text-on-error' : 'bg-primary text-on-primary'
+            }`}>
+              {notification.message}
+            </div>
+          </div>
+        )}
+        <LocateFixed className="w-16 h-16 text-primary mb-6 animate-pulse" />
+        <h2 className="font-h2 text-h2 font-bold mb-3">Akses Lokasi Dibutuhkan</h2>
+        <p className="text-neutral-400 mb-8 font-body text-body max-w-[300px]">
+          Mode keliling memerlukan akses GPS untuk mengurutkan rute dari toko prioritas (lama tidak dikunjungi) dan toko terdekat.
+        </p>
+        <button 
+          onClick={handleUpdateLocation} 
+          disabled={isLocating}
+          className="w-full max-w-[300px] py-4 bg-primary text-on-primary rounded-2xl font-bold shadow-lg hover:bg-primary/90 transition-all flex justify-center items-center gap-2"
+        >
+          {isLocating ? (
+             <>
+               <Navigation className="w-5 h-5 animate-spin" />
+               Mencari Lokasi...
+             </>
+          ) : (
+             <>
+               <Navigation className="w-5 h-5" />
+               Mulai Cari Lokasi
+             </>
+          )}
+        </button>
+        <button onClick={handleClose} className="mt-4 px-6 py-3 text-neutral-400 hover:text-white transition-colors">
+          Batal & Kembali
         </button>
       </div>
     );
@@ -129,8 +236,19 @@ export default function JourneyPage() {
 
   return (
     // FULLSCREEN OVERLAY
-    <div className="min-h-screen w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300">
+    <div className="min-h-screen w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
       
+      {/* CUSTOM NOTIFICATION */}
+      {notification && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
+          <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
+            notification.type === 'error' ? 'bg-error text-on-error' : 'bg-primary text-on-primary'
+          }`}>
+            {notification.message}
+          </div>
+        </div>
+      )}
+
       {/* HEADER BAR */}
       <div className="flex justify-between items-center p-4 text-white shrink-0">
         <button onClick={handleClose} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
@@ -163,25 +281,45 @@ export default function JourneyPage() {
           {/* MAIN CARD ACTIVE */}
           <div className="w-full bg-surface rounded-3xl shadow-2xl overflow-hidden flex flex-col mx-4 z-20 transition-all duration-300">
             
-            {/* Peta Read-Only (Iframe Google Maps) */}
-            <div className="h-40 bg-surface-container-low relative">
-              <iframe 
-                src={`https://maps.google.com/maps?q=${currentStore.latitude || 0},${currentStore.longitude || 0}&z=16&output=embed`}
-                className="w-full h-full border-0 pointer-events-none opacity-80" 
-                loading="lazy"
-                title="Map"
-              />
-              <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-surface/50 to-transparent pointer-events-none" />
-              <div className="absolute bottom-3 right-3 bg-neutral-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-lg border border-white/10">
+            {/* Peta Interaktif Leaflet */}
+            <div className="h-40 relative z-0 bg-surface-container-low">
+              <MapContainer 
+                center={[currentStore.latitude || -6.200000, currentStore.longitude || 106.816666]} 
+                zoom={16} 
+                zoomControl={false}
+                style={{ width: '100%', height: '100%' }}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; OpenStreetMap'
+                />
+                {currentStore.latitude && currentStore.longitude && (
+                  <Marker position={[currentStore.latitude, currentStore.longitude]}>
+                    <Popup>{currentStore.name}</Popup>
+                  </Marker>
+                )}
+                {/* Komponen pembantu untuk memindahkan kamera */}
+                <ChangeView center={[currentStore.latitude || -6.2, currentStore.longitude || 106.8]} zoom={16} />
+              </MapContainer>
+
+              <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-surface/50 to-transparent pointer-events-none z-10" />
+              <div className="absolute bottom-3 right-3 bg-neutral-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
                 <MapPin className="w-4 h-4 text-primary-fixed" />
                 {currentStore.distance === 9999 ? '?' : currentStore.distance} km
               </div>
             </div>
 
             {/* Info Toko */}
-            <div className="p-5 flex flex-col gap-4">
+            <div className="p-5 flex flex-col gap-4 bg-surface z-20">
               <div>
-                <h2 className="font-h2 text-h2 font-bold text-text-primary line-clamp-1">{currentStore.name}</h2>
+                <h2 className="font-h2 text-h2 font-bold text-text-primary line-clamp-1 flex items-center gap-2">
+                  {currentStore.name}
+                  {currentStore.isOverdue && (
+                    <span className="px-2 py-0.5 bg-error text-on-error text-[10px] uppercase rounded-full tracking-wider animate-pulse">
+                      Overdue
+                    </span>
+                  )}
+                </h2>
                 <p className="font-body-sm text-body-sm text-text-secondary mt-1 flex items-start gap-1">
                   <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />
                   <span className="line-clamp-2">{currentStore.address || 'Alamat tidak tersedia'}</span>
@@ -205,7 +343,7 @@ export default function JourneyPage() {
                   onClick={openMaps}
                   className="w-1/2 flex flex-col items-center justify-center py-3 bg-surface-container-low hover:bg-surface-container border border-outline-variant rounded-xl transition-colors text-text-primary gap-1"
                 >
-                  <Map className="w-5 h-5" />
+                  <MapIcon className="w-5 h-5" />
                   <span className="font-bold text-xs">BUKA MAPS</span>
                 </button>
                 <button 
@@ -234,7 +372,7 @@ export default function JourneyPage() {
 
       {/* MINI JUMPER MENU (Bottom Sheet/Drawer) */}
       <div 
-        className={`absolute bottom-0 inset-x-0 bg-neutral-950/95 backdrop-blur-lg border-t border-white/10 transition-transform duration-300 ease-in-out ${
+        className={`absolute bottom-0 inset-x-0 bg-neutral-950/95 backdrop-blur-lg border-t border-white/10 transition-transform duration-300 ease-in-out z-50 ${
           showMiniMenu ? "translate-y-0" : "translate-y-[calc(100%-40px)]"
         }`}
       >
@@ -255,12 +393,15 @@ export default function JourneyPage() {
             <button
               key={store.id}
               onClick={() => setCurrentIndex(idx)}
-              className={`shrink-0 w-[4.5rem] h-20 rounded-2xl flex flex-col items-center justify-center snap-center transition-all duration-200 ${
+              className={`relative shrink-0 w-[4.5rem] h-20 rounded-2xl flex flex-col items-center justify-center snap-center transition-all duration-200 ${
                 idx === currentIndex 
                   ? 'bg-neutral-800 text-white ring-2 ring-primary scale-105 shadow-xl' 
                   : 'bg-neutral-900/50 text-white/60 border border-white/5 hover:bg-neutral-800'
               }`}
             >
+              {store.isOverdue && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-error rounded-full ring-2 ring-neutral-900"></span>
+              )}
               <span className="font-bold text-lg leading-none">
                 {store.distance === 9999 ? '?' : store.distance}
               </span>
