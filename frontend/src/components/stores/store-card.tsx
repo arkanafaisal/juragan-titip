@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { MapPin, Store as StoreIcon, Package, CircleDollarSign } from "lucide-react";
+import { MapPin, Store as StoreIcon, Package, CircleDollarSign, History } from "lucide-react";
 import type { Store } from "@/types";
 
 interface StoreCardProps {
@@ -21,11 +21,15 @@ export function StoreCard({ store }: StoreCardProps) {
     <div className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
       <div className="p-md flex-1 flex flex-col cursor-pointer" onClick={() => navigate(`/stores/${store.id}`)}>
         <div className="flex items-start justify-between mb-sm">
-          <div className="flex items-center gap-sm">
-            <div>
+          <div className="flex items-center gap-sm flex-1 min-w-0 pr-2">
+            <div className="min-w-0">
               <h3 className="font-h3 text-h3 text-text-primary line-clamp-1">{store.name}</h3>
-              <p className="font-body-sm text-body-sm text-text-secondary">{store.ownerName} • {store.phone}</p>
+              <p className="font-body-sm text-body-sm text-text-secondary line-clamp-1">{store.ownerName} • {store.phone}</p>
             </div>
+          </div>
+          <div className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 mt-0.5 rounded-md font-caption text-[10px] ${store.lastVisitAt ? 'bg-primary/10 text-primary' : 'bg-surface-container-high text-text-secondary'}`}>
+            <History className="w-3 h-3" />
+            <span>{store.lastVisitAt ? new Date(store.lastVisitAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : "Belum dikunjungi"}</span>
           </div>
         </div>
         
