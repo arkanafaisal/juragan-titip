@@ -5,10 +5,13 @@ import { useLocation } from "react-router";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { toast } from "sonner"
 import { ProfileMenu } from "@/components/layout/profile-menu";
+import { NotificationPanel } from "./notification-panel";
+import { useState } from "react";
 
 export function PageHeader() {
   const location = useLocation();
   const todayDate = format(new Date(), "dd MMM yyyy", { locale: idLocale });
+  const [isAlertPanelOpen, setIsAlertPanelOpen] = useState(false)
   const { toggle } = useSidebar();
   
 
@@ -82,13 +85,18 @@ export function PageHeader() {
           <span className="font-data-md text-data-md">{todayDate}</span>
         </div>
 
-        <button onClick={()=>{toast.error("Fitur ini belum tersedia")}} className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low relative">
+        <button onClick={()=>{setIsAlertPanelOpen((prev)=>{return !prev})}} className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low relative">
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
         </button>
+
+        <NotificationPanel 
+          isOpen={isAlertPanelOpen} 
+          onClose={() => setIsAlertPanelOpen(false)} 
+        />
         
         
-        <div className="md:hidden relative ml-1 flex items-center">
+        <div onClick={()=>{setIsAlertPanelOpen(false)}} className="md:hidden relative ml-1 flex items-center">
           <ProfileMenu />
         </div>
 
