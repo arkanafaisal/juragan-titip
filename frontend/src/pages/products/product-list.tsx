@@ -158,7 +158,7 @@ export default function ProductListPage() {
           onSearchChange={setSearchInput}
           searchPlaceholder="Cari toko mitra..."
           onAddClick={handleOpenAdd}
-          onSettingClick={() => navigate("/settings?section=operasional")}
+          onSettingClick={() => navigate("/settings?section=produk")}
           
           // Cukup passing 3 baris ini, Boom! Filter beres.
           filterGroups={storeFilterConfig}
