@@ -61,8 +61,8 @@ export const validateStoreForm = (data: any): string | null => {
   return null;
 };
 
-export const validateProfileForm = (data: any): { name?: string, phone?: string, email?: string } => {
-  const errors: { name?: string, phone?: string, email?: string } = {};
+export const validateProfileForm = (data: any): { name?: string, phone?: string } => {
+  const errors: { name?: string, phone?: string } = {};
 
   if (!validateRequired(data.name)) {
     errors.name = "Nama Usaha / Pemilik harus diisi";
@@ -70,14 +70,8 @@ export const validateProfileForm = (data: any): { name?: string, phone?: string,
     errors.name = `Nama Usaha / Pemilik harus antara ${VALIDATION_RULES.STORE.NAME_MIN}-${VALIDATION_RULES.STORE.NAME_MAX} karakter`;
   }
 
-  if (!validateRequired(data.phone)) {
-    errors.phone = "No. WhatsApp harus diisi";
-  } else if (!validateWhatsApp(data.phone, VALIDATION_RULES.PHONE)) {
+  if (data.phone && data.phone.trim() && !validateWhatsApp(data.phone, VALIDATION_RULES.PHONE)) {
     errors.phone = "Format nomor WhatsApp tidak valid (Harus diawali 0, full angka, tanpa spasi/+)";
-  }
-
-  if (data.email && data.email.trim() && !validateRegex(data.email, VALIDATION_RULES.GENERAL.EMAIL_REGEX)) {
-    errors.email = "Format email tidak valid";
   }
 
   return errors;
