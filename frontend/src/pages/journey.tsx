@@ -24,7 +24,12 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
   return null;
 }
 
-
+const getDaysAgoText = (dateString?: string) => {
+  if (!dateString) return "Belum Pernah";
+  const diffTime = Math.abs(new Date().getTime() - new Date(dateString).getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return `${diffDays} Hari Lalu`;
+};
 
 export default function JourneyPage() {
   const navigate = useNavigate();
@@ -103,13 +108,15 @@ export default function JourneyPage() {
 
   // 3. Efek Auto-Scroll pada Mini Menu
   useEffect(() => {
-    if (miniMenuRef.current && hasGpsAccess) {
+    if (miniMenuRef.current && hasGpsAccess && showMiniMenu) {
       const activeEl = miniMenuRef.current.children[currentIndex] as HTMLElement;
       if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        const container = miniMenuRef.current;
+        const scrollPos = activeEl.offsetLeft - (container.clientWidth / 2) + (activeEl.clientWidth / 2);
+        container.scrollTo({ left: scrollPos, behavior: 'smooth' });
       }
     }
-  }, [currentIndex, hasGpsAccess]);
+  }, [currentIndex, hasGpsAccess, showMiniMenu]);
 
   const handleClose = () => {
     navigate('/dashboard'); 
@@ -117,7 +124,7 @@ export default function JourneyPage() {
 
   if (stores.length === 0) {
     return (
-      <div className="min-h-dvh bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
+      <div className="h-dvh overflow-hidden bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -142,7 +149,7 @@ export default function JourneyPage() {
   // STATUS: Minta GPS
   if (!hasGpsAccess) {
     return (
-      <div className="min-h-dvh bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
+      <div className="h-dvh overflow-hidden bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -155,7 +162,7 @@ export default function JourneyPage() {
         <LocateFixed className="w-16 h-16 text-primary mb-6 animate-pulse" />
         <h2 className="font-h2 text-h2 font-bold mb-3">Akses Lokasi Dibutuhkan</h2>
         <p className="text-neutral-400 mb-8 font-body text-body max-w-[300px]">
-          Mode keliling memerlukan akses GPS untuk mengurutkan rute dari toko prioritas (lama tidak dikunjungi) dan toko terdekat.
+          Mode keliling memerlukan akses GPS untuk mencarikan rute toko prioritas yang wajib Anda kunjungi (mulai dari yang terdekat).
         </p>
         <button 
           onClick={handleUpdateLocation} 
@@ -198,7 +205,7 @@ export default function JourneyPage() {
 
   return (
     // FULLSCREEN OVERLAY
-    <div className="min-h-dvh w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
+    <div className="h-dvh overflow-hidden w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
       
       {/* CUSTOM NOTIFICATION */}
       {notification && (
@@ -227,7 +234,7 @@ export default function JourneyPage() {
       </div>
 
       {/* MAIN CAROUSEL AREA */}
-      <div className="flex-1 flex items-center justify-center relative overflow-hidden pb-20">
+      <div className="flex-1 flex items-center justify-center relative overflow-hidden">
         <div className="relative w-full max-w-[360px] flex items-center justify-center">
           
           {/* FAKE BORDER LEFT (Klik Mundur) */}
@@ -285,11 +292,9 @@ export default function JourneyPage() {
               <div>
                 <h2 className="font-h2 text-h2 font-bold text-text-primary line-clamp-1 flex items-center gap-2">
                   {currentStore.name}
-                  {currentStore.isOverdue && (
-                    <span className="px-2 py-0.5 bg-error text-on-error text-[10px] uppercase rounded-full tracking-wider animate-pulse">
-                      Overdue
-                    </span>
-                  )}
+                  <span className="px-2 py-0.5 bg-error text-on-error text-[10px] uppercase rounded-full tracking-wider whitespace-nowrap">
+                    {getDaysAgoText(currentStore.lastVisitAt)}
+                  </span>
                 </h2>
                 <p className="font-body-sm text-body-sm text-text-secondary mt-1 flex items-start gap-1">
                   <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />
@@ -358,7 +363,7 @@ export default function JourneyPage() {
         {/* Scrollable Mini Cards */}
         <div 
           ref={miniMenuRef}
-          className="flex overflow-x-auto gap-3 px-4 pb-6 pt-2 snap-x snap-mandatory no-scrollbar"
+          className="flex overflow-x-auto gap-3 px-4 pb-6 pt-2 snap-x snap-mandatory no-scrollbar relative"
         >
           {stores.map((store, idx) => (
             <button
@@ -370,9 +375,7 @@ export default function JourneyPage() {
                   : 'bg-neutral-900/50 text-white/60 border border-white/5 hover:bg-neutral-800'
               }`}
             >
-              {store.isOverdue && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-error rounded-full ring-2 ring-neutral-900"></span>
-              )}
+
               <span className="font-bold text-lg leading-none">
                 {store.distance === 9999 ? '?' : store.distance}
               </span>

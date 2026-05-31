@@ -21,17 +21,15 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
   
   const [profile, setProfile] = useState({
     name: savedProfile?.name || "",
-    phone: savedProfile?.phone || "",
-    email: savedProfile?.email || ""
+    phone: savedProfile?.phone || ""
   });
-  const [errors, setErrors] = useState<{name?: string, phone?: string, email?: string}>({});
+  const [errors, setErrors] = useState<{name?: string, phone?: string}>({});
 
   useEffect(() => {
     if (isOpen) {
       setProfile({
         name: savedProfile?.name || "",
-        phone: savedProfile?.phone || "",
-        email: savedProfile?.email || ""
+        phone: savedProfile?.phone || ""
       });
       setErrors({});
     }
@@ -136,11 +134,11 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
 
             <div className="space-y-1.5">
               <Label htmlFor="profile-phone" className={cn("text-body-sm", errors.phone ? "text-error" : "text-text-secondary")}>
-                No. WhatsApp
+                No. WhatsApp (Opsional)
               </Label>
               <Input 
                 id="profile-phone" 
-                placeholder="0812-3456-7890"
+                placeholder="081234567890"
                 type="tel"
                 value={profile.phone}
                 onChange={(e) => {
@@ -156,23 +154,6 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
               {errors.phone && <p className="text-caption text-error">{errors.phone}</p>}
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="profile-email" className={cn("text-body-sm", errors.email ? "text-error" : "text-text-secondary")}>
-                Email (Opsional)
-              </Label>
-              <Input 
-                id="profile-email" 
-                placeholder="budi@juragantitip.com"
-                type="email"
-                value={profile.email}
-                onChange={(e) => {
-                  setProfile({ ...profile, email: e.target.value });
-                  if (errors.email) setErrors({ ...errors, email: undefined });
-                }}
-                className={cn("bg-surface", errors.email && "border-error focus-visible:ring-error")}
-              />
-              {errors.email && <p className="text-caption text-error">{errors.email}</p>}
-            </div>
           </div>
 
           <div className="flex flex-row gap-2 pt-2">
