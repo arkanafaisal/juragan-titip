@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Search, ChevronDown, Plus, Package, Trash2, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, ChevronDown, Plus, Package, Trash2, ArrowRight, Loader2 } from "lucide-react";
 import { NumberInput } from "@/components/shared/number-input";
 import type { Product, RestockItem } from "@/types";
+import { productApi } from "@/services/api/products";
 
 interface StepRestockProps {
   allProducts: Product[];
@@ -21,11 +22,54 @@ export function StepRestock({
   onNext, onPrev, formatCurrency 
 }: StepRestockProps) {
   const [searchProduct, setSearchProduct] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchedProducts, setSearchedProducts] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const filteredProducts = allProducts.filter(p => 
-    p.name.toLowerCase().includes(searchProduct.toLowerCase())
-  );
+  useEffect(() => {
+    if (!searchProduct) {
+      setDebouncedSearch("");
+      return;
+    }
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchProduct);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [searchProduct]);
+
+  useEffect(() => {
+    const fetchSearchedProducts = async () => {
+      if (!debouncedSearch) {
+        setSearchedProducts([]);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        let foundProducts: Product[] = [];
+        if (!isNaN(Number(debouncedSearch))) {
+          const byIdResponse = await productApi.getById(debouncedSearch);
+          if (byIdResponse.success && byIdResponse.data) {
+            foundProducts = [byIdResponse.data];
+          }
+        }
+        if (foundProducts.length === 0) {
+          const response = await productApi.getAll({ search: debouncedSearch });
+          if (response.success) {
+            foundProducts = response.data;
+          }
+        }
+        setSearchedProducts(foundProducts);
+      } catch (error) {
+        console.error("Gagal mencari produk:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+    fetchSearchedProducts();
+  }, [debouncedSearch]);
+
+  const displayProducts = debouncedSearch ? searchedProducts : allProducts;
 
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-md">
@@ -59,8 +103,12 @@ export function StepRestock({
 
             {isDropdownOpen && (
               <div className="absolute top-full mt-1 w-full bg-surface-elevated border border-border rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-100">
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map(p => (
+                {isSearching ? (
+                  <div className="p-md text-center text-text-secondary font-body-sm text-body-sm flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Mencari produk...
+                  </div>
+                ) : displayProducts.length > 0 ? (
+                  displayProducts.map(p => (
                     <div 
                       key={p.id} 
                       onMouseDown={(e) => e.preventDefault()}
