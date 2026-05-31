@@ -38,7 +38,7 @@ export default function FinancePage() {
 
   if (loading || !data) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+      <div className="min-h-dvh bg-background flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
         <p className="text-text-secondary font-body">Memuat data keuangan...</p>
       </div>
@@ -50,7 +50,7 @@ export default function FinancePage() {
   }
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-background animate-fade-in">
+    <div className="flex flex-col w-full min-h-dvh bg-background animate-fade-in">
       
       {/* --- DASHBOARD SECTION --- */}
       <div className="pb-[24px] space-y-[24px]">

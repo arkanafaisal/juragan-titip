@@ -117,7 +117,7 @@ export default function JourneyPage() {
 
   if (stores.length === 0) {
     return (
-      <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
+      <div className="min-h-dvh bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -142,7 +142,7 @@ export default function JourneyPage() {
   // STATUS: Minta GPS
   if (!hasGpsAccess) {
     return (
-      <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
+      <div className="min-h-dvh bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -198,7 +198,7 @@ export default function JourneyPage() {
 
   return (
     // FULLSCREEN OVERLAY
-    <div className="min-h-screen w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
+    <div className="min-h-dvh w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
       
       {/* CUSTOM NOTIFICATION */}
       {notification && (

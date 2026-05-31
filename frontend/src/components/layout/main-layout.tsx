@@ -14,13 +14,13 @@ export function MainLayout() {
   const { isCollapsed } = useSidebar()
 
   return (
-    <div className="min-h-screen bg-surface-bright font-body text-body text-on-surface selection:bg-primary-container selection:text-on-primary-container flex">
+    <div className="min-h-dvh bg-surface-bright font-body text-body text-on-surface selection:bg-primary-container selection:text-on-primary-container flex">
       
       {!isMobile && <AppSidebar />}
 
       <main
         className={cn(
-          "flex-1 flex flex-col min-h-screen transition-all duration-300 min-w-0 relative",
+          "flex-1 flex flex-col min-h-dvh transition-all duration-300 min-w-0 relative",
           isMobile
             ? "pb-safe"
             : isCollapsed

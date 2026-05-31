@@ -38,7 +38,7 @@ export const router = createBrowserRouter([
   {
     path: "/journey",
     element: (
-      <Suspense fallback={<div className="flex items-center justify-center w-full h-screen bg-neutral-900"><Loader2 className="w-8 h-8 animate-spin text-primary/50" /></div>}>
+      <Suspense fallback={<div className="flex items-center justify-center w-full h-dvh bg-neutral-900"><Loader2 className="w-8 h-8 animate-spin text-primary/50" /></div>}>
         <JourneyPage />
       </Suspense>
     )
