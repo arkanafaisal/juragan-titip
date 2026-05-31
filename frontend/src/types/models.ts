@@ -30,6 +30,7 @@ export interface Store {
   notes: string
   debt: number
   assetValue: number
+  lastVisitAt?: string
 }
 
 export interface StorePrice {

@@ -79,7 +79,8 @@ export const visitApi = {
 
         await db.stores.update(Number(data.storeId), {
           debt: data.currentDebt,
-          assetValue: assetValue
+          assetValue: assetValue,
+          lastVisitAt: newVisit.createdAt
         });
       });
 
