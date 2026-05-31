@@ -59,11 +59,7 @@ export default function Dashboard() {
   }
 
   if (selectedVisitId) {
-    return (
-      <div className="fixed inset-0 z-50 bg-surface overflow-y-auto">
-        <InvoiceDetail id={selectedVisitId} onBack={() => setSelectedVisitId(null)} />
-      </div>
-    );
+    return <InvoiceDetail id={selectedVisitId} onBack={() => setSelectedVisitId(null)} />;
   }
 
   return (
