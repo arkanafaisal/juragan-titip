@@ -9,6 +9,7 @@ import Dexie from "dexie"
 export interface StoreQueryParams {
   search?: string;
   status?: string;
+  sortBy?: string;
   page?: number;
 }
 
@@ -39,9 +40,30 @@ export const storeApi = {
       const limit = 6;
       const offset = (page - 1) * limit;
 
-      const stores = await collection.offset(offset).limit(limit + 1).toArray();
+      if (!params?.sortBy) {
+        const stores = await collection.offset(offset).limit(limit + 1).toArray();
+        return { success: true, data: stores };
+      }
 
-      return { success: true, data: stores }
+      let stores = await collection.toArray();
+
+      if (params.sortBy === 'lastVisitAsc') {
+        stores.sort((a, b) => {
+          if (!a.lastVisitAt) return -1;
+          if (!b.lastVisitAt) return 1;
+          return new Date(a.lastVisitAt).getTime() - new Date(b.lastVisitAt).getTime();
+        });
+      } else if (params.sortBy === 'lastVisitDesc') {
+        stores.sort((a, b) => {
+          if (!a.lastVisitAt) return 1;
+          if (!b.lastVisitAt) return -1;
+          return new Date(b.lastVisitAt).getTime() - new Date(a.lastVisitAt).getTime();
+        });
+      }
+
+      const paginatedStores = stores.slice(offset, offset + limit + 1);
+
+      return { success: true, data: paginatedStores }
     } catch (error) {
       toast.error("Gagal memuat data toko")
       return { success: false, data: [], message: "Gagal memuat data toko" }

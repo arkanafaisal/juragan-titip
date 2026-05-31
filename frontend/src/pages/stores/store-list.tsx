@@ -17,7 +17,7 @@ export default function StoreListPage() {
   
   const [filters, setFilters] = useState<Record<string, string>>({
     status: "",
-    // sortBy: "name_asc"
+    sortBy: ""
   });
   const storeFilterConfig: FilterGroup[] = [
     {
@@ -29,14 +29,15 @@ export default function StoreListPage() {
         { label: "Piutang", value: "piutang" }
       ]
     },
-    // {
-    //   id: "sortBy",
-    //   title: "Urutkan Berdasarkan",
-    //   options: [
-    //     { label: "Nama (A-Z)", value: "name_asc" },
-    //     { label: "Terbaru Ditambahkan", value: "newest" }
-    //   ]
-    // }
+    {
+      id: "sortBy",
+      title: "Urutkan Berdasarkan",
+      options: [
+        { label: "Default", value: "" },
+        { label: "Kunjungan Terbaru", value: "lastVisitDesc" },
+        { label: "Kunjungan Terlama", value: "lastVisitAsc" }
+      ]
+    }
   ];
 
   const handleFilterChange = (groupId: string, value: string) => {
@@ -69,6 +70,7 @@ export default function StoreListPage() {
         const response = await storeApi.getAll({
           search: debouncedSearch,
           status: filters.status,
+          sortBy: filters.sortBy,
           page: currentPage
         });
         if (response.success) {
