@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 const LOW_STOCK_THRESHOLD_KEY = "juragan_titip_low_stock_threshold";
 const CATEGORY_LABELS_KEY = "juragan_titip_category_labels";
 const STORE_CATEGORY_LABELS_KEY = "juragan_titip_store_category_labels";
+const STORE_OVERDUE_DAYS_KEY = "juragan_titip_store_overdue_days";
 
 export type CategoryLabels = {
   "1": string;
@@ -56,6 +57,15 @@ export const settingsApi = {
   
   updateStoreCategoryLabels: (labels: CategoryLabels): void => {
     storageSet(STORE_CATEGORY_LABELS_KEY, labels);
+  },
+
+  getStoreOverdueDays: (): number => {
+    const val = storageGet<number>(STORE_OVERDUE_DAYS_KEY);
+    return val !== null ? val : 30;
+  },
+  
+  updateStoreOverdueDays: (days: number): void => {
+    storageSet(STORE_OVERDUE_DAYS_KEY, days);
   },
 
   clearAllData: async (): Promise<void> => {

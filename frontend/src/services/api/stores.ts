@@ -3,6 +3,7 @@
 import type { Store, StoreFormData, ApiResponse, Visit } from "@/types"
 import { db, type DbStore } from "@/lib/db"
 import { visitApi } from "@/services/api/visits"
+import { settingsApi } from "@/services/api/settings"
 import { toast } from "sonner"
 import Dexie from "dexie"
 
@@ -10,6 +11,7 @@ export interface StoreQueryParams {
   search?: string;
   status?: string;
   category?: string;
+  visitStatus?: string;
   sortBy?: string;
   page?: number;
 }
@@ -38,6 +40,12 @@ export const storeApi = {
 
         if (params.category) {
           collection = collection.filter(s => s.category === params.category);
+        }
+
+        if (params.visitStatus === 'overdue') {
+          const overdueDays = settingsApi.getStoreOverdueDays();
+          const overdueTime = new Date().getTime() - (overdueDays * 24 * 60 * 60 * 1000);
+          collection = collection.filter(s => !s.lastVisitAt || new Date(s.lastVisitAt).getTime() < overdueTime);
         }
       }
 

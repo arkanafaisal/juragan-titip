@@ -17,10 +17,12 @@ export default function StoreListPage() {
   const [searchInput, setSearchInput] = useState("");
   
   const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
+  const overdueDays = settingsApi.getStoreOverdueDays();
 
   const [filters, setFilters] = useState<Record<string, string>>({
     status: "",
     category: "",
+    visitStatus: "",
     sortBy: ""
   });
   const storeFilterConfig: FilterGroup[] = [
@@ -43,6 +45,14 @@ export default function StoreListPage() {
         { label: "Semua", value: "" },
         { label: "Lunas", value: "lunas" },
         { label: "Piutang", value: "piutang" }
+      ]
+    },
+    {
+      id: "visitStatus",
+      title: "Kunjungan Toko",
+      options: [
+        { label: "Semua", value: "" },
+        { label: `> ${overdueDays} Hari`, value: "overdue" }
       ]
     },
     {
@@ -87,6 +97,7 @@ export default function StoreListPage() {
           search: debouncedSearch,
           status: filters.status,
           category: filters.category,
+          visitStatus: filters.visitStatus,
           sortBy: filters.sortBy,
           page: currentPage
         });

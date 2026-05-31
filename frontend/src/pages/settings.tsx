@@ -53,6 +53,7 @@ export default function SettingsPage() {
   const [lowStockThreshold, setLowStockThreshold] = useState<number | string>(settingsApi.getLowStockThreshold());
   const [categoryLabels, setCategoryLabels] = useState(settingsApi.getCategoryLabels());
   const [storeCategoryLabels, setStoreCategoryLabels] = useState(settingsApi.getStoreCategoryLabels());
+  const [storeOverdueDays, setStoreOverdueDays] = useState<number | string>(settingsApi.getStoreOverdueDays());
   const [quickPayNominals, setQuickPayNominals] = useState<string>("20000, 50000, 100000");
   const [waFooterMsg, setWaFooterMsg] = useState<string>("Terima kasih! Pembayaran via transfer bisa ke BCA 12345678 a.n Juragan Titip.");
 
@@ -66,10 +67,20 @@ export default function SettingsPage() {
     if (isNaN(threshold) || threshold < 0) {
       threshold = 0;
     }
+    let overdueDays = Number(storeOverdueDays);
+    if (isNaN(overdueDays) || overdueDays <= 0) {
+      overdueDays = 30;
+    }
+    if (overdueDays > 300) {
+      overdueDays = 300;
+    }
+
     settingsApi.updateLowStockThreshold(threshold);
     settingsApi.updateCategoryLabels(categoryLabels);
     settingsApi.updateStoreCategoryLabels(storeCategoryLabels);
+    settingsApi.updateStoreOverdueDays(overdueDays);
     setLowStockThreshold(threshold);
+    setStoreOverdueDays(overdueDays);
     toast.success("Pengaturan berhasil disimpan!");
   };
 
@@ -219,6 +230,23 @@ export default function SettingsPage() {
           {openSection === 'toko' && (
             <div className="p-md border-t border-outline-variant bg-surface space-y-md animate-in slide-in-from-top-2">
               <div>
+                <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
+                  Batas Peringatan Belum Dikunjungi (Hari)
+                </label>
+                <input 
+                  type="number" 
+                  min="0"
+                  max="300"
+                  value={storeOverdueDays}
+                  onChange={(e) => setStoreOverdueDays(e.target.value)}
+                  className="w-full px-3 py-3 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
+                />
+                <p className="font-caption text-caption text-text-secondary mt-1">
+                  *Toko yang belum dikunjungi lebih dari angka ini (maks 300) bisa difilter di Daftar Toko.
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-outline-variant">
                 <label className="font-body-sm text-body-sm font-bold text-text-primary block mb-3">
                   Label Kategori Toko (1 - 5)
                 </label>
