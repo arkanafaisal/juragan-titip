@@ -65,7 +65,7 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
     };
 
     // 3. GENERATOR TEKS WA (Format Linear + Emoji agar tidak hancur di layar kecil)
-    const handleSendWA = () => {
+    const handleSendWA = (targetPhone?: string) => {
         if(!visit){return}
         const lakuItemsText = visit.items
         .filter(i => i.sold > 0)
@@ -103,9 +103,8 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
 
     Terima kasih atas kerjasamanya! 🙏`;
 
-        // Kita menggunakan wa.me/ kosong agar sistem membuka WA dan meminta user memilih kontak
-        // (Karena dari data Visit kita tidak punya nomor WA toko secara instan)
-        const waUrl = `https://wa.me/${storePhoneNumber || ""}?text=${encodeURIComponent(waText)}`;
+        const phone = targetPhone !== undefined ? targetPhone : (storePhoneNumber || "");
+        const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(waText)}`;
         window.open(waUrl, '_blank');
     };
 
@@ -224,14 +223,30 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
             </div>
 
             {/* FOOTER ACTION (Sticky Bottom) */}
-            <div className="bg-surface border-t border-outline-variant p-4 sticky bottom-0 z-10">
+            <div className="bg-surface border-t border-outline-variant p-4 sticky bottom-0 z-10 space-y-3">
+            
+            {!storePhoneNumber && (
+                <p className="font-caption text-caption text-text-secondary text-center px-2">
+                    * Nomor WhatsApp toko belum diatur. Anda akan diminta memilih kontak manual.
+                </p>
+            )}
+
             <button 
-                onClick={handleSendWA}
+                onClick={() => handleSendWA()}
                 className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
             >
                 <MessageCircle className="w-5 h-5 fill-current" />
-                Kirim Nota via WhatsApp
+                Kirim Nota ke Toko
             </button>
+
+            {currentUser?.phone && (
+                <button 
+                    onClick={() => handleSendWA(currentUser.phone)}
+                    className="w-full bg-surface-container hover:bg-surface-container-high text-text-primary border border-outline-variant font-body text-body-sm py-2.5 rounded-xl font-bold flex items-center justify-center transition-all active:scale-95"
+                >
+                    Kirim Salinan ke Nomor Saya
+                </button>
+            )}
             </div>
 
         </div>
