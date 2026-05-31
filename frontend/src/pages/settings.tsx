@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { settingsApi } from "@/services/api/settings";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
+import { VALIDATION_RULES } from "@/lib/validation-rules";
 
 export default function SettingsPage() {
   const [searchParams] = useSearchParams();
@@ -50,13 +51,13 @@ export default function SettingsPage() {
 
   // --- FORM SETTINGS STATE (Local) ---
   // Nantinya bisa Anda hubungkan ke localStorage atau tabel 'settings' di Dexie
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  // const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [lowStockThreshold, setLowStockThreshold] = useState<number | string>(settingsApi.getLowStockThreshold());
   const [categoryLabels, setCategoryLabels] = useState(settingsApi.getCategoryLabels());
   const [storeCategoryLabels, setStoreCategoryLabels] = useState(settingsApi.getStoreCategoryLabels());
   const [storeOverdueDays, setStoreOverdueDays] = useState<number | string>(settingsApi.getStoreOverdueDays());
-  const [quickPayNominals, setQuickPayNominals] = useState<string>("20000, 50000, 100000");
-  const [waFooterMsg, setWaFooterMsg] = useState<string>("Terima kasih! Pembayaran via transfer bisa ke BCA 12345678 a.n Juragan Titip.");
+  // const [quickPayNominals, setQuickPayNominals] = useState<string>("20000, 50000, 100000");
+  // const [waFooterMsg, setWaFooterMsg] = useState<string>("Terima kasih! Pembayaran via transfer bisa ke BCA 12345678 a.n Juragan Titip.");
 
   // --- MODAL STATE ---
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
@@ -66,15 +67,26 @@ export default function SettingsPage() {
   // --- HANDLERS (Mock) ---
   const handleSaveSettings = () => {
     let threshold = Number(lowStockThreshold);
-    if (isNaN(threshold) || threshold < 0) {
-      threshold = 0;
+    if (isNaN(threshold) || threshold < VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MIN || threshold > VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MAX) {
+      toast.error(`Batas stok menipis harus antara ${VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MIN} - ${VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MAX}`);
+      return;
+    }
+
+    const isCategoryInvalid = Object.values(categoryLabels).some(val => val.trim().length < VALIDATION_RULES.SETTINGS.CATEGORY_MIN || val.trim().length > VALIDATION_RULES.SETTINGS.CATEGORY_MAX);
+    if (isCategoryInvalid) {
+      toast.error(`Nama kategori produk harus antara ${VALIDATION_RULES.SETTINGS.CATEGORY_MIN} - ${VALIDATION_RULES.SETTINGS.CATEGORY_MAX} karakter`);
+      return;
+    }
+
+    const isStoreCategoryInvalid = Object.values(storeCategoryLabels).some(val => val.trim().length < VALIDATION_RULES.SETTINGS.CATEGORY_MIN || val.trim().length > VALIDATION_RULES.SETTINGS.CATEGORY_MAX);
+    if (isStoreCategoryInvalid) {
+      toast.error(`Nama kategori toko harus antara ${VALIDATION_RULES.SETTINGS.CATEGORY_MIN} - ${VALIDATION_RULES.SETTINGS.CATEGORY_MAX} karakter`);
+      return;
     }
     let overdueDays = Number(storeOverdueDays);
-    if (isNaN(overdueDays) || overdueDays <= 0) {
-      overdueDays = 30;
-    }
-    if (overdueDays > 300) {
-      overdueDays = 300;
+    if (isNaN(overdueDays) || overdueDays < VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MIN || overdueDays > VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MAX) {
+      toast.error(`Batas hari belum dikunjungi harus antara ${VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MIN} - ${VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MAX}`);
+      return;
     }
 
     settingsApi.updateLowStockThreshold(threshold);
@@ -192,7 +204,8 @@ export default function SettingsPage() {
                 </label>
                 <input 
                   type="number" 
-                  min="0"
+                  min={VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MIN}
+                  max={VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MAX}
                   value={lowStockThreshold}
                   onChange={(e) => setLowStockThreshold(e.target.value)}
                   className="w-full px-3 py-3 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
@@ -217,6 +230,8 @@ export default function SettingsPage() {
                         value={categoryLabels[num.toString() as keyof typeof categoryLabels]}
                         onChange={(e) => setCategoryLabels(prev => ({...prev, [num.toString()]: e.target.value}))}
                         placeholder={`Kategori ${num}`}
+                        minLength={VALIDATION_RULES.SETTINGS.CATEGORY_MIN}
+                        maxLength={VALIDATION_RULES.SETTINGS.CATEGORY_MAX}
                         className="flex-1 px-3 py-2 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
                       />
                     </div>
@@ -250,8 +265,8 @@ export default function SettingsPage() {
                 </label>
                 <input 
                   type="number" 
-                  min="0"
-                  max="300"
+                  min={VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MIN}
+                  max={VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MAX}
                   value={storeOverdueDays}
                   onChange={(e) => setStoreOverdueDays(e.target.value)}
                   className="w-full px-3 py-3 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
@@ -276,6 +291,8 @@ export default function SettingsPage() {
                         value={storeCategoryLabels[num.toString() as keyof typeof storeCategoryLabels]}
                         onChange={(e) => setStoreCategoryLabels(prev => ({...prev, [num.toString()]: e.target.value}))}
                         placeholder={`Kategori Toko ${num}`}
+                        minLength={VALIDATION_RULES.SETTINGS.CATEGORY_MIN}
+                        maxLength={VALIDATION_RULES.SETTINGS.CATEGORY_MAX}
                         className="flex-1 px-3 py-2 bg-surface border border-outline text-text-primary font-body text-body focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all"
                       />
                     </div>

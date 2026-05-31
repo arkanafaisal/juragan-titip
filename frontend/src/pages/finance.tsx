@@ -49,8 +49,6 @@ export default function FinancePage() {
     return <InvoiceDetail id={selectedInvoiceId} onBack={() => setSelectedInvoiceId(null)} />;
   }
 
-  console.log(data.summary.income.chartData)
-
   return (
     <div className="flex flex-col w-full min-h-screen bg-background animate-fade-in">
       

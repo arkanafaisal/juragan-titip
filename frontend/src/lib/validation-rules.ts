@@ -23,5 +23,13 @@ export const VALIDATION_RULES = {
   GENERAL: {
     EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     PASSWORD_MIN: 6,
+  },
+  SETTINGS: {
+    CATEGORY_MIN: 3,
+    CATEGORY_MAX: 20,
+    STOCK_THRESHOLD_MIN: 1,
+    STOCK_THRESHOLD_MAX: 1000,
+    OVERDUE_DAYS_MIN: 1,
+    OVERDUE_DAYS_MAX: 300,
   }
 };
