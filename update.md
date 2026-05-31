@@ -1,3 +1,75 @@
+
+31 May 2026
+<details>
+- updated journey page: show user static location
+- updated page header: hide notification & add full screen mode toggle
+- refactored journey page: journey service
+- updated journey page: gps failed handler, distance calculation, priority grouping, leaflet openstreetmap, zoom & scroll map
+- cleaned up TS: unused imports, type missmatch
+- implemented dashboard page: integrate dashboard service to get data
+- updated finance: reduce padding
+- added settings page: JSON backup & recovery
+- updated action toolbar: fixed max height & overflow hidden
+- added settings page: input validation
+- added settings page: reset settings data
+- fixed journey: route level (fullscreen)
+- added store settings: days overdue input & filter
+- added react lazy load
+- fixed product list: settings navigation query url
+- updated dashboard page: new UI
+- added store category settings
+- added store list: sortBy last visit
+- added notification panel (UI)
+- added store card: last visit data
+- added store detail: last visit data
+- added store schema: string lastVisitAt
+- updated action toolbar: close filter on select
+</details>
+
+30 May 2026
+<details>
+- added settings page: query instruction
+- updated: rename focus mode to journey
+- removed settings page: header
+- added delete all data setting
+- added custom product category setting
+- added focus-mode (UI)
+- added product category setting (UI & service)
+- added low stock treshhold setting
+- added settings page (UI)
+- added store detail: invoice detail
+- added invoice detail: added invoice note generator
+- implemented finance: integrate finance api services
+- added finance services: finance page api
+- removed visit schema: documentNumber
+- updated visit service: desc id sort
+- implemented visit step checkout: connect paid amount input value into visit create data
+- added step checkout: paid amount input (UI)
+- updated type: remove visit totalBilled
+- updated store detail: show store debt & assetValue
+- updated visit service: use db transaction & add store debt & assetValue
+- updated type: rename previousReceivable to currentDebt
+- updated type: add assetValue property to store type
+- updated type: rename store totalReceivable to debt
+- updated store visit: container padding
+- updated visit step restock: empty state text padding & align
+- updated visit step opname: remove disable & move error into toast
+- updated store-visit: remove restock item bill charge
+- updated validation rules: phone & addess length
+- updated store service: warning modal on duplicate store name & phone
+- updated store type: optional phone property
+- updated store schema: remove unique constraint on name & phone
+- added finance UI
+- updated input: autocomplete off on repetitive input
+- updated store form: sonner notification on gps error
+- implemented profile menu input validation
+- removed auth guard & pages
+- implemented use profile service
+- added profile service
+- refactored header, sidebar: use profile menu component
+- added profile menu component
+</details>
+
 29 May 2026
 <details>
 - cleaned TypeScript errors (unused, null possibility)
