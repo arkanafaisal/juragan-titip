@@ -144,7 +144,7 @@ export default function FinancePage() {
       </div>
 
       {/* --- TAB NAVIGATION --- */}
-      <div className="px-[24px] mb-[16px]">
+      <div className="mb-[16px]">
         <div className="flex bg-surface-container-low p-1 rounded-xl">
           <button 
             onClick={() => setActiveTab("income")}
@@ -177,7 +177,7 @@ export default function FinancePage() {
       </div>
 
       {/* --- TAB CONTENT AREA --- */}
-      <div className="px-[24px] pb-[10px] flex-1">
+      <div className="px-[12px] pb-[10px] flex-1">
         
         {/* KONTEN: UANG MASUK */}
         {activeTab === "income" && (
