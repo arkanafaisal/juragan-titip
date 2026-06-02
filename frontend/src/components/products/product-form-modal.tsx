@@ -150,7 +150,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
-              <div className="flex flex-col gap-xs">
+              <div className={cn("flex flex-col gap-xs", !product && "sm:col-span-2")}>
                 <label className="font-body-sm text-body-sm text-on-surface-variant font-medium">Kategori</label>
                 <select 
                   required 
@@ -167,21 +167,23 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
                   <option value="5">{categoryLabels["5"]}</option>
                 </select>
               </div>
-              <div className="flex flex-col gap-xs">
-                <label className="font-body-sm text-body-sm text-on-surface-variant font-medium">Stok Gudang</label>
-                <input 
-                  required 
-                  type="number" 
-                  min="0" 
-                  name="warehouseStock" 
-                  value={formData.warehouseStock === 0 && !product && !formData.warehouseStock.toString() ? '' : formData.warehouseStock} 
-                  onChange={handleChange} 
-                  placeholder="100" 
-                  className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
-                  max={VALIDATION_RULES.PRODUCT.STOCK_MAX}
-                  autoComplete="off"
-                />
-              </div>
+              {product && (
+                <div className="flex flex-col gap-xs">
+                  <label className="font-body-sm text-body-sm text-on-surface-variant font-medium">Stok Gudang</label>
+                  <input 
+                    required 
+                    type="number" 
+                    min="0" 
+                    name="warehouseStock" 
+                    value={formData.warehouseStock} 
+                    onChange={handleChange} 
+                    placeholder="100" 
+                    className="w-full px-gutter py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all" 
+                    max={VALIDATION_RULES.PRODUCT.STOCK_MAX}
+                    autoComplete="off"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
