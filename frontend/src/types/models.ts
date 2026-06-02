@@ -43,24 +43,6 @@ export interface StorePrice {
   customPrice: number
 }
 
-export interface Consignment {
-  id: string
-  storeId: string
-  storeName: string
-  items: ConsignmentItem[]
-  status: "active" | "checked"
-  createdAt: string
-}
-
-export interface ConsignmentItem {
-  id: string
-  productId: string
-  productName: string
-  quantity: number
-  wholesalePrice: number
-  retailPrice: number
-}
-
 export interface Visit {
   id: number
   storeId: number

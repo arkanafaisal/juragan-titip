@@ -4,8 +4,6 @@ export type {
   Product,
   Store,
   StorePrice,
-  Consignment,
-  ConsignmentItem,
   Visit,
   OpnameItem,
   RestockItem,
