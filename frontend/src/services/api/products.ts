@@ -17,7 +17,7 @@ export interface ProductQueryParams {
 export const productApi = {
   getAll: async (params?: ProductQueryParams): Promise<ApiResponse<Product[]>> => {
     try {
-      let collection = db.products.toCollection();
+      let collection = db.products.filter(p => !p.isArchived);
 
       if (params) {
         if (params.search) {
@@ -59,7 +59,7 @@ export const productApi = {
     try {
       const numericId = Number(id);
       const product = await db.products.get(numericId);
-      if (!product) {
+      if (!product || product.isArchived) {
         toast.error("Produk tidak ditemukan");
         return { success: false, data: null, message: "Produk tidak ditemukan" }
       }
@@ -76,7 +76,8 @@ export const productApi = {
     const newProduct: Omit<DbProduct, 'id'> = {
       ...data,
       warehouseStock: 0,
-      normalizedName
+      normalizedName,
+      isArchived: false
     }
 
     try {
@@ -98,7 +99,7 @@ export const productApi = {
     const numericId = Number(id);
     const product = await db.products.get(numericId);
     
-    if (!product) return { success: false, data: null, message: "Produk tidak ditemukan" }
+    if (!product || product.isArchived) return { success: false, data: null, message: "Produk tidak ditemukan" }
     
     const updateData: Partial<DbProduct> = { ...data };
     if (data.name) {
@@ -124,7 +125,7 @@ export const productApi = {
     const numericId = Number(id);
     const product = await db.products.get(numericId);
     
-    if (!product) {
+    if (!product || product.isArchived) {
       return { 
         success: false, 
         data: null, 
@@ -140,7 +141,7 @@ export const productApi = {
       };
     }
 
-    await db.products.delete(numericId);
+    await db.products.update(numericId, { isArchived: true });
     return { success: true, data: null };
   },
 }

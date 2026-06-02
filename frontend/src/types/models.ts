@@ -16,6 +16,7 @@ export interface Product {
   retailPrice?: number
   warehouseStock: number
   description: string
+  isArchived: boolean
 }
 
 export interface Store {
