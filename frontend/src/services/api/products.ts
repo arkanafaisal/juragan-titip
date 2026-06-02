@@ -75,6 +75,7 @@ export const productApi = {
     
     const newProduct: Omit<DbProduct, 'id'> = {
       ...data,
+      warehouseStock: 0,
       normalizedName
     }
 
