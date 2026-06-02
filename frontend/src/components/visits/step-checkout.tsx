@@ -47,6 +47,7 @@ export function StepCheckout({
   const isChange = diff < 0;
   const isFullyPaid = diff === 0;
   const remainingDebt = Math.max(0, diff);
+  const changeAmount = isChange ? Math.abs(diff) : 0;
 
   // Fungsi untuk membatasi input hanya angka murni
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +137,7 @@ export function StepCheckout({
               }`}>
                 <span>{isChange ? 'KEMBALIAN:' : (isFullyPaid ? 'LUNAS:' : 'SISA HUTANG:')}</span>
                 <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">
-                  {formatCurrency(remainingDebt)}
+                  {formatCurrency(isChange ? changeAmount : remainingDebt)}
                 </span>
               </div>
 
