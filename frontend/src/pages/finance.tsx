@@ -64,7 +64,7 @@ export default function FinancePage() {
             <div className="flex items-center gap-2 mb-2 opacity-90">
               <Banknote className="w-5 h-5" />
               <h3 className="font-body text-body-sm font-medium uppercase tracking-wider">
-                Margin (Bulan Ini)
+                Margin (30 Hari Terakhir)
               </h3>
             </div>
             <div className="text-display font-bold tracking-tight">
@@ -187,7 +187,7 @@ export default function FinancePage() {
             </p>
             
             {data.lists.incomes.length === 0 && (
-              <div className="text-center py-8 text-text-secondary">Belum ada data pembayaran bulan ini.</div>
+              <div className="text-center py-8 text-text-secondary">Belum ada data pembayaran 30 hari terakhir.</div>
             )}
             
             {data.lists.incomes.map((item, idx) => (

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { startOfMonth, endOfMonth, parseISO, format } from "date-fns";
+import { subDays, startOfDay, endOfDay, parseISO, format } from "date-fns";
 import { id } from "date-fns/locale";
 
 export interface FinanceDashboardData {
@@ -84,10 +84,12 @@ export const financeApi = {
         }
       });
 
-      // 2. Ambil data Pemasukan Bulan Ini (Summary & Chart)
+      // 2. Ambil data Pemasukan 30 Hari Terakhir (Summary & Chart)
       const now = new Date();
-      const start = startOfMonth(now).toISOString();
-      const end = endOfMonth(now).toISOString();
+      const startDate = startOfDay(subDays(now, 29));
+      const endDate = endOfDay(now);
+      const start = startDate.toISOString();
+      const end = endDate.toISOString();
 
       const visitsThisMonth = await db.visits
         .where('createdAt')
@@ -95,21 +97,30 @@ export const financeApi = {
         .toArray();
 
       const chartDataMap = new Map<string, number>();
+      for (let i = 29; i >= 0; i--) {
+        const d = subDays(now, i);
+        const dayStr = format(d, "yyyy-MM-dd");
+        chartDataMap.set(dayStr, 0);
+      }
 
       visitsThisMonth.forEach(visit => {
         if (visit.amountPaid > 0) {
           result.summary.income.totalThisMonth += visit.amountPaid;
           
-          const day = format(parseISO(visit.createdAt), "d");
-          const currentDayTotal = chartDataMap.get(day) || 0;
-          chartDataMap.set(day, currentDayTotal + visit.amountPaid);
+          const visitDateStr = format(parseISO(visit.createdAt), "yyyy-MM-dd");
+          if (chartDataMap.has(visitDateStr)) {
+            const currentDayTotal = chartDataMap.get(visitDateStr)!;
+            chartDataMap.set(visitDateStr, currentDayTotal + visit.amountPaid);
+          }
         }
       });
 
       // Konversi map chart ke array terurut
       const chartData = Array.from(chartDataMap.entries())
-        .map(([date, amount]) => ({ date, amount }))
-        .sort((a, b) => parseInt(a.date) - parseInt(b.date));
+        .map(([date, amount]) => ({ 
+          date: format(parseISO(date), "d MMM", { locale: id }), 
+          amount 
+        }));
         
       result.summary.income.chartData = chartData;
 
