@@ -82,7 +82,7 @@ export default function Dashboard() {
             <Wallet className="w-4 h-4" />
           </div>
           <span className="font-body-sm text-body-sm font-semibold text-text-secondary">
-            Margin Minggu Ini
+            Margin 7 Hari Terakhir
           </span>
         </div>
         <div className="mt-1">
@@ -120,7 +120,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="font-h3 text-h3 font-bold text-text-primary">Kunjungan</h3>
-            <p className="font-caption text-caption text-text-secondary">Minggu ini (Total: {data.totalVisitsThisWeek})</p>
+            <p className="font-caption text-caption text-text-secondary">7 Hari Terakhir (Total: {data.totalVisitsThisWeek})</p>
           </div>
           <div className="p-2 bg-surface-container-low rounded-lg text-primary">
             <TrendingUp className="w-4 h-4" />
@@ -132,7 +132,7 @@ export default function Dashboard() {
           {data.totalVisitsThisWeek === 0 ? (
             <div className="flex flex-col items-center justify-center w-full h-full text-text-secondary opacity-70">
               <Inbox className="w-8 h-8 mb-2" />
-              <p className="font-caption text-caption">Belum ada kunjungan minggu ini</p>
+              <p className="font-caption text-caption">Belum ada kunjungan dalam 7 hari terakhir</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">

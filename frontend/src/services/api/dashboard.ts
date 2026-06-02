@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import { startOfWeek, endOfWeek, isSameDay } from "date-fns";
+import { subDays, startOfDay, endOfDay, isSameDay, format } from "date-fns";
+import { id as idLocale } from "date-fns/locale";
 
 export interface DashboardHistory {
   id: number;
@@ -18,10 +19,10 @@ export interface DashboardData {
 
 export const dashboardApi = {
   getDashboardData: async (): Promise<DashboardData> => {
-    // 1. Determine the date ranges (Monday start)
+    // 1. Determine the date ranges (Rolling 7 days: 6 days ago to today)
     const now = new Date();
-    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+    const weekStart = startOfDay(subDays(now, 6));
+    const weekEnd = endOfDay(now);
 
     const weekStartISO = weekStart.toISOString();
     
@@ -38,15 +39,14 @@ export const dashboardApi = {
     let weeklyRevenue = 0;
     let totalVisitsThisWeek = 0;
     
-    const chartDataMap = [
-      { name: 'Sen', visits: 0, dayIndex: 1 },
-      { name: 'Sel', visits: 0, dayIndex: 2 },
-      { name: 'Rab', visits: 0, dayIndex: 3 },
-      { name: 'Kam', visits: 0, dayIndex: 4 },
-      { name: 'Jum', visits: 0, dayIndex: 5 },
-      { name: 'Sab', visits: 0, dayIndex: 6 },
-      { name: 'Min', visits: 0, dayIndex: 0 },
-    ];
+    const chartDataMap = Array.from({ length: 7 }, (_, i) => {
+      const d = subDays(now, 6 - i);
+      return {
+        name: format(d, 'EEE', { locale: idLocale }),
+        dateString: format(d, 'yyyy-MM-dd'),
+        visits: 0
+      };
+    });
 
     const todayHistory: DashboardHistory[] = [];
 
@@ -55,9 +55,9 @@ export const dashboardApi = {
       totalVisitsThisWeek++;
 
       const visitDate = new Date(visit.createdAt);
-      const dayIndex = visitDate.getDay(); 
+      const visitDateString = format(visitDate, 'yyyy-MM-dd');
       
-      const chartItem = chartDataMap.find(c => c.dayIndex === dayIndex);
+      const chartItem = chartDataMap.find(c => c.dateString === visitDateString);
       if (chartItem) {
         chartItem.visits++;
       }
