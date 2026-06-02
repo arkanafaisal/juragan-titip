@@ -248,14 +248,15 @@ export default function StoreVisitPage() {
         .map(item => ({ productId: item.productId, quantity: item.quantity }));
 
       const amountPaidNum = parseInt(amountPaidStr.replace(/\D/g, '')) || 0;
-      const totalBilled = (store.debt || 0) + subtotal;
+      const totalBilled = currentDebt + subtotal;
       const remainingDebt = Math.max(0, totalBilled - amountPaidNum);
+      const actualAmountPaid = Math.min(amountPaidNum, totalBilled);
 
       const result = await visitApi.create({
         storeId: Number(id), 
         storeName: store.name, 
         items: finalItems,
-        amountPaid: amountPaidNum, 
+        amountPaid: actualAmountPaid, 
         currentDebt: remainingDebt,
         restockItems: restockData
       });
