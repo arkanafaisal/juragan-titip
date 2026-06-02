@@ -35,7 +35,7 @@ export default function StoreVisitPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  let currentDebt = 0
+  const [currentDebt, setCurrentDebt] = useState(0);
 
   
   const [opnameItems, setOpnameItems] = useState<(OpnameItem & { initialStock: number })[]>([]);
@@ -60,7 +60,7 @@ export default function StoreVisitPage() {
         
         if (visitsRes.success && visitsRes.data && visitsRes.data.length > 0) {
           const lastVisit = visitsRes.data[0];
-          currentDebt = lastVisit.currentDebt
+          setCurrentDebt(lastVisit.currentDebt);
           
           const initialOpname = lastVisit.items
             .filter(item => item.remained > 0)
