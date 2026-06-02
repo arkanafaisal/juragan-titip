@@ -64,13 +64,17 @@ export default function StoreVisitPage() {
           
           const initialOpname = lastVisit.items
             .filter(item => item.remained > 0)
-            .map(item => ({
-               ...item,
-               initialStock: item.remained, 
-               sold: 0,
-               returned: 0,
-               remained: item.remained
-            }));
+            .map(item => {
+               const p = productsFromStorage.data.find(prod => prod.id === item.productId);
+               return {
+                 ...item,
+                 initialStock: item.remained, 
+                 sold: 0,
+                 returned: 0,
+                 remained: item.remained,
+                 costPrice: p ? p.costPrice : (item.costPrice || 0)
+               };
+            });
           
           setOpnameItems(initialOpname);
           
@@ -210,6 +214,7 @@ export default function StoreVisitPage() {
           sold: item.sold,
           returned: item.returned,
           remained: item.remained,
+          costPrice: item.costPrice,
           wholesalePrice: item.wholesalePrice
         });
       });
@@ -219,7 +224,8 @@ export default function StoreVisitPage() {
           const existing = mergedItemsMap.get(item.productId);
           if (existing) {
             existing.remained += item.quantity;
-            existing.wholesalePrice = item.wholesalePrice; 
+            existing.wholesalePrice = item.wholesalePrice;
+            existing.costPrice = item.costPrice;
           } else {
             mergedItemsMap.set(item.productId, {
               productId: item.productId,
@@ -227,6 +233,7 @@ export default function StoreVisitPage() {
               sold: 0,
               returned: 0,
               remained: item.quantity,
+              costPrice: item.costPrice,
               wholesalePrice: item.wholesalePrice
             });
           }

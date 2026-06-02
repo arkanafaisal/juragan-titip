@@ -60,6 +60,7 @@ export interface OpnameItem {
   sold: number
   returned: number
   remained: number
+  costPrice: number;
   wholesalePrice: number
 }
 
