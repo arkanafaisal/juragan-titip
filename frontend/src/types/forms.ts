@@ -3,7 +3,7 @@ export interface ProductFormData {
   category: "1" | "2" | "3" | "4" | "5" 
   costPrice: number
   wholesalePrice: number
-  retailPrice: number
+  retailPrice?: number
   warehouseStock: number
   description: string
 }

@@ -116,7 +116,7 @@ export default function StoreVisitPage() {
     const fullProduct = res.data;
     setRestockItems(prev => [...prev, {
       productId: fullProduct.id, productName: fullProduct.name, quantity: 1, 
-      wholesalePrice: fullProduct.wholesalePrice, retailPrice: fullProduct.retailPrice, _warehouseStock: fullProduct.warehouseStock 
+      costPrice: fullProduct.costPrice, wholesalePrice: fullProduct.wholesalePrice, _warehouseStock: fullProduct.warehouseStock 
     }]);
   };
 

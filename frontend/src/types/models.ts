@@ -13,7 +13,7 @@ export interface Product {
   category: "1" | "2" | "3" | "4" | "5" 
   costPrice: number
   wholesalePrice: number
-  retailPrice: number
+  retailPrice?: number
   warehouseStock: number
   description: string
 }
@@ -66,8 +66,8 @@ export interface RestockItem {
   productId: number
   productName: string
   quantity: number
+  costPrice: number
   wholesalePrice: number
-  retailPrice: number
 }
 
 
@@ -98,5 +98,5 @@ export interface ActiveStockItem {
   remaining: number
   restocked: number
   totalActive: number
-  retailPrice: number
+  wholesalePrice: number
 }
