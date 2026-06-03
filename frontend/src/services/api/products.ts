@@ -22,7 +22,7 @@ export interface ProductDetailWithLogs {
 export const productApi = {
   getAll: async (params?: ProductQueryParams): Promise<ApiResponse<Product[]>> => {
     try {
-      let collection = db.products.filter(p => !p.isArchived);
+      let collection = db.products.orderBy('normalizedName').filter(p => !p.isArchived);
 
       if (params) {
         if (params.search) {

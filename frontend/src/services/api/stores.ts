@@ -19,7 +19,7 @@ export interface StoreQueryParams {
 export const storeApi = {
   getAll: async (params?: StoreQueryParams): Promise<ApiResponse<Store[]>> => {
     try {
-      let collection = db.stores.toCollection();
+      let collection = db.stores.orderBy('normalizedName');
       
       if (params) {
         if (params.search) {
