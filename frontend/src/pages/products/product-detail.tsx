@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { 
   ArrowLeft, Edit2, PackagePlus, RefreshCw, 
-  Store, Package, Pencil, Trash2, X, Save, 
-  Archive, Scale
+  Store, Package, Pencil, Trash2, Scale
 } from 'lucide-react';
+import { EditProductModal } from '@/components/products/edit-product-modal';
+import { EditStockModal } from '@/components/products/edit-stock-modal';
+import { AddStockModal } from '@/components/products/add-stock-modal';
+import { ProcessReturnModal } from '@/components/products/process-return-modal';
 
 // ==========================================
 // 1. DUMMY DATA
@@ -40,7 +43,7 @@ export default function ProductDetailPage() {
   // Jika tombol Edit ditekan, Render form Edit secara inline 
   // agar 100% menghormati Global Header & Bottom Tab
   if (isEditOpen) {
-    return <EditProductView onClose={() => setIsEditOpen(false)} product={mockProduct} />;
+    return <EditProductModal onClose={() => setIsEditOpen(false)} product={mockProduct} />;
   }
 
   return (
@@ -175,16 +178,16 @@ export default function ProductDetailPage() {
       </main>
 
       {/* RENDER BOTTOM SHEETS */}
-      <KoreksiStokModal 
+      <EditStockModal 
         isOpen={isKoreksiOpen} 
         onClose={() => setIsKoreksiOpen(false)} 
         currentStock={mockProduct.warehouseStock} 
       />
-      <TambahStokModal 
+      <AddStockModal 
         isOpen={isTambahStokOpen} 
         onClose={() => setIsTambahStokOpen(false)} 
       />
-      <OlahReturModal 
+      <ProcessReturnModal 
         isOpen={isOlahReturOpen} 
         onClose={() => setIsOlahReturOpen(false)} 
         returnedStock={mockProduct.returnedStock} 
@@ -193,201 +196,3 @@ export default function ProductDetailPage() {
   );
 }
 
-// ==========================================
-// 3. SUB-COMPONENTS (INLINE VIEW & BOTTOM SHEETS)
-// ==========================================
-
-/** 
- * INLINE VIEW: EDIT PRODUK 
- * Di-render menggantikan halaman utama agar Header dan Bottom Tab aman.
- */
-function EditProductView({ onClose, product }: { onClose: () => void, product: any }) {
-  return (
-    <main className="p-3 space-y-4 pb-4 animate-in fade-in slide-in-from-right-4 duration-200">
-      
-      {/* HEADER EDIT */}
-      <div className="flex items-center justify-between mb-2">
-        <button onClick={onClose} className="flex items-center gap-1.5 text-slate-600 font-semibold px-1 py-1 -ml-1 rounded-lg active:bg-slate-100">
-          <X className="w-5 h-5" /> Batal
-        </button>
-        <h2 className="font-bold text-slate-800">Edit Produk</h2>
-        <div className="w-16"></div> {/* Spacer balance */}
-      </div>
-
-      {/* INFORMASI DASAR */}
-      <section className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Informasi Dasar</h3>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Nama Produk</label>
-          <input type="text" defaultValue={product.name} className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
-          <input type="text" defaultValue={product.category} className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi (Opsional)</label>
-          <textarea rows={2} defaultValue={product.description} className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-        </div>
-      </section>
-
-      {/* PENGATURAN HARGA */}
-      <section className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pengaturan Harga</h3>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Harga Modal (Kulakan)</label>
-          <div className="relative">
-            <span className="absolute left-3 top-2.5 text-slate-400 font-medium text-sm">Rp</span>
-            <input type="number" defaultValue={product.costPrice} className="w-full p-2.5 pl-10 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-          </div>
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Harga Jual (Grosir/Toko)</label>
-          <div className="relative">
-            <span className="absolute left-3 top-2.5 text-slate-400 font-medium text-sm">Rp</span>
-            <input type="number" defaultValue={product.wholesalePrice} className="w-full p-2.5 pl-10 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-          </div>
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Harga Eceran (Ke Konsumen)</label>
-          <div className="relative">
-            <span className="absolute left-3 top-2.5 text-slate-400 font-medium text-sm">Rp</span>
-            <input type="number" defaultValue={product.retailPrice} className="w-full p-2.5 pl-10 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-          </div>
-        </div>
-      </section>
-
-      {/* BUTTONS ACTION */}
-      <div className="space-y-2 mt-4">
-        <button className="w-full py-3 bg-blue-600 active:bg-blue-700 text-white font-bold rounded-xl flex items-center justify-center gap-2">
-          <Save className="w-4 h-4" /> SIMPAN PERUBAHAN
-        </button>
-        <button className="w-full py-3 bg-red-50 text-red-600 active:bg-red-100 font-bold rounded-xl flex items-center justify-center gap-2">
-          <Archive className="w-4 h-4" /> ARSIPKAN PRODUK
-        </button>
-      </div>
-    </main>
-  );
-}
-
-/** 
- * MODAL: KOREKSI STOK (BOTTOM SHEET) 
- */
-function KoreksiStokModal({ isOpen, onClose, currentStock }: { isOpen: boolean, onClose: () => void, currentStock: number }) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 max-w-[448px] mx-auto">
-      <div className="absolute inset-0" onClick={onClose}></div>
-      
-      {/* pb-24 untuk mendorong konten ke atas Bottom Tab Bar global */}
-      <div className="relative w-full bg-white rounded-t-3xl p-5 pb-24 animate-in slide-in-from-bottom-10 duration-200">
-        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
-        <h3 className="font-bold text-lg text-slate-800 mb-1">Koreksi Stok Utama</h3>
-        <p className="text-sm text-slate-500 mb-5">Tercatat di aplikasi: <span className="font-bold text-slate-800">{currentStock} Pcs</span></p>
-        
-        <div className="space-y-3 mb-6">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">Jumlah stok FISIK saat ini?</label>
-            <div className="relative">
-              <input type="number" placeholder="140" className="w-full p-3 pr-14 text-lg font-bold border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none" />
-              <span className="absolute right-3 top-3.5 text-slate-400 font-bold">Pcs</span>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">Alasan (Opsional)</label>
-            <input type="text" placeholder="Misal: Salah ketik" className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none" />
-          </div>
-        </div>
-
-        <div className="flex gap-2.5">
-          <button onClick={onClose} className="flex-1 py-3 bg-slate-100 active:bg-slate-200 text-slate-700 rounded-xl font-bold">Batal</button>
-          <button onClick={onClose} className="flex-[2] py-3 bg-slate-800 active:bg-slate-900 text-white rounded-xl font-bold">SESUAIKAN STOK</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** 
- * MODAL: TAMBAH STOK (BOTTOM SHEET) 
- */
-function TambahStokModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 max-w-[448px] mx-auto">
-      <div className="absolute inset-0" onClick={onClose}></div>
-      
-      {/* pb-24 untuk mendorong konten ke atas Bottom Tab Bar global */}
-      <div className="relative w-full bg-white rounded-t-3xl p-5 pb-24 animate-in slide-in-from-bottom-10 duration-200">
-        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
-        <h3 className="font-bold text-lg text-slate-800 mb-1">Tambah Stok</h3>
-        <p className="text-sm text-slate-500 mb-5">Masukkan jumlah barang baru dari pabrik/agen.</p>
-        
-        <div className="mb-6">
-          <div className="relative">
-            <input type="number" placeholder="0" className="w-full p-3 pr-14 text-2xl font-black border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-center" autoFocus />
-            <span className="absolute right-4 top-4 text-slate-400 font-bold">Pcs</span>
-          </div>
-        </div>
-
-        <div className="flex gap-2.5">
-          <button onClick={onClose} className="flex-1 py-3 bg-slate-100 active:bg-slate-200 text-slate-700 rounded-xl font-bold">Batal</button>
-          <button onClick={onClose} className="flex-[2] py-3 bg-blue-600 active:bg-blue-700 text-white rounded-xl font-bold flex items-center justify-center gap-1.5">
-            <PackagePlus className="w-5 h-5" /> SIMPAN STOK
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** 
- * MODAL: SORTIR / OLAH RETUR (BOTTOM SHEET) 
- */
-function OlahReturModal({ isOpen, onClose, returnedStock }: { isOpen: boolean, onClose: () => void, returnedStock: number }) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 max-w-[448px] mx-auto">
-      <div className="absolute inset-0" onClick={onClose}></div>
-      
-      {/* pb-24 untuk mendorong konten ke atas Bottom Tab Bar global */}
-      <div className="relative w-full bg-white rounded-t-3xl p-5 pb-24 animate-in slide-in-from-bottom-10 duration-200">
-        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
-        <h3 className="font-bold text-lg text-slate-800 mb-1">Sortir Barang Retur</h3>
-        <p className="text-sm text-slate-500 mb-5">Belum Diolah: <span className="font-bold text-red-500">{returnedStock} Pcs</span></p>
-        
-        <div className="space-y-3 mb-5">
-          <div className="p-3 rounded-xl border border-blue-100 bg-blue-50/50">
-            <label className="flex items-center gap-1.5 text-xs font-bold text-blue-900 mb-2">
-              <RefreshCw className="w-3.5 h-3.5" /> SIAP JUAL LAGI?
-            </label>
-            <div className="relative">
-              <input type="number" placeholder="0" className="w-full p-2.5 pr-10 text-base font-bold border border-blue-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none" />
-              <span className="absolute right-3 top-3 text-blue-400 font-bold text-sm">Pcs</span>
-            </div>
-          </div>
-          
-          <div className="p-3 rounded-xl border border-red-100 bg-red-50/50">
-            <label className="flex items-center gap-1.5 text-xs font-bold text-red-900 mb-2">
-              <Trash2 className="w-3.5 h-3.5" /> BASI / RUSAK (Dibuang)?
-            </label>
-            <div className="relative">
-              <input type="number" placeholder="0" className="w-full p-2.5 pr-10 text-base font-bold border border-red-200 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none" />
-              <span className="absolute right-3 top-3 text-red-400 font-bold text-sm">Pcs</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-2.5">
-          <button onClick={onClose} className="flex-1 py-3 bg-slate-100 active:bg-slate-200 text-slate-700 rounded-xl font-bold">Batal</button>
-          <button onClick={onClose} className="flex-[2] py-3 bg-orange-500 active:bg-orange-600 text-white rounded-xl font-bold flex items-center justify-center gap-1.5">
-            <Scale className="w-5 h-5" /> SIMPAN SORTIR
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
