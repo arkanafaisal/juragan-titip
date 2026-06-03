@@ -1,11 +1,10 @@
-import { Pencil, Trash2, Package } from "lucide-react";
+import { Package } from "lucide-react";
+import { useNavigate } from "react-router";
 import type { Product } from "@/types";
 import { settingsApi } from "@/services/api/settings";
 
 interface ProductCardProps {
   product: Product;
-  onEdit: (product: Product) => void;
-  onDelete: (product: { id: number; name: string }) => void;
 }
 
 const formatCurrency = (value: number) => {
@@ -38,14 +37,18 @@ const getCategoryStyles = (category: string) => {
   return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant" };
 };
 
-export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
+  const navigate = useNavigate();
   const catStyle = getCategoryStyles(product.category);
   const stockStyle = getStockBlockStyles(product.warehouseStock);
   const categoryLabels = settingsApi.getCategoryLabels();
   const displayCategory = categoryLabels[product.category as keyof typeof categoryLabels] || product.category;
 
   return (
-    <div className={`bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden border-[1.5px] ${catStyle.border}`}>
+    <div 
+      onClick={() => navigate(`/products/${product.id}`)}
+      className={`bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden border-[1.5px] cursor-pointer ${catStyle.border}`}
+    >
       <div className="p-md flex-1 flex flex-col">
         <div className="flex items-start justify-between mb-md gap-3">
           <div className="flex items-start gap-sm">
@@ -79,21 +82,6 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
           </div>
           <span className="font-data-md text-data-md font-bold">{product.warehouseStock}</span>
         </div>
-      </div>
-
-      <div className="p-sm bg-surface-bright border-t border-outline-variant flex gap-sm">
-        <button 
-          onClick={() => onEdit(product)} 
-          className="flex-1 border border-outline-variant text-text-secondary hover:text-warning hover:bg-warning/10 hover:border-warning/50 font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
-        >
-          <Pencil className="w-4 h-4" /> Edit
-        </button>
-        <button 
-          onClick={() => onDelete({ id: product.id, name: product.name })} 
-          className="flex-1 border border-outline-variant text-text-secondary hover:text-error hover:bg-error/10 hover:border-error/50 font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
-        >
-          <Trash2 className="w-4 h-4" /> Hapus
-        </button>
       </div>
     </div>
   );

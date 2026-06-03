@@ -15,6 +15,7 @@ export interface Product {
   wholesalePrice: number
   retailPrice?: number
   warehouseStock: number
+  returnedStock: number
   description: string
   isArchived: boolean
 }

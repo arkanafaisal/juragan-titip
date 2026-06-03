@@ -1,6 +1,6 @@
 
 
-import type { Product, ProductFormData, ApiResponse } from "@/types"
+import type { Product, ProductFormData, ApiResponse, InventoryLog } from "@/types"
 import { db, type DbProduct } from "@/lib/db"
 import { toast } from "sonner"
 import Dexie from "dexie";
@@ -12,6 +12,11 @@ export interface ProductQueryParams {
   category?: string;
   stockStatus?: string;
   page?: number;
+}
+
+export interface ProductDetailWithLogs {
+  product: Product;
+  logs: InventoryLog[];
 }
 
 export const productApi = {
@@ -70,12 +75,40 @@ export const productApi = {
     }
   },
 
+  getDetailWithLogs: async (id: number | string): Promise<ApiResponse<ProductDetailWithLogs | null>> => {
+    try {
+      const numericId = Number(id);
+      const product = await db.products.get(numericId);
+      
+      if (!product || product.isArchived) {
+        toast.error("Produk tidak ditemukan");
+        return { success: false, data: null, message: "Produk tidak ditemukan" };
+      }
+
+      // Fetching logs and sorting by createdAt using compound index
+      const logs = await db.inventoryLogs
+        .where('[productId+createdAt]')
+        .between([numericId, Dexie.minKey], [numericId, Dexie.maxKey])
+        .reverse()
+        .toArray();
+
+      return { 
+        success: true, 
+        data: { product, logs } 
+      };
+    } catch (error) {
+      toast.error("Gagal memuat detail produk dan riwayat");
+      return { success: false, data: null, message: "Gagal memuat detail produk dan riwayat" };
+    }
+  },
+
   create: async (data: ProductFormData): Promise<ApiResponse<Product | null>> => {
     const normalizedName = data.name.toLowerCase();
     
     const newProduct: Omit<DbProduct, 'id'> = {
       ...data,
       warehouseStock: 0,
+      returnedStock: 0,
       normalizedName,
       isArchived: false
     }
