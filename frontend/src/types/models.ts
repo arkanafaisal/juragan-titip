@@ -109,7 +109,8 @@ export type InventoryActionType =
   | 'TITIPAN'      // (OUT) Mengurangi stok utama karena dibawa/dititip ke toko
   | 'TARIK_RETUR'  // (IN) Nambah stok retur karena ditarik dari toko
   | 'OLAH_RETUR'   // (RESTORE) Mengurangi stok retur, menambah stok utama (barang masih bagus)
-  | 'BUANG_RUSAK'; // (DISCARD) Mengurangi stok (utama/retur) menjadi debu (rugi)
+  | 'BUANG_RUSAK' // (DISCARD) Mengurangi stok (utama/retur) menjadi debu (rugi)
+  | 'KOREKSI';     // (ADJUST) Penyesuaian stok (bisa plus/minus) karena salah ketik/selisih hitung
 
 // 2. Skema Tabel InventoryLog
 export interface InventoryLog {
@@ -117,7 +118,8 @@ export interface InventoryLog {
   productId: number;
   
   type: InventoryActionType;
-  
+
+  // Catatan: Selalu positif untuk tipe lain, tapi BISA MINUS/PLUS khusus untuk tipe 'KOREKSI'
   quantity: number; 
   
   storeId?: number;
