@@ -1,45 +1,120 @@
-import React from 'react';
-import { RefreshCw, Trash2, Scale } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { RefreshCw, Trash2, Scale, Loader2 } from 'lucide-react';
+import { productApi } from '@/services/api/products';
+import { toast } from 'sonner';
 
-export function ProcessReturnModal({ isOpen, onClose, returnedStock }: { isOpen: boolean, onClose: () => void, returnedStock: number }) {
+export function ProcessReturnModal({ 
+  isOpen, 
+  onClose, 
+  returnedStock,
+  productId
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  returnedStock: number;
+  productId?: string | number;
+}) {
+  const [resaleQty, setResaleQty] = useState('');
+  const [wasteQty, setWasteQty] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setResaleQty('');
+      setWasteQty('');
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
+  const handleSave = async () => {
+    if (!productId) return;
+    
+    const rQty = parseInt(resaleQty) || 0;
+    const wQty = parseInt(wasteQty) || 0;
+    
+    if (rQty === 0 && wQty === 0) {
+      toast.error("Masukkan jumlah barang yang diolah");
+      return;
+    }
+    
+    if (rQty + wQty > returnedStock) {
+      toast.error("Total melebihi jumlah retur yang ada");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await productApi.processReturn(productId, rQty, wQty);
+      if (res.success) {
+        onClose();
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 max-w-[448px] mx-auto">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-on-surface/50 backdrop-blur-sm max-w-[448px] mx-auto font-body text-body text-on-surface antialiased">
       <div className="absolute inset-0" onClick={onClose}></div>
       
       {/* pb-24 untuk mendorong konten ke atas Bottom Tab Bar global */}
-      <div className="relative w-full bg-white rounded-t-3xl p-5 pb-24 animate-in slide-in-from-bottom-10 duration-200">
-        <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
-        <h3 className="font-bold text-lg text-slate-800 mb-1">Sortir Barang Retur</h3>
-        <p className="text-sm text-slate-500 mb-5">Belum Diolah: <span className="font-bold text-red-500">{returnedStock} Pcs</span></p>
+      <div className="relative w-full bg-surface-container-lowest rounded-t-3xl p-lg pb-24 animate-in slide-in-from-bottom-10 duration-200 shadow-xl">
+        <div className="w-12 h-1.5 bg-outline-variant rounded-full mx-auto mb-5"></div>
+        <h3 className="font-h3 text-h3 font-bold text-on-surface mb-1">Sortir Barang Retur</h3>
+        <p className="font-body-sm text-body-sm text-on-surface-variant mb-5">Belum Diolah: <span className="font-bold text-error">{returnedStock} Pcs</span></p>
         
-        <div className="space-y-3 mb-5">
-          <div className="p-3 rounded-xl border border-primary/50 bg-primary/10">
-            <label className="flex items-center gap-1.5 text-sm font-bold text-primary mb-2">
-              <RefreshCw className="w-3.5 h-3.5" /> SIAP JUAL LAGI?
+        <div className="space-y-4 mb-6">
+          <div className="p-md rounded-2xl border border-primary/20 bg-primary/5">
+            <label className="flex items-center gap-1.5 font-body-sm text-body-sm font-bold text-primary mb-2">
+              <RefreshCw className="w-4 h-4" /> SIAP JUAL LAGI?
             </label>
             <div className="relative">
-              <input type="number" placeholder="0" className="bg-white w-full p-2.5 pr-10 text-base font-bold border border-blue-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none" />
-              <span className="absolute right-3 top-3 text-primary font-bold text-sm">Pcs</span>
+              <input 
+                type="number" 
+                placeholder="0" 
+                value={resaleQty}
+                onChange={(e) => setResaleQty(e.target.value)}
+                min="0"
+                className="w-full px-gutter py-md pr-14 font-data-md text-data-md font-bold border border-primary/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all text-primary" 
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-primary/60 font-bold">Pcs</span>
             </div>
           </div>
           
-          <div className="p-3 rounded-xl border border-error/50 bg-error/10">
-            <label className="flex items-center gap-1.5 text-sm font-bold text-error mb-2">
-              <Trash2 className="w-3.5 h-3.5" /> BASI / RUSAK (Dibuang)?
+          <div className="p-md rounded-2xl border border-error/20 bg-error/5">
+            <label className="flex items-center gap-1.5 font-body-sm text-body-sm font-bold text-error mb-2">
+              <Trash2 className="w-4 h-4" /> BASI / RUSAK (Dibuang)?
             </label>
             <div className="relative">
-              <input type="number" placeholder="0" className="bg-white w-full p-2.5 pr-10 text-base font-bold border border-red-200 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none" />
-              <span className="absolute right-3 top-3 text-error font-bold text-sm">Pcs</span>
+              <input 
+                type="number" 
+                placeholder="0" 
+                value={wasteQty}
+                onChange={(e) => setWasteQty(e.target.value)}
+                min="0"
+                className="w-full px-gutter py-md pr-14 font-data-md text-data-md font-bold border border-error/20 rounded-xl focus:border-error focus:ring-1 focus:ring-error bg-surface-container-lowest outline-none transition-all text-error" 
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-error/60 font-bold">Pcs</span>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-2.5">
-          <button onClick={onClose} className="flex-1 py-3 bg-error hover:bg-error/90 text-white rounded-xl font-bold">Batal</button>
-          <button onClick={onClose} className="flex-[2] py-3 bg-warning active:bg-warning/90 text-white rounded-xl font-bold flex items-center justify-center gap-1.5">
-            <Scale className="w-5 h-5" /> SIMPAN SORTIR
+        <div className="flex gap-sm mt-lg">
+          <button 
+            onClick={onClose} 
+            disabled={isSaving}
+            className="flex-1 py-sm px-md rounded-xl font-body-sm text-body-sm font-bold text-on-error bg-error hover:bg-error/90 transition-all shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
+          >
+            Batal
+          </button>
+          <button 
+            onClick={handleSave} 
+            disabled={isSaving || (!resaleQty && !wasteQty)}
+            className="flex-[2] flex items-center justify-center gap-xs py-sm px-md bg-warning text-on-warning hover:bg-warning/90 rounded-xl font-body-sm text-body-sm font-bold transition-all shadow-md active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
+          >
+            {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Scale className="w-5 h-5" />}
+            {isSaving ? "MEMPROSES..." : "SIMPAN SORTIR"}
           </button>
         </div>
       </div>

@@ -255,6 +255,7 @@ export default function ProductDetailPage() {
           loadData();
         }} 
         returnedStock={product.returnedStock} 
+        productId={product.id}
       />
     </div>
   );

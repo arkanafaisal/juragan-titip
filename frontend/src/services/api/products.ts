@@ -251,4 +251,75 @@ export const productApi = {
       return { success: false, data: null, message: error.message || "Gagal menambah stok" };
     }
   },
+
+  processReturn: async (
+    id: number | string, 
+    resaleQty: number, 
+    wasteQty: number
+  ): Promise<ApiResponse<Product | null>> => {
+    const numericId = Number(id);
+    
+    if (resaleQty < 0 || wasteQty < 0) {
+      toast.error("Jumlah tidak valid");
+      return { success: false, data: null, message: "Jumlah tidak valid" };
+    }
+    
+    if (resaleQty === 0 && wasteQty === 0) {
+      return { success: true, data: null };
+    }
+
+    try {
+      let updatedProduct: Product | null = null;
+      
+      await db.transaction('rw', db.products, db.inventoryLogs, async () => {
+        const product = await db.products.get(numericId);
+        if (!product || product.isArchived) throw new Error("Produk tidak ditemukan");
+        
+        const totalProcessed = resaleQty + wasteQty;
+        if (totalProcessed > (product.returnedStock || 0)) {
+          throw new Error("Jumlah melebihi stok retur yang ada");
+        }
+        
+        const newReturnedStock = (product.returnedStock || 0) - totalProcessed;
+        const newWarehouseStock = product.warehouseStock + resaleQty;
+        
+        await db.products.update(numericId, { 
+          returnedStock: newReturnedStock,
+          warehouseStock: newWarehouseStock 
+        });
+        
+        const now = new Date();
+        
+        if (resaleQty > 0) {
+          await db.inventoryLogs.add({
+            productId: numericId,
+            type: 'OLAH_RETUR',
+            quantity: resaleQty,
+            notes: "Siap jual, masuk kembali ke gudang",
+            createdAt: now.toISOString()
+          } as any);
+        }
+        
+        if (wasteQty > 0) {
+          now.setMilliseconds(now.getMilliseconds() + 1);
+          await db.inventoryLogs.add({
+            productId: numericId,
+            type: 'BUANG_RUSAK',
+            quantity: -wasteQty,
+            notes: "Basi/Rusak/Dibuang",
+            createdAt: now.toISOString()
+          } as any);
+        }
+        
+        updatedProduct = await db.products.get(numericId) as Product;
+      });
+      
+      toast.success("Barang retur berhasil diproses");
+      return { success: true, data: updatedProduct };
+    } catch (error: any) {
+      console.error("Dexie Process Return Error:", error);
+      toast.error(error.message || "Gagal memproses barang retur");
+      return { success: false, data: null, message: error.message || "Gagal memproses barang retur" };
+    }
+  },
 }
