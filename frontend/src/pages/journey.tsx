@@ -20,7 +20,9 @@ L.Icon.Default.mergeOptions({
 // Component to dynamically change map view
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
   const map = useMap();
-  map.setView(center, zoom);
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center[0], center[1], zoom, map]);
   return null;
 }
 
