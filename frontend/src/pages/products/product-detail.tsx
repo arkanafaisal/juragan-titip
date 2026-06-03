@@ -85,7 +85,7 @@ export default function ProductDetailPage() {
   const categoryLabels = settingsApi.getCategoryLabels();
 
   return (
-    <div className="min-h-dvh bg-surface-container-lowest max-w-[448px] mx-auto font-sans">
+    <div className="min-h-dvh bg-surface-container-lowest max-w-[448px] mx-auto">
       <main className="space-y-4"> 
         
         {/* KEMBALI BUTTON */}
@@ -146,7 +146,7 @@ export default function ProductDetailPage() {
 
         {/* SECTION: STOK UTAMA */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
-          <h3 className="text-xs font-black text-black/50 mb-2 uppercase tracking-wide">
+          <h3 className="text-xs font-black text-black mb-2 uppercase">
             Stok Utama
           </h3>
           <div className="flex items-end gap-1.5 mb-4">
@@ -190,7 +190,7 @@ export default function ProductDetailPage() {
         {/* SECTION: RIWAYAT AKTIVITAS */}
         <section className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
           <div className="p-4 border-b border-outline-variant">
-            <h3 className="text-xs font-black text-black/50 uppercase tracking-wide">
+            <h3 className="text-sm font-black text-black uppercase">
               Riwayat Aktivitas
             </h3>
           </div>
