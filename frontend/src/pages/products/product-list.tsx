@@ -183,8 +183,6 @@ export default function ProductListPage() {
               <ProductCard
                 key={product.id}
                 product={product}
-                onEdit={handleOpenEdit}
-                onDelete={setProductToDelete}
               />
             );
           })}
