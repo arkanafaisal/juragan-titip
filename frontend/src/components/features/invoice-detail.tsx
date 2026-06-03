@@ -243,14 +243,18 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
                 Kirim Nota ke Toko
             </button>
 
-            {currentUser?.phone && (
-                <button 
-                    onClick={() => handleSendWA(currentUser.phone)}
-                    className="w-full bg-surface-container hover:bg-surface-container-high text-text-primary border border-outline-variant font-body text-body-sm py-2.5 rounded-xl font-bold flex items-center justify-center transition-all active:scale-95"
-                >
-                    Kirim Salinan ke Nomor Saya
-                </button>
-            )}
+            <button 
+                onClick={() => {
+                    if (!currentUser?.phone) {
+                        toast.error("Nomor WhatsApp Anda belum diatur di profil.");
+                        return;
+                    }
+                    handleSendWA(currentUser.phone);
+                }}
+                className="w-full bg-surface-container hover:bg-surface-container-high text-text-primary border border-outline-variant font-body text-body-sm py-2.5 rounded-xl font-bold flex items-center justify-center transition-all active:scale-95"
+            >
+                Kirim Salinan ke Nomor Saya
+            </button>
             </div>
 
         </div>
