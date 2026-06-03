@@ -91,7 +91,7 @@ export default function ProductDetailPage() {
         {/* KEMBALI BUTTON */}
         <div className="mb-2 flex items-center">
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/products")}
             className="flex items-center gap-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm font-bold text-black hover:bg-surface-container-low active:scale-[0.98] transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> 
