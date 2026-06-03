@@ -1,6 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { productApi } from '@/services/api/products';
+import { Loader2 } from 'lucide-react';
 
-export function EditStockModal({ isOpen, onClose, currentStock }: { isOpen: boolean, onClose: () => void, currentStock: number }) {
+interface EditStockModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  currentStock: number;
+  productId: number;
+}
+
+export function EditStockModal({ isOpen, onClose, currentStock, productId }: EditStockModalProps) {
+  const [newStock, setNewStock] = useState<string>('');
+  const [reason, setReason] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setNewStock(currentStock.toString());
+      setReason('');
+    }
+  }, [isOpen, currentStock]);
+
+  const handleSubmit = async () => {
+    const stockVal = parseInt(newStock);
+    if (isNaN(stockVal) || stockVal < 0) return;
+    
+    setIsSubmitting(true);
+    const res = await productApi.adjustStock(productId, stockVal, reason);
+    setIsSubmitting(false);
+    
+    if (res.success) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -17,19 +50,45 @@ export function EditStockModal({ isOpen, onClose, currentStock }: { isOpen: bool
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-1.5">Jumlah stok FISIK saat ini?</label>
             <div className="relative">
-              <input type="number" placeholder="140" className="w-full p-3 pr-14 text-lg font-bold border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none" />
+              <input 
+                type="number" 
+                value={newStock}
+                onChange={e => setNewStock(e.target.value)}
+                placeholder={currentStock.toString()} 
+                min="0"
+                className="w-full p-3 pr-14 text-lg font-bold border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none" 
+              />
               <span className="absolute right-3 top-3.5 text-slate-400 font-bold">Pcs</span>
             </div>
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-1.5">Alasan (Opsional)</label>
-            <input type="text" placeholder="Misal: Salah ketik" className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none" />
+            <input 
+              type="text" 
+              value={reason}
+              onChange={e => setReason(e.target.value)}
+              placeholder="Misal: Salah ketik, Barang hilang" 
+              className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none" 
+            />
           </div>
         </div>
 
         <div className="flex gap-2.5">
-          <button onClick={onClose} className="flex-1 py-3 bg-slate-100 active:bg-slate-200 text-slate-700 rounded-xl font-bold">Batal</button>
-          <button onClick={onClose} className="flex-[2] py-3 bg-slate-800 active:bg-slate-900 text-white rounded-xl font-bold">SESUAIKAN STOK</button>
+          <button 
+            onClick={onClose} 
+            disabled={isSubmitting}
+            className="flex-1 py-3 bg-slate-100 active:bg-slate-200 text-slate-700 rounded-xl font-bold disabled:opacity-50"
+          >
+            Batal
+          </button>
+          <button 
+            onClick={handleSubmit} 
+            disabled={isSubmitting}
+            className="flex-[2] flex items-center justify-center gap-2 py-3 bg-slate-800 active:bg-slate-900 text-white rounded-xl font-bold disabled:opacity-50"
+          >
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+            {isSubmitting ? "MENYIMPAN..." : "SESUAIKAN STOK"}
+          </button>
         </div>
       </div>
     </div>

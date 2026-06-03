@@ -177,4 +177,40 @@ export const productApi = {
     await db.products.update(numericId, { isArchived: true });
     return { success: true, data: null };
   },
+
+  adjustStock: async (id: number | string, newStock: number, reason?: string): Promise<ApiResponse<Product | null>> => {
+    const numericId = Number(id);
+    
+    try {
+      let updatedProduct: Product | null = null;
+      
+      await db.transaction('rw', db.products, db.inventoryLogs, async () => {
+        const product = await db.products.get(numericId);
+        if (!product || product.isArchived) throw new Error("Produk tidak ditemukan");
+        
+        const diff = newStock - product.warehouseStock;
+        
+        if (diff !== 0) {
+          await db.products.update(numericId, { warehouseStock: newStock });
+          
+          await db.inventoryLogs.add({
+            productId: numericId,
+            type: 'KOREKSI',
+            quantity: diff,
+            notes: reason || "Penyesuaian stok fisik",
+            createdAt: new Date().toISOString()
+          } as any);
+        }
+        
+        updatedProduct = await db.products.get(numericId) as Product;
+      });
+      
+      toast.success("Stok berhasil disesuaikan");
+      return { success: true, data: updatedProduct };
+    } catch (error: any) {
+      console.error("Dexie Adjust Stock Error:", error);
+      toast.error(error.message || "Gagal menyesuaikan stok");
+      return { success: false, data: null, message: error.message || "Gagal menyesuaikan stok" };
+    }
+  },
 }

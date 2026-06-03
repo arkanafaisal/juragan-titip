@@ -234,6 +234,7 @@ export default function ProductDetailPage() {
           loadData();
         }} 
         currentStock={product.warehouseStock} 
+        productId={product.id}
       />
       <AddStockModal 
         isOpen={isTambahStokOpen} 
