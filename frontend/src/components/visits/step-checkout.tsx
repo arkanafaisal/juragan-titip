@@ -113,33 +113,37 @@ export function StepCheckout({
                 <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">{formatCurrency(totalBilled)}</span>
               </div>
 
-              {/* INPUT PEMBAYARAN */}
-              <div className="pt-sm">
-                <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
-                  Jumlah Dibayar (Tunai):
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-data-md text-text-secondary">Rp</span>
-                  <input 
-                    type="text" 
-                    inputMode="numeric"
-                    placeholder="0"
-                    value={formatInputCurrency(localAmountPaid)}
-                    onChange={handleAmountChange}
-                    className="w-full pl-10 pr-3 py-2 sm:py-3 bg-surface border border-outline text-text-primary font-data-md sm:font-data-lg font-bold focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all shadow-sm"
-                  />
-                </div>
-              </div>
+              {totalBilled > 0 && (
+                <>
+                  {/* INPUT PEMBAYARAN */}
+                  <div className="pt-sm">
+                    <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
+                      Jumlah Dibayar (Tunai):
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 font-data-md text-text-secondary">Rp</span>
+                      <input 
+                        type="text" 
+                        inputMode="numeric"
+                        placeholder="0"
+                        value={formatInputCurrency(localAmountPaid)}
+                        onChange={handleAmountChange}
+                        className="w-full pl-10 pr-3 py-2 sm:py-3 bg-surface border border-outline text-text-primary font-data-md sm:font-data-lg font-bold focus:border-primary focus:ring-1 focus:ring-primary rounded-xl outline-none transition-all shadow-sm"
+                      />
+                    </div>
+                  </div>
 
-              {/* SISA HUTANG DINAMIS */}
-              <div className={`flex justify-between font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold mt-sm p-sm rounded-lg items-center transition-colors ${
-                isChange ? 'bg-warning/10 text-warning' : (isFullyPaid ? 'bg-success/10 text-success' : 'bg-error/10 text-error')
-              }`}>
-                <span>{isChange ? 'KEMBALIAN:' : (isFullyPaid ? 'LUNAS:' : 'SISA HUTANG:')}</span>
-                <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">
-                  {formatCurrency(isChange ? changeAmount : remainingDebt)}
-                </span>
-              </div>
+                  {/* SISA HUTANG DINAMIS */}
+                  <div className={`flex justify-between font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold mt-sm p-sm rounded-lg items-center transition-colors ${
+                    isChange ? 'bg-warning/10 text-warning' : (isFullyPaid ? 'bg-success/10 text-success' : 'bg-error/10 text-error')
+                  }`}>
+                    <span>{isChange ? 'KEMBALIAN:' : (isFullyPaid ? 'LUNAS:' : 'SISA HUTANG:')}</span>
+                    <span className="font-data-md sm:font-data-lg text-data-md sm:text-data-lg">
+                      {formatCurrency(isChange ? changeAmount : remainingDebt)}
+                    </span>
+                  </div>
+                </>
+              )}
 
             </div>
           </div>
