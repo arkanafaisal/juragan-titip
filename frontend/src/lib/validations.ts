@@ -76,15 +76,4 @@ export const validateProfileForm = (data: any): { name?: string, phone?: string 
 
   return errors;
 };
-
-export const validateProductForm = (data: any): string | null => {
-  if (!validateRequired(data.name) || !validateLength(data.name, VALIDATION_RULES.PRODUCT.NAME_MIN, VALIDATION_RULES.PRODUCT.NAME_MAX)) return `Nama produk harus antara ${VALIDATION_RULES.PRODUCT.NAME_MIN}-${VALIDATION_RULES.PRODUCT.NAME_MAX} karakter.`;
-  if (!validateRequired(data.category)) return "Kategori produk wajib dipilih.";
-  if (data.warehouseStock < 0 || data.warehouseStock > VALIDATION_RULES.PRODUCT.STOCK_MAX) return `Stok gudang harus antara 0-${VALIDATION_RULES.PRODUCT.STOCK_MAX}.`;
-  if (!validateGreaterThanZero(data.costPrice) || data.costPrice > VALIDATION_RULES.PRODUCT.PRICE_MAX) return `Harga modal harus lebih besar dari 0 dan maksimal ${VALIDATION_RULES.PRODUCT.PRICE_MAX}.`;
-  if (!validateGreaterThanZero(data.wholesalePrice) || data.wholesalePrice > VALIDATION_RULES.PRODUCT.PRICE_MAX) return `Harga grosir/setor harus lebih besar dari 0 dan maksimal ${VALIDATION_RULES.PRODUCT.PRICE_MAX}.`;
-  if (data.retailPrice && (!validateGreaterThanZero(data.retailPrice) || data.retailPrice > VALIDATION_RULES.PRODUCT.PRICE_MAX)) return `Harga eceran/jual (jika ada) harus lebih besar dari 0 dan maksimal ${VALIDATION_RULES.PRODUCT.PRICE_MAX}.`;
-  if (!validatePriceMargin(data.costPrice, data.wholesalePrice)) return "Harga modal tidak boleh sama atau lebih besar dari harga setor.";
-  if (data.description && data.description.length > VALIDATION_RULES.PRODUCT.DESC_MAX) return `Deskripsi maksimal ${VALIDATION_RULES.PRODUCT.DESC_MAX} karakter.`;
-  return null;
-};
+
