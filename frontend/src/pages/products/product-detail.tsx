@@ -146,7 +146,7 @@ export default function ProductDetailPage() {
 
         {/* SECTION: STOK UTAMA */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
-          <h3 className="text-xs font-black text-black mb-2 uppercase">
+          <h3 className="text-base font-black text-black mb-2 uppercase">
             Stok Utama
           </h3>
           <div className="flex items-end gap-1.5 mb-4">
@@ -172,7 +172,7 @@ export default function ProductDetailPage() {
 
         {/* SECTION: MANAJEMEN RETUR */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
-          <h3 className="text-sm font-black text-black mb-1 uppercase">
+          <h3 className="text-base font-black text-black mb-1 uppercase">
             Manajemen Retur
           </h3>
           <p className="text-xs text-black/70 mb-4 font-medium">
@@ -190,7 +190,7 @@ export default function ProductDetailPage() {
         {/* SECTION: RIWAYAT AKTIVITAS */}
         <section className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
           <div className="p-4 border-b border-outline-variant">
-            <h3 className="text-sm font-black text-black uppercase">
+            <h3 className="text-base font-black text-black uppercase">
               Riwayat Aktivitas
             </h3>
           </div>
@@ -246,6 +246,7 @@ export default function ProductDetailPage() {
           setIsTambahStokOpen(false);
           loadData();
         }} 
+        productId={product.id}
       />
       <ProcessReturnModal 
         isOpen={isOlahReturOpen} 
