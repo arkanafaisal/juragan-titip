@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { User, Product, Store, Visit } from '@/types';
+import type { User, Product, Store, Visit, InventoryLog } from '@/types';
 
 
 export type DbUser = User & { password: string };
@@ -12,6 +12,7 @@ const db = new Dexie('JuraganTitipDB') as Dexie & {
   products: EntityTable<DbProduct, 'id'>;
   stores: EntityTable<DbStore, 'id'>;
   visits: EntityTable<DbVisit, 'id'>;
+  inventoryLogs: EntityTable<InventoryLog, 'id'>;
 };
 
 
@@ -46,6 +47,14 @@ db.version(11).stores({
   products: '++id, &normalizedName, category',
   stores: '++id, normalizedName, phone, lastVisitAt, category',
   visits: '++id, storeId, createdAt'
+});
+
+db.version(12).stores({
+  users: '++id, &email',
+  products: '++id, &normalizedName, category',
+  stores: '++id, normalizedName, phone, lastVisitAt, category',
+  visits: '++id, storeId, createdAt',
+  inventoryLogs: '++id, productId, type, storeId, createdAt'
 });
 
 export { db };

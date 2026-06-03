@@ -10,6 +10,8 @@ export type {
   Invoice,
   BilledItem,
   ActiveStockItem,
+  InventoryLog,
+  InventoryActionType,
 } from "./models"
 export type {
   ProductFormData,

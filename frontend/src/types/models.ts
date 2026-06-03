@@ -102,3 +102,28 @@ export interface ActiveStockItem {
   totalActive: number
   wholesalePrice: number
 }
+
+// 1. Kita kunci tipe aktivitasnya agar tidak ada typo di database
+export type InventoryActionType = 
+  | 'KULAKAN'      // (IN) Nambah stok utama dari agen/pabrik
+  | 'TITIPAN'      // (OUT) Mengurangi stok utama karena dibawa/dititip ke toko
+  | 'TARIK_RETUR'  // (IN) Nambah stok retur karena ditarik dari toko
+  | 'OLAH_RETUR'   // (RESTORE) Mengurangi stok retur, menambah stok utama (barang masih bagus)
+  | 'BUANG_RUSAK'; // (DISCARD) Mengurangi stok (utama/retur) menjadi debu (rugi)
+
+// 2. Skema Tabel InventoryLog
+export interface InventoryLog {
+  id: number;
+  productId: number;
+  
+  type: InventoryActionType;
+  
+  quantity: number; 
+  
+  storeId?: number;
+  storeName?: string; 
+  
+  // Contoh: "Dimakan tikus", "Basi", "Nota Kulakan: INV-001"
+  notes?: string;
+  createdAt: string; 
+}
