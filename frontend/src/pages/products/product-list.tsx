@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { productApi } from "@/services/api/products";
 import { ProductCard } from "@/components/products/product-card";
 import type { Product } from "@/types";
-import { ProductFormModal } from "@/components/products/product-form-modal";
+import { AddProductModal } from "@/components/products/add-product-modal";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Pagination } from "@/components/shared/pagination";
 import { LIMIT } from "@/lib/constants";
@@ -17,7 +17,6 @@ export default function ProductListPage() {
   
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   
   const [searchInput, setSearchInput] = useState("");
@@ -114,18 +113,11 @@ export default function ProductListPage() {
   }, [debouncedSearch, filters, currentPage]);
 
   const handleOpenAdd = () => {
-    setEditingProduct(null);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (product: Product) => {
-    setEditingProduct(product);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setEditingProduct(null);
   };
 
   const handleDeleteConfirm = async (typedName?: string) => {
@@ -198,11 +190,10 @@ export default function ProductListPage() {
         />
       )}
 
-      <ProductFormModal 
+      <AddProductModal 
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSuccess={fetchProducts}
-        product={editingProduct}
       />
 
       <ConfirmationModal
