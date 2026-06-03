@@ -66,11 +66,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="grid grid-cols-2 gap-sm mb-md mt-auto">
           <div className="flex flex-col gap-0.5">
-            <span className="font-caption text-caption text-text-secondary">HPP</span>
+            <span className="font-caption text-caption text-text-secondary">Modal (Kulakan)</span>
             <span className="font-data-md text-data-md text-text-primary">{formatCurrency(product.costPrice)}</span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="font-caption text-caption text-text-secondary">Harga Grosir</span>
+            <span className="font-caption text-caption text-text-secondary">Harga Jual (Warung)</span>
             <span className="font-data-md text-data-md text-text-primary">{formatCurrency(product.wholesalePrice)}</span>
           </div>
         </div>
