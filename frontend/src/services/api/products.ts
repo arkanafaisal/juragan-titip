@@ -213,4 +213,42 @@ export const productApi = {
       return { success: false, data: null, message: error.message || "Gagal menyesuaikan stok" };
     }
   },
+
+  addStock: async (id: number | string, addedStock: number, notes?: string): Promise<ApiResponse<Product | null>> => {
+    const numericId = Number(id);
+    
+    if (addedStock <= 0) {
+      toast.error("Jumlah stok tidak valid");
+      return { success: false, data: null, message: "Jumlah stok tidak valid" };
+    }
+
+    try {
+      let updatedProduct: Product | null = null;
+      
+      await db.transaction('rw', db.products, db.inventoryLogs, async () => {
+        const product = await db.products.get(numericId);
+        if (!product || product.isArchived) throw new Error("Produk tidak ditemukan");
+        
+        const newStock = product.warehouseStock + addedStock;
+        await db.products.update(numericId, { warehouseStock: newStock });
+        
+        await db.inventoryLogs.add({
+          productId: numericId,
+          type: 'KULAKAN',
+          quantity: addedStock,
+          notes: notes || "Tambah stok dari agen",
+          createdAt: new Date().toISOString()
+        } as any);
+        
+        updatedProduct = await db.products.get(numericId) as Product;
+      });
+      
+      toast.success("Stok berhasil ditambah");
+      return { success: true, data: updatedProduct };
+    } catch (error: any) {
+      console.error("Dexie Add Stock Error:", error);
+      toast.error(error.message || "Gagal menambah stok");
+      return { success: false, data: null, message: error.message || "Gagal menambah stok" };
+    }
+  },
 }
