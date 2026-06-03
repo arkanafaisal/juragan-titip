@@ -214,5 +214,14 @@ export const storeApi = {
     } catch (error) {
       return { success: false, data: undefined, message: "Gagal mengambil nomor telepon toko" };
     }
+  },
+
+  countTotal: async (): Promise<number> => {
+    try {
+      return await db.stores.count();
+    } catch (error) {
+      console.error("Dexie Count Store Error:", error);
+      return 0;
+    }
   }
 }

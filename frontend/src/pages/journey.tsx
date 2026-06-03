@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, Navigation, LocateFixed 
 } from "lucide-react";
 import { journeyApi, type StoreWithDistance } from "@/services/api/journey";
+import { storeApi } from "@/services/api/stores";
 import { MapContainer, TileLayer, Marker, Popup, useMap, CircleMarker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -36,6 +37,8 @@ const getDaysAgoText = (dateString?: string) => {
 export default function JourneyPage() {
   const navigate = useNavigate();
   const [stores, setStores] = useState<StoreWithDistance[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalStoresCount, setTotalStoresCount] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLocating, setIsLocating] = useState(false);
   const [hasGpsAccess, setHasGpsAccess] = useState(false);
@@ -65,10 +68,20 @@ export default function JourneyPage() {
   useEffect(() => {
     const loadStores = async () => {
       try {
-        const initialStores = await journeyApi.getInitialStores();
-        setStores(initialStores);
+        setIsLoading(true);
+        const total = await storeApi.countTotal();
+        setTotalStoresCount(total);
+        
+        if (total === 0) {
+          setStores([]);
+        } else {
+          const initialStores = await journeyApi.getInitialStores();
+          setStores(initialStores);
+        }
       } catch (error) {
         showNotif("Gagal memuat data toko.", 'error');
+      } finally {
+        setIsLoading(false);
       }
     };
     loadStores();
@@ -124,6 +137,14 @@ export default function JourneyPage() {
     navigate('/dashboard'); 
   };
 
+  if (isLoading) {
+    return (
+      <div className="h-dvh bg-neutral-900 flex items-center justify-center text-white">
+        <Navigation className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   if (stores.length === 0) {
     return (
       <div className="h-dvh overflow-hidden bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
@@ -137,9 +158,13 @@ export default function JourneyPage() {
           </div>
         )}
         <MapPin className="w-12 h-12 text-neutral-500 mb-4" />
-        <h2 className="font-h2 text-h2 font-bold mb-2">Belum Ada Toko</h2>
+        <h2 className="font-h2 text-h2 font-bold mb-2">
+          {totalStoresCount === 0 ? "Belum Ada Toko" : "Semua Toko Sudah Dikunjungi"}
+        </h2>
         <p className="text-neutral-400 mb-6 font-body text-body">
-          Tambahkan data toko terlebih dahulu untuk menggunakan Mode Keliling.
+          {totalStoresCount === 0 
+            ? "Tambahkan data toko terlebih dahulu untuk menggunakan Mode Keliling."
+            : "Saat ini tidak ada toko yang melewati batas hari kunjungan."}
         </p>
         <button onClick={handleClose} className="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold">
           Kembali ke Dashboard
