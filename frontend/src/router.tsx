@@ -11,6 +11,7 @@ const NotFoundPage = lazy(() => import("@/pages/not-found"))
 const DashboardPage = lazy(() => import("@/pages/dashboard"))
 const ProductListPage = lazy(() => import("@/pages/products/product-list"))
 const ProductDetailPage = lazy(() => import("@/pages/products/product-detail"))
+const ProductEditPage = lazy(() => import("@/pages/products/product-edit"))
 const StoreListPage = lazy(() => import("@/pages/stores/store-list"))
 const StoreDetailPage = lazy(() => import("@/pages/stores/store-detail"))
 const StoreFormPage = lazy(() => import("@/pages/stores/store-form"))
@@ -55,7 +56,8 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", element: <DashboardPage /> },
       { path: "products", element: <ProductListPage /> },
-      { path: "products", element: <ProductDetailPage /> },
+      { path: "products/:id", element: <ProductDetailPage /> },
+      { path: "products/:id/edit", element: <ProductEditPage /> },
       { path: "stores", element: <StoreListPage /> },
       { path: "stores/new", element: <StoreFormPage /> },
       { path: "stores/:id", element: <StoreDetailPage /> },

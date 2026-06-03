@@ -3,7 +3,7 @@ import {
   ArrowLeft, Edit2, PackagePlus, RefreshCw, 
   Store, Package, Pencil, Trash2, Scale
 } from 'lucide-react';
-import { EditProductModal } from '@/components/products/edit-product-modal';
+import { useNavigate } from 'react-router';
 import { EditStockModal } from '@/components/products/edit-stock-modal';
 import { AddStockModal } from '@/components/products/add-stock-modal';
 import { ProcessReturnModal } from '@/components/products/process-return-modal';
@@ -35,16 +35,10 @@ const mockLogs = [
 // 2. MAIN COMPONENT: ProductDetailPage
 // ==========================================
 export default function ProductDetailPage() {
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  const navigate = useNavigate();
   const [isKoreksiOpen, setIsKoreksiOpen] = useState(false);
   const [isTambahStokOpen, setIsTambahStokOpen] = useState(false);
   const [isOlahReturOpen, setIsOlahReturOpen] = useState(false);
-
-  // Jika tombol Edit ditekan, Render form Edit secara inline 
-  // agar 100% menghormati Global Header & Bottom Tab
-  if (isEditOpen) {
-    return <EditProductModal onClose={() => setIsEditOpen(false)} product={mockProduct} />;
-  }
 
   return (
     <div className="min-h-dvh bg-slate-50 max-w-[448px] mx-auto font-sans">
@@ -66,7 +60,7 @@ export default function ProductDetailPage() {
               {mockProduct.name}
             </h2>
             <button 
-              onClick={() => setIsEditOpen(true)}
+              onClick={() => navigate(`/products/${mockProduct.id}/edit`)}
               className="p-1.5 bg-slate-50 border border-slate-100 text-slate-500 rounded-lg shrink-0 active:bg-slate-100 active:text-blue-600 transition-colors"
             >
               <Edit2 className="w-4 h-4" />
