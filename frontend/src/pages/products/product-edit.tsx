@@ -22,6 +22,7 @@ export default function ProductEditPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isNotFound, setIsNotFound] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -38,6 +39,8 @@ export default function ProductEditPage() {
           wholesalePrice: res.data.wholesalePrice,
           retailPrice: res.data.retailPrice || 0,
         });
+      } else {
+        setIsNotFound(true);
       }
       setIsLoading(false);
     };
@@ -84,119 +87,128 @@ export default function ProductEditPage() {
   };
 
   if (isLoading) {
-    return <div className="min-h-dvh flex items-center justify-center bg-slate-50">Memuat...</div>;
+    return <div className="min-h-dvh flex items-center justify-center bg-surface-container-lowest text-black font-medium">Memuat...</div>;
+  }
+
+  if (isNotFound) {
+    return <div className="min-h-dvh flex items-center justify-center bg-surface-container-lowest text-black font-medium">Produk tidak ditemukan</div>;
   }
 
   return (
-    <div className="min-h-dvh bg-slate-50 max-w-[448px] mx-auto font-sans">
-      <main className="space-y-4 pb-6 animate-in fade-in slide-in-from-right-4 duration-200">
+    <div className="min-h-dvh bg-surface-container-lowest max-w-[448px] mx-auto">
+      <main className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-200">
         
-        <button onClick={handleBack} className="flex items-center gap-1.5 text-slate-600 font-semibold px-1 py-1 -ml-1 rounded-lg active:bg-slate-100 transition-colors">
-          <X className="w-5 h-5" /> Batal
-        </button>
+        <div className="mb-2 flex items-center">
+          <button 
+            onClick={handleBack}
+            className="flex items-center justify-center px-4 py-2 bg-error text-on-error rounded-xl shadow-sm hover:bg-error/90 active:scale-[0.98] transition-all"
+          >
+            <span className="text-sm">Batal</span>
+          </button>
+        </div>
 
         {/* INFORMASI DASAR */}
-        <section className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Informasi Dasar</h3>
+        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant space-y-3">
+          <h3 className="text-lg font-black mb-2 uppercase">Informasi Dasar</h3>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Nama Produk</label>
+            <label className="block text-sm font-black text-black/70 mb-1">Nama Produk</label>
             <input 
               type="text" 
               name="name"
               value={formData.name || ''} 
               onChange={handleChange}
-              className={`w-full p-2.5 text-sm bg-slate-50 border ${errors.name ? 'border-red-500' : 'border-slate-200'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none`} 
+              className={`w-full p-3 text-sm font-bold text-black bg-black/5 border ${errors.name ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all placeholder:text-black/30`} 
             />
-            {errors.name && <p className="text-[10px] text-red-500 mt-1">{errors.name}</p>}
+            {errors.name && <p className="text-[10px] font-bold text-error mt-1">{errors.name}</p>}
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
+            <label className="block text-sm font-black text-black/70 mb-1">Kategori</label>
             <select 
               name="category"
               value={formData.category || ''} 
               onChange={handleChange}
-              className={`w-full p-2.5 text-sm bg-slate-50 border ${errors.category ? 'border-red-500' : 'border-slate-200'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none`} 
+              className={`w-full p-3 text-sm font-bold text-black bg-black/5 border ${errors.category ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all capitalize`} 
             >
-              <option value="" disabled>Pilih Kategori...</option>
+              <option value="" disabled className="text-black/30">Pilih Kategori...</option>
               <option value="1">{categoryLabels["1"]}</option>
               <option value="2">{categoryLabels["2"]}</option>
               <option value="3">{categoryLabels["3"]}</option>
               <option value="4">{categoryLabels["4"]}</option>
               <option value="5">{categoryLabels["5"]}</option>
             </select>
-            {errors.category && <p className="text-[10px] text-red-500 mt-1">{errors.category}</p>}
+            {errors.category && <p className="text-[10px] font-bold text-error mt-1">{errors.category}</p>}
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi (Opsional)</label>
+            <label className="block text-sm font-black text-black/70 mb-1">Deskripsi (Opsional)</label>
             <textarea 
-              rows={2} 
+              rows={3} 
               name="description"
               value={formData.description || ''} 
               onChange={handleChange}
-              className={`w-full p-2.5 text-sm bg-slate-50 border ${errors.description ? 'border-red-500' : 'border-slate-200'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none`} 
+              className={`w-full p-3 text-sm font-medium text-black bg-black/5 border ${errors.description ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all resize-none placeholder:text-black/30`} 
             />
-            {errors.description && <p className="text-[10px] text-red-500 mt-1">{errors.description}</p>}
+            {errors.description && <p className="text-[10px] font-bold text-error mt-1">{errors.description}</p>}
           </div>
         </section>
 
         {/* PENGATURAN HARGA */}
-        <section className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pengaturan Harga</h3>
+        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant space-y-3">
+          <h3 className="text-lg font-black mb-2 uppercase">Pengaturan Harga</h3>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Harga Modal (Kulakan)</label>
+            <label className="block text-sm font-black text-black/70 mb-1">Harga Modal (Kulakan)</label>
             <div className="relative">
-              <span className="absolute left-3 top-2.5 text-slate-400 font-medium text-sm">Rp</span>
+              <span className="absolute left-3 top-3 text-black/40 font-black text-sm">Rp</span>
               <input 
                 type="number" 
                 name="costPrice"
                 value={formData.costPrice || ''} 
                 onChange={handleChange}
-                className={`w-full p-2.5 pl-10 text-sm bg-slate-50 border ${errors.costPrice ? 'border-red-500' : 'border-slate-200'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none`} 
+                className={`w-full p-3 pl-10 text-sm font-black text-black bg-black/5 border ${errors.costPrice ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all`} 
               />
             </div>
-            {errors.costPrice && <p className="text-[10px] text-red-500 mt-1">{errors.costPrice}</p>}
+            {errors.costPrice && <p className="text-[10px] font-bold text-error mt-1">{errors.costPrice}</p>}
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Harga Jual (Grosir/Toko)</label>
+            <label className="block text-sm font-black text-black/70 mb-1">Harga Jual (Grosir/Toko)</label>
             <div className="relative">
-              <span className="absolute left-3 top-2.5 text-slate-400 font-medium text-sm">Rp</span>
+              <span className="absolute left-3 top-3 text-black/40 font-black text-sm">Rp</span>
               <input 
                 type="number" 
                 name="wholesalePrice"
                 value={formData.wholesalePrice || ''} 
                 onChange={handleChange}
-                className={`w-full p-2.5 pl-10 text-sm bg-slate-50 border ${errors.wholesalePrice ? 'border-red-500' : 'border-slate-200'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none`} 
+                className={`w-full p-3 pl-10 text-sm font-black text-primary bg-black/5 border ${errors.wholesalePrice ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all`} 
               />
             </div>
-            {errors.wholesalePrice && <p className="text-[10px] text-red-500 mt-1">{errors.wholesalePrice}</p>}
+            {errors.wholesalePrice && <p className="text-[10px] font-bold text-error mt-1">{errors.wholesalePrice}</p>}
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Harga Eceran (Ke Konsumen)</label>
+            <label className="block text-sm font-black text-black/70 mb-1">Harga Eceran (Ke Konsumen)</label>
             <div className="relative">
-              <span className="absolute left-3 top-2.5 text-slate-400 font-medium text-sm">Rp</span>
+              <span className="absolute left-3 top-3 text-black/40 font-black text-sm">Rp</span>
               <input 
                 type="number" 
                 name="retailPrice"
                 value={formData.retailPrice || ''} 
                 onChange={handleChange}
-                className={`w-full p-2.5 pl-10 text-sm bg-slate-50 border ${errors.retailPrice ? 'border-red-500' : 'border-slate-200'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none`} 
+                className={`w-full p-3 pl-10 text-sm font-black text-black bg-black/5 border ${errors.retailPrice ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all`} 
               />
             </div>
-            {errors.retailPrice && <p className="text-[10px] text-red-500 mt-1">{errors.retailPrice}</p>}
+            {errors.retailPrice && <p className="text-[10px] font-bold text-error mt-1">{errors.retailPrice}</p>}
           </div>
         </section>
 
         {/* BUTTONS ACTION */}
-        <div className="space-y-2 mt-4">
+        <div className="space-y-3 mt-6">
           <button 
             onClick={handleSave} 
             disabled={isSubmitting}
-            className="w-full py-3 bg-blue-600 active:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
+            className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-on-primary font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
           >
-            <Save className="w-4 h-4" /> {isSubmitting ? "MENYIMPAN..." : "SIMPAN PERUBAHAN"}
+            <Save className="w-5 h-5" /> {isSubmitting ? "MENYIMPAN..." : "SIMPAN PERUBAHAN"}
           </button>
-          <button className="w-full py-3 bg-red-50 text-red-600 active:bg-red-100 font-bold rounded-xl flex items-center justify-center gap-2 transition-colors">
-            <Archive className="w-4 h-4" /> ARSIPKAN PRODUK
+          <button className="w-full py-3.5 bg-error hover:bg-error/90 text-on-primary active:bg-error/30 font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+            <Archive className="w-5 h-5" /> ARSIPKAN PRODUK
           </button>
         </div>
       </main>
