@@ -51,7 +51,7 @@ export const visitApi = {
     try {
       let createdVisit: Visit | null = null;
 
-      await db.transaction('rw', db.visits, db.products, db.stores, async () => {
+      await db.transaction('rw', db.visits, db.products, db.stores, db.inventoryLogs, async () => {
         const assetValue = data.items.reduce((acc, item) => acc + (item.remained * item.wholesalePrice), 0);
         
         const newVisit: Omit<DbVisit, 'id'> = {
@@ -66,6 +66,19 @@ export const visitApi = {
         const id = await db.visits.add(newVisit as DbVisit);
         createdVisit = { ...newVisit, id } as Visit;
 
+        for (const item of data.items) {
+          if (item.returned > 0) {
+            await db.inventoryLogs.add({
+              productId: item.productId,
+              type: 'TARIK_RETUR',
+              quantity: item.returned,
+              storeId: newVisit.storeId,
+              storeName: newVisit.storeName,
+              createdAt: newVisit.createdAt
+            } as any);
+          }
+        }
+
         for (const item of data.restockItems) {
           if (item.quantity > 0) {
             const product = await db.products.get(item.productId);
@@ -73,6 +86,15 @@ export const visitApi = {
               await db.products.update(item.productId, { 
                 warehouseStock: Math.max(0, product.warehouseStock - item.quantity) 
               });
+              
+              await db.inventoryLogs.add({
+                productId: item.productId,
+                type: 'TITIPAN',
+                quantity: item.quantity,
+                storeId: newVisit.storeId,
+                storeName: newVisit.storeName,
+                createdAt: newVisit.createdAt
+              } as any);
             }
           }
         }
