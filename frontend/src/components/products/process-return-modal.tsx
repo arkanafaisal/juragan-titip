@@ -65,8 +65,8 @@ export function ProcessReturnModal({
         <p className="font-body-sm text-body-sm text-on-surface-variant mb-5">Belum Diolah: <span className="font-bold text-error">{returnedStock} Pcs</span></p>
         
         <div className="space-y-4 mb-6">
-          <div className="p-md rounded-2xl border border-primary/20 bg-primary/5">
-            <label className="flex items-center gap-1.5 font-body-sm text-body-sm font-bold text-primary mb-2">
+          <div className="p-md rounded-2xl border border-success/20 bg-success/5">
+            <label className="flex items-center gap-1.5 font-body-sm text-body-sm font-bold text-success mb-2">
               <RefreshCw className="w-4 h-4" /> SIAP JUAL LAGI?
             </label>
             <div className="relative">
@@ -76,9 +76,9 @@ export function ProcessReturnModal({
                 value={resaleQty}
                 onChange={(e) => setResaleQty(e.target.value)}
                 min="0"
-                className="w-full px-gutter py-md pr-14 font-data-md text-data-md font-bold border border-primary/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest outline-none transition-all text-primary" 
+                className="w-full px-gutter py-md pr-14 font-data-md text-data-md font-bold border border-success/20 rounded-xl focus:border-success focus:ring-1 focus:ring-success bg-surface-container-lowest outline-none transition-all text-success" 
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-primary/60 font-bold">Pcs</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-success/60 font-bold">Pcs</span>
             </div>
           </div>
           
