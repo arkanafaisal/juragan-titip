@@ -76,6 +76,13 @@ export const visitApi = {
               storeName: newVisit.storeName,
               createdAt: newVisit.createdAt
             } as any);
+
+            const product = await db.products.get(item.productId);
+            if (product) {
+              await db.products.update(item.productId, {
+                returnedStock: (product.returnedStock || 0) + item.returned
+              });
+            }
           }
         }
 
