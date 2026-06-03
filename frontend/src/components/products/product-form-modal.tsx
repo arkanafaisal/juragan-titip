@@ -45,7 +45,7 @@ export function ProductFormModal({ isOpen, onClose, onSuccess, product }: Produc
           warehouseStock: product.warehouseStock,
           costPrice: product.costPrice,
           wholesalePrice: product.wholesalePrice,
-          retailPrice: product.retailPrice,
+          retailPrice: product.retailPrice || 0,
           description: product.description || ""
         });
       } else {
