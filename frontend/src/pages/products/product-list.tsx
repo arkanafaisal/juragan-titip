@@ -27,6 +27,7 @@ export default function ProductListPage() {
     // sortBy: "name_asc"
   });
   const categoryLabels = settingsApi.getCategoryLabels();
+  const lowStockThreshold = settingsApi.getLowStockThreshold();
 
   const storeFilterConfig: FilterGroup[] = [
     {
@@ -46,9 +47,9 @@ export default function ProductListPage() {
       title: "level stock",
       options: [
         { label: "Semua", value: "" },
-        { label: "Habis", value: "out_of_stock" },
-        { label: "Menipis", value: "low_stock" },
-        { label: "Tersedia", value: "in_stock" }
+        { label: "0", value: "out_of_stock" },
+        { label: `1-${lowStockThreshold}`, value: "low_stock" },
+        { label: `>${lowStockThreshold}`, value: "in_stock" }
       ]
     },
     // {
