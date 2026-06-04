@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { MapPin, Store as StoreIcon, Package, CircleDollarSign, History } from "lucide-react";
 import type { Store } from "@/types";
-import { settingsApi } from "@/services/api/settings";
+import { formatRupiah } from "@/lib/utils";
 
 const getCategoryStyles = (category?: string) => {
   if (category === "1") return { bg: "bg-info/10", text: "text-info", border: "border-info/40" };
@@ -14,19 +14,11 @@ const getCategoryStyles = (category?: string) => {
 
 interface StoreCardProps {
   store: Store;
+  storeCategoryLabels: Record<string, string>;
 }
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(value);
-};
-
-export function StoreCard({ store }: StoreCardProps) {
+export function StoreCard({ store, storeCategoryLabels }: StoreCardProps) {
   const navigate = useNavigate();
-  const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
   const catStyle = getCategoryStyles(store.category);
   const displayCategory = store.category ? storeCategoryLabels[store.category as keyof typeof storeCategoryLabels] || store.category : null;
 
@@ -66,7 +58,7 @@ export function StoreCard({ store }: StoreCardProps) {
               <Package className="w-4 h-4 shrink-0" />
               <span className="font-caption text-caption">Nilai Aset</span>
             </div>
-            <span className="font-data-md text-data-md text-text-primary">{formatCurrency(store.assetValue || 0)}</span>
+            <span className="font-data-md text-data-md text-text-primary">{formatRupiah(store.assetValue || 0)}</span>
           </div>
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-xs text-text-secondary">
@@ -78,7 +70,7 @@ export function StoreCard({ store }: StoreCardProps) {
                 ? 'text-success' 
                 : store.debt > 1000000 ? 'text-error' : 'text-warning'
             }`}>
-              {store.debt === 0 ? "Rp 0" : formatCurrency(store.debt)}
+              {store.debt === 0 ? "Rp 0" : formatRupiah(store.debt)}
             </span>
           </div>
         </div>

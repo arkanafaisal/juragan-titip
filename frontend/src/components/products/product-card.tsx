@@ -1,22 +1,15 @@
 import { Package } from "lucide-react";
 import { useNavigate } from "react-router";
 import type { Product } from "@/types";
-import { settingsApi } from "@/services/api/settings";
+import { formatRupiah } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
+  categoryLabels: Record<string, string>;
+  lowStockThreshold: number;
 }
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(value);
-};
-
-const getStockBlockStyles = (stock: number) => {
-  const threshold = settingsApi.getLowStockThreshold();
+const getStockBlockStyles = (stock: number, threshold: number) => {
   if (stock === 0) return "bg-error/10 text-error border-error/20";
   if (stock <= threshold) return "bg-warning/10 text-warning-dark border-warning/20"; 
   return "bg-success/10 text-success border-success/20";
@@ -37,11 +30,10 @@ const getCategoryStyles = (category: string) => {
   return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant" };
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, categoryLabels, lowStockThreshold }: ProductCardProps) {
   const navigate = useNavigate();
   const catStyle = getCategoryStyles(product.category);
-  const stockStyle = getStockBlockStyles(product.warehouseStock);
-  const categoryLabels = settingsApi.getCategoryLabels();
+  const stockStyle = getStockBlockStyles(product.warehouseStock, lowStockThreshold);
   const displayCategory = categoryLabels[product.category as keyof typeof categoryLabels] || product.category;
 
   return (
@@ -67,11 +59,11 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="grid grid-cols-2 gap-sm mb-md mt-auto">
           <div className="flex flex-col gap-0.5">
             <span className="font-caption text-caption text-text-secondary">Modal (Kulakan)</span>
-            <span className="font-data-md text-data-md text-text-primary">{formatCurrency(product.costPrice)}</span>
+            <span className="font-data-md text-data-md text-text-primary">{formatRupiah(product.costPrice)}</span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="font-caption text-caption text-text-secondary">Harga Jual (Warung)</span>
-            <span className="font-data-md text-data-md text-text-primary">{formatCurrency(product.wholesalePrice)}</span>
+            <span className="font-data-md text-data-md text-text-primary">{formatRupiah(product.wholesalePrice)}</span>
           </div>
         </div>
 

@@ -168,6 +168,8 @@ export default function ProductListPage() {
               <ProductCard
                 key={product.id}
                 product={product}
+                categoryLabels={categoryLabels}
+                lowStockThreshold={lowStockThreshold}
               />
             );
           })}

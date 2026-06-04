@@ -144,7 +144,7 @@ export default function StoreListPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
           {stores.map((store, index) => {
             if (index >= LIMIT) { return }
-            return <StoreCard key={store.id} store={store} />
+            return <StoreCard key={store.id} store={store} storeCategoryLabels={storeCategoryLabels} />
           })}
 
         </div>
