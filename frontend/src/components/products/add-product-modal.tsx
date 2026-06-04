@@ -3,8 +3,6 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { productApi } from "@/services/api/products";
 import { settingsApi } from "@/services/api/settings";
-import { useSidebar } from "@/hooks/use-sidebar";
-import { useMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { validateProductForm, PRODUCT_VALIDATION_RULES } from "@/lib/product-validation";
 
@@ -29,8 +27,6 @@ export function AddProductModal({ isOpen, onClose, onSuccess }: AddProductModalP
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { isCollapsed } = useSidebar();
-  const isMobile = useMobile()
   const categoryLabels = settingsApi.getCategoryLabels();
 
   useEffect(() => {
@@ -78,12 +74,9 @@ export function AddProductModal({ isOpen, onClose, onSuccess }: AddProductModalP
 
   return createPortal(
     <div className={cn(
-      "fixed right-0 z-50 flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md transition-all font-body text-body text-on-surface antialiased",
-      "top-16",
-      isMobile ? "bottom-[72px]" : "bottom-0",
-      isMobile ? "left-0" : isCollapsed ? "left-20" : "left-60"
+      "fixed inset-0 z-50 flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md transition-all font-body text-body text-on-surface antialiased"
     )}>
-      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-[512px] overflow-hidden flex flex-col max-h-full">
+      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-[400px] overflow-hidden flex flex-col max-h-full">
         <div className="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-bright shrink-0">
           <h3 className="font-h3 text-h3 text-on-surface">Tambah Produk Baru</h3>
           <button onClick={onClose} className="text-on-surface-variant hover:bg-surface-container-low p-sm rounded-full transition-colors">

@@ -8,7 +8,6 @@ import {
   PopoverTrigger 
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useMobile } from "@/hooks/use-mobile";
 
 // --- Tipe Data untuk Filter Generic ---
 export interface FilterOption {
@@ -52,7 +51,6 @@ export function ActionToolbar({
   isSettingDisabled = false,
   className,
 }: ActionToolbarProps) {
-  const isMobile = useMobile();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   // Mengecek apakah ada filter yang tidak menggunakan nilai default (asumsi "" adalah default/Semua)
   const hasActiveFilter = Object.values(activeFilters).some(val => val !== "" && val !== "name_asc");
@@ -102,10 +100,10 @@ export function ActionToolbar({
           </PopoverTrigger>
           
           <PopoverContent 
-            align={isMobile ? "end" : "center"}
+            align="end"
             sideOffset={8}
             collisionPadding={16}
-            className="w-[calc(100vw-2rem)]  p-5 rounded-2xl bg-surface border border-border shadow-lg max-h-[60vh] overflow-y-auto custom-scrollbar"
+            className="md:translate-x-12 w-[calc(100vw-2rem)] max-w-[400px] p-5 rounded-2xl bg-surface border border-border shadow-lg max-h-[60vh] overflow-y-auto custom-scrollbar"
           >
             <div className="flex flex-col space-y-6">
               {filterGroups.map((group) => (

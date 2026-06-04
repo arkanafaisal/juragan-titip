@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { useSidebar } from "@/hooks/use-sidebar";
-import { useMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 interface ConfirmationModalProps {
@@ -38,8 +36,6 @@ export function ConfirmationModal({
   errorMessage,
   onClearError
 }: ConfirmationModalProps) {
-  const { isCollapsed } = useSidebar();
-  const isMobile = useMobile();
   const [inputValue, setInputValue] = useState("");
 
   
@@ -75,17 +71,14 @@ export function ConfirmationModal({
   return createPortal(
     <div 
       className={cn(
-        "fixed right-0 z-[60] flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md",
-        
-        "top-16",
-        isMobile ? "bottom-[72px] left-0" : isCollapsed ? "bottom-0 left-20" : "bottom-0 left-60"
+        "fixed inset-0 z-[60] flex items-center justify-center bg-on-surface/50 backdrop-blur-sm animate-in fade-in duration-200 p-md"
       )}
       style={{ pointerEvents: 'auto' }} 
     >
       
       <div className="absolute inset-0" onClick={() => !isLoading && onClose()} />
 
-      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full  min-w-[300px] shrink-0 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-full relative z-10">
+      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-[400px] min-w-[300px] shrink-0 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-full relative z-10">
         
         <div className="p-lg overflow-y-auto custom-scrollbar">
           <div className={`flex items-center gap-sm mb-sm ${isDanger ? 'text-error' : 'text-primary'}`}>

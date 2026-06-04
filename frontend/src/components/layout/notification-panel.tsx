@@ -135,7 +135,7 @@ export function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
   return (
     <div 
       ref={panelRef}
-      className="absolute top-full right-0 w-[85vw]  bg-surface/95 backdrop-blur-xl border-b border-l border-outline-variant shadow-2xl rounded-none rounded-bl-3xl z-50 overflow-hidden flex flex-col max-h-[75vh] animate-in slide-in-from-top-2 fade-in duration-200"
+      className="absolute top-full right-0 w-[85vw] max-w-[380px] bg-surface/95 backdrop-blur-xl border-b border-l border-outline-variant shadow-2xl rounded-none rounded-bl-3xl z-50 overflow-hidden flex flex-col max-h-[75vh] animate-in slide-in-from-top-2 fade-in duration-200"
       style={{
         // Memastikan menempel sempurna tanpa border atas dan kanan
         marginTop: '-1px', 
