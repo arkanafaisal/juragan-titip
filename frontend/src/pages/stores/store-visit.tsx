@@ -245,7 +245,7 @@ export default function StoreVisitPage() {
 
       const restockData = restockItems
         .filter(item => item.quantity > 0)
-        .map(item => ({ productId: item.productId, quantity: item.quantity }));
+        .map(item => ({ productId: item.productId, productName: item.productName, quantity: item.quantity }));
 
       const amountPaidNum = parseInt(amountPaidStr.replace(/\D/g, '')) || 0;
       const totalBilled = currentDebt + subtotal;

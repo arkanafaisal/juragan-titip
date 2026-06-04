@@ -3,7 +3,7 @@ import { db, type DbVisit } from "@/lib/db"
 import { toast } from "sonner"
 
 export interface CreateVisitPayload extends Omit<Visit, "id" | "createdAt"> {
-  restockItems: { productId: number; quantity: number }[];
+  restockItems: { productId: number; productName?: string; quantity: number }[];
 }
 
 export const visitApi = {
@@ -68,6 +68,11 @@ export const visitApi = {
 
         for (const item of data.items) {
           if (item.returned > 0) {
+            const product = await db.products.get(item.productId);
+            if (!product) {
+              throw new Error(`Produk "${item.productName || item.productId}" tidak ditemukan. Mungkin sudah dihapus.`);
+            }
+
             await db.inventoryLogs.add({
               productId: item.productId,
               type: 'TARIK_RETUR',
@@ -77,32 +82,31 @@ export const visitApi = {
               createdAt: newVisit.createdAt
             } as Omit<InventoryLog, 'id'>);
 
-            const product = await db.products.get(item.productId);
-            if (product) {
-              await db.products.update(item.productId, {
-                returnedStock: (product.returnedStock || 0) + item.returned
-              });
-            }
+            await db.products.update(item.productId, {
+              returnedStock: (product.returnedStock || 0) + item.returned
+            });
           }
         }
 
         for (const item of data.restockItems) {
           if (item.quantity > 0) {
             const product = await db.products.get(item.productId);
-            if (product) {
-              await db.products.update(item.productId, { 
-                warehouseStock: Math.max(0, product.warehouseStock - item.quantity) 
-              });
-              
-              await db.inventoryLogs.add({
-                productId: item.productId,
-                type: 'TITIPAN',
-                quantity: item.quantity,
-                storeId: newVisit.storeId,
-                storeName: newVisit.storeName,
-                createdAt: newVisit.createdAt
-              } as Omit<InventoryLog, 'id'>);
+            if (!product) {
+              throw new Error(`Produk "${item.productName || item.productId}" tidak ditemukan. Mungkin sudah dihapus.`);
             }
+
+            await db.products.update(item.productId, { 
+              warehouseStock: Math.max(0, product.warehouseStock - item.quantity) 
+            });
+            
+            await db.inventoryLogs.add({
+              productId: item.productId,
+              type: 'TITIPAN',
+              quantity: item.quantity,
+              storeId: newVisit.storeId,
+              storeName: newVisit.storeName,
+              createdAt: newVisit.createdAt
+            } as Omit<InventoryLog, 'id'>);
           }
         }
 
@@ -115,10 +119,11 @@ export const visitApi = {
 
       toast.success("Kunjungan berhasil disimpan");
       return { success: true, data: createdVisit };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Dexie Create Visit Transaction Error:", error);
-      toast.error("Gagal menyimpan kunjungan");
-      return { success: false, data: null, message: "Gagal menyimpan kunjungan" };
+      const message = error.message || "Gagal menyimpan kunjungan";
+      toast.error(message);
+      return { success: false, data: null, message };
     }
   },
 }
