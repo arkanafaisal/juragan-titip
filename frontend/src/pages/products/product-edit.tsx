@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Archive } from 'lucide-react';
+import { Save, Archive } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { productApi } from '@/services/api/products';
 import { validateProductEditFields } from '@/lib/product-validation';

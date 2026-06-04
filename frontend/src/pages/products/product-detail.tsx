@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  ArrowLeft, Edit2, PackagePlus, RefreshCw, 
+  ArrowLeft, PackagePlus, RefreshCw, 
   Store, Package, Pencil, Trash2, Scale, SquarePen
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';

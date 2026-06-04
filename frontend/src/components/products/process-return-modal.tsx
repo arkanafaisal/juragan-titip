@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { RefreshCw, Trash2, Scale, Loader2 } from 'lucide-react';
 import { productApi } from '@/services/api/products';
 import { toast } from 'sonner';
