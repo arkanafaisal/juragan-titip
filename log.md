@@ -1,3 +1,72 @@
+git --no-pager log 7294658fa2cc2e1841bd7480d6532823f28268d1..HEAD --pretty=format:"%H %s"
+9251d070de79321ee5a1b0f269a0c940a2849b8c update(process return modal): change recycle theme from blue to green
+e15d43dde5ec6339995c0b3fb646d521a4b6d9ef feat(process return modal): implement product service
+f03384fd25d3fa36980d7a51b124fa99db033738 update(process return modal): styling
+fdd4e06d5e0fd49bdac944be40abf2d2bc1f26f4 (add stock modal): implement product service     
+598d8dc5efca64ddfff5f6bd31811f0f2af02bbe update(product detail page): fontsize
+a56fe4442dfaafec105e761b43795d8d3f3e3bd1 fix(product detail): back navigate
+1497039cc737937024a76a0da0cbbdbdd6495b7b update(product detail page): fontsize & fontfamily
+c5fcc25620e3105c5d17ec63dd4b52800944a413 update(product edit page): styling
+3edf804802d5df9748710532ef88b70b1611baa4 update(product detail): styling & wording        
+2f1accb0a6f87fa43d553beb77e206fdd24a2059 update(edit stock modal): colors
+a27a989825298b56bb42a008e3c02159258af883 update(edit stock modal): integrate product service
+8b21456e5306e3b830f5e9f36714652a462f0e1b update(product & store service): default abjad a-z order
+9243f290e44be594c58766ff094fbe56a35af768 update(product filter): stock level wording      
+da716808832077e7a40995606875e94fcb418261 fix(step restock): update product returnedStock on finish
+8067b411f26a633db0d83211b9b88dd5c6ec6c10 update(product-edit): remove dummy & integrate product service
+8ff0865c888eb220be112e7795feaaa5766bd86b update(product-form-modal): fully for add product & change fields wording
+37be8fc10f517b1591ca044881c2915a97cab527 update(validation): separate product validation  
+380f108f6cbe5f78e245955df502d006c6e19ae0 update(product list): remove edit & delete btn & connect card into detail page
+de5fe99835b1ba7a19c94d2953ac5da057f55fbb feat(product detail): implement product service  
+fdb825f048173a12d765b820152e7c5b9d4d79fb update(edit product): separate page
+094a202b13639a83dc6e6ea36c9459ee59f3ee5c refactor(product detail): modularization
+2f1c3a9edbed9a09bdd4754322e2b784abe92914 update(visit service): hit inventory logs oncreate transaction
+1a691b11fe9b74d75611b5f9fb7295de2a1a287d update(product detail): UI & features
+2dd324b4abfa360a49544d243c8ca96458efc853 update(type models): add correction on InventoryActionType
+5f262af7c3f63e04ad8bb84476dd41ce5013555e update(step checkout): hide amountPaid input & status info on 0 totalBilled
+33efdfc60353e82a2550d990e1cbeba7dcec722c update(invoice detail): show send to my number on missing user phone number (guarded by toast)
+2fde023e8e9f63fbb15356fd1fb20756e533f3df fix(journey page): empty store on overdue filter 
+1feb5391ab1f49ef42b2bb2b83023fae05e6e8ec fix(product form): fallback retail price to 0    
+35bcff4be17936ddb8a7fea84c0b887dc426ed2d fix(journey page): maintain map position on menu toogle
+91b277fad312e2dba3986fb118e4f0e2ad669082 add: inventory logs type & table
+a4dccac2255856dd8ecc2e818fcad18fb67b611c fix(step checkout): amountPaid registered        
+d0fdc6cca44eb18b303af61fa42e35f7ff484f69 fix(step checkout): exchange amount calculation  
+3a7ccc24ca681ce191152c6bd1998b37d199c3e5 add: product detail (UI)
+1d22cc15fe1ab7054a2d66e0b3d677fea5f4a961 add(visit): costPrice property
+18e1521ca29a2781396fa89160206aa76480e6f3 fix(store visit): currentDebt lost value
+492ae77ebda0d03e5296d78decd1b4870f33cb71 update(product): archive soft delete
+7a2e7675069a9bb9e68ed450e705ae24900c9276 fix(product type): change retailPrice to costPrice for visit service
+250327ccccfa272f2e9f884cc2dc3e5ff426daad remove(types): consignment
+f7faccafbf983e02d8cdb2bd4c4b296b26da6ffb fix(product service): 0 warehouseStock default value"
+f3d69d2cd2034d7cf238e70e5f06ea0a245cf8dd remove(product form modal): warehouseStock input (default 0)
+aefcb611f1238272c1f4e639d23410e02991fbc2 fix(finance page): monthly data
+a7b72e1e0f6942c8de1637e422e069be16af8f90 fix(dashboard page): 7 days data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 D:\Arkana\project\JuraganTitip>git --no-pager log eb80b3455341dcf86f1370ddddea70d78cc91a77..HEAD --pretty=format:"%H %s"
 316ca8a7910f3eb4d67a24ae1daae9dbd55a65c2 update(journey page): show user static location

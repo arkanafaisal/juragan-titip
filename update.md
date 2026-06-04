@@ -1,4 +1,43 @@
 
+3 June 2026
+<details>
+- updated process return modal styling color (text color & recycle theme)
+- implemented product service on add stock modal & process return modal     
+- updated product detail page fontsize
+- fixed product detail (back button navigation)
+- updated product edit page styling (size, color, layout),  wording & add empty state
+- updated product detail color
+- implemented integrate product service on edit stock modal
+- updated product & store service (default abjad a-z order)
+- updated product filter stock level wording      
+- updated visit create service (update product returnedStock on finish)
+- implemented product service on product edit page
+- updated product form modal (remove edit mode & change fields wording)
+- refactored validation util (separate product validation)
+- updated products page: remove edit & delete btn, card onclick navigation (detail page)
+- implemented product service on product detail page
+- updated edit product modal into separate page
+- refactored product detail: modularization edit product info, add stock, edit stock, process return
+- updated visit create service (hit inventory logs)
+- updated product detail UI & add modals (edit product information, stock correction, process return)
+- updated step checkout to hide amountPaid input & status info on 0 totalBilled
+- updated invoice detail "send to my number" button (always show)
+- fixed journey page: maintain map position on menu toogle, empty store on overdue filter
+- added inventory logs type & table
+</details>
+
+2 June 2026
+<details>
+- fixed visit step checkout: debt lost value, exchange amount calculation, amountPaid value
+- added product detail (UI)
+- added costPrice on visit record
+- updated product hard delete into soft delete (archive)
+- fixed variable retailPrice to costPrice on visit service
+- removed consignment type
+- removed warehouseStock input (default 0) on add product
+- fixed analysis date data (7 days & 1 month start date) 
+</details>
+
 31 May 2026
 <details>
 - updated journey page: show user static location
