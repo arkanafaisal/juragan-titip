@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { productApi } from "@/services/api/products";
 import { ProductCard } from "@/components/products/product-card";
@@ -29,7 +29,7 @@ export default function ProductListPage() {
   const categoryLabels = settingsApi.getCategoryLabels();
   const lowStockThreshold = settingsApi.getLowStockThreshold();
 
-  const storeFilterConfig: FilterGroup[] = [
+  const storeFilterConfig: FilterGroup[] = useMemo(() => [
     {
       id: "category",
       title: "Kategori Produk",
@@ -51,23 +51,15 @@ export default function ProductListPage() {
         { label: `1-${lowStockThreshold}`, value: "low_stock" },
         { label: `>${lowStockThreshold}`, value: "in_stock" }
       ]
-    },
-    // {
-    //   id: "sortBy",
-    //   title: "Urutkan Berdasarkan",
-    //   options: [
-    //     { label: "Nama (A-Z)", value: "name_asc" },
-    //     { label: "Terbaru Ditambahkan", value: "newest" }
-    //   ]
-    // }
-  ];
+    }
+  ], [categoryLabels, lowStockThreshold]);
 
-    const handleFilterChange = (groupId: string, value: string) => {
-      setFilters(prev => ({
-        ...prev,
-        [groupId]: value
-      }))
-    };
+  const handleFilterChange = useCallback((groupId: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [groupId]: value
+    }))
+  }, []);
   
   const [currentPage, setCurrentPage] = useState(1);
 

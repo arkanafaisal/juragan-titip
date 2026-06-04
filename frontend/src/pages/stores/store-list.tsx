@@ -1,6 +1,6 @@
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { StoreCard } from "@/components/stores/store-card";
 import type { Store } from "@/types";
@@ -25,7 +25,7 @@ export default function StoreListPage() {
     visitStatus: "",
     sortBy: ""
   });
-  const storeFilterConfig: FilterGroup[] = [
+  const storeFilterConfig: FilterGroup[] = useMemo(() => [
     {
       id: "category",
       title: "Kategori Toko",
@@ -64,14 +64,14 @@ export default function StoreListPage() {
         { label: "Kunjungan Terlama", value: "lastVisitAsc" }
       ]
     }
-  ];
+  ], [storeCategoryLabels, overdueDays]);
 
-  const handleFilterChange = (groupId: string, value: string) => {
+  const handleFilterChange = useCallback((groupId: string, value: string) => {
     setFilters(prev => ({
       ...prev,
       [groupId]: value
     }))
-  };
+  }, []);
 
 
   const [debouncedSearch, setDebouncedSearch] = useState("");
