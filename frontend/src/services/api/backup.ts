@@ -6,6 +6,7 @@ export const backupApi = {
       const products = await db.products.toArray();
       const stores = await db.stores.toArray();
       const visits = await db.visits.toArray();
+      const inventoryLogs = await db.inventoryLogs.toArray();
 
       const backupData = {
         timestamp: new Date().toISOString(),
@@ -13,7 +14,8 @@ export const backupApi = {
         data: {
           products,
           stores,
-          visits
+          visits,
+          inventoryLogs
         }
       };
 
@@ -51,16 +53,18 @@ export const backupApi = {
             throw new Error("Format file backup tidak valid.");
           }
 
-          const { products, stores, visits } = parsed.data;
+          const { products, stores, visits, inventoryLogs = [] } = parsed.data;
 
-          await db.transaction('rw', db.products, db.stores, db.visits, async () => {
+          await db.transaction('rw', db.products, db.stores, db.visits, db.inventoryLogs, async () => {
             await db.products.clear();
             await db.stores.clear();
             await db.visits.clear();
+            await db.inventoryLogs.clear();
 
             if (products.length > 0) await db.products.bulkAdd(products);
             if (stores.length > 0) await db.stores.bulkAdd(stores);
             if (visits.length > 0) await db.visits.bulkAdd(visits);
+            if (inventoryLogs.length > 0) await db.inventoryLogs.bulkAdd(inventoryLogs);
           });
 
           resolve();

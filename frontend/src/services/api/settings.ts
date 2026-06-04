@@ -91,10 +91,11 @@ export const settingsApi = {
   },
 
   clearAllData: async (): Promise<void> => {
-    await db.transaction('rw', db.products, db.stores, db.visits, async () => {
+    await db.transaction('rw', db.products, db.stores, db.visits, db.inventoryLogs, async () => {
       await db.products.clear();
       await db.stores.clear();
       await db.visits.clear();
+      await db.inventoryLogs.clear();
     });
   }
 };
