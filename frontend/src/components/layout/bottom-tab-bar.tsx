@@ -31,7 +31,7 @@ export function BottomTabBar() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest border-t border-outline-variant flex justify-between items-center px-1 py-2 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <nav className="shrink-0 w-full z-50 bg-surface-container-lowest border-t border-outline-variant flex justify-between items-center px-1 py-2 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <Link to="/dashboard" onClick={(e) => handleNavClick(e, "/dashboard")} className="flex flex-col items-center justify-center flex-1 shrink-0 min-w-0 py-1 text-on-surface-variant hover:text-primary-container transition-colors">
           <div className={`w-12 h-8 rounded-full flex items-center justify-center mb-1 ${isActive("/dashboard") ? "bg-primary-fixed text-primary-container" : ""}`}>
             <Home className="w-5 h-5" />

@@ -1,9 +1,6 @@
 // import { Menu, Calendar, Bell, Maximize, Minimize } from "lucide-react";
-import { Menu, Calendar, Maximize, Minimize } from "lucide-react";
-import { format } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
+import { Maximize, Minimize } from "lucide-react";
 import { useLocation } from "react-router";
-import { useSidebar } from "@/hooks/use-sidebar";
 import { ProfileMenu } from "@/components/layout/profile-menu";
 // import { NotificationPanel } from "./notification-panel";
 import { useState, useEffect } from "react";
@@ -11,9 +8,8 @@ import { toast } from "sonner";
 
 export function PageHeader() {
   const location = useLocation();
-  const todayDate = format(new Date(), "dd MMM yyyy", { locale: idLocale });
   // const [isAlertPanelOpen, setIsAlertPanelOpen] = useState(false)
-  const { toggle } = useSidebar();
+  // const { toggle } = useSidebar();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -88,12 +84,7 @@ export function PageHeader() {
       
       
       <div className="flex items-center gap-sm min-w-0 pr-2">
-        <button 
-          onClick={toggle}
-          className="hidden md:block p-2 -ml-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors shrink-0"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
+
 
         <div className="text-h1 font-bold text-primary-container tracking-tight truncate">
           {dynamicTitle}
@@ -101,10 +92,7 @@ export function PageHeader() {
       </div>
 
       <div className="flex items-center gap-sm shrink-0">
-        <div className="hidden md:flex items-center gap-xs text-on-surface-variant bg-surface-bright px-sm py-xs rounded-md border border-outline-variant mr-sm">
-          <Calendar className="w-4 h-4" />
-          <span className="font-data-md text-data-md">{todayDate}</span>
-        </div>
+
 
         <button 
           onClick={toggleFullscreen} 
@@ -126,7 +114,7 @@ export function PageHeader() {
         
         
         {/* <div onClick={()=>{setIsAlertPanelOpen(false)}} className="md:hidden relative ml-1 flex items-center"> */}
-        <div className="md:hidden relative ml-1 flex items-center">
+        <div className="relative ml-1 flex items-center">
           <ProfileMenu />
         </div>
 
