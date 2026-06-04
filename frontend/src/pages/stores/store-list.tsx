@@ -118,18 +118,21 @@ export default function StoreListPage() {
 
   return (
     <div className="flex flex-col">
-      <ActionToolbar
-        searchValue={searchInput}
-        onSearchChange={setSearchInput}
-        searchPlaceholder="Cari toko mitra..."
-        onAddClick={() => navigate("/stores/new")}
-        onSettingClick={() => navigate("/settings?section=toko")}
-        
-        // Cukup passing 3 baris ini, Boom! Filter beres.
-        filterGroups={storeFilterConfig}
-        activeFilters={filters}
-        onFilterChange={handleFilterChange}
-      />
+      <div className="sticky top-[-16px] z-20 bg-gradient-to-b from-surface-container-lowest via-surface-container-lowest/90 to-transparent -mx-4 px-4 pt-4 pb-8 -mb-4">
+        <ActionToolbar
+          className="mb-0"
+          searchValue={searchInput}
+          onSearchChange={setSearchInput}
+          searchPlaceholder="Cari toko mitra..."
+          onAddClick={() => navigate("/stores/new")}
+          onSettingClick={() => navigate("/settings?section=toko")}
+          
+          // Cukup passing 3 baris ini, Boom! Filter beres.
+          filterGroups={storeFilterConfig}
+          activeFilters={filters}
+          onFilterChange={handleFilterChange}
+        />
+      </div>
       
 
       {isLoading ? (

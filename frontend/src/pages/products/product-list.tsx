@@ -138,10 +138,12 @@ export default function ProductListPage() {
   return (
     <div className="flex flex-col">
     
+      <div className="sticky top-[-16px] z-20 bg-gradient-to-b from-surface-container-lowest via-surface-container-lowest/90 to-transparent -mx-4 px-4 pt-4 pb-8 -mb-4">
         <ActionToolbar
+          className="mb-0"
           searchValue={searchInput}
           onSearchChange={setSearchInput}
-          searchPlaceholder="Cari toko mitra..."
+          searchPlaceholder="Cari produk..."
           onAddClick={handleOpenAdd}
           onSettingClick={() => navigate("/settings?section=produk")}
           
@@ -150,6 +152,7 @@ export default function ProductListPage() {
           activeFilters={filters}
           onFilterChange={handleFilterChange}
         />
+      </div>
 
       
       {isLoading ? (
