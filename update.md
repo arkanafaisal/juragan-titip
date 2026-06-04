@@ -1,4 +1,29 @@
 
+4 June 2026
+<details>
+- updated store detail: add back button, change edit delete button & history tabs UI style
+- updated store detail: remove font bold & font black
+- updated action toolbar: sticky on scroll
+- fixed product getAll service: avoid full table scan on category filter
+- fixed visit create: cancel transaction on not found product
+- fixed backup & settings service: add inventory logs table
+- fixed modals breakpoint
+- removed breakpoint classes
+- updated app width layout into mobile only
+- updated hardcoded classes to design tokens
+- updated product detail & edit: consistent size classes
+- fixed store & product card: prevent repeated localstorage hit & function declaration
+- fixed prevent recreate static code on rerender
+- refactored reuse mobile bottom drawer
+- fixed tailwind animate import
+- deleted unused packages
+- updated product & store service: change search query from includes to startsWith
+- fixed store service: first sorting on getAll
+- deleted unused file & imports
+- deleted up backend & docs folder
+</details>
+
+
 3 June 2026
 <details>
 - updated process return modal styling color (text color & recycle theme)

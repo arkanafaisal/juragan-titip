@@ -1,3 +1,32 @@
+git --no-pager log ef1210ee6671c85943e3b49f8231665bbe231461..HEAD --pretty=format:"%H %s"
+5c1fd2f3098b46c4c7d780c53b5d19010575e615 update(store detail): add back button, change edit delete button & history tabs UI style
+d18313a20c6e3f2e38cd96a3fb2bbce94daf47b4 update(store detail): remove font bold & font black
+6268ea0df8e8eeb1ddfbcb0c0d131542eacf1a28 update(action toolbar): sticky on scroll
+abfcad55de0bc6999333a2654105e492cae30d7c fix(product getAll service): avoid full table scan on category filter
+b2424add22205cab94c26e9fd7febeb0c148457d fix(visit create): cancel transaction on not found product
+2e5baa33a34f32bff732703997f91df9d913aaea fix(backup & settings service): add inventory logs table
+0fe0c0dde7633bcf6e737a745c3978347e8be925 fix: modals breakpoint
+b8ac4dd3e2d4d49142ef0cede2bc71158b1954d0 remove: breakpoint classes
+901759baa9332ddb89a21c9f873f4a12be55c305 update: lock app width layout into mobile only
+def74662583de55527f776f1b7b334897af6c5a5 update: hardcoded classes to design tokens
+a421c390e480123b47247d9999eaac1994460491 update(product detail & edit): consistent size classes
+8fbb4af3a4ba921ac079d1e19e17135534acc203 fix(store & product card): prevent repeated localstorage hit & function declaration
+25f023f4757483c509d843d2137dfddb03813fd0 fix: prevent recreate static code on rerender
+8282cc8d1419a5ddbc42f9e64e97a93a8dd30475 refactor: reuse mobile bottom drawer
+ccf46542d3e61213c987149e756ee8fee986dde1 fix: tailwind animate import
+5c9f7af9d579a5f72acbb4e777814a5637a3051e delete unused file & packages
+1513428492b6e24e90b4848852da0273a1219902 delete unused file (auth service)
+4f33a8adf65325a66b3cfa18bb7103b953e3a11a update(product & store service): change search query from includes to startsWith
+b8be54ba48530bf31d4fbd0030fd17ba0e2343f3 remove: as any typesafety gap
+f816a0d0257d356318c05cf20444569615c1f674 fix(store service): first sorting on getAll
+9356e6b0f3d148d1609bfc57f8db3b72efb2369d delete: unused ui components
+ff1daeba4e0a60aacda10493c26c6115d132698b delete: unused files & router config
+61bfa215e439cd4008bb9376ab76a5499191f798 update gitignore
+358e32aabc011c2cd5313a86790799d4cbc77ac7 add test scripts
+5b70d1363efd274780bf7fb6409b3e5650fab98b cleanup: unused file
+97bc4b84db2bfc720278a920d9ba3bac6b570a22 cleanup: backend & docs folder
+
+
 git --no-pager log 7294658fa2cc2e1841bd7480d6532823f28268d1..HEAD --pretty=format:"%H %s"
 9251d070de79321ee5a1b0f269a0c940a2849b8c update(process return modal): change recycle theme from blue to green
 e15d43dde5ec6339995c0b3fb646d521a4b6d9ef feat(process return modal): implement product service
