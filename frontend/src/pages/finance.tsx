@@ -98,43 +98,43 @@ export default function FinancePage() {
         </div>
 
         {/* 2. Dua Baris terpisah untuk Piutang & Aset */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px]">
+        <div className="grid grid-cols-1  gap-[16px]">
           
           {/* Card Total Piutang */}
-          <div className="bg-surface p-[16px] sm:p-[20px] rounded-[16px] border border-outline-variant shadow-sm flex items-start gap-[12px] sm:gap-[16px]">
-            <div className="my-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
-              <Wallet className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="bg-surface p-[16px]  rounded-[16px] border border-outline-variant shadow-sm flex items-start gap-[12px] ">
+            <div className="my-auto w-10 h-10   rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
+              <Wallet className="w-5 h-5  " />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2 mb-1">
                 <p className="text-body-sm text-text-secondary font-medium truncate">
                   Total Piutang
                 </p>
-                <span className="text-[10px] sm:text-caption font-medium bg-error/10 text-error px-2 py-1 rounded-md shrink-0">
+                <span className="text-[10px]  font-medium bg-error/10 text-error px-2 py-1 rounded-md shrink-0">
                   {data.summary.receivables.storeCount} Toko
                 </span>
               </div>
-              <h4 className="text-h3 sm:text-h2 font-bold text-text-primary truncate">
+              <h4 className="text-h3  font-bold text-text-primary truncate">
                 {formatRupiah(data.summary.receivables.totalDebt)}
               </h4>
             </div>
           </div>
 
           {/* Card Nilai Item Aktif */}
-          <div className="bg-surface p-[16px] sm:p-[20px] rounded-[16px] border border-outline-variant shadow-sm flex items-start gap-[12px] sm:gap-[16px]">
-            <div className="my-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <Package className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="bg-surface p-[16px]  rounded-[16px] border border-outline-variant shadow-sm flex items-start gap-[12px] ">
+            <div className="my-auto w-10 h-10   rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Package className="w-5 h-5  " />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2 mb-1">
                 <p className="text-body-sm text-text-secondary font-medium truncate">
                   Nilai Item Aktif
                 </p>
-                <span className="text-[10px] sm:text-caption font-medium bg-primary/10 text-primary px-2 py-1 rounded-md shrink-0">
+                <span className="text-[10px]  font-medium bg-primary/10 text-primary px-2 py-1 rounded-md shrink-0">
                   {data.summary.assets.storeCount} Toko
                 </span>
               </div>
-              <h4 className="text-h3 sm:text-h2 font-bold text-text-primary truncate">
+              <h4 className="text-h3  font-bold text-text-primary truncate">
                 {formatRupiah(data.summary.assets.totalAssetValue)}
               </h4>
             </div>

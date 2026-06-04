@@ -47,7 +47,7 @@ export function AppSidebar() {
     <>
       <nav
         className={cn(
-          "hidden md:flex flex-col bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 h-full z-40 transition-all duration-300 py-md",
+          "hidden  flex-col bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 h-full z-40 transition-all duration-300 py-md",
           isCollapsed ? "w-20" : "w-60"
         )}
       >

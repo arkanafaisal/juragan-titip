@@ -85,7 +85,7 @@ export function ConfirmationModal({
       
       <div className="absolute inset-0" onClick={() => !isLoading && onClose()} />
 
-      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full sm:w-[400px] min-w-[300px] shrink-0 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-full relative z-10">
+      <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full  min-w-[300px] shrink-0 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-full relative z-10">
         
         <div className="p-lg overflow-y-auto custom-scrollbar">
           <div className={`flex items-center gap-sm mb-sm ${isDanger ? 'text-error' : 'text-primary'}`}>

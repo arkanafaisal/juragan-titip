@@ -208,10 +208,10 @@ export default function StoreFormPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-lg items-start">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1  gap-lg items-start">
         
         
-        <div className="lg:col-span-7 flex flex-col gap-lg">
+        <div className=" flex flex-col gap-lg">
           
           
           <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden">
@@ -223,7 +223,7 @@ export default function StoreFormPage() {
             </div>
             
             <div className="p-md flex flex-col gap-md">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+              <div className="grid grid-cols-1  gap-md">
                 <div className="flex flex-col gap-xs">
                   <label className="font-caption text-caption text-text-secondary" htmlFor="name">
                     Nama Toko <span className="text-error">*</span>
@@ -264,7 +264,7 @@ export default function StoreFormPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+              <div className="grid grid-cols-1  gap-md">
                 <div className="flex flex-col gap-xs">
                   <label className="font-caption text-caption text-text-secondary" htmlFor="phone">
                     Nomor Telepon (Opsional)
@@ -359,7 +359,7 @@ export default function StoreFormPage() {
         </div>
 
         
-        <div className="lg:col-span-5 flex flex-col gap-lg">
+        <div className=" flex flex-col gap-lg">
           <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden flex flex-col h-full">
             
             
@@ -378,7 +378,7 @@ export default function StoreFormPage() {
               </button>
             </div>
 
-            <div className="relative w-full h-[240px] lg:h-[300px] shrink-0">
+            <div className="relative w-full h-[240px]  shrink-0">
               <MapPicker
                 position={location}
                 onChange={handleLocationChange}
@@ -419,7 +419,7 @@ export default function StoreFormPage() {
         </div>
 
         
-        <div className="col-span-1 lg:col-span-12 flex justify-end gap-md pt-lg border-t border-outline-variant mt-sm">
+        <div className="col-span-1  flex justify-end gap-md pt-lg border-t border-outline-variant mt-sm">
           <button 
             type="button" 
             onClick={handleCancel}

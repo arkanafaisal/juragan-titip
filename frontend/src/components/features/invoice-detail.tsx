@@ -114,10 +114,10 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
 
     return (
         // DINDING HITAM (Letterbox untuk Tablet/PC)
-        <div className="min-h-dvh bg-inverse-surface flex justify-center sm:py-8 sm:px-4">
+        <div className="min-h-dvh bg-inverse-surface flex justify-center  ">
         
         {/* KERTAS STRUK (Lebar maksimal untuk meniru struk nyata) */}
-        <div className="w-full max-w-[484px] bg-surface text-text-primary flex flex-col relative sm:rounded-2xl shadow-2xl overflow-hidden min-h-dvh sm:min-h-0">
+        <div className="w-full max-w-[484px] bg-surface text-text-primary flex flex-col relative  shadow-2xl overflow-hidden min-h-dvh ">
             
             {/* HEADER */}
             <div className="bg-surface-container-low px-4 py-4 border-b border-outline-variant flex items-center justify-between sticky top-0 z-10">

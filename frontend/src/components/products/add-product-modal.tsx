@@ -133,7 +133,7 @@ export function AddProductModal({ isOpen, onClose, onSuccess }: AddProductModalP
               </select>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
+            <div className="grid grid-cols-1   gap-md">
               <div className="flex flex-col gap-xs">
                 <label className="font-body-sm text-body-sm text-on-surface-variant font-medium">Harga Modal (Kulakan)</label>
                 <input 

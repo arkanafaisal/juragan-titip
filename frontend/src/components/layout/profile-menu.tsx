@@ -93,7 +93,7 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
         align={variant === "sidebar" ? "start" : "end"} 
         sideOffset={12} 
         collisionPadding={16}
-        className="w-[calc(100vw-2rem)] sm:w-[340px] p-5 rounded-2xl bg-surface border border-border shadow-xl z-50"
+        className="w-[calc(100vw-2rem)]  p-5 rounded-2xl bg-surface border border-border shadow-xl z-50"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className="flex flex-col space-y-4">

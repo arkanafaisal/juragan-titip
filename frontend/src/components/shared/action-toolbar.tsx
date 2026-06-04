@@ -105,7 +105,7 @@ export function ActionToolbar({
             align={isMobile ? "end" : "center"}
             sideOffset={8}
             collisionPadding={16}
-            className="w-[calc(100vw-2rem)] sm:w-[320px] p-5 rounded-2xl bg-surface border border-border shadow-lg max-h-[60vh] overflow-y-auto custom-scrollbar"
+            className="w-[calc(100vw-2rem)]  p-5 rounded-2xl bg-surface border border-border shadow-lg max-h-[60vh] overflow-y-auto custom-scrollbar"
           >
             <div className="flex flex-col space-y-6">
               {filterGroups.map((group) => (
@@ -154,7 +154,7 @@ export function ActionToolbar({
         className="shrink-0 bg-primary text-on-primary hover:bg-primary/90 shadow-sm border-transparent"
       >
         <Plus className="w-4 h-4" />
-        <span className="hidden sm:inline-block ml-1">{addLabel}</span>
+        <span className="hidden  ml-1">{addLabel}</span>
       </Button>
       
     </div>

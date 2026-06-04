@@ -268,7 +268,7 @@ export default function JourneyPage() {
           {hasPrev && (
             <button 
               onClick={goPrev}
-              className="absolute -left-6 sm:-left-12 w-10 sm:w-16 h-[85%] bg-surface rounded-r-3xl opacity-40 hover:opacity-80 transition-opacity flex items-center justify-end pr-1 sm:pr-2 shadow-2xl z-10 border-y border-r border-outline-variant"
+              className="absolute -left-6  w-10  h-[85%] bg-surface rounded-r-3xl opacity-40 hover:opacity-80 transition-opacity flex items-center justify-end pr-1  shadow-2xl z-10 border-y border-r border-outline-variant"
             >
               <ChevronLeft className="w-6 h-6 text-text-primary" />
             </button>
@@ -364,7 +364,7 @@ export default function JourneyPage() {
           {hasNext && (
             <button 
               onClick={goNext}
-              className="absolute -right-6 sm:-right-12 w-10 sm:w-16 h-[85%] bg-surface rounded-l-3xl opacity-40 hover:opacity-80 transition-opacity flex items-center justify-start pl-1 sm:pl-2 shadow-2xl z-10 border-y border-l border-outline-variant"
+              className="absolute -right-6  w-10  h-[85%] bg-surface rounded-l-3xl opacity-40 hover:opacity-80 transition-opacity flex items-center justify-start pl-1  shadow-2xl z-10 border-y border-l border-outline-variant"
             >
               <ChevronRight className="w-6 h-6 text-text-primary" />
             </button>

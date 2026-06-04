@@ -16,13 +16,13 @@ const StepIndicator = ({ current, target, label, num }: any) => {
   const isActive = current === target;
   
   return (
-    <div className={`flex items-center gap-1 sm:gap-2 ${isActive ? 'text-primary' : isPast ? 'text-success' : 'text-text-muted'}`}>
-      {isPast ? <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" /> : (
-        <div className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold ${isActive ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-text-muted'}`}>
+    <div className={`flex items-center gap-1  ${isActive ? 'text-primary' : isPast ? 'text-success' : 'text-text-muted'}`}>
+      {isPast ? <CheckCircle2 className="w-4 h-4   shrink-0" /> : (
+        <div className={`w-4 h-4   shrink-0 rounded-full flex items-center justify-center text-[10px]  font-bold ${isActive ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-text-muted'}`}>
           {num}
         </div>
       )}
-      <span className="font-caption sm:font-body-sm font-medium hidden sm:block">{label}</span>
+      <span className="font-caption  font-medium hidden ">{label}</span>
     </div>
   );
 };
@@ -289,23 +289,23 @@ export default function StoreVisitPage() {
   }
 
   return (
-    <div className="max-w-container-max mx-auto space-y-md md:space-y-lg">
+    <div className="max-w-container-max mx-auto space-y-md ">
       <div className="flex items-center justify-between bg-surface rounded-xl p-md shadow-sm border border-border">
-        <div className="flex items-center gap-2 sm:gap-md min-w-0">
-          <button onClick={handleHeaderPrevStep} className="p-1 sm:p-xs hover:bg-surface-container-low rounded-lg transition-colors text-text-secondary shrink-0">
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+        <div className="flex items-center gap-2  min-w-0">
+          <button onClick={handleHeaderPrevStep} className="p-1  hover:bg-surface-container-low rounded-lg transition-colors text-text-secondary shrink-0">
+            <ChevronLeft className="w-5 h-5  " />
           </button>
           <div className="min-w-0">
             
-            <h2 className="font-h3 sm:font-h2 text-h3 sm:text-h2 font-bold text-text-primary truncate max-w-[140px] sm:max-w-[320px] md:max-w-[448px]">{store.name}</h2>
+            <h2 className="font-h3  text-h3  font-bold text-text-primary truncate max-w-[140px]  ">{store.name}</h2>
           </div>
         </div>
         
-        <div className="flex items-center gap-1 sm:gap-3 md:gap-lg shrink-0">
+        <div className="flex items-center gap-1   shrink-0">
           <StepIndicator current={step} target={1} label="Opname" num="1" />
-          <div className="w-2 sm:w-3 md:w-4 h-[1px] bg-outline-variant hidden sm:block"></div>
+          <div className="w-2   h-[1px] bg-outline-variant hidden "></div>
           <StepIndicator current={step} target={2} label="Restock" num="2" />
-          <div className="w-2 sm:w-3 md:w-4 h-[1px] bg-outline-variant hidden sm:block"></div>
+          <div className="w-2   h-[1px] bg-outline-variant hidden "></div>
           <StepIndicator current={step} target={3} label="Checkout" num="3" />
         </div>
       </div>

@@ -161,7 +161,7 @@ export default function ProductListPage() {
           <div className="text-text-secondary font-body text-body">Pencarian tidak menemukan produk.</div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+        <div className="grid grid-cols-1   gap-md">
           {products.map((product, index) => {
             if(index >= LIMIT){return}
             return (

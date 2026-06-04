@@ -141,7 +141,7 @@ export default function StoreListPage() {
           <div className="text-text-secondary font-body text-body">Pencarian tidak menemukan toko.</div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+        <div className="grid grid-cols-1   gap-md">
           {stores.map((store, index) => {
             if (index >= LIMIT) { return }
             return <StoreCard key={store.id} store={store} storeCategoryLabels={storeCategoryLabels} />

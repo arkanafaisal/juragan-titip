@@ -113,7 +113,7 @@ export function PageHeader() {
         /> */}
         
         
-        {/* <div onClick={()=>{setIsAlertPanelOpen(false)}} className="md:hidden relative ml-1 flex items-center"> */}
+        {/* <div onClick={()=>{setIsAlertPanelOpen(false)}} className=" relative ml-1 flex items-center"> */}
         <div className="relative ml-1 flex items-center">
           <ProfileMenu />
         </div>

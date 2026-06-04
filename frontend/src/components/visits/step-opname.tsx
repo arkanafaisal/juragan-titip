@@ -15,24 +15,24 @@ export function StepOpname({ opnameItems, handleOpnameChange, onNext }: StepOpna
       <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="bg-surface-container-low px-md py-sm border-b border-outline-variant flex justify-between items-center">
           <div>
-            <h3 className="font-body sm:font-h3 text-body sm:text-h3 font-bold text-text-primary">Cek fisik barang sisa titipan terakhir</h3>
+            <h3 className="font-body  text-body  font-bold text-text-primary">Cek fisik barang sisa titipan terakhir</h3>
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[500px] md:min-w-[600px]">
+          <table className="w-full text-left min-w-[500px] ">
             <thead>
               <tr className="bg-surface-container-lowest border-b border-outline-variant">
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold w-[35%] md:w-[45%]">Produk</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[15%] md:w-[11%]">Titip</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%] md:w-[16%]">Laku</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%] md:w-[16%]">Retur (Rusak)</th>
-                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[10%] md:w-[12%]">Sisa</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold w-[35%] ">Produk</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[15%] ">Titip</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%] ">Laku</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[20%] ">Retur (Rusak)</th>
+                <th className="py-sm px-md font-caption text-caption text-text-secondary font-semibold text-center w-[10%] ">Sisa</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {opnameItems.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-xl text-center text-text-secondary font-body-sm sm:font-body text-body-sm sm:text-body bg-surface-bright">
+                  <td colSpan={5} className="py-xl text-center text-text-secondary font-body-sm  text-body-sm  bg-surface-bright">
                     Tidak ada data titipan sebelumnya. (Otomatis Skip)
                   </td>
                 </tr>
@@ -56,7 +56,7 @@ export function StepOpname({ opnameItems, handleOpnameChange, onNext }: StepOpna
                       </div>
                     </td>
                     <td className="py-md px-md text-center">
-                      <span className={`font-data-md sm:font-data-lg text-data-md sm:text-data-lg font-bold ${item.remained > 0 ? 'text-primary' : 'text-text-muted'}`}>{item.remained}</span>
+                      <span className={`font-data-md  text-data-md  font-bold ${item.remained > 0 ? 'text-primary' : 'text-text-muted'}`}>{item.remained}</span>
                     </td>
                   </tr>
                 ))
@@ -66,8 +66,8 @@ export function StepOpname({ opnameItems, handleOpnameChange, onNext }: StepOpna
         </div>
       </div>
       <div className="flex justify-end">
-        <button onClick={onNext} className="bg-primary text-on-primary px-lg py-sm sm:py-md rounded-lg font-body sm:font-h3 text-body sm:text-h3 font-medium flex items-center gap-xs hover:bg-primary/90 transition-colors shadow-sm">
-          Lanjut Restock <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+        <button onClick={onNext} className="bg-primary text-on-primary px-lg py-sm  rounded-lg font-body  text-body  font-medium flex items-center gap-xs hover:bg-primary/90 transition-colors shadow-sm">
+          Lanjut Restock <ArrowRight className="w-4 h-4  " />
         </button>
       </div>
     </div>
