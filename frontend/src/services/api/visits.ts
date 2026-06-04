@@ -1,4 +1,4 @@
-import type { Visit, ApiResponse } from "@/types"
+import type { Visit, ApiResponse, InventoryLog } from "@/types"
 import { db, type DbVisit } from "@/lib/db"
 import { toast } from "sonner"
 
@@ -75,7 +75,7 @@ export const visitApi = {
               storeId: newVisit.storeId,
               storeName: newVisit.storeName,
               createdAt: newVisit.createdAt
-            } as any);
+            } as Omit<InventoryLog, 'id'>);
 
             const product = await db.products.get(item.productId);
             if (product) {
@@ -101,7 +101,7 @@ export const visitApi = {
                 storeId: newVisit.storeId,
                 storeName: newVisit.storeName,
                 createdAt: newVisit.createdAt
-              } as any);
+              } as Omit<InventoryLog, 'id'>);
             }
           }
         }

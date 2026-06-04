@@ -199,7 +199,7 @@ export const productApi = {
             quantity: diff,
             notes: reason || "Penyesuaian stok fisik",
             createdAt: new Date().toISOString()
-          } as any);
+          } as Omit<InventoryLog, 'id'>);
         }
         
         updatedProduct = await db.products.get(numericId) as Product;
@@ -238,7 +238,7 @@ export const productApi = {
           quantity: addedStock,
           notes: notes || "Tambah stok dari agen",
           createdAt: new Date().toISOString()
-        } as any);
+        } as Omit<InventoryLog, 'id'>);
         
         updatedProduct = await db.products.get(numericId) as Product;
       });
@@ -297,7 +297,7 @@ export const productApi = {
             quantity: resaleQty,
             notes: "Siap jual, masuk kembali ke gudang",
             createdAt: now.toISOString()
-          } as any);
+          } as Omit<InventoryLog, 'id'>);
         }
         
         if (wasteQty > 0) {
@@ -308,7 +308,7 @@ export const productApi = {
             quantity: -wasteQty,
             notes: "Basi/Rusak/Dibuang",
             createdAt: now.toISOString()
-          } as any);
+          } as Omit<InventoryLog, 'id'>);
         }
         
         updatedProduct = await db.products.get(numericId) as Product;
