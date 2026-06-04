@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
-  Pencil,
+  SquarePen,
   Trash2,
   MapPin,
   User,
@@ -12,7 +12,8 @@ import {
   TrendingUp,
   History,
   StickyNote,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from "lucide-react";
 import { MapPicker } from "@/components/features/map-picker";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -139,6 +140,16 @@ export default function StoreDetailPage() {
 
   return (
     <div className="max-w-container-max mx-auto space-y-md  pb-xl">
+      {/* KEMBALI BUTTON */}
+      <div className="flex items-center">
+        <button 
+          onClick={() => navigate("/stores")}
+          className="flex items-center gap-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm font-bold text-text-primary hover:bg-surface-container-low active:scale-[0.98] transition-all"
+        >
+          <ArrowLeft className="w-4 h-4" /> 
+          <span className="text-body-sm">Kembali</span>
+        </button>
+      </div>
 
       <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
         <div className="flex flex-col ">
@@ -153,20 +164,18 @@ export default function StoreDetailPage() {
                 </div>
                 
                 
-                <div className="flex items-center gap-xs ">
+                <div className="flex items-center gap-2">
                   <button 
                     onClick={() => setIsDeleteModalOpen(true)}
-                    className="text-error hover:bg-error/10 p-sm   rounded-lg transition-colors flex items-center gap-xs font-body-sm text-body-sm   border border-error/20"
+                    className="p-1.5 text-error hover:text-error/80 hover:bg-error/30 rounded-xl shrink-0 transition-colors active:scale-95"
                   >
-                    <Trash2 className="w-4 h-4" />
-                    <span className="hidden ">Hapus</span>
+                    <Trash2 className="w-6 h-6" />
                   </button>
                   <button 
                     onClick={() => navigate(`/stores/${store.id}/edit`)}
-                    className="text-primary hover:bg-surface-container-low p-sm   rounded-lg transition-colors flex items-center gap-xs font-body-sm text-body-sm   border border-outline-variant"
+                    className="p-1.5 text-warning hover:text-warning/80 hover:bg-warning/30 rounded-xl shrink-0 transition-colors active:scale-95"
                   >
-                    <Pencil className="w-4 h-4" />
-                    <span className="hidden ">Edit</span>
+                    <SquarePen className="w-6 h-6" />
                   </button>
                 </div>
               </div>
@@ -213,9 +222,21 @@ export default function StoreDetailPage() {
       </div>
 
       <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden flex flex-col">
-        <div className="flex border-b border-border px-md bg-surface-container-lowest overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
-          <button onClick={() => setActiveTab("titipan")} className={`px-md py-3 font-body text-body   whitespace-nowrap transition-colors border-b-2 relative top-[1px] ${activeTab === "titipan" ? "font-bold text-primary border-primary" : "text-text-secondary hover:text-text-primary border-transparent"}`}>Titipan</button>
-          <button onClick={() => setActiveTab("riwayat")} className={`px-md py-3 font-body text-body   whitespace-nowrap transition-colors border-b-2 relative top-[1px] ${activeTab === "riwayat" ? "font-bold text-primary border-primary" : "text-text-secondary hover:text-text-primary border-transparent"}`}>Riwayat</button>
+        <div className="p-3 bg-surface-container-lowest border-b border-border">
+          <div className="flex bg-surface-container-low p-1 rounded-xl">
+            <button 
+              onClick={() => setActiveTab("titipan")} 
+              className={`flex-1 py-2 text-body-sm font-semibold rounded-lg transition-all ${activeTab === "titipan" ? "bg-primary text-on-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+            >
+              Titipan
+            </button>
+            <button 
+              onClick={() => setActiveTab("riwayat")} 
+              className={`flex-1 py-2 text-body-sm font-semibold rounded-lg transition-all ${activeTab === "riwayat" ? "bg-primary text-on-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+            >
+              Riwayat
+            </button>
+          </div>
         </div>
         {activeTab === "titipan" && (
           <div className="p-md ">
