@@ -94,14 +94,14 @@ export default function ProductDetailPage() {
             className="flex items-center gap-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm font-bold text-black hover:bg-surface-container-low active:scale-[0.98] transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> 
-            <span className="text-sm">Kembali</span>
+            <span className="text-body-sm">Kembali</span>
           </button>
         </div>
 
         {/* SECTION: IDENTITAS & HARGA */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
           <div className="flex justify-between items-start mb-1">
-            <h2 className="text-xl font-black text-black pr-2">
+            <h2 className="text-h2 font-black text-black pr-2">
               {product.name}
             </h2>
             <button 
@@ -112,12 +112,12 @@ export default function ProductDetailPage() {
             </button>
           </div>
           
-          <div className="text-sm text-black/60 mb-4 font-bold capitalize">
+          <div className="text-body-sm text-black/60 mb-4 font-bold capitalize">
             {categoryLabels[product.category as keyof typeof categoryLabels] || product.category}
           </div>
           
           {product.description && (
-            <div className="bg-black/5 p-3 rounded-xl mb-4 border border-black/5 text-sm">
+            <div className="bg-black/5 p-3 rounded-xl mb-4 border border-black/5 text-body-sm">
               <p className="text-black/80">
                 <span className="font-bold text-black mr-1">Deskripsi:</span>
                 {product.description}
@@ -125,7 +125,7 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          <div className="space-y-3 text-sm mt-2">
+          <div className="space-y-3 text-data-md mt-2">
             <div className="flex justify-between pb-2 border-b border-outline-variant border-dashed">
               <span className="text-black/70 font-bold">Modal</span>
               <span className="font-black text-black">Rp {product.costPrice.toLocaleString('id-ID')}</span>
@@ -136,7 +136,7 @@ export default function ProductDetailPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-black/70 font-bold">Harga Ecer</span>
-              <span className={`font-black ${product.retailPrice ? 'text-black' : 'text-black/40 italic text-sm'}`}>
+              <span className={`font-black ${product.retailPrice ? 'text-black' : 'text-black/40 italic text-body-sm'}`}>
                 {product.retailPrice ? `Rp ${product.retailPrice.toLocaleString('id-ID')}` : 'Belum diatur'}
               </span>
             </div>
@@ -145,12 +145,12 @@ export default function ProductDetailPage() {
 
         {/* SECTION: STOK UTAMA */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
-          <h3 className="text-base font-black text-black mb-2 uppercase">
+          <h3 className="text-h3 font-black text-black mb-2 uppercase">
             Stok Utama
           </h3>
           <div className="flex items-end gap-1.5 mb-4">
-            <span className="text-4xl font-black text-black leading-none">{product.warehouseStock}</span>
-            <span className="text-sm font-bold text-black/50 mb-0.5">Pcs</span>
+            <span className="text-display font-black text-black leading-none">{product.warehouseStock}</span>
+            <span className="text-body-sm font-bold text-black/50 mb-0.5">Pcs</span>
           </div>
           
           <div className="flex gap-2">
@@ -171,10 +171,10 @@ export default function ProductDetailPage() {
 
         {/* SECTION: MANAJEMEN RETUR */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
-          <h3 className="text-base font-black text-black mb-1 uppercase">
+          <h3 className="text-h3 font-black text-black mb-1 uppercase">
             Manajemen Retur
           </h3>
-          <p className="text-xs text-black/70 mb-4 font-medium">
+          <p className="text-caption text-black/70 mb-4 font-medium">
             Terdapat <span className="font-black text-error">{product.returnedStock || 0} Pcs</span> barang retur di tangan Anda.
           </p>
           <button 
@@ -189,14 +189,14 @@ export default function ProductDetailPage() {
         {/* SECTION: RIWAYAT AKTIVITAS */}
         <section className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
           <div className="p-4 border-b border-outline-variant">
-            <h3 className="text-base font-black text-black uppercase">
+            <h3 className="text-h3 font-black text-black uppercase">
               Riwayat Aktivitas
             </h3>
           </div>
 
           <div className="p-4 space-y-5">
             {logs.length === 0 ? (
-              <p className="text-sm font-medium text-center text-black/50">Belum ada riwayat aktivitas</p>
+              <p className="text-body-sm font-medium text-center text-black/50">Belum ada riwayat aktivitas</p>
             ) : (
               logs.map((log, index) => {
                 const config = getLogConfig(log);
@@ -213,10 +213,10 @@ export default function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex flex-col mb-1">
-                        <span className="text-sm font-black text-black">{config.title}</span>
-                        <span className="text-xs text-black/50 font-bold">{formatDate(log.createdAt)}</span>
+                        <span className="text-body-sm font-black text-black">{config.title}</span>
+                        <span className="text-caption text-black/50 font-bold">{formatDate(log.createdAt)}</span>
                       </div>
-                      <p className="text-sm font-medium text-black/80 mt-0.5">
+                      <p className="text-body-sm font-medium text-black/80 mt-0.5">
                         <span className="text-black/30 mr-1 font-bold">↳</span>{config.desc}
                       </p>
                     </div>
