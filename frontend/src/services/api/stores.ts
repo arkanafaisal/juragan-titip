@@ -19,7 +19,17 @@ export interface StoreQueryParams {
 export const storeApi = {
   getAll: async (params?: StoreQueryParams): Promise<ApiResponse<Store[]>> => {
     try {
-      let collection = db.stores.orderBy('normalizedName');
+      let collection;
+      // 1. Tentukan Index yang akan digunakan berdasarkan parameter
+      if (params?.sortBy === 'lastVisitAsc') {
+        collection = db.stores.orderBy('lastVisitAt');
+      } else if (params?.sortBy === 'lastVisitDesc') {
+        collection = db.stores.orderBy('lastVisitAt').reverse();
+      } else {
+        // Default: Urut abjad
+        collection = db.stores.orderBy('normalizedName');
+      }
+      
       
       if (params) {
         if (params.search) {
@@ -52,30 +62,9 @@ export const storeApi = {
       const page = params?.page || 1;
       const offset = (page - 1) * LIMIT;
 
-      if (!params?.sortBy) {
-        const stores = await collection.offset(offset).limit(LIMIT + 1).toArray();
-        return { success: true, data: stores };
-      }
+      const stores = await collection.offset(offset).limit(LIMIT + 1).toArray();
+      return { success: true, data: stores };
 
-      let stores = await collection.toArray();
-
-      if (params.sortBy === 'lastVisitAsc') {
-        stores.sort((a, b) => {
-          if (!a.lastVisitAt) return -1;
-          if (!b.lastVisitAt) return 1;
-          return new Date(a.lastVisitAt).getTime() - new Date(b.lastVisitAt).getTime();
-        });
-      } else if (params.sortBy === 'lastVisitDesc') {
-        stores.sort((a, b) => {
-          if (!a.lastVisitAt) return 1;
-          if (!b.lastVisitAt) return -1;
-          return new Date(b.lastVisitAt).getTime() - new Date(a.lastVisitAt).getTime();
-        });
-      }
-
-      const paginatedStores = stores.slice(offset, offset + LIMIT + 1);
-
-      return { success: true, data: paginatedStores }
     } catch (error) {
       toast.error("Gagal memuat data toko")
       return { success: false, data: [], message: "Gagal memuat data toko" }
@@ -128,7 +117,8 @@ export const storeApi = {
       ...data,
       normalizedName,
       debt: 0,
-      assetValue: 0
+      assetValue: 0,
+      lastVisitAt: ""
     }
 
     try {

@@ -32,7 +32,7 @@ export interface Store {
   notes: string
   debt: number
   assetValue: number
-  lastVisitAt?: string
+  lastVisitAt: string
   category: "1" | "2" | "3" | "4" | "5"
 }
 
