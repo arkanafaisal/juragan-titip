@@ -22,38 +22,58 @@ export interface ProductDetailWithLogs {
 export const productApi = {
   getAll: async (params?: ProductQueryParams): Promise<ApiResponse<Product[]>> => {
     try {
-      let collection = db.products.orderBy('normalizedName').filter(p => !p.isArchived);
+      let productsArray: DbProduct[] = [];
+      
+      if (params?.category) {
+        productsArray = await db.products
+          .where('category')
+          .equals(params.category.toLowerCase())
+          .sortBy('normalizedName');
+      } else {
+        productsArray = await db.products
+          .orderBy('normalizedName')
+          .toArray();
+      }
+
+      // ====================================================
+      // 2. FASE RAM (Javascript): Filter logika bisnis
+      // ====================================================
+      
+      productsArray = productsArray.filter(p => !p.isArchived);
 
       if (params) {
         if (params.search) {
           const query = params.search.toLowerCase();
-          collection = collection.filter(p => p.normalizedName.startsWith(query));
+          productsArray = productsArray.filter(p => p.normalizedName.startsWith(query));
         }
         
-        if (params.category) {
-          const categoryFilter = params.category.toLowerCase();
-          collection = collection.filter(p => p.category.toLowerCase() === categoryFilter);
-        }
-        
+        // Filter Status Stok
         if (params.stockStatus) {
           const threshold = settingsApi.getLowStockThreshold();
           if (params.stockStatus === 'in_stock') {
-            collection = collection.filter(p => p.warehouseStock > threshold);
+            productsArray = productsArray.filter(p => p.warehouseStock > threshold);
           } else if (params.stockStatus === 'low_stock') {
-            collection = collection.filter(p => p.warehouseStock > 0 && p.warehouseStock <= threshold);
+            productsArray = productsArray.filter(p => p.warehouseStock > 0 && p.warehouseStock <= threshold);
           } else if (params.stockStatus === 'out_of_stock') {
-            collection = collection.filter(p => p.warehouseStock === 0);
+            productsArray = productsArray.filter(p => p.warehouseStock === 0);
           }
         }
       }
 
       const page = params?.page || 1;
-      const offset = (page - 1) * LIMIT;
+      const startIndex = (page - 1) * LIMIT;
+      
+      // Ambil LIMIT + 1 untuk mempertahankan kompatibilitas dengan UI.
+      // (Memberitahu frontend bahwa masih ada halaman berikutnya)
+      const endIndex = startIndex + LIMIT + 1; 
 
-      const products = await collection.offset(offset).limit(LIMIT + 1).toArray();
+      // Memotong array menggunakan .slice() sangat ringan dan instan O(1)
+      const paginatedData = productsArray.slice(startIndex, endIndex);
 
-      return { success: true, data: products };
+      return { success: true, data: paginatedData as Product[] };
+      
     } catch (error) {
+      console.error("Dexie Get All Products Error:", error);
       toast.error("Gagal memuat data produk");
       return { success: false, data: [], message: "Gagal memuat data produk" };
     }
