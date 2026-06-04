@@ -35,8 +35,8 @@ export const storeApi = {
         if (params.search) {
           const query = params.search.toLowerCase();
           collection = collection.filter(s => 
-            s.name.toLowerCase().includes(query) || 
-            s.ownerName.toLowerCase().includes(query)
+            s.normalizedName.startsWith(query) || 
+            s.ownerName.toLowerCase().startsWith(query)
           );
         }
         

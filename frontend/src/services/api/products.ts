@@ -27,8 +27,7 @@ export const productApi = {
       if (params) {
         if (params.search) {
           const query = params.search.toLowerCase();
-          
-          collection = collection.filter(p => p.normalizedName.includes(query));
+          collection = collection.filter(p => p.normalizedName.startsWith(query));
         }
         
         if (params.category) {
