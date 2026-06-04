@@ -23,13 +23,13 @@ const getLogConfig = (log: InventoryLog) => {
     case 'TITIPAN':
       return { title: 'TITIPAN TOKO', desc: `${log.storeName || 'Toko'}: -${Math.abs(log.quantity)} Pcs`, icon: Store, color: 'text-orange-500', bg: 'bg-orange-50' };
     case 'KOREKSI':
-      return { title: 'KOREKSI STOK', desc: `Penyesuaian: ${log.quantity > 0 ? '+' : ''}${log.quantity} Pcs`, icon: Pencil, color: 'text-black/60', bg: 'bg-black/5' };
+      return { title: 'KOREKSI STOK', desc: `Penyesuaian: ${log.quantity > 0 ? '+' : ''}${log.quantity} Pcs`, icon: Pencil, color: 'text-text-secondary', bg: 'bg-surface-container-low' };
     case 'KULAKAN':
       return { title: 'KULAKAN AGEN', desc: `Tambah Stok: ${log.quantity} Pcs`, icon: Package, color: 'text-success', bg: 'bg-success/10' };
     case 'TARIK_RETUR':
       return { title: 'TARIK RETUR', desc: `${log.storeName || 'Toko'}: ${log.quantity} Pcs`, icon: RefreshCw, color: 'text-indigo-500', bg: 'bg-indigo-50' };
     default:
-      return { title: log.type, desc: `${log.quantity} Pcs`, icon: Package, color: 'text-black/60', bg: 'bg-black/5' };
+      return { title: log.type, desc: `${log.quantity} Pcs`, icon: Package, color: 'text-text-secondary', bg: 'bg-surface-container-low' };
   }
 };
 
@@ -73,11 +73,11 @@ export default function ProductDetailPage() {
   }, [id]);
 
   if (isLoading) {
-    return <div className="min-h-dvh flex items-center justify-center bg-surface-container-lowest text-black font-medium">Memuat...</div>;
+    return <div className="min-h-dvh flex items-center justify-center bg-surface-container-lowest text-text-primary font-medium">Memuat...</div>;
   }
 
   if (!data) {
-    return <div className="min-h-dvh flex items-center justify-center bg-surface-container-lowest text-black font-medium">Produk tidak ditemukan</div>;
+    return <div className="min-h-dvh flex items-center justify-center bg-surface-container-lowest text-text-primary font-medium">Produk tidak ditemukan</div>;
   }
 
   const { product, logs } = data;
@@ -91,7 +91,7 @@ export default function ProductDetailPage() {
         <div className="mb-2 flex items-center">
           <button 
             onClick={() => navigate("/products")}
-            className="flex items-center gap-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm font-bold text-black hover:bg-surface-container-low active:scale-[0.98] transition-all"
+            className="flex items-center gap-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm font-bold text-text-primary hover:bg-surface-container-low active:scale-[0.98] transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> 
             <span className="text-body-sm">Kembali</span>
@@ -101,7 +101,7 @@ export default function ProductDetailPage() {
         {/* SECTION: IDENTITAS & HARGA */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
           <div className="flex justify-between items-start mb-1">
-            <h2 className="text-h2 font-black text-black pr-2">
+            <h2 className="text-h2 font-black text-text-primary pr-2">
               {product.name}
             </h2>
             <button 
@@ -112,14 +112,14 @@ export default function ProductDetailPage() {
             </button>
           </div>
           
-          <div className="text-body-sm text-black/60 mb-4 font-bold capitalize">
+          <div className="text-body-sm text-text-secondary mb-4 font-bold capitalize">
             {categoryLabels[product.category as keyof typeof categoryLabels] || product.category}
           </div>
           
           {product.description && (
-            <div className="bg-black/5 p-3 rounded-xl mb-4 border border-black/5 text-body-sm">
-              <p className="text-black/80">
-                <span className="font-bold text-black mr-1">Deskripsi:</span>
+            <div className="bg-surface-container-low p-3 rounded-xl mb-4 border border-black/5 text-body-sm">
+              <p className="text-text-primary/80">
+                <span className="font-bold text-text-primary mr-1">Deskripsi:</span>
                 {product.description}
               </p>
             </div>
@@ -127,16 +127,16 @@ export default function ProductDetailPage() {
 
           <div className="space-y-3 text-data-md mt-2">
             <div className="flex justify-between pb-2 border-b border-outline-variant border-dashed">
-              <span className="text-black/70 font-bold">Modal</span>
-              <span className="font-black text-black">Rp {product.costPrice.toLocaleString('id-ID')}</span>
+              <span className="text-text-secondary font-bold">Modal</span>
+              <span className="font-black text-text-primary">Rp {product.costPrice.toLocaleString('id-ID')}</span>
             </div>
             <div className="flex justify-between pb-2 border-b border-outline-variant border-dashed">
-              <span className="text-black/70 font-bold">Jual (Toko)</span>
+              <span className="text-text-secondary font-bold">Jual (Toko)</span>
               <span className="font-black text-primary">Rp {product.wholesalePrice.toLocaleString('id-ID')}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-black/70 font-bold">Harga Ecer</span>
-              <span className={`font-black ${product.retailPrice ? 'text-black' : 'text-black/40 italic text-body-sm'}`}>
+              <span className="text-text-secondary font-bold">Harga Ecer</span>
+              <span className={`font-black ${product.retailPrice ? 'text-text-primary' : 'text-text-muted italic text-body-sm'}`}>
                 {product.retailPrice ? `Rp ${product.retailPrice.toLocaleString('id-ID')}` : 'Belum diatur'}
               </span>
             </div>
@@ -145,12 +145,12 @@ export default function ProductDetailPage() {
 
         {/* SECTION: STOK UTAMA */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
-          <h3 className="text-h3 font-black text-black mb-2 uppercase">
+          <h3 className="text-h3 font-black text-text-primary mb-2 uppercase">
             Stok Utama
           </h3>
           <div className="flex items-end gap-1.5 mb-4">
-            <span className="text-display font-black text-black leading-none">{product.warehouseStock}</span>
-            <span className="text-body-sm font-bold text-black/50 mb-0.5">Pcs</span>
+            <span className="text-display font-black text-text-primary leading-none">{product.warehouseStock}</span>
+            <span className="text-body-sm font-bold text-text-muted mb-0.5">Pcs</span>
           </div>
           
           <div className="flex gap-2">
@@ -171,10 +171,10 @@ export default function ProductDetailPage() {
 
         {/* SECTION: MANAJEMEN RETUR */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
-          <h3 className="text-h3 font-black text-black mb-1 uppercase">
+          <h3 className="text-h3 font-black text-text-primary mb-1 uppercase">
             Manajemen Retur
           </h3>
-          <p className="text-caption text-black/70 mb-4 font-medium">
+          <p className="text-caption text-text-secondary mb-4 font-medium">
             Terdapat <span className="font-black text-error">{product.returnedStock || 0} Pcs</span> barang retur di tangan Anda.
           </p>
           <button 
@@ -189,14 +189,14 @@ export default function ProductDetailPage() {
         {/* SECTION: RIWAYAT AKTIVITAS */}
         <section className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
           <div className="p-4 border-b border-outline-variant">
-            <h3 className="text-h3 font-black text-black uppercase">
+            <h3 className="text-h3 font-black text-text-primary uppercase">
               Riwayat Aktivitas
             </h3>
           </div>
 
           <div className="p-4 space-y-5">
             {logs.length === 0 ? (
-              <p className="text-body-sm font-medium text-center text-black/50">Belum ada riwayat aktivitas</p>
+              <p className="text-body-sm font-medium text-center text-text-muted">Belum ada riwayat aktivitas</p>
             ) : (
               logs.map((log, index) => {
                 const config = getLogConfig(log);
@@ -213,11 +213,11 @@ export default function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex flex-col mb-1">
-                        <span className="text-body-sm font-black text-black">{config.title}</span>
-                        <span className="text-caption text-black/50 font-bold">{formatDate(log.createdAt)}</span>
+                        <span className="text-body-sm font-black text-text-primary">{config.title}</span>
+                        <span className="text-caption text-text-muted font-bold">{formatDate(log.createdAt)}</span>
                       </div>
-                      <p className="text-body-sm font-medium text-black/80 mt-0.5">
-                        <span className="text-black/30 mr-1 font-bold">↳</span>{config.desc}
+                      <p className="text-body-sm font-medium text-text-primary/80 mt-0.5">
+                        <span className="text-text-muted mr-1 font-bold">↳</span>{config.desc}
                       </p>
                     </div>
                   </div>

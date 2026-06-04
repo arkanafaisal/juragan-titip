@@ -139,7 +139,7 @@ export default function JourneyPage() {
 
   if (isLoading) {
     return (
-      <div className="h-dvh bg-neutral-900 flex items-center justify-center text-white">
+      <div className="h-dvh bg-inverse-surface flex items-center justify-center text-inverse-on-surface">
         <Navigation className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -147,7 +147,7 @@ export default function JourneyPage() {
 
   if (stores.length === 0) {
     return (
-      <div className="h-dvh overflow-hidden bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center relative">
+      <div className="h-dvh overflow-hidden bg-inverse-surface flex flex-col items-center justify-center text-inverse-on-surface p-6 text-center relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -157,11 +157,11 @@ export default function JourneyPage() {
             </div>
           </div>
         )}
-        <MapPin className="w-12 h-12 text-neutral-500 mb-4" />
+        <MapPin className="w-12 h-12 text-outline mb-4" />
         <h2 className="font-h2 text-h2 font-bold mb-2">
           {totalStoresCount === 0 ? "Belum Ada Toko" : "Semua Toko Sudah Dikunjungi"}
         </h2>
-        <p className="text-neutral-400 mb-6 font-body text-body">
+        <p className="text-inverse-on-surface/70 mb-6 font-body text-body">
           {totalStoresCount === 0 
             ? "Tambahkan data toko terlebih dahulu untuk menggunakan Mode Keliling."
             : "Saat ini tidak ada toko yang melewati batas hari kunjungan."}
@@ -176,7 +176,7 @@ export default function JourneyPage() {
   // STATUS: Minta GPS
   if (!hasGpsAccess) {
     return (
-      <div className="h-dvh overflow-hidden bg-neutral-900 flex flex-col items-center justify-center text-white p-6 text-center animate-in fade-in duration-300 relative">
+      <div className="h-dvh overflow-hidden bg-inverse-surface flex flex-col items-center justify-center text-inverse-on-surface p-6 text-center animate-in fade-in duration-300 relative">
         {notification && (
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 w-max max-w-[90vw]">
             <div className={`px-5 py-2.5 rounded-full shadow-lg font-body-sm text-body-sm font-bold flex items-center justify-center text-center gap-2 ${
@@ -188,7 +188,7 @@ export default function JourneyPage() {
         )}
         <LocateFixed className="w-16 h-16 text-primary mb-6 animate-pulse" />
         <h2 className="font-h2 text-h2 font-bold mb-3">Akses Lokasi Dibutuhkan</h2>
-        <p className="text-neutral-400 mb-8 font-body text-body max-w-[300px]">
+        <p className="text-inverse-on-surface/70 mb-8 font-body text-body max-w-[300px]">
           Mode keliling memerlukan akses GPS untuk mencarikan rute toko prioritas yang wajib Anda kunjungi (mulai dari yang terdekat).
         </p>
         <button 
@@ -208,7 +208,7 @@ export default function JourneyPage() {
              </>
           )}
         </button>
-        <button onClick={handleClose} className="mt-4 px-6 py-3 text-neutral-400 hover:text-white transition-colors">
+        <button onClick={handleClose} className="mt-4 px-6 py-3 text-inverse-on-surface/70 hover:text-inverse-on-surface transition-colors">
           Batal & Kembali
         </button>
       </div>
@@ -232,7 +232,7 @@ export default function JourneyPage() {
 
   return (
     // FULLSCREEN OVERLAY
-    <div className="h-dvh overflow-hidden w-full bg-neutral-900 flex flex-col font-body animate-in fade-in duration-300 relative">
+    <div className="h-dvh overflow-hidden w-full bg-inverse-surface flex flex-col font-body animate-in fade-in duration-300 relative">
       
       {/* CUSTOM NOTIFICATION */}
       {notification && (
@@ -246,7 +246,7 @@ export default function JourneyPage() {
       )}
 
       {/* HEADER BAR */}
-      <div className="flex justify-between items-center p-4 text-white shrink-0">
+      <div className="flex justify-between items-center p-4 text-inverse-on-surface shrink-0">
         <button onClick={handleClose} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
           <X className="w-5 h-5" />
         </button>
@@ -308,7 +308,7 @@ export default function JourneyPage() {
               </MapContainer>
 
               <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-surface/50 to-transparent pointer-events-none z-10" />
-              <div className="absolute bottom-3 right-3 bg-neutral-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
+              <div className="absolute bottom-3 right-3 bg-inverse-surface/90 backdrop-blur-md text-inverse-on-surface px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
                 <MapPin className="w-4 h-4 text-primary-fixed" />
                 {currentStore.distance === 9999 ? '?' : currentStore.distance} km
               </div>
@@ -375,13 +375,13 @@ export default function JourneyPage() {
 
       {/* MINI JUMPER MENU (Bottom Sheet/Drawer) */}
       <div 
-        className={`absolute bottom-0 inset-x-0 bg-neutral-950/95 backdrop-blur-lg border-t border-white/10 transition-transform duration-300 ease-in-out z-50 ${
+        className={`absolute bottom-0 inset-x-0 bg-on-surface/95 backdrop-blur-lg border-t border-white/10 transition-transform duration-300 ease-in-out z-50 ${
           showMiniMenu ? "translate-y-0" : "translate-y-[calc(100%-40px)]"
         }`}
       >
         <button 
           onClick={() => setShowMiniMenu(!showMiniMenu)} 
-          className="w-full h-10 flex items-center justify-center gap-2 text-white/50 hover:text-white/80 transition-colors font-medium text-xs tracking-wider uppercase"
+          className="w-full h-10 flex items-center justify-center gap-2 text-inverse-on-surface/50 hover:text-inverse-on-surface/80 transition-colors font-medium text-xs tracking-wider uppercase"
         >
           {showMiniMenu ? <ChevronDown className="w-4 h-4"/> : <ChevronUp className="w-4 h-4"/>}
           {showMiniMenu ? `Sembunyikan (Posisi ${currentIndex + 1} dari ${stores.length})` : 'Tampilkan Radar Rute'}
@@ -398,8 +398,8 @@ export default function JourneyPage() {
               onClick={() => setCurrentIndex(idx)}
               className={`relative shrink-0 w-[4.5rem] h-20 rounded-2xl flex flex-col items-center justify-center snap-center transition-all duration-200 ${
                 idx === currentIndex 
-                  ? 'bg-neutral-800 text-white ring-2 ring-primary scale-105 shadow-xl' 
-                  : 'bg-neutral-900/50 text-white/60 border border-white/5 hover:bg-neutral-800'
+                  ? 'bg-surface-tint/30 text-inverse-on-surface ring-2 ring-primary scale-105 shadow-xl' 
+                  : 'bg-inverse-surface/50 text-inverse-on-surface/60 border border-white/5 hover:bg-surface-tint/30'
               }`}
             >
 
