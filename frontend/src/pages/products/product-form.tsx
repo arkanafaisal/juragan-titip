@@ -88,7 +88,7 @@ export default function ProductFormPage() {
       } else {
         const res = await productApi.create(formData as ProductFormData);
         if (res.success && res.data) {
-          navigate(`/products/${res.data.id}`);
+          navigate(`/products/${res.data.id}`, { replace: true });
         }
       }
     } finally {

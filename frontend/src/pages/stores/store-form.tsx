@@ -173,12 +173,17 @@ export default function StoreFormPage() {
         result = await storeApi.create(payload);
       }
 
-      if (result.success) {
+      if (result.success && result.data) {
         if (isEditMode) {
           navigate(`/stores/${id}`);
         } else {
-          navigate("/stores"); 
+          // Asumsi result.data memiliki properti id dari store yang baru dibuat
+          navigate(`/stores/${result.data.id}`, { replace: true }); 
         }
+      } else if (result.success) {
+         // Fallback jika API mengembalikan success tapi data null
+         if (isEditMode) navigate(`/stores/${id}`);
+         else navigate("/stores", { replace: true });
       } else {
         setError(result.message || "Gagal menyimpan data toko.");
       }
