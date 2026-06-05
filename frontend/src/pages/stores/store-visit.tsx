@@ -10,6 +10,7 @@ import type { Store, Product, OpnameItem, RestockItem } from "@/types";
 import { StepOpname } from "@/components/visits/step-opname";
 import { StepRestock } from "@/components/visits/step-restock";
 import { StepCheckout } from "@/components/visits/step-checkout";
+import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { toast } from "sonner";
 
 const StepIndicator = ({ current, target, label, num }: any) => {
@@ -44,6 +45,8 @@ export default function StoreVisitPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [restockItems, setRestockItems] = useState<(RestockItem & { _warehouseStock: number })[]>([]);
   const [amountPaidStr, setAmountPaidStr] = useState("");
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [hasCheckedVisit, setHasCheckedVisit] = useState(false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
@@ -92,6 +95,26 @@ export default function StoreVisitPage() {
     };
     init();
   }, [id]);
+
+  useEffect(() => {
+    if (store && store.lastVisitAt && !hasCheckedVisit) {
+      const lastDate = new Date(store.lastVisitAt);
+      const today = new Date();
+
+      const isVisitedToday = 
+        lastDate.getDate() === today.getDate() &&
+        lastDate.getMonth() === today.getMonth() &&
+        lastDate.getFullYear() === today.getFullYear();
+
+      if (isVisitedToday) {
+        setShowWarningModal(true);
+      }
+      
+      setHasCheckedVisit(true);
+    } else if (store && !store.lastVisitAt && !hasCheckedVisit) {
+      setHasCheckedVisit(true);
+    }
+  }, [store, hasCheckedVisit]);
 
   const handleOpnameChange = (productId: number, field: 'sold' | 'returned', value: number) => {
     setOpnameItems(prev => prev.map(item => {
@@ -352,6 +375,20 @@ export default function StoreVisitPage() {
           formatCurrency={formatCurrency}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={showWarningModal}
+        onClose={() => {
+          setShowWarningModal(false);
+          navigate(-1);
+        }}
+        onConfirm={() => setShowWarningModal(false)}
+        title="Toko Sudah Dikunjungi Hari Ini"
+        description="Sistem mencatat bahwa sudah ada nota kunjungan untuk toko ini pada hari yang sama. Apakah Anda yakin ingin membuat nota ganda?"
+        cancelText="Kembali"
+        confirmText="Tetap Lanjutkan"
+        isDanger={false}
+      />
     </div>
   );
 }
