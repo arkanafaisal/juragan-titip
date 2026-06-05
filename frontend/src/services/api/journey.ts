@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { settingsApi } from "@/services/api/settings";
 import type { DbStore } from "@/lib/db";
 
-export type StoreWithDistance = DbStore & { distance: number; isOverdue?: boolean };
+export type StoreWithDistance = DbStore & { distance?: number; isOverdue?: boolean };
 
 // Helper: Rumus Haversine untuk menghitung jarak lurus (dalam KM)
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -18,41 +18,31 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return Number((R * c).toFixed(1)); 
 };
 
-// Helper: Cek apakah toko overdue
-const isStoreOverdue = (store: DbStore, overdueDays: number, now: Date) => {
-  if (!store.lastVisitAt) return true;
-  const lastVisit = new Date(store.lastVisitAt);
-  const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays > overdueDays;
-};
 
 export const journeyApi = {
-  getInitialStores: async (): Promise<StoreWithDistance[]> => {
+  getStoresRoute: async ({ latitude, longitude }: { latitude?: number; longitude?: number } = {}): Promise<StoreWithDistance[]> => {
     const overdueDays = settingsApi.getStoreOverdueDays();
     const now = new Date();
     
     const overdueStores = await db.stores
-      .filter(s => isStoreOverdue(s, overdueDays, now))
+      .filter(store => {
+        if (!store.lastVisitAt) return true;
+        const lastVisit = new Date(store.lastVisitAt);
+        const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays > overdueDays;
+      })
       .toArray();
       
-    return overdueStores.map(s => ({ ...s, distance: 9999, isOverdue: true }));
-  },
-  
-  getOptimalRoute: async (latitude: number, longitude: number): Promise<StoreWithDistance[]> => {
-    const overdueDays = settingsApi.getStoreOverdueDays();
-    const now = new Date();
-    
-    const overdueStores = await db.stores
-      .filter(s => isStoreOverdue(s, overdueDays, now))
-      .toArray();
+    if (latitude === undefined || longitude === undefined) {
+      return overdueStores;
+    }
     
     const processedStores = overdueStores.map(s => {
       const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
       return { ...s, distance, isOverdue: true };
     });
 
-    // Urutkan berdasarkan jarak terdekat
-    return processedStores.sort((a, b) => a.distance - b.distance);
+    return processedStores.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
   }
 };

@@ -75,7 +75,7 @@ export default function JourneyPage() {
         if (total === 0) {
           setStores([]);
         } else {
-          const initialStores = await journeyApi.getInitialStores();
+          const initialStores = await journeyApi.getStoresRoute();
           setStores(initialStores);
         }
       } catch (error) {
@@ -101,7 +101,7 @@ export default function JourneyPage() {
         setUserLocation([latitude, longitude]);
         
         try {
-          const optimalRoute = await journeyApi.getOptimalRoute(latitude, longitude);
+          const optimalRoute = await journeyApi.getStoresRoute({ latitude, longitude });
           setStores(optimalRoute);
           setHasGpsAccess(true);
           setCurrentIndex(0); 
@@ -310,7 +310,7 @@ export default function JourneyPage() {
               <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-surface/50 to-transparent pointer-events-none z-10" />
               <div className="absolute bottom-3 right-3 bg-inverse-surface/90 backdrop-blur-md text-inverse-on-surface px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
                 <MapPin className="w-4 h-4 text-primary-fixed" />
-                {currentStore.distance === 9999 ? '?' : currentStore.distance} km
+                {currentStore.distance === undefined ? '?' : currentStore.distance} km
               </div>
             </div>
 
@@ -404,7 +404,7 @@ export default function JourneyPage() {
             >
 
               <span className="font-bold text-lg leading-none">
-                {store.distance === 9999 ? '?' : store.distance}
+                {store.distance === undefined ? '?' : store.distance}
               </span>
               <span className="font-caption text-[10px] mt-1 opacity-70">km</span>
             </button>
