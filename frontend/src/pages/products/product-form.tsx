@@ -8,7 +8,7 @@ import { settingsApi } from '@/services/api/settings';
 import { toast } from 'sonner';
 import type { ProductFormData } from '@/types';
 
-export default function ProductEditPage() {
+export default function ProductFormPage() {
   const navigate = useNavigate();
   const { goBack } = useSmartBack();
   const { id } = useParams();
@@ -29,7 +29,10 @@ export default function ProductEditPage() {
 
   useEffect(() => {
     const loadProduct = async () => {
-      if (!id) return;
+      if (!id) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(true);
       const res = await productApi.getById(id);
       if (res.success && res.data) {
@@ -50,7 +53,7 @@ export default function ProductEditPage() {
   }, [id]);
 
   const handleBack = () => {
-    goBack(`/products/${id}`);
+    goBack(id ? `/products/${id}` : '/products');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -68,8 +71,6 @@ export default function ProductEditPage() {
   };
 
   const handleSave = async () => {
-    if (!id) return;
-    
     const validationErrors = validateProductEditFields(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -79,9 +80,16 @@ export default function ProductEditPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await productApi.update(id, formData);
-      if (res.success) {
-        navigate(`/products/${id}`);
+      if (id) {
+        const res = await productApi.update(id, formData);
+        if (res.success) {
+          navigate(`/products/${id}`);
+        }
+      } else {
+        const res = await productApi.create(formData as ProductFormData);
+        if (res.success && res.data) {
+          navigate(`/products/${res.data.id}`);
+        }
       }
     } finally {
       setIsSubmitting(false);
@@ -207,11 +215,13 @@ export default function ProductEditPage() {
             disabled={isSubmitting}
             className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-on-primary font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
           >
-            <Save className="w-5 h-5" /> {isSubmitting ? "MENYIMPAN..." : "SIMPAN PERUBAHAN"}
+            <Save className="w-5 h-5" /> {isSubmitting ? "MENYIMPAN..." : (id ? "SIMPAN PERUBAHAN" : "TAMBAH PRODUK")}
           </button>
-          <button className="w-full py-3.5 bg-error hover:bg-error/90 text-on-primary active:bg-error/30 font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-            <Archive className="w-5 h-5" /> ARSIPKAN PRODUK
-          </button>
+          {id && (
+            <button className="w-full py-3.5 bg-error hover:bg-error/90 text-on-primary active:bg-error/30 font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+              <Archive className="w-5 h-5" /> ARSIPKAN PRODUK
+            </button>
+          )}
         </div>
       </main>
     </div>
