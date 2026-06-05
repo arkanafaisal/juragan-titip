@@ -85,7 +85,7 @@ export const productApi = {
     try {
       const numericId = Number(id);
       const product = await db.products.get(numericId);
-      if (!product || product.isArchived) {
+      if (!product) {
         toast.error("Produk tidak ditemukan");
         return { success: false, data: null, message: "Produk tidak ditemukan" }
       }
@@ -101,7 +101,7 @@ export const productApi = {
       const numericId = Number(id);
       const product = await db.products.get(numericId);
       
-      if (!product || product.isArchived) {
+      if (!product) {
         toast.error("Produk tidak ditemukan");
         return { success: false, data: null, message: "Produk tidak ditemukan" };
       }
@@ -200,6 +200,23 @@ export const productApi = {
     }
 
     await db.products.update(numericId, { isArchived: true });
+    return { success: true, data: null };
+  },
+
+  restore: async (id: number | string): Promise<ApiResponse<null>> => {
+    const numericId = Number(id);
+    const product = await db.products.get(numericId);
+    
+    if (!product) {
+      return { 
+        success: false, 
+        data: null, 
+        message: "Produk tidak ditemukan" 
+      };
+    }
+
+    await db.products.update(numericId, { isArchived: false });
+    toast.success("Produk berhasil dipulihkan");
     return { success: true, data: null };
   },
 

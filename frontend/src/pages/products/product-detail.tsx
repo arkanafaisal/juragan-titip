@@ -12,6 +12,8 @@ import { productApi, type ProductDetailWithLogs } from '@/services/api/products'
 import { settingsApi } from '@/services/api/settings';
 import type { InventoryLog } from '@/types';
 import { SectionCard } from '@/components/shared/section-card';
+import { ConfirmationModal } from '@/components/shared/confirmation-modal';
+import { toast } from 'sonner';
 
 // ==========================================
 // UTILS
@@ -59,6 +61,8 @@ export default function ProductDetailPage() {
   const [isKoreksiOpen, setIsKoreksiOpen] = useState(false);
   const [isTambahStokOpen, setIsTambahStokOpen] = useState(false);
   const [isOlahReturOpen, setIsOlahReturOpen] = useState(false);
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   const loadData = async () => {
     if (!id) return;
@@ -68,6 +72,25 @@ export default function ProductDetailPage() {
       setData(res.data);
     }
     setIsLoading(false);
+  };
+
+  const handleRestore = async () => {
+    if (!id) return;
+    setIsRestoring(true);
+    try {
+      const response = await productApi.restore(id);
+      if (response.success) {
+        setIsRestoreModalOpen(false);
+        loadData();
+      } else {
+        toast.error(response.message || "Gagal memulihkan produk");
+      }
+    } catch (error) {
+      console.error("Gagal memulihkan:", error);
+      toast.error("Terjadi kesalahan sistem saat memulihkan");
+    } finally {
+      setIsRestoring(false);
+    }
   };
 
   useEffect(() => {
@@ -91,6 +114,20 @@ export default function ProductDetailPage() {
         
         {/* KEMBALI BUTTON */}
         <BackButton fallbackPath="/products" className="mb-2" />
+
+        {product.isArchived && (
+          <div className="bg-error/10 border border-error/30 rounded-xl p-4 flex flex-col items-start gap-2">
+            <p className="text-body-sm font-bold text-error">
+              Perhatian: Produk ini sedang diarsipkan dan tidak muncul di daftar aktif.
+            </p>
+            <button 
+              onClick={() => setIsRestoreModalOpen(true)}
+              className="py-1.5 px-4 bg-error text-on-error rounded-lg text-body-sm font-bold hover:bg-error/90 transition-colors active:scale-95"
+            >
+              Pulihkan Produk
+            </button>
+          </div>
+        )}
 
         {/* SECTION: IDENTITAS & HARGA */}
         <SectionCard>
@@ -248,6 +285,17 @@ export default function ProductDetailPage() {
         }} 
         returnedStock={product.returnedStock} 
         productId={product.id}
+      />
+
+      <ConfirmationModal
+        isOpen={isRestoreModalOpen}
+        onClose={() => setIsRestoreModalOpen(false)}
+        onConfirm={handleRestore}
+        title="Pulihkan Produk"
+        description="Produk ini akan dikembalikan ke daftar aktif dan dapat ditambahkan ke nota kunjungan lagi. Anda yakin ingin memulihkan produk ini?"
+        confirmText="Pulihkan"
+        isDanger={false}
+        isLoading={isRestoring}
       />
     </div>
   );

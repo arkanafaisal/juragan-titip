@@ -20,6 +20,8 @@ import { MapPicker } from "@/components/features/map-picker";
 import { InvoiceDetail } from "@/components/features/invoice-detail";
 import { storeApi } from "@/services/api/stores";
 import type { Store, Visit } from "@/types";
+import { ConfirmationModal } from '@/components/shared/confirmation-modal';
+import { toast } from "sonner";
 
 export default function StoreDetailPage() {
   const navigate = useNavigate();
@@ -34,11 +36,12 @@ export default function StoreDetailPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
-  useEffect(() => {
-    const fetchStoreData = async () => {
-      if (!id) return;
-      setIsLoading(true);
+  const fetchStoreData = async () => {
+    if (!id) return;
+    setIsLoading(true);
       try {
         const storeRes = await storeApi.getById(id);
 
@@ -56,10 +59,30 @@ export default function StoreDetailPage() {
       } finally {
         setIsLoading(false);
       }
-    };
+  };
 
+  useEffect(() => {
     fetchStoreData();
   }, [id]);
+
+  const handleRestore = async () => {
+    if (!id) return;
+    setIsRestoring(true);
+    try {
+      const response = await storeApi.restore(id);
+      if (response.success) {
+        setIsRestoreModalOpen(false);
+        fetchStoreData();
+      } else {
+        toast.error(response.message || "Gagal memulihkan toko");
+      }
+    } catch (error) {
+      console.error("Gagal memulihkan toko:", error);
+      toast.error("Terjadi kesalahan sistem saat memulihkan toko");
+    } finally {
+      setIsRestoring(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -89,6 +112,20 @@ export default function StoreDetailPage() {
     <div className="max-w-container-max mx-auto space-y-md  pb-xl">
       {/* KEMBALI BUTTON */}
       <BackButton fallbackPath="/stores" />
+
+      {store.isArchived && (
+        <div className="bg-error/10 border border-error/30 rounded-xl p-4 flex flex-col items-start gap-2">
+          <p className="text-body-sm font-bold text-error">
+            Perhatian: Toko ini sedang diarsipkan dan tidak muncul di daftar aktif.
+          </p>
+          <button 
+            onClick={() => setIsRestoreModalOpen(true)}
+            className="py-1.5 px-4 bg-error text-on-error rounded-lg text-body-sm font-bold hover:bg-error/90 transition-colors active:scale-95"
+          >
+            Pulihkan Toko
+          </button>
+        </div>
+      )}
 
       <SectionCard className="!p-0 overflow-hidden">
         <div className="flex flex-col ">
@@ -226,6 +263,17 @@ export default function StoreDetailPage() {
           </div>
         )}
       </SectionCard>
+
+      <ConfirmationModal
+        isOpen={isRestoreModalOpen}
+        onClose={() => setIsRestoreModalOpen(false)}
+        onConfirm={handleRestore}
+        title="Pulihkan Toko"
+        description="Toko ini akan dikembalikan ke daftar aktif. Anda yakin ingin memulihkan toko ini?"
+        confirmText="Pulihkan"
+        isDanger={false}
+        isLoading={isRestoring}
+      />
     </div>
   );
 }

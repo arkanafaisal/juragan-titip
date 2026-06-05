@@ -84,7 +84,7 @@ export const storeApi = {
     try {
       const numericId = Number(id);
       const store = await db.stores.get(numericId);
-      if (!store || store.isArchived) {
+      if (!store) {
         toast.error("Toko tidak ditemukan")
         return { success: false, data: null, message: "Toko tidak ditemukan" }
       }
@@ -209,6 +209,23 @@ export const storeApi = {
     }
 
     await db.stores.update(numericId, { isArchived: true });
+    return { success: true, data: null };
+  },
+
+  restore: async (id: number | string): Promise<ApiResponse<null>> => {
+    const numericId = Number(id);
+    const store = await db.stores.get(numericId);
+
+    if (!store) {
+      return { 
+        success: false, 
+        data: null, 
+        message: "Nama toko tidak ditemukan di sistem" 
+      };
+    }
+
+    await db.stores.update(numericId, { isArchived: false });
+    toast.success("Toko berhasil dipulihkan");
     return { success: true, data: null };
   },
   getPhoneNumber: async (id: number | string): Promise<ApiResponse<string | undefined>> => {
