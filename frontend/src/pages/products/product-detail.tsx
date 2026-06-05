@@ -11,6 +11,7 @@ import { ProcessReturnModal } from '@/components/products/process-return-modal';
 import { productApi, type ProductDetailWithLogs } from '@/services/api/products';
 import { settingsApi } from '@/services/api/settings';
 import type { InventoryLog } from '@/types';
+import { SectionCard } from '@/components/shared/section-card';
 
 // ==========================================
 // UTILS
@@ -92,7 +93,7 @@ export default function ProductDetailPage() {
         <BackButton fallbackPath="/products" className="mb-2" />
 
         {/* SECTION: IDENTITAS & HARGA */}
-        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
+        <SectionCard>
           <div className="flex justify-between items-start mb-1">
             <h2 className="text-h2  text-text-primary pr-2">
               {product.name}
@@ -134,10 +135,9 @@ export default function ProductDetailPage() {
               </span>
             </div>
           </div>
-        </section>
+        </SectionCard>
 
-        {/* SECTION: STOK UTAMA */}
-        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
+        <SectionCard>
           <h3 className="text-h3  text-text-primary mb-2 uppercase">
             Stok Utama
           </h3>
@@ -160,10 +160,10 @@ export default function ProductDetailPage() {
               <PackagePlus className="w-5 h-5" /> Tambah Stok
             </button>
           </div>
-        </section>
+        </SectionCard>
 
         {/* SECTION: MANAJEMEN RETUR */}
-        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">
+        <SectionCard>
           <h3 className="text-h3  text-text-primary mb-1 uppercase">
             Manajemen Retur
           </h3>
@@ -177,17 +177,17 @@ export default function ProductDetailPage() {
           >
             <Scale className="w-4 h-4" /> OLAH BARANG RETUR
           </button>
-        </section>
+        </SectionCard>
 
         {/* SECTION: RIWAYAT AKTIVITAS */}
-        <section className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
-          <div className="p-4 border-b border-outline-variant">
+        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+          <div className="border-b pb-2 border-outline-variant">
             <h3 className="text-h3  text-text-primary uppercase">
               Riwayat Aktivitas
             </h3>
           </div>
 
-          <div className="p-4 space-y-5">
+          <div className="pt-4 space-y-5">
             {logs.length === 0 ? (
               <p className="text-body-sm font-medium text-center text-text-muted">Belum ada riwayat aktivitas</p>
             ) : (
