@@ -19,6 +19,7 @@ import { validateStoreForm } from "@/lib/validations";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
 import { toast } from "sonner";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
+import { SectionCard } from "@/components/shared/section-card";
 
 export default function StoreFormPage() {
   const navigate = useNavigate();
@@ -177,13 +178,8 @@ export default function StoreFormPage() {
         if (isEditMode) {
           navigate(`/stores/${id}`);
         } else {
-          // Asumsi result.data memiliki properti id dari store yang baru dibuat
           navigate(`/stores/${result.data.id}`, { replace: true }); 
         }
-      } else if (result.success) {
-         // Fallback jika API mengembalikan success tapi data null
-         if (isEditMode) navigate(`/stores/${id}`);
-         else navigate("/stores", { replace: true });
       } else {
         setError(result.message || "Gagal menyimpan data toko.");
       }
@@ -249,15 +245,14 @@ export default function StoreFormPage() {
         <div className=" flex flex-col gap-lg">
           
           
-          <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden">
-            <div className="px-md py-sm border-b border-outline-variant bg-surface-container-low">
-              <h3 className="font-h3 text-h3 font-semibold flex items-center gap-sm text-text-primary">
-                <Info className="w-5 h-5 text-primary" />
+          <SectionCard className="overflow-hidden bg-surface">
+            {/* <div className="px-md py-sm border-b border-outline-variant bg-surface-container-low"> */}
+              <h3 className="mb-3 font-h3 text-h3 flex items-center text-text-primary">
                 Informasi Dasar
               </h3>
-            </div>
+            {/* </div> */}
             
-            <div className="p-md flex flex-col gap-md">
+            <div className="flex flex-col gap-md">
               <div className="grid grid-cols-1  gap-md">
                 <div className="flex flex-col gap-xs">
                   <label className="font-caption text-caption text-text-secondary" htmlFor="name">
@@ -365,37 +360,29 @@ export default function StoreFormPage() {
                 />
               </div>
             </div>
-          </div>
+          </SectionCard>
 
           
-          <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden">
-            <div className="px-md py-sm border-b border-outline-variant bg-surface-container-low">
-              <h3 className="font-h3 text-h3 font-semibold flex items-center gap-sm text-text-primary">
-                <StickyNote className="w-5 h-5 text-primary" />
-                Catatan Tambahan
-              </h3>
-            </div>
-            <div className="p-md flex flex-col gap-xs">
-              <label className="font-caption text-caption text-text-secondary" htmlFor="notes">
-                Catatan Operasional (Opsional)
-              </label>
-              <textarea 
-                id="notes"
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange}
-                className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
-                placeholder="Buka Senin-Sabtu, jam 08:00 - 17:00" 
-                rows={2} 
-                maxLength={VALIDATION_RULES.STORE.NOTES_MAX}
-              />
-            </div>
-          </div>
+          <SectionCard className="overflow-hidden bg-surface">
+            <h3 className="mb-3 font-h3 text-h3 font-semibold flex items-center gap-sm text-text-primary">
+              Catatan Tambahan (opsional)
+            </h3>
+            <textarea 
+              id="notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
+              placeholder="Buka Senin-Sabtu, jam 08:00 - 17:00" 
+              rows={2} 
+              maxLength={VALIDATION_RULES.STORE.NOTES_MAX}
+            />
+          </SectionCard>
         </div>
 
         
         <div className=" flex flex-col gap-lg">
-          <div className="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden flex flex-col h-full">
+          <SectionCard className="!p-0 overflow-hidden bg-surface flex flex-col h-full">
             
             
             <div className="px-md py-sm border-b border-outline-variant bg-surface-container-low flex justify-between items-center shrink-0">
@@ -450,7 +437,7 @@ export default function StoreFormPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </SectionCard>
         </div>
 
         {/* BUTTONS ACTION */}

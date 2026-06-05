@@ -7,6 +7,7 @@ import { validateProductEditFields } from '@/lib/product-validation';
 import { settingsApi } from '@/services/api/settings';
 import { toast } from 'sonner';
 import type { ProductFormData } from '@/types';
+import { SectionCard } from "@/components/shared/section-card";
 
 export default function ProductFormPage() {
   const navigate = useNavigate();
@@ -118,7 +119,7 @@ export default function ProductFormPage() {
         </div>
 
         {/* INFORMASI DASAR */}
-        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant space-y-3">
+        <SectionCard className="space-y-3">
           <h3 className="text-h3 font-black mb-2 uppercase">Informasi Dasar</h3>
           <div>
             <label className="block text-body-sm font-black text-text-secondary mb-1">Nama Produk</label>
@@ -159,10 +160,10 @@ export default function ProductFormPage() {
             />
             {errors.description && <p className="text-[10px] font-bold text-error mt-1">{errors.description}</p>}
           </div>
-        </section>
+        </SectionCard>
 
         {/* PENGATURAN HARGA */}
-        <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant space-y-3">
+        <SectionCard className="space-y-3">
           <h3 className="text-h3 font-black mb-2 uppercase">Pengaturan Harga</h3>
           <div>
             <label className="block text-body-sm font-black text-text-secondary mb-1">Harga Modal (Kulakan)</label>
@@ -206,7 +207,7 @@ export default function ProductFormPage() {
             </div>
             {errors.retailPrice && <p className="text-[10px] font-bold text-error mt-1">{errors.retailPrice}</p>}
           </div>
-        </section>
+        </SectionCard>
 
         {/* BUTTONS ACTION */}
         <div className="space-y-3 mt-6">
