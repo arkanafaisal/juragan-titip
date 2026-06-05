@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router";
-import { StoreCard } from "@/components/stores/store-card";
+import { ItemCard } from "@/components/shared/item-card";
 import type { Store } from "@/types";
 import { storeApi } from "@/services/api/stores";
 import { Pagination } from "@/components/shared/pagination";
@@ -147,7 +147,7 @@ export default function StoreListPage() {
         <div className="grid grid-cols-1   gap-md">
           {stores.map((store, index) => {
             if (index >= LIMIT) { return }
-            return <StoreCard key={store.id} store={store} storeCategoryLabels={storeCategoryLabels} />
+            return <ItemCard key={store.id} store={store} storeCategoryLabels={storeCategoryLabels} />
           })}
 
         </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { productApi } from "@/services/api/products";
-import { ProductCard } from "@/components/products/product-card";
+import { ItemCard } from "@/components/shared/item-card";
 import type { Product } from "@/types";
 import { AddProductModal } from "@/components/products/add-product-modal";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -168,7 +168,7 @@ export default function ProductListPage() {
           {products.map((product, index) => {
             if(index >= LIMIT){return}
             return (
-              <ProductCard
+              <ItemCard
                 key={product.id}
                 product={product}
                 categoryLabels={categoryLabels}
