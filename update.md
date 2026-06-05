@@ -1,3 +1,32 @@
+5 June 2026
+<details>
+- fixed TS unused variables & imports
+- removed unused index & migration on db config
+- updated store & product detail: data pulling limit explanation
+- updated getById store service: only 10 last visit data
+- updated dashboard page: history card color
+- updated store visit: add confirmation when user already done visit today
+- updated store & product detail: add recover from archive feature
+- fixed product form: connect archive button to product service
+- updated product & store list: add Archived item filter
+- updated get detail product service: only fetch previous 1 month inventory logs
+- refactored product & store list: migrate search and filter state to URL params
+- updated financial page: sticky detail tab
+- refactored: use consistent section card custom layout on store detail, product & store form, finance page, dashboard page, settings page, profile menu
+- refactored move add product form from modal to /new page url
+- updated store & product form: replace url to /:id on create success
+- updated product edit modal: dual mode (add &edit)
+- updated action toolbar & item card color
+- updated reusable item card for both product & store list
+- updated : use section card layout component
+- refactored: reusable back button, section card, stat card 
+- updated store detail: move delete button into store form (and to archive)
+- updated back button (navigate -1)
+- updated store service: soft delete (archive)
+- updated journey service: merge getInitialStores & getOptimalRoute, optimize store data extraction (filter first then toArray)
+- deleted unused files
+</details>
+
 
 4 June 2026
 <details>

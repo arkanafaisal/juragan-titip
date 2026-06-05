@@ -1,3 +1,42 @@
+git --no-pager log 605705415a9f54fabe09c438fa287c0d74483850..HEAD --pretty=format:"%H %s"
+c7f09b23db0c9719ae6b0d6aab7582e299a8d1dd fix: TS unused variables & imports
+62547fbc71787d9963411b4d0f475e2c598e369e update(db config): remove unused index & migration config     
+1c6c6f74dac4ff54c848a6e94050ca1fd5e334a6 update(store & product detail): data pulling limit explanation
+d8c5dc3f28f86d5251f9ed6edea2b708aa2533c4 update(getById store service): only 10 last visit data
+e2157f6bfa2a5ef7bc8cb9384640da3a4d597881 update(dashboard page): history card color
+c26611490d2d1fe6f8bdd3576751e703d27e2278 update(profile menu): use section card
+727849b500e0489e4a522dc061c850429ecad3fd update(store visit): add confirmation when user already done visit today
+6c8c34620ed88ddf0fdef916f3b7685f33e86404 update(store & product detail): add recover from archive feature
+6e47503ad6b0234e5c65bf930a7d95bf728b1bdf update(product form): connect archive buttonto product service
+b210f293a7063e5bf10855d76afab22808f6294c update(product & store list): add Archived item filter
+7d3420cde047369b53c08a2ab622da7877434fe0 update(get detail product service): only fetch previous 1 month inventory logs
+b8af1211a9d6ea58e28b5f1dbe62bcc6eb5c5e8e refactor(product & store list): migrate search and filter state to URL params
+d1d252c8c814c11f10be21d33e334fc603fc4e5b update(settings page): use section card
+5dfe29f0398bd60bb75457a23634d42e53af38e8 update(dashboard page): use section card
+a883a1bf8578810d4f39aa47ac390c52ad015fe0 update(financial page): sticky detail tab
+13945e402ebfd250201b1b5275cee4e8f8b2cf9e update(finance page): use section card
+a4870f2a30e56f4f113a8edc09d51ecb070db80e update(store detail): section card usage consistency
+f07ba15c13e601e2a5fe11c6d476386e4d3d375c update(product & store form): use section card
+b442c8dc247c49643ee66e4425999d2111a73200 refactor: move add product form from modal to /new page url
+4c2abf36477787e132e18d233ae15a3d628207c9 update(store & product form): replace url to /:id on create success
+e782d1a1ba65b42229db0836ed6429a9afcfd21d update(product edit modal): dual mode (add &edit
+f369f2cb4ea435bc345643e34ff476356e1bd625 update: action toolbar & item card color
+546567879c372769d60524ba4a7b5f908138d2e8 update: reusable item card for both product & store list
+52325a59d857742e7d6703517b17e2c5367146a7 update(store card): use section card layout component
+22fc21110b0e9516256958a1fc2bc8274b79f7d3 refactor: modular stat-card component
+b285f758e5b907608fd6572c8d7c23a0b4159943 refactor: reusable section card
+b370093577fdeade3e1995a27b0145e4e17fa49f refactor: reusable back button
+6843d252bccf22092cab50c4816a892e4513a59c update(store detail): move delete button into store form (and change wording to archive)    
+0acaebef9193e79a99d1ebf162413dd40437859a update: navigate -1 on back button
+0f50cb7a7874182fe180e4a61c2bba97233a9c91 update(store service): soft delete (archive)
+dda8fb86e34bea7464aa8f9b46387f55b833e2d0 update(journey service): merge getInitialStores & getOptimalRoute
+7c8177f4ffb3c67cd9ff45bb6d1b25618e4606d1 update(journey service): optimize store data extraction (filter first then toArray)
+7755638b9e39e90681c788fad4ef48480eb433f7 delete unused files
+7ffd8980060141cadccf843832097e2ef956a4e6 delete design folder
+
+
+
+
 git --no-pager log ef1210ee6671c85943e3b49f8231665bbe231461..HEAD --pretty=format:"%H %s"
 5c1fd2f3098b46c4c7d780c53b5d19010575e615 update(store detail): add back button, change edit delete button & history tabs UI style
 d18313a20c6e3f2e38cd96a3fb2bbce94daf47b4 update(store detail): remove font bold & font black
