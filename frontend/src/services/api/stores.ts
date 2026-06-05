@@ -89,7 +89,7 @@ export const storeApi = {
         return { success: false, data: null, message: "Toko tidak ditemukan" }
       }
 
-      const visitRes = await visitApi.getByStore(numericId);
+      const visitRes = await visitApi.getByStore(numericId, 10);
       const storeVisits = visitRes.success && visitRes.data ? visitRes.data : [];
 
       let activeItems: { productName: string; remained: number }[] = [];

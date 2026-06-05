@@ -18,12 +18,15 @@ export const visitApi = {
     }
   },
 
-  getByStore: async (storeId: number | string): Promise<ApiResponse<Visit[] | null>> => {
+  getByStore: async (storeId: number | string, limitCount?: number): Promise<ApiResponse<Visit[] | null>> => {
     const numericId = Number(storeId);
     try {
-      const visits = await db.visits.where('storeId').equals(numericId).toArray();
-      const sortedVisits = visits.sort((a, b) => b.id - a.id);
-      return { success: true, data: sortedVisits }
+      let collection = db.visits.where('storeId').equals(numericId).reverse();
+      if (limitCount) {
+        collection = collection.limit(limitCount);
+      }
+      const visits = await collection.toArray();
+      return { success: true, data: visits }
     } catch (error) {
       console.error("Dexie Get Visits by Store Error:", error);
       toast.error("Gagal memuat kunjungan toko")
