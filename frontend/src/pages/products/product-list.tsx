@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { productApi } from "@/services/api/products";
 import { ItemCard } from "@/components/shared/item-card";
 import type { Product } from "@/types";
@@ -15,13 +15,17 @@ export default function ProductListPage() {
   const [isLoading, setIsLoading] = useState(true);
   
   
-  const [searchInput, setSearchInput] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const searchInput = searchParams.get('search') || '';
+  const currentPage = Number(searchParams.get('page')) || 1;
+  
+  const filters = useMemo(() => ({
+    category: searchParams.get('category') || "",
+    stock: searchParams.get('stock') || ""
+  }), [searchParams]);
 
-  const [filters, setFilters] = useState<Record<string, string>>({
-    category: "",
-    // sortBy: "name_asc"
-  });
+  const [debouncedSearch, setDebouncedSearch] = useState(searchInput);
   const categoryLabels = settingsApi.getCategoryLabels();
   const lowStockThreshold = settingsApi.getLowStockThreshold();
 
@@ -50,14 +54,29 @@ export default function ProductListPage() {
     }
   ], [categoryLabels, lowStockThreshold]);
 
+  const handleSearchChange = (value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) newParams.set('search', value);
+    else newParams.delete('search');
+    
+    newParams.set('page', '1');
+    setSearchParams(newParams, { replace: true });
+  };
+
   const handleFilterChange = useCallback((groupId: string, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [groupId]: value
-    }))
-  }, []);
+    const newParams = new URLSearchParams(searchParams);
+    if (value) newParams.set(groupId, value);
+    else newParams.delete(groupId);
+    
+    newParams.set('page', '1');
+    setSearchParams(newParams, { replace: true });
+  }, [searchParams, setSearchParams]);
   
-  const [currentPage, setCurrentPage] = useState(1);
+  const handlePageChange = (page: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', page.toString());
+    setSearchParams(newParams, { replace: true });
+  };
 
   
   const [productToDelete, setProductToDelete] = useState<{ id: number, name: string } | null>(null);
@@ -71,11 +90,6 @@ export default function ProductListPage() {
     }, 1000);
     return () => clearTimeout(timer);
   }, [searchInput]);
-
-  
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearch, filters]);
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -134,7 +148,7 @@ export default function ProductListPage() {
         <ActionToolbar
           className="mb-0"
           searchValue={searchInput}
-          onSearchChange={setSearchInput}
+          onSearchChange={handleSearchChange}
           searchPlaceholder="Cari produk..."
           onAddClick={handleOpenAdd}
           onSettingClick={() => navigate("/settings?section=produk")}
@@ -176,7 +190,7 @@ export default function ProductListPage() {
         <Pagination 
           currentPage={currentPage}
           hasNextPage={products.length > LIMIT}
-          onPageChange={(page) => setCurrentPage(page)}
+          onPageChange={handlePageChange}
         />
       )}
 

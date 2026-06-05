@@ -1,7 +1,7 @@
 
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { ItemCard } from "@/components/shared/item-card";
 import type { Store } from "@/types";
 import { storeApi } from "@/services/api/stores";
@@ -14,17 +14,22 @@ export default function StoreListPage() {
   const navigate = useNavigate();
   const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchInput, setSearchInput] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const searchInput = searchParams.get('search') || '';
+  const currentPage = Number(searchParams.get('page')) || 1;
   
   const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
   const overdueDays = settingsApi.getStoreOverdueDays();
 
-  const [filters, setFilters] = useState<Record<string, string>>({
-    status: "",
-    category: "",
-    visitStatus: "",
-    sortBy: ""
-  });
+  const filters = useMemo(() => ({
+    status: searchParams.get('status') || "",
+    category: searchParams.get('category') || "",
+    visitStatus: searchParams.get('visitStatus') || "",
+    sortBy: searchParams.get('sortBy') || ""
+  }), [searchParams]);
+
+  const [debouncedSearch, setDebouncedSearch] = useState(searchInput);
   const storeFilterConfig: FilterGroup[] = useMemo(() => [
     {
       id: "category",
@@ -66,17 +71,29 @@ export default function StoreListPage() {
     }
   ], [storeCategoryLabels, overdueDays]);
 
+  const handleSearchChange = (value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) newParams.set('search', value);
+    else newParams.delete('search');
+    
+    newParams.set('page', '1');
+    setSearchParams(newParams, { replace: true });
+  };
+
   const handleFilterChange = useCallback((groupId: string, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [groupId]: value
-    }))
-  }, []);
+    const newParams = new URLSearchParams(searchParams);
+    if (value) newParams.set(groupId, value);
+    else newParams.delete(groupId);
+    
+    newParams.set('page', '1');
+    setSearchParams(newParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
-
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-
-  const [currentPage, setCurrentPage] = useState(1);
+  const handlePageChange = (page: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', page.toString());
+    setSearchParams(newParams, { replace: true });
+  };
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -84,10 +101,6 @@ export default function StoreListPage() {
     }, 1000);
     return () => clearTimeout(timer);
   }, [searchInput]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearch, filters]);
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -122,7 +135,7 @@ export default function StoreListPage() {
         <ActionToolbar
           className="mb-0"
           searchValue={searchInput}
-          onSearchChange={setSearchInput}
+          onSearchChange={handleSearchChange}
           searchPlaceholder="Cari toko mitra..."
           onAddClick={() => navigate("/stores/new")}
           onSettingClick={() => navigate("/settings?section=toko")}
@@ -158,7 +171,7 @@ export default function StoreListPage() {
         <Pagination
         currentPage={currentPage}
         hasNextPage={stores.length > LIMIT}
-        onPageChange={(page) => {setCurrentPage(page)}}
+        onPageChange={handlePageChange}
         />
       )}
     </div>
