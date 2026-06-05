@@ -70,11 +70,7 @@ db.version(14).stores({
   products: '++id, &normalizedName, category',
   stores: '++id, normalizedName, phone, lastVisitAt, category',
   visits: '++id, storeId, createdAt',
-  inventoryLogs: '++id, [productId+createdAt], productId, type, storeId, createdAt'
-}).upgrade(tx => {
-  return tx.table('stores').toCollection().modify(store => {
-    store.isArchived = false;
-  });
+  inventoryLogs: '++id, [productId+createdAt]'
 });
 
 export { db };
