@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { BackButton } from "@/components/shared/back-button";
+import { SectionCard } from "@/components/shared/section-card";
+import { StatCard } from "@/components/shared/stat-card";
 import {
   SquarePen,
   MapPin,
@@ -59,35 +61,6 @@ export default function StoreDetailPage() {
     fetchStoreData();
   }, [id]);
 
-  const StatCard = ({ 
-    icon: Icon, title, value, unit, bgClass, textClass, 
-    valSizePC = "font-h1 text-h1", valSizeMobile = "font-h3 text-h3 font-bold" 
-  }: any) => (
-    <div className="bg-surface rounded-xl shadow-sm border border-border p-md flex flex-row  justify-between items-center  gap-3 ">
-      <div className="flex items-center gap-3 ">
-        <div className={`p-2  ${bgClass} rounded-lg ${textClass} shrink-0`}>
-          <Icon className="w-5 h-5  " />
-        </div>
-        <div className="flex flex-col ">
-          <span className="font-caption text-caption text-text-secondary">{title}</span>
-          <div className="flex items-baseline gap-1">
-            <span className={`text-text-primary tracking-tight ${valSizeMobile}`}>{value}</span>
-            {unit && <span className="font-caption text-caption text-text-secondary">{unit}</span>}
-          </div>
-        </div>
-        <span className="hidden  font-h3 text-h3 text-text-secondary">{title}</span>
-      </div>
-      <div className="flex flex-col items-end     shrink-0">
-        <div className="hidden  flex-col">
-          <div className="flex items-baseline gap-1">
-            <span className={`text-text-primary tracking-tight font-bold ${valSizePC}`}>{value}</span>
-            {unit && <span className="font-body-sm text-body-sm text-text-secondary">{unit}</span>}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-24">
@@ -117,7 +90,7 @@ export default function StoreDetailPage() {
       {/* KEMBALI BUTTON */}
       <BackButton fallbackPath="/stores" />
 
-      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
+      <SectionCard className="!p-0 overflow-hidden">
         <div className="flex flex-col ">
           <div className="flex-1 p-md  flex flex-col justify-between">
             <div>
@@ -174,14 +147,14 @@ export default function StoreDetailPage() {
             <MapPicker position={{ lat: store.latitude, lng: store.longitude }} readonly={true} />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       <div className="grid grid-cols-1  gap-sm ">
         <StatCard icon={Wallet} title="Piutang" value={store.debt > 0 ? `Rp ${store.debt.toLocaleString("id-ID")}` : "Rp 0"} bgClass="bg-error/10" textClass="text-error" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
         <StatCard icon={TrendingUp} title="Nilai Aset" value={store.assetValue > 0 ? `Rp ${store.assetValue.toLocaleString("id-ID")}` : "Rp 0"} bgClass="bg-success/10" textClass="text-success" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
       </div>
 
-      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden flex flex-col">
+      <SectionCard className="!p-0 overflow-hidden flex flex-col">
         <div className="p-3 bg-surface-container-lowest border-b border-border">
           <div className="flex bg-surface-container-low p-1 rounded-xl">
             <button 
@@ -252,7 +225,7 @@ export default function StoreDetailPage() {
             )}
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   );
 }
