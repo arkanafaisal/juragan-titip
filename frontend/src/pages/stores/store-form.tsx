@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
+import { useSmartBack } from "@/hooks/use-smart-back";
 import { 
   Info, 
   StickyNote, 
@@ -20,6 +21,7 @@ import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 
 export default function StoreFormPage() {
   const navigate = useNavigate();
+  const { goBack } = useSmartBack();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
 
@@ -184,11 +186,7 @@ export default function StoreFormPage() {
   };
 
   const handleCancel = () => {
-    if (isEditMode) {
-      navigate(`/stores/${id}`);
-    } else {
-      navigate("/stores");
-    }
+    goBack(isEditMode ? `/stores/${id}` : "/stores");
   };
 
   if (isLoadingData) {

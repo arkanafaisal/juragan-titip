@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
+import { useSmartBack } from "@/hooks/use-smart-back";
 import { 
   X, MapPin, Map as MapIcon, Play, ChevronDown, ChevronUp, 
   ChevronLeft, ChevronRight, Navigation, LocateFixed 
@@ -36,6 +37,7 @@ const getDaysAgoText = (dateString?: string) => {
 
 export default function JourneyPage() {
   const navigate = useNavigate();
+  const { goBack } = useSmartBack();
   const [stores, setStores] = useState<StoreWithDistance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalStoresCount, setTotalStoresCount] = useState(0);
@@ -134,7 +136,7 @@ export default function JourneyPage() {
   }, [currentIndex, hasGpsAccess, showMiniMenu]);
 
   const handleClose = () => {
-    navigate('/dashboard'); 
+    goBack('/dashboard'); 
   };
 
   if (isLoading) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Archive } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
+import { useSmartBack } from '@/hooks/use-smart-back';
 import { productApi } from '@/services/api/products';
 import { validateProductEditFields } from '@/lib/product-validation';
 import { settingsApi } from '@/services/api/settings';
@@ -9,6 +10,7 @@ import type { ProductFormData } from '@/types';
 
 export default function ProductEditPage() {
   const navigate = useNavigate();
+  const { goBack } = useSmartBack();
   const { id } = useParams();
   const categoryLabels = settingsApi.getCategoryLabels();
 
@@ -48,7 +50,7 @@ export default function ProductEditPage() {
   }, [id]);
 
   const handleBack = () => {
-    navigate(`/products/${id}`);
+    goBack(`/products/${id}`);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
+import { useSmartBack } from "@/hooks/use-smart-back";
 import { ChevronLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { storeApi } from "@/services/api/stores";
 import { visitApi } from "@/services/api/visits";
@@ -30,6 +31,7 @@ const StepIndicator = ({ current, target, label, num }: any) => {
 export default function StoreVisitPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { goBack } = useSmartBack();
   
   const [store, setStore] = useState<Store | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -198,7 +200,7 @@ export default function StoreVisitPage() {
 
   const handlePrevStepFromRestock = () => {
     if (opnameItems.length > 0) setStep(1);
-    else navigate(`/stores/${id}`);
+    else goBack(`/stores/${id}`);
   };
 
   const handleFinish = async () => {
@@ -275,9 +277,9 @@ export default function StoreVisitPage() {
     if (step === 3) setStep(2);
     else if (step === 2) {
       if (opnameItems.length > 0) setStep(1);
-      else navigate(`/stores/${id}`);
+      else goBack(`/stores/${id}`);
     }
-    else if (step === 1) navigate(`/stores/${id}`);
+    else if (step === 1) goBack(`/stores/${id}`);
   };
 
   if (isLoading || !store) {
