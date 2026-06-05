@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { 
-  ArrowLeft, PackagePlus, RefreshCw, 
+  PackagePlus, RefreshCw, 
   Store, Package, Pencil, Trash2, Scale, SquarePen
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
-import { useSmartBack } from '@/hooks/use-smart-back';
+import { BackButton } from '@/components/shared/back-button';
 import { EditStockModal } from '@/components/products/edit-stock-modal';
 import { AddStockModal } from '@/components/products/add-stock-modal';
 import { ProcessReturnModal } from '@/components/products/process-return-modal';
@@ -51,7 +51,6 @@ const formatDate = (isoString: string) => {
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { goBack } = useSmartBack();
   
   const [data, setData] = useState<ProductDetailWithLogs | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,15 +89,7 @@ export default function ProductDetailPage() {
       <main className="space-y-4"> 
         
         {/* KEMBALI BUTTON */}
-        <div className="mb-2 flex items-center">
-          <button 
-            onClick={() => goBack("/products")}
-            className="flex items-center gap-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm  text-text-primary hover:bg-surface-container-low active:scale-[0.98] transition-all"
-          >
-            <ArrowLeft className="w-4 h-4" /> 
-            <span className="text-body-sm">Kembali</span>
-          </button>
-        </div>
+        <BackButton fallbackPath="/products" className="mb-2" />
 
         {/* SECTION: IDENTITAS & HARGA */}
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant">

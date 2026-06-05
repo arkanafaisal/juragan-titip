@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useSmartBack } from "@/hooks/use-smart-back";
+import { BackButton } from "@/components/shared/back-button";
 import {
   SquarePen,
   MapPin,
@@ -12,8 +12,7 @@ import {
   TrendingUp,
   History,
   StickyNote,
-  Loader2,
-  ArrowLeft
+  Loader2
 } from "lucide-react";
 import { MapPicker } from "@/components/features/map-picker";
 import { InvoiceDetail } from "@/components/features/invoice-detail";
@@ -22,7 +21,6 @@ import type { Store, Visit } from "@/types";
 
 export default function StoreDetailPage() {
   const navigate = useNavigate();
-  const { goBack } = useSmartBack();
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("titipan");
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null);
@@ -117,15 +115,7 @@ export default function StoreDetailPage() {
   return (
     <div className="max-w-container-max mx-auto space-y-md  pb-xl">
       {/* KEMBALI BUTTON */}
-      <div className="flex items-center">
-        <button 
-          onClick={() => goBack("/stores")}
-          className="flex items-center gap-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm font-bold text-text-primary hover:bg-surface-container-low active:scale-[0.98] transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" /> 
-          <span className="text-body-sm">Kembali</span>
-        </button>
-      </div>
+      <BackButton fallbackPath="/stores" />
 
       <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
         <div className="flex flex-col ">
