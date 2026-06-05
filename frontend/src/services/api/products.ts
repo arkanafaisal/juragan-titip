@@ -11,6 +11,7 @@ export interface ProductQueryParams {
   search?: string;
   category?: string;
   stockStatus?: string;
+  isArchived?: string;
   page?: number;
 }
 
@@ -39,7 +40,8 @@ export const productApi = {
       // 2. FASE RAM (Javascript): Filter logika bisnis
       // ====================================================
       
-      productsArray = productsArray.filter(p => !p.isArchived);
+      const showArchived = params?.isArchived === 'true';
+      productsArray = productsArray.filter(p => !!p.isArchived === showArchived);
 
       if (params) {
         if (params.search) {

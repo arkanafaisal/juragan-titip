@@ -18,10 +18,10 @@ interface ItemCardProps {
   product?: Product;
   storeCategoryLabels?: Record<string, string>;
   categoryLabels?: Record<string, string>;
-  lowStockThreshold: number;
+  lowStockThreshold?: number;
 }
 
-export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, lowStockThreshold }: ItemCardProps) {
+export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, lowStockThreshold = 0 }: ItemCardProps) {
   const navigate = useNavigate();
   
   const data = store || product;

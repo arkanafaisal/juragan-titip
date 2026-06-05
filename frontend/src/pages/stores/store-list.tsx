@@ -26,7 +26,8 @@ export default function StoreListPage() {
     status: searchParams.get('status') || "",
     category: searchParams.get('category') || "",
     visitStatus: searchParams.get('visitStatus') || "",
-    sortBy: searchParams.get('sortBy') || ""
+    sortBy: searchParams.get('sortBy') || "",
+    isArchived: searchParams.get('isArchived') || ""
   }), [searchParams]);
 
   const [debouncedSearch, setDebouncedSearch] = useState(searchInput);
@@ -67,6 +68,14 @@ export default function StoreListPage() {
         { label: "Default", value: "" },
         { label: "Kunjungan Terbaru", value: "lastVisitDesc" },
         { label: "Kunjungan Terlama", value: "lastVisitAsc" }
+      ]
+    },
+    {
+      id: "isArchived",
+      title: "Status Arsip",
+      options: [
+        { label: "Aktif", value: "" },
+        { label: "Diarsipkan", value: "true" }
       ]
     }
   ], [storeCategoryLabels, overdueDays]);
@@ -111,6 +120,7 @@ export default function StoreListPage() {
           status: filters.status,
           category: filters.category,
           visitStatus: filters.visitStatus,
+          isArchived: filters.isArchived,
           sortBy: filters.sortBy,
           page: currentPage
         });

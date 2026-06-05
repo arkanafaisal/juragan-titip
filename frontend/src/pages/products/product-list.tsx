@@ -22,7 +22,8 @@ export default function ProductListPage() {
   
   const filters = useMemo(() => ({
     category: searchParams.get('category') || "",
-    stock: searchParams.get('stock') || ""
+    stock: searchParams.get('stock') || "",
+    isArchived: searchParams.get('isArchived') || ""
   }), [searchParams]);
 
   const [debouncedSearch, setDebouncedSearch] = useState(searchInput);
@@ -50,6 +51,14 @@ export default function ProductListPage() {
         { label: "0", value: "out_of_stock" },
         { label: `1-${lowStockThreshold}`, value: "low_stock" },
         { label: `>${lowStockThreshold}`, value: "in_stock" }
+      ]
+    },
+    {
+      id: "isArchived",
+      title: "Status Arsip",
+      options: [
+        { label: "Aktif", value: "" },
+        { label: "Diarsipkan", value: "true" }
       ]
     }
   ], [categoryLabels, lowStockThreshold]);
@@ -98,6 +107,7 @@ export default function ProductListPage() {
         search: debouncedSearch,
         category: filters.category,
         stockStatus: filters.stock,
+        isArchived: filters.isArchived,
         page: currentPage
       });
       if (response.success) {

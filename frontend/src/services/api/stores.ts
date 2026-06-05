@@ -12,6 +12,7 @@ export interface StoreQueryParams {
   status?: string;
   category?: string;
   visitStatus?: string;
+  isArchived?: string;
   sortBy?: string;
   page?: number;
 }
@@ -30,8 +31,9 @@ export const storeApi = {
         collection = db.stores.orderBy('normalizedName');
       }
 
-      // Selalu sembunyikan yang sudah diarsipkan
-      collection = collection.filter(s => !s.isArchived);
+      // Selalu sembunyikan yang sudah diarsipkan kecuali isArchived="true"
+      const showArchived = params?.isArchived === 'true';
+      collection = collection.filter(s => !!s.isArchived === showArchived);
       
       
       if (params) {
