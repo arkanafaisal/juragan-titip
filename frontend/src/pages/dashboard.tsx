@@ -178,7 +178,7 @@ export default function Dashboard() {
               <button 
                 key={item.id}
                 onClick={() => setSelectedVisitId(item.id)}
-                className="flex items-center justify-between p-3 bg-surface-container-low hover:bg-surface-container-lowest rounded-xl border border-outline-variant/30 transition-colors text-left"
+                className="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-xl border border-outline-variant transition-colors text-left"
               >
                 <div className="flex items-start gap-3">
                   <span className="font-data-sm text-data-sm text-text-secondary mt-0.5 w-10 shrink-0">
