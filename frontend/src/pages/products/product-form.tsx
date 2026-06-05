@@ -8,6 +8,7 @@ import { settingsApi } from '@/services/api/settings';
 import { toast } from 'sonner';
 import type { ProductFormData } from '@/types';
 import { SectionCard } from "@/components/shared/section-card";
+import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 
 export default function ProductFormPage() {
   const navigate = useNavigate();
@@ -27,6 +28,9 @@ export default function ProductFormPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -94,6 +98,26 @@ export default function ProductFormPage() {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteConfirm = async (typedName?: string) => {
+    if (!id || !typedName) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      const response = await productApi.delete(id, typedName);
+      if (response.success) {
+        toast.success("Produk berhasil diarsipkan");
+        navigate("/products", { replace: true });
+      } else {
+        setDeleteError(response.message || "Gagal mengarsipkan produk");
+      }
+    } catch (error) {
+      setDeleteError("Terjadi kesalahan sistem saat mengarsipkan produk.");
+      console.error("Gagal mengarsipkan produk:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -219,12 +243,35 @@ export default function ProductFormPage() {
             <Save className="w-5 h-5" /> {isSubmitting ? "MENYIMPAN..." : (id ? "SIMPAN PERUBAHAN" : "TAMBAH PRODUK")}
           </button>
           {id && (
-            <button className="w-full py-3.5 bg-error hover:bg-error/90 text-on-primary active:bg-error/30 font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+            <button 
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="w-full py-3.5 bg-error hover:bg-error/90 text-on-error active:bg-error/80 font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            >
               <Archive className="w-5 h-5" /> ARSIPKAN PRODUK
             </button>
           )}
         </div>
       </main>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeleteError(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Arsipkan Produk"
+        description="Tindakan ini permanen. Histori barang ini di invoice sebelumnya tetap aman, namun Anda tidak bisa lagi menambahkannya ke kunjungan baru."
+        isDanger={true}
+        confirmText="Arsipkan Produk"
+        isLoading={isDeleting}
+        verificationText={formData.name}
+        verificationLabel={
+          <>Ketik persis <span className="font-bold text-text-primary select-none">{formData.name}</span> untuk konfirmasi:</>
+        }
+        errorMessage={deleteError}
+        onClearError={() => setDeleteError(null)}
+      />
     </div>
   );
 }
