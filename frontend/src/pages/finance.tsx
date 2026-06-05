@@ -15,6 +15,7 @@ import {
 import { cn, formatRupiah } from "@/lib/utils";
 import { financeApi, type FinanceDashboardData } from "@/services/api/finance";
 import { InvoiceDetail } from "@/components/features/invoice-detail";
+import { SectionCard } from "@/components/shared/section-card";
 
 export default function FinancePage() {
   const [activeTab, setActiveTab] = useState<"income" | "receivables" | "assets">("income");
@@ -101,7 +102,7 @@ export default function FinancePage() {
         <div className="grid grid-cols-1  gap-[16px]">
           
           {/* Card Total Piutang */}
-          <div className="bg-surface p-[16px]  rounded-[16px] border border-outline-variant shadow-sm flex items-start gap-[12px] ">
+          <SectionCard className="flex items-start gap-[12px]">
             <div className="my-auto w-10 h-10   rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
               <Wallet className="w-5 h-5  " />
             </div>
@@ -118,10 +119,10 @@ export default function FinancePage() {
                 {formatRupiah(data.summary.receivables.totalDebt)}
               </h4>
             </div>
-          </div>
+          </SectionCard>
 
           {/* Card Nilai Item Aktif */}
-          <div className="bg-surface p-[16px]  rounded-[16px] border border-outline-variant shadow-sm flex items-start gap-[12px] ">
+          <SectionCard className="flex items-start gap-[12px]">
             <div className="my-auto w-10 h-10   rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <Package className="w-5 h-5  " />
             </div>
@@ -138,7 +139,7 @@ export default function FinancePage() {
                 {formatRupiah(data.summary.assets.totalAssetValue)}
               </h4>
             </div>
-          </div>
+          </SectionCard>
 
         </div>
       </div>
@@ -177,12 +178,12 @@ export default function FinancePage() {
       </div>
 
       {/* --- TAB CONTENT AREA --- */}
-      <div className="px-[12px] pb-[10px] flex-1">
+      <div className=" flex-1">
         
         {/* KONTEN: UANG MASUK */}
         {activeTab === "income" && (
           <div className="space-y-[16px] animate-fade-in">
-            <p className="text-body-sm text-text-secondary leading-snug">
+            <p className="text-body-sm text-text-secondary leading-snug px-3">
               Riwayat pembayaran uang tunai dari kunjungan toko.
             </p>
             
@@ -191,7 +192,7 @@ export default function FinancePage() {
             )}
             
             {data.lists.incomes.map((item, idx) => (
-              <div key={idx} className="bg-surface p-[16px] rounded-[16px] border border-outline-variant shadow-sm border-l-4 border-l-primary">
+              <SectionCard key={idx}>
                 <div className="mb-3">
                   <h4 className="font-semibold text-body text-text-primary">
                     {item.storeName}
@@ -217,7 +218,7 @@ export default function FinancePage() {
                     Lihat Nota <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
+              </SectionCard>
             ))}
           </div>
         )}
@@ -225,7 +226,7 @@ export default function FinancePage() {
         {/* KONTEN: PIUTANG */}
         {activeTab === "receivables" && (
           <div className="space-y-[16px] animate-fade-in">
-            <p className="text-body-sm text-text-secondary leading-snug">
+            <p className="text-body-sm text-text-secondary leading-snug px-3">
               Daftar tagihan aktif. Sisa hutang selalu berpindah dan diakumulasikan ke riwayat kunjungan paling akhir.
             </p>
             
@@ -234,7 +235,7 @@ export default function FinancePage() {
             )}
             
             {data.lists.receivables.map((item, idx) => (
-              <div key={idx} className="bg-surface p-[16px] rounded-[16px] border border-outline-variant shadow-sm border-l-4 border-l-error">
+              <SectionCard key={idx}>
                 <div className="mb-3">
                   <h4 className="font-semibold text-body text-text-primary">
                     {item.storeName}
@@ -260,7 +261,7 @@ export default function FinancePage() {
                     Detail Toko <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
-              </div>
+              </SectionCard>
             ))}
           </div>
         )}
@@ -268,7 +269,7 @@ export default function FinancePage() {
         {/* KONTEN: ASET */}
         {activeTab === "assets" && (
           <div className="space-y-[16px] animate-fade-in">
-            <p className="text-body-sm text-text-secondary leading-snug">
+            <p className="text-body-sm text-text-secondary leading-snug px-3">
               Sebaran data nilai dan barang titipan terakhir di masing-masing toko.
             </p>
             
@@ -277,7 +278,7 @@ export default function FinancePage() {
             )}
             
             {data.lists.assets.map((item, idx) => (
-              <div key={idx} className="bg-surface p-[16px] rounded-[16px] border border-outline-variant shadow-sm border-l-4 border-l-primary">
+              <SectionCard key={idx}>
                 <div className="mb-3">
                   <h4 className="font-semibold text-body text-text-primary">
                     {item.storeName}
@@ -302,7 +303,7 @@ export default function FinancePage() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </SectionCard>
             ))}
           </div>
         )}
