@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/use-profile";
 import { validateProfileForm } from "@/lib/validations";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
+import { SectionCard } from "@/components/shared/section-card";
 
 interface ProfileMenuProps {
   variant?: "icon" | "sidebar";
@@ -93,10 +94,10 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
         align={variant === "sidebar" ? "start" : "end"} 
         sideOffset={12} 
         collisionPadding={16}
-        className="w-[calc(100vw-2rem)] max-w-[400px] p-5 rounded-2xl bg-surface border border-border shadow-xl z-50"
+        className="w-[calc(100vw-2rem)] max-w-[400px] p-0 border-none shadow-none bg-transparent z-50"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <div className="flex flex-col space-y-4">
+        <SectionCard className="flex flex-col space-y-4 shadow-xl">
           
           <div className="flex items-center gap-3 pb-3 border-b border-border">
             <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-text-secondary shrink-0">
@@ -172,7 +173,7 @@ export function ProfileMenu({ variant = "icon", isSidebarCollapsed = false }: Pr
             </Button>
           </div>
 
-        </div>
+        </SectionCard>
       </PopoverContent>
     </Popover>
   );
