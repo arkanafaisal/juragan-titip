@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { 
   Banknote, 
   Wallet, 
@@ -22,6 +22,21 @@ export default function FinancePage() {
   const [data, setData] = useState<FinanceDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const handleTabChange = (tab: "income" | "receivables" | "assets") => {
+    setActiveTab(tab);
+    setTimeout(() => {
+      if (tabsRef.current) {
+        const rect = tabsRef.current.getBoundingClientRect();
+        // Jika elemen anchor sudah terscroll ke atas (yaitu saat sticky aktif)
+        // Kita scroll kembali ke anchor tersebut
+        if (rect.top < 100) { // Toleransi tinggi header aplikasi
+          tabsRef.current.scrollIntoView({ block: "start" });
+        }
+      }
+    }, 10);
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -145,10 +160,11 @@ export default function FinancePage() {
       </div>
 
       {/* --- TAB NAVIGATION --- */}
-      <div className="mb-[16px]">
+      <div ref={tabsRef} className="scroll-mt-[16px]" />
+      <div className="sticky -top-4 z-20 bg-background/80 backdrop-blur-md pb-4 pt-4 -mx-4 px-4">
         <div className="flex bg-surface-container-low p-1 rounded-xl">
           <button 
-            onClick={() => setActiveTab("income")}
+            onClick={() => handleTabChange("income")}
             className={cn(
               "flex-1 py-2 text-body-sm font-semibold rounded-lg transition-all",
               activeTab === "income" ? "bg-primary text-on-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
@@ -157,7 +173,7 @@ export default function FinancePage() {
             Masuk
           </button>
           <button 
-            onClick={() => setActiveTab("receivables")}
+            onClick={() => handleTabChange("receivables")}
             className={cn(
               "flex-1 py-2 text-body-sm font-semibold rounded-lg transition-all",
               activeTab === "receivables" ? "bg-primary text-on-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
@@ -166,7 +182,7 @@ export default function FinancePage() {
             Piutang
           </button>
           <button 
-            onClick={() => setActiveTab("assets")}
+            onClick={() => handleTabChange("assets")}
             className={cn(
               "flex-1 py-2 text-body-sm font-semibold rounded-lg transition-all",
               activeTab === "assets" ? "bg-primary text-on-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
@@ -178,7 +194,7 @@ export default function FinancePage() {
       </div>
 
       {/* --- TAB CONTENT AREA --- */}
-      <div className=" flex-1">
+      <div className="flex-1">
         
         {/* KONTEN: UANG MASUK */}
         {activeTab === "income" && (
