@@ -104,10 +104,14 @@ export const productApi = {
         return { success: false, data: null, message: "Produk tidak ditemukan" };
       }
 
-      // Fetching logs and sorting by createdAt using compound index
+      // Mengambil logs 1 bulan terakhir dan diurutkan berdasarkan createdAt
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+      const minDateStr = oneMonthAgo.toISOString();
+
       const logs = await db.inventoryLogs
         .where('[productId+createdAt]')
-        .between([numericId, Dexie.minKey], [numericId, Dexie.maxKey])
+        .between([numericId, minDateStr], [numericId, Dexie.maxKey])
         .reverse()
         .toArray();
 
