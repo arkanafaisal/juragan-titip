@@ -17,6 +17,7 @@ import { settingsApi } from "@/services/api/settings";
 import { backupApi } from "@/services/api/backup";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
+import { SectionCard } from "@/components/shared/section-card";
 
 export default function SettingsPage() {
   const [searchParams] = useSearchParams();
@@ -219,19 +220,19 @@ export default function SettingsPage() {
         </div> */}
 
         {/* SECTION: PENGATURAN PRODUK */}
-        <div id="section-produk" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        <SectionCard id="section-produk" className="transition-all">
           <button 
             onClick={() => toggleSection('produk')}
-            className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
+            className="w-full flex justify-between items-center bg-surface-container-low hover:bg-surface-bright rounded-xl transition-colors"
           >
-            <span className="font-h3 text-h3 font-bold text-text-primary flex items-center gap-sm">
+            <span className="font-h2 text-h2 font-bold text-text-primary flex items-center gap-sm">
               <Package className="w-5 h-5 text-primary" /> Pengaturan Produk
             </span>
             {openSection === 'produk' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
           </button>
           
           {openSection === 'produk' && (
-            <div className="p-md border-t border-outline-variant bg-surface space-y-md animate-in slide-in-from-top-2">
+            <div className="pt-4 mt-4 border-t border-outline-variant space-y-md animate-in slide-in-from-top-2">
               
               <div>
                 <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
@@ -278,22 +279,22 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
-        </div>
+        </SectionCard>
 
         {/* SECTION: PENGATURAN TOKO */}
-        <div id="section-toko" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
+        <SectionCard id="section-toko" className="transition-all">
           <button 
             onClick={() => toggleSection('toko')}
-            className="w-full flex justify-between items-center p-md bg-surface-container-low hover:bg-surface-bright transition-colors"
+            className="w-full flex justify-between items-center bg-surface-container-low hover:bg-surface-bright rounded-xl transition-colors"
           >
-            <span className="font-h3 text-h3 font-bold text-text-primary flex items-center gap-sm">
+            <span className="font-h2 text-h2 font-bold text-text-primary flex items-center gap-sm">
               <Store className="w-5 h-5 text-primary" /> Pengaturan Toko
             </span>
             {openSection === 'toko' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
           </button>
           
           {openSection === 'toko' && (
-            <div className="p-md border-t border-outline-variant bg-surface space-y-md animate-in slide-in-from-top-2">
+            <div className="pt-4 mt-4 border-t border-outline-variant space-y-md animate-in slide-in-from-top-2">
               <div>
                 <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
                   Batas Peringatan Belum Dikunjungi (Hari)
@@ -339,7 +340,7 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
-        </div>
+        </SectionCard>
 
         {/* SECTION: KASIR & TRANSAKSI */}
         {/* <div id="section-transaksi" className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm transition-all">
@@ -415,7 +416,7 @@ export default function SettingsPage() {
 
 
         {/* SECTION 4: MANAJEMEN DATA (DANGER ZONE) */}
-        <div className="mt-xl pt-lg border-t-2 border-dashed border-outline-variant">
+        <SectionCard className="mt-8">
           <h2 className="font-h3 text-h3 font-bold text-text-primary flex items-center gap-2 mb-md">
             <Database className="w-5 h-5 text-text-secondary" /> Manajemen Data (Offline)
           </h2>
@@ -452,7 +453,7 @@ export default function SettingsPage() {
             />
 
             {/* ZONA BERBAHAYA */}
-            <div className="bg-error/10 border border-error/30 rounded-xl p-md mt-md">
+            <SectionCard className="!bg-error/10 !border-error/30 mt-md">
               <h3 className="font-body text-body font-bold text-error mb-1">Zona Berbahaya</h3>
               <p className="font-caption text-caption text-error/80 mb-3">
                 Aksi ini akan menghapus permanen seluruh riwayat toko, hutang, dan produk dari HP ini. Pastikan Anda sudah melakukan Backup.
@@ -463,9 +464,9 @@ export default function SettingsPage() {
               >
                 <Trash2 className="w-5 h-5" /> Reset & Hapus Semua Data
               </button>
-            </div>
+            </SectionCard>
           </div>
-        </div>
+        </SectionCard>
 
       </div>
 
