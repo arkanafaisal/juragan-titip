@@ -9,7 +9,8 @@ import {
   MapPin, 
   Locate, 
   Save,
-  Loader2
+  Loader2,
+  Archive
 } from "lucide-react";
 import { storeApi } from "@/services/api/stores";
 import { settingsApi } from "@/services/api/settings";
@@ -30,6 +31,10 @@ export default function StoreFormPage() {
   const [error, setError] = useState<string | null>(null);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateMessage, setDuplicateMessage] = useState<React.ReactNode | null>(null);
+
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [archiveError, setArchiveError] = useState<string | null>(null);
   
   const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
 
@@ -189,6 +194,25 @@ export default function StoreFormPage() {
     goBack(isEditMode ? `/stores/${id}` : "/stores");
   };
 
+  const handleArchiveConfirm = async (typedName?: string) => {
+    if (!id || !typedName) return;
+    
+    setIsArchiving(true);
+    setArchiveError(null);
+    try {
+      const response = await storeApi.delete(id, typedName);
+      if (response.success) {
+        navigate("/stores");
+      } else {
+        setArchiveError(response.message || "Gagal mengarsipkan toko");
+      }
+    } catch (err) {
+      setArchiveError("Terjadi kesalahan sistem saat mengarsipkan toko.");
+    } finally {
+      setIsArchiving(false);
+    }
+  };
+
   if (isLoadingData) {
     return (
       <div className="flex justify-center items-center py-24">
@@ -199,6 +223,14 @@ export default function StoreFormPage() {
 
   return (
     <div className="max-w-container-max mx-auto space-y-lg pb-xl">
+      <div className="mb-2 flex items-center">
+        <button 
+          onClick={handleCancel}
+          className="flex items-center justify-center px-4 py-2 bg-error text-on-error rounded-xl shadow-sm hover:bg-error/90 active:scale-[0.98] transition-all"
+        >
+          <span className="text-body-sm">Batal</span>
+        </button>
+      </div>
 
       {error && (
         <div className="w-full bg-error-container text-on-error-container p-sm rounded-lg mb-md font-body-sm text-body-sm flex items-center justify-center">
@@ -416,23 +448,25 @@ export default function StoreFormPage() {
           </div>
         </div>
 
-        
-        <div className="col-span-1  flex justify-end gap-md pt-lg border-t border-outline-variant mt-sm">
-          <button 
-            type="button" 
-            onClick={handleCancel}
-            className="px-lg py-2 rounded-lg font-body text-body font-medium text-on-surface-variant bg-surface border border-outline-variant hover:bg-surface-container-low transition-colors active:scale-95 duration-100"
-          >
-            Batal
-          </button>
+        {/* BUTTONS ACTION */}
+        <div className="col-span-1 space-y-3 mt-6">
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="px-lg py-2 rounded-lg font-body text-body font-medium text-on-primary bg-primary hover:bg-primary/90 shadow-sm transition-all active:scale-95 duration-100 flex items-center gap-2 disabled:opacity-50"
+            className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-on-primary font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
           >
-            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            {isSubmitting ? "Memproses..." : isEditMode ? "Simpan Perubahan" : "Simpan Toko"}
+            <Save className="w-5 h-5" /> {isSubmitting ? "MENYIMPAN..." : isEditMode ? "SIMPAN PERUBAHAN" : "TAMBAH TOKO"}
           </button>
+          
+          {isEditMode && (
+            <button 
+              type="button"
+              onClick={() => setIsArchiveModalOpen(true)}
+              className="w-full py-3.5 bg-error hover:bg-error/90 text-on-primary active:bg-error/30 font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            >
+              <Archive className="w-5 h-5" /> ARSIPKAN TOKO
+            </button>
+          )}
         </div>
 
       </form>
@@ -447,6 +481,26 @@ export default function StoreFormPage() {
         cancelText="Batal"
         isDanger={true}
         isLoading={isSubmitting}
+      />
+
+      <ConfirmationModal
+        isOpen={isArchiveModalOpen}
+        onClose={() => {
+          setIsArchiveModalOpen(false);
+          setArchiveError(null);
+        }}
+        onConfirm={handleArchiveConfirm}
+        title="Arsipkan Toko"
+        description="Apakah Anda yakin ingin mengarsipkan toko ini? Toko tidak akan muncul di daftar utama dan perjalanan, namun riwayat kunjungan dan tagihannya masih tersimpan di database."
+        isDanger={true}
+        confirmText="Arsipkan"
+        isLoading={isArchiving}
+        verificationText={formData.name}
+        verificationLabel={
+          <>Ketik persis <span className="font-bold text-text-primary select-none">{formData.name}</span> untuk konfirmasi:</>
+        }
+        errorMessage={archiveError}
+        onClearError={() => setArchiveError(null)}
       />
     </div>
   );

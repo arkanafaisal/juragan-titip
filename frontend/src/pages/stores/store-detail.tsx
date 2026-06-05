@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router";
 import { useSmartBack } from "@/hooks/use-smart-back";
 import {
   SquarePen,
-  Trash2,
   MapPin,
   User,
   Phone,
@@ -17,7 +16,6 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { MapPicker } from "@/components/features/map-picker";
-import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { InvoiceDetail } from "@/components/features/invoice-detail";
 import { storeApi } from "@/services/api/stores";
 import type { Store, Visit } from "@/types";
@@ -36,11 +34,6 @@ export default function StoreDetailPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStoreData = async () => {
@@ -67,25 +60,6 @@ export default function StoreDetailPage() {
 
     fetchStoreData();
   }, [id]);
-
-  const handleDeleteConfirm = async (typedName?: string) => {
-    if (!store || !id || !typedName) return;
-    
-    setIsDeleting(true);
-    setDeleteError(null);
-    try {
-      const response = await storeApi.delete(id, typedName);
-      if (response.success) {
-        navigate("/stores");
-      } else {
-        setDeleteError(response.message || "Gagal menghapus toko");
-      }
-    } catch (err) {
-      setDeleteError("Terjadi kesalahan sistem saat menghapus toko.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const StatCard = ({ 
     icon: Icon, title, value, unit, bgClass, textClass, 
@@ -167,12 +141,6 @@ export default function StoreDetailPage() {
                 
                 
                 <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => setIsDeleteModalOpen(true)}
-                    className="p-1.5 text-error hover:text-error/80 hover:bg-error/30 rounded-xl shrink-0 transition-colors active:scale-95"
-                  >
-                    <Trash2 className="w-6 h-6" />
-                  </button>
                   <button 
                     onClick={() => navigate(`/stores/${store.id}/edit`)}
                     className="p-1.5 text-warning hover:text-warning/80 hover:bg-warning/30 rounded-xl shrink-0 transition-colors active:scale-95"
@@ -295,26 +263,6 @@ export default function StoreDetailPage() {
           </div>
         )}
       </div>
-
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setDeleteError(null);
-        }}
-        onConfirm={handleDeleteConfirm}
-        title="Hapus Toko"
-        description="Tindakan ini permanen dan tidak dapat dibatalkan. Semua data kunjungan, catatan piutang, dan riwayat titipan yang terkait dengan toko ini akan ikut terhapus."
-        isDanger={true}
-        confirmText="Hapus Permanen"
-        isLoading={isDeleting}
-        verificationText={store.name}
-        verificationLabel={
-          <>Ketik persis <span className="font-bold text-text-primary select-none">{store.name}</span> untuk konfirmasi:</>
-        }
-        errorMessage={deleteError}
-        onClearError={() => setDeleteError(null)}
-      />
     </div>
   );
 }
