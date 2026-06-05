@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import { productApi } from "@/services/api/products";
 import { ItemCard } from "@/components/shared/item-card";
 import type { Product } from "@/types";
-import { AddProductModal } from "@/components/products/add-product-modal";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Pagination } from "@/components/shared/pagination";
 import { LIMIT } from "@/lib/constants";
@@ -15,9 +14,6 @@ export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -106,11 +102,7 @@ export default function ProductListPage() {
   }, [debouncedSearch, filters, currentPage]);
 
   const handleOpenAdd = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+    navigate("/product/new");
   };
 
   const handleDeleteConfirm = async (typedName?: string) => {
@@ -188,11 +180,6 @@ export default function ProductListPage() {
         />
       )}
 
-      <AddProductModal 
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSuccess={fetchProducts}
-      />
 
       <ConfirmationModal
         isOpen={!!productToDelete}
