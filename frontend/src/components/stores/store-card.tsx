@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router";
-import { MapPin, Store as StoreIcon, Package, CircleDollarSign, History } from "lucide-react";
+import { MapPin, Store as StoreIcon, History } from "lucide-react";
 import type { Store } from "@/types";
 import { formatRupiah } from "@/lib/utils";
+import { SectionCard } from "@/components/shared/section-card";
 
 const getCategoryStyles = (category?: string) => {
   if (category === "1") return { bg: "bg-info/10", text: "text-info", border: "border-info/40" };
@@ -23,8 +24,8 @@ export function StoreCard({ store, storeCategoryLabels }: StoreCardProps) {
   const displayCategory = store.category ? storeCategoryLabels[store.category as keyof typeof storeCategoryLabels] || store.category : null;
 
   return (
-    <div className={`bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden border-[1.5px] ${store.category ? catStyle.border : 'border-outline-variant'}`}>
-      <div className="p-md flex-1 flex flex-col cursor-pointer" onClick={() => navigate(`/stores/${store.id}`)}>
+    <SectionCard className={`!p-0 hover:shadow-md transition-shadow flex flex-col overflow-hidden ${store.category ? `!border-[1.5px] !${catStyle.border}` : ''}`}>
+      <div className="p-md pb-xs flex-1 flex flex-col cursor-pointer" onClick={() => navigate(`/stores/${store.id}`)}>
         <div className="flex items-start justify-between mb-sm">
           <div className="flex items-center gap-sm flex-1 min-w-0 pr-2">
             <div className="min-w-0">
@@ -50,19 +51,15 @@ export function StoreCard({ store, storeCategoryLabels }: StoreCardProps) {
           <span className="font-body-sm text-body-sm line-clamp-2">{store.address}</span>
         </div>
 
-        <hr className="border-outline-variant mb-md" />
-
         <div className="grid grid-cols-2 gap-sm mb-xs">
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-xs text-text-secondary">
-              <Package className="w-4 h-4 shrink-0" />
               <span className="font-caption text-caption">Nilai Aset</span>
             </div>
             <span className="font-data-md text-data-md text-text-primary">{formatRupiah(store.assetValue || 0)}</span>
           </div>
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-xs text-text-secondary">
-              <CircleDollarSign className="w-4 h-4 shrink-0" />
               <span className="font-caption text-caption">Piutang</span>
             </div>
             <span className={`font-data-md text-data-md ${
@@ -76,7 +73,7 @@ export function StoreCard({ store, storeCategoryLabels }: StoreCardProps) {
         </div>
       </div>
 
-      <div className="p-sm bg-surface-bright border-t border-outline-variant flex gap-sm">
+      <div className="p-sm bg-surface-bright flex gap-sm">
         <button 
           onClick={(e) => { 
             e.stopPropagation(); 
@@ -98,6 +95,6 @@ export function StoreCard({ store, storeCategoryLabels }: StoreCardProps) {
           Kunjungi
         </button>
       </div>
-    </div>
+    </SectionCard>
   );
 }
