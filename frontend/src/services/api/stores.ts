@@ -29,6 +29,9 @@ export const storeApi = {
         // Default: Urut abjad
         collection = db.stores.orderBy('normalizedName');
       }
+
+      // Selalu sembunyikan yang sudah diarsipkan
+      collection = collection.filter(s => !s.isArchived);
       
       
       if (params) {
@@ -79,7 +82,7 @@ export const storeApi = {
     try {
       const numericId = Number(id);
       const store = await db.stores.get(numericId);
-      if (!store) {
+      if (!store || store.isArchived) {
         toast.error("Toko tidak ditemukan")
         return { success: false, data: null, message: "Toko tidak ditemukan" }
       }
@@ -118,7 +121,8 @@ export const storeApi = {
       normalizedName,
       debt: 0,
       assetValue: 0,
-      lastVisitAt: ""
+      lastVisitAt: "",
+      isArchived: false
     }
 
     try {
@@ -157,7 +161,11 @@ export const storeApi = {
 
   checkDuplicateName: async (name: string, excludeId?: number): Promise<boolean> => {
     const normalizedName = name.toLowerCase();
-    const existingStore = await db.stores.where('normalizedName').equals(normalizedName).first();
+    const existingStore = await db.stores
+      .where('normalizedName')
+      .equals(normalizedName)
+      .filter(s => !s.isArchived)
+      .first();
     if (existingStore) {
       if (excludeId !== undefined && existingStore.id === excludeId) return false;
       return true;
@@ -166,7 +174,11 @@ export const storeApi = {
   },
 
   checkDuplicatePhone: async (phone: string, excludeId?: number): Promise<boolean> => {
-    const existingStore = await db.stores.where('phone').equals(phone).first();
+    const existingStore = await db.stores
+      .where('phone')
+      .equals(phone)
+      .filter(s => !s.isArchived)
+      .first();
     if (existingStore) {
       if (excludeId !== undefined && existingStore.id === excludeId) return false;
       return true;
@@ -194,7 +206,7 @@ export const storeApi = {
       };
     }
 
-    await db.stores.delete(numericId);
+    await db.stores.update(numericId, { isArchived: true });
     return { success: true, data: null };
   },
   getPhoneNumber: async (id: number | string): Promise<ApiResponse<string | undefined>> => {
@@ -208,7 +220,7 @@ export const storeApi = {
 
   countTotal: async (): Promise<number> => {
     try {
-      return await db.stores.count();
+      return await db.stores.filter(s => !s.isArchived).count();
     } catch (error) {
       console.error("Dexie Count Store Error:", error);
       return 0;

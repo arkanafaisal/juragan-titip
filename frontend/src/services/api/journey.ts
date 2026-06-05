@@ -26,6 +26,7 @@ export const journeyApi = {
     
     const overdueStores = await db.stores
       .filter(store => {
+        if (store.isArchived) return false;
         if (!store.lastVisitAt) return true;
         const lastVisit = new Date(store.lastVisitAt);
         const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
@@ -40,7 +41,7 @@ export const journeyApi = {
     
     const processedStores = overdueStores.map(s => {
       const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
-      return { ...s, distance, isOverdue: true };
+      return { ...s, distance };
     });
 
     return processedStores.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));

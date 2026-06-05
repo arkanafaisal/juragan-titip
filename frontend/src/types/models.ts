@@ -34,6 +34,7 @@ export interface Store {
   assetValue: number
   lastVisitAt: string
   category: "1" | "2" | "3" | "4" | "5"
+  isArchived: boolean
 }
 
 export interface StorePrice {
