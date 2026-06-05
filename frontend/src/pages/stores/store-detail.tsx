@@ -154,8 +154,8 @@ export default function StoreDetailPage() {
         <StatCard icon={TrendingUp} title="Nilai Aset" value={store.assetValue > 0 ? `Rp ${store.assetValue.toLocaleString("id-ID")}` : "Rp 0"} bgClass="bg-success/10" textClass="text-success" valSizePC="font-h2 text-h2" valSizeMobile="font-body text-body font-bold" />
       </div>
 
-      <SectionCard className="!p-0 overflow-hidden flex flex-col">
-        <div className="p-3 bg-surface-container-lowest border-b border-border">
+      <SectionCard className="overflow-hidden flex flex-col">
+        <div className="mb-3 bg-surface-container-lowest border-b border-border">
           <div className="flex bg-surface-container-low p-1 rounded-xl">
             <button 
               onClick={() => setActiveTab("titipan")} 
@@ -172,7 +172,7 @@ export default function StoreDetailPage() {
           </div>
         </div>
         {activeTab === "titipan" && (
-          <div className="p-md ">
+          <div className="">
             {analysis?.activeItems && analysis.activeItems.length > 0 ? (
               <div className="space-y-sm">
                 {analysis.activeItems.map((item, idx) => (
@@ -193,7 +193,7 @@ export default function StoreDetailPage() {
           </div>
         )}
         {activeTab === "riwayat" && (
-          <div className="p-md  min-h-[200px]">
+          <div className="">
             {analysis?.visitHistory && analysis.visitHistory.length > 0 ? (
               <div className="space-y-sm">
                 {analysis.visitHistory.map((visit) => (
