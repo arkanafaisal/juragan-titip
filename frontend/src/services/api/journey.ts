@@ -29,21 +29,23 @@ const isStoreOverdue = (store: DbStore, overdueDays: number, now: Date) => {
 
 export const journeyApi = {
   getInitialStores: async (): Promise<StoreWithDistance[]> => {
-    const allStores = await db.stores.toArray();
     const overdueDays = settingsApi.getStoreOverdueDays();
     const now = new Date();
     
-    return allStores
+    const overdueStores = await db.stores
       .filter(s => isStoreOverdue(s, overdueDays, now))
-      .map(s => ({ ...s, distance: 9999, isOverdue: true }));
+      .toArray();
+      
+    return overdueStores.map(s => ({ ...s, distance: 9999, isOverdue: true }));
   },
   
   getOptimalRoute: async (latitude: number, longitude: number): Promise<StoreWithDistance[]> => {
-    const allStores = await db.stores.toArray();
     const overdueDays = settingsApi.getStoreOverdueDays();
     const now = new Date();
     
-    const overdueStores = allStores.filter(s => isStoreOverdue(s, overdueDays, now));
+    const overdueStores = await db.stores
+      .filter(s => isStoreOverdue(s, overdueDays, now))
+      .toArray();
     
     const processedStores = overdueStores.map(s => {
       const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
