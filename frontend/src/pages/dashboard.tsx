@@ -1,4 +1,4 @@
-import { useNavigate, Link } from "react-router";
+import { Link } from "react-router";
 import { 
   Wallet, 
   Navigation, 
@@ -25,7 +25,6 @@ import { InvoiceDetail } from "@/components/features/invoice-detail";
 import { SectionCard } from "@/components/shared/section-card";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const todayDate = format(new Date(), "EEEE, dd MMM yyyy", { locale: idLocale });
   
   const [data, setData] = useState<DashboardData | null>(null);

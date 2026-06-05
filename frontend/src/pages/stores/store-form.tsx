@@ -3,9 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSmartBack } from "@/hooks/use-smart-back";
-import { 
-  Info, 
-  StickyNote, 
+import {
   MapPin, 
   Locate, 
   Save,
