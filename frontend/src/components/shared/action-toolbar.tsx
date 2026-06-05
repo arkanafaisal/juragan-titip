@@ -149,7 +149,7 @@ export function ActionToolbar({
       {/* 4. Tombol Tambah */}
       <Button 
         onClick={onAddClick} 
-        className="shrink-0 bg-primary text-on-primary hover:bg-primary/90 shadow-sm border-transparent"
+        className="shrink-0 bg-success text-on-primary hover:bg-success/90 shadow-sm border-transparent"
       >
         <Plus className="w-4 h-4" />
         <span className="hidden  ml-1">{addLabel}</span>

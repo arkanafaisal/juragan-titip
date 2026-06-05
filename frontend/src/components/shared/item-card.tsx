@@ -5,11 +5,11 @@ import { formatRupiah } from "@/lib/utils";
 import { SectionCard } from "@/components/shared/section-card";
 
 const getCategoryStyles = (category?: string) => {
-  if (category === "1") return { bg: "bg-info/10", text: "text-info", border: "border-info/40" };
-  if (category === "2") return { bg: "bg-success/10", text: "text-success", border: "border-success/40" };
-  if (category === "3") return { bg: "bg-warning/10", text: "text-warning", border: "border-warning/40" };
-  if (category === "4") return { bg: "bg-secondary/10", text: "text-secondary", border: "border-secondary/40" };
-  if (category === "5") return { bg: "bg-primary/10", text: "text-primary", border: "border-primary/40" };
+  if (category === "1") return { bg: "bg-primary", text: "text-on-primary", border: "border-info/40" };
+  if (category === "2") return { bg: "bg-success", text: "text-on-success", border: "border-success/40" };
+  if (category === "3") return { bg: "bg-warning", text: "text-on-warning", border: "border-warning/40" };
+  if (category === "4") return { bg: "bg-secondary", text: "text-on-secondary", border: "border-secondary/40" };
+  if (category === "5") return { bg: "bg-on-background", text: "text-on-primary", border: "border-on-background/40" };
   return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant" };
 };
 
@@ -18,7 +18,7 @@ interface ItemCardProps {
   product?: Product;
   storeCategoryLabels?: Record<string, string>;
   categoryLabels?: Record<string, string>;
-  lowStockThreshold?: number;
+  lowStockThreshold: number;
 }
 
 export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, lowStockThreshold }: ItemCardProps) {
@@ -53,7 +53,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
               </span>
             )}
             {isStore && (
-              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-caption text-[10px] ${(data as Store).lastVisitAt ? 'bg-primary/10 text-primary' : 'bg-surface-container-high text-text-secondary'}`}>
+              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-caption text-[10px] ${(data as Store).lastVisitAt ? 'bg-success text-on-success' : 'bg-error text-on-error'}`}>
                 <History className="w-3 h-3" />
                 <span>{(data as Store).lastVisitAt ? new Date((data as Store).lastVisitAt!).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : "Belum dikunjungi"}</span>
               </div>
@@ -73,15 +73,23 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
             <div className="flex items-center gap-xs text-text-secondary">
               <span className="font-caption text-caption">{isStore ? "Nilai Aset" : "Jumlah Stok"}</span>
             </div>
-            <span className={`font-data-md text-data-md ${!isStore && lowStockThreshold !== undefined && (data as Product).warehouseStock <= lowStockThreshold ? 'text-error' : 'text-text-primary'}`}>
-              {isStore ? formatRupiah((data as Store).assetValue || 0) : (data as Product).warehouseStock}
+            <span className={`font-data-md text-data-md ${
+              isStore
+                ? ((data as Store).assetValue > 0 ? 'text-success' : 'text-warning')
+                : (data as Product).warehouseStock === 0 ? 'text-error' : (data as Product).warehouseStock > lowStockThreshold ? "text-success" : "text-warning"}
+              }`}>
+                {isStore ? formatRupiah((data as Store).assetValue || 0) : (data as Product).warehouseStock}
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-xs text-text-secondary">
               <span className="font-caption text-caption">{isStore ? "Piutang" : "Jumlah Retur"}</span>
             </div>
-            <span className="font-data-md text-data-md text-text-primary">
+            <span className={`font-data-md text-data-md ${
+              isStore 
+                ? ((data as Store).debt === 0 ? 'text-success' : (data as Store).debt > 1000000 ? 'text-error' : 'text-warning')
+                : (((data as Product).returnedStock || 0) > 0 ? 'text-error' : 'text-success')
+            }`}>
               {isStore 
                 ? ((data as Store).debt === 0 ? "Rp 0" : formatRupiah((data as Store).debt)) 
                 : ((data as Product).returnedStock || 0)}
@@ -97,7 +105,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
               e.stopPropagation(); 
               window.open(`https://www.google.com/maps/search/?api=1&query=${(data as Store).latitude},${(data as Store).longitude}`, '_blank'); 
             }}
-            className="flex-1 border border-outline-variant text-text-secondary hover:text-primary hover:bg-surface-container-low font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
+            className="flex-1 border border-outline-variant bg-on-background/85 hover:bg-on-background/65 text-on-primary font-body-sm text-body-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-xs"
           >
             <MapPin className="w-4 h-4" />
             Maps
