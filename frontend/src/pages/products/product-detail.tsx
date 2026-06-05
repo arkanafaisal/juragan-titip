@@ -220,7 +220,7 @@ export default function ProductDetailPage() {
         <section className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
           <div className="border-b pb-2 border-outline-variant">
             <h3 className="text-h3  text-text-primary uppercase">
-              Riwayat Aktivitas
+              Riwayat Aktivitas ( 30 hari )
             </h3>
           </div>
 

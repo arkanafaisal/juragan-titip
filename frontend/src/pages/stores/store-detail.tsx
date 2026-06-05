@@ -233,6 +233,7 @@ export default function StoreDetailPage() {
           <div className="">
             {analysis?.visitHistory && analysis.visitHistory.length > 0 ? (
               <div className="space-y-sm">
+                <p className="text-caption text-text-muted mb-sm italic px-1">Menampilkan maksimal 10 riwayat kunjungan terakhir.</p>
                 {analysis.visitHistory.map((visit) => (
                   <button 
                     key={visit.id} 
