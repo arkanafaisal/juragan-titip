@@ -4,7 +4,6 @@ export interface ProductFormData {
   costPrice: number
   wholesalePrice: number
   retailPrice?: number
-  warehouseStock: number
   description: string
 }
 
