@@ -115,10 +115,10 @@ export default function SettingsPage() {
 
   const handleExportBackup = async () => {
     setIsBackupLoading(true);
-    toast.info("Mempersiapkan file backup...");
+    toast.info("Mempersiapkan file Excel...");
     try {
-      await backupApi.exportToJson();
-      toast.success("Backup berhasil diunduh!");
+      await backupApi.exportDatabaseExcel();
+      toast.success("Backup Excel berhasil diunduh!");
     } catch (error) {
       toast.error("Gagal melakukan backup data.");
     } finally {
@@ -126,6 +126,7 @@ export default function SettingsPage() {
     }
   };
 
+  /*
   const handleImportBackup = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -155,6 +156,7 @@ export default function SettingsPage() {
       fileInputRef.current.value = "";
     }
   };
+  */
 
   const handleResetDataClick = () => {
     setIsResetModalOpen(true);
@@ -434,9 +436,10 @@ export default function SettingsPage() {
               disabled={isBackupLoading}
               className="w-full bg-surface border border-primary text-primary hover:bg-primary/10 font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
-              <Download className="w-5 h-5" /> Backup Data ke File (JSON)
+              <Download className="w-5 h-5" /> Backup Data ke File (Excel)
             </button>
             
+            {/*
             <button 
               onClick={handleImportBackup}
               disabled={isBackupLoading}
@@ -451,6 +454,7 @@ export default function SettingsPage() {
               ref={fileInputRef} 
               onChange={handleFileChange} 
             />
+            */}
 
             {/* ZONA BERBAHAYA */}
             <SectionCard className="!bg-error/10 !border-error/30 mt-md">
