@@ -110,7 +110,7 @@ export default function ProductFormPage() {
       toast.success("Produk berhasil diarsipkan");
       navigate("/products", { replace: true });
     } else {
-      setDeleteError(response.message || "Gagal mengarsipkan produk");
+      setDeleteError(response.message);
     }
     
     setIsDeleting(false);

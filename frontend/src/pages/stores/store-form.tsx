@@ -70,7 +70,7 @@ export default function StoreFormPage() {
             lng: response.data.store.longitude,
           });
         } else {
-          setError(response.message || "Gagal memuat data toko.");
+          setError(response.message);
         }
         setIsLoadingData(false);
       };
@@ -169,7 +169,7 @@ export default function StoreFormPage() {
         navigate(`/stores/${result.data.id}`, { replace: true }); 
       }
     } else {
-      setError(result.message || "Gagal menyimpan data toko.");
+      setError(result.message);
     }
     
     setIsSubmitting(false);
@@ -189,7 +189,7 @@ export default function StoreFormPage() {
     if (response.success) {
       navigate("/stores");
     } else {
-      setArchiveError(response.message || "Gagal mengarsipkan toko");
+      setArchiveError(response.message);
     }
     
     setIsArchiving(false);

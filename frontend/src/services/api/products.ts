@@ -260,8 +260,8 @@ export const productApi = {
       return { success: true, data: updatedProduct };
     } catch (error: any) {
       console.error("Dexie Adjust Stock Error:", error);
-      toast.error(error.message || "Gagal menyesuaikan stok");
-      return { success: false, message: error.message || "Gagal menyesuaikan stok" };
+      toast.error("Gagal menyesuaikan stok");
+      return { success: false, message: "Gagal menyesuaikan stok" };
     }
   },
 
@@ -299,8 +299,8 @@ export const productApi = {
       return { success: true, data: updatedProduct };
     } catch (error: any) {
       console.error("Dexie Add Stock Error:", error);
-      toast.error(error.message || "Gagal menambah stok");
-      return { success: false, message: error.message || "Gagal menambah stok" };
+      toast.error("Gagal menambah stok");
+      return { success: false, message: "Gagal menambah stok" };
     }
   },
 
@@ -371,8 +371,8 @@ export const productApi = {
       return { success: true, data: updatedProduct };
     } catch (error: any) {
       console.error("Dexie Process Return Error:", error);
-      toast.error(error.message || "Gagal memproses barang retur");
-      return { success: false, message: error.message || "Gagal memproses barang retur" };
+      toast.error( "Gagal memproses barang retur");
+      return { success: false, message: "Gagal memproses barang retur" };
     }
   },
 }

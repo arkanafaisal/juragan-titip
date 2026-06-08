@@ -125,9 +125,8 @@ export const visitApi = {
       return { success: true, data: createdVisit };
     } catch (error: any) {
       console.error("Dexie Create Visit Transaction Error:", error);
-      const message = error.message || "Gagal menyimpan kunjungan";
-      toast.error(message);
-      return { success: false, message };
+      toast.error("Gagal menyimpan kunjungan");
+      return { success: false, message: "Gagal menyimpan kunjungan"};
     }
   },
 }

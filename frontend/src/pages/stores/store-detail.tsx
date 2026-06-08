@@ -52,7 +52,7 @@ export default function StoreDetailPage() {
         visitHistory: storeRes.data.visitHistory
       });
     } else {
-      setError(storeRes.message || "Toko tidak ditemukan");
+      setError(storeRes.message);
     }
     
     setIsLoading(false);
@@ -71,7 +71,7 @@ export default function StoreDetailPage() {
       setIsRestoreModalOpen(false);
       fetchStoreData();
     } else {
-      toast.error(response.message || "Gagal memulihkan toko");
+      toast.error(response.message);
     }
     
     setIsRestoring(false);

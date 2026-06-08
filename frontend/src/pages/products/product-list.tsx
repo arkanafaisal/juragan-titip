@@ -137,7 +137,7 @@ export default function ProductListPage() {
       setProductToDelete(null);
       fetchProducts();
     } else {
-      setDeleteError(response.message || "Gagal menghapus produk");
+      setDeleteError(response.message);
     }
     
     setIsDeleting(false);

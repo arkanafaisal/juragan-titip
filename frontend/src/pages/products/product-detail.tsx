@@ -83,7 +83,7 @@ export default function ProductDetailPage() {
       setIsRestoreModalOpen(false);
       loadData();
     } else {
-      toast.error(response.message || "Gagal memulihkan produk");
+      toast.error(response.message);
     }
     
     setIsRestoring(false);
