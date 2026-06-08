@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { toast } from "sonner";
 
 const autoSizeColumns = (worksheet: ExcelJS.Worksheet) => {
   worksheet.columns.forEach((column) => {
@@ -24,7 +25,7 @@ const autoSizeColumns = (worksheet: ExcelJS.Worksheet) => {
 };
 
 export const backupApi = {
-  exportDatabaseExcel: async (): Promise<void> => {
+  exportDatabaseExcel: async (): Promise<boolean> => {
     try {
       const products = await db.products.toArray();
       const stores = await db.stores.toArray();
@@ -137,9 +138,11 @@ export const backupApi = {
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, 'Database_Backup.xlsx');
+      return true;
     } catch (error) {
       console.error("Failed to export Excel backup:", error);
-      throw error;
+      toast.error("Gagal melakukan backup data.");
+      return false;
     }
   },
 

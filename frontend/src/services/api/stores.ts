@@ -162,71 +162,94 @@ export const storeApi = {
   },
 
   checkDuplicateName: async (name: string, excludeId?: number): Promise<boolean> => {
-    const normalizedName = name.toLowerCase();
-    const existingStore = await db.stores
-      .where('normalizedName')
-      .equals(normalizedName)
-      .filter(s => !s.isArchived)
-      .first();
-    if (existingStore) {
-      if (excludeId !== undefined && existingStore.id === excludeId) return false;
-      return true;
+    try {
+      const normalizedName = name.toLowerCase();
+      const existingStore = await db.stores
+        .where('normalizedName')
+        .equals(normalizedName)
+        .filter(s => !s.isArchived)
+        .first();
+      if (existingStore) {
+        if (excludeId !== undefined && existingStore.id === excludeId) return false;
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Dexie Check Duplicate Name Error:", error);
+      toast.error("Gagal memeriksa duplikasi nama");
+      return false;
     }
-    return false;
   },
 
   checkDuplicatePhone: async (phone: string, excludeId?: number): Promise<boolean> => {
-    const existingStore = await db.stores
-      .where('phone')
-      .equals(phone)
-      .filter(s => !s.isArchived)
-      .first();
-    if (existingStore) {
-      if (excludeId !== undefined && existingStore.id === excludeId) return false;
-      return true;
+    try {
+      const existingStore = await db.stores
+        .where('phone')
+        .equals(phone)
+        .filter(s => !s.isArchived)
+        .first();
+      if (existingStore) {
+        if (excludeId !== undefined && existingStore.id === excludeId) return false;
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Dexie Check Duplicate Phone Error:", error);
+      toast.error("Gagal memeriksa duplikasi telepon");
+      return false;
     }
-    return false;
   },
 
   delete: async (id: number | string, storeNameConfirm: string): Promise<ApiResponse<null>> => {
-    const numericId = Number(id);
-    const store = await db.stores.get(numericId);
+    try {
+      const numericId = Number(id);
+      const store = await db.stores.get(numericId);
 
-    if (!store) {
-      return { 
-        success: false, 
-        data: null, 
-        message: "Nama toko tidak ditemukan di sistem" 
-      };
+      if (!store) {
+        return { 
+          success: false, 
+          data: null, 
+          message: "Nama toko tidak ditemukan di sistem" 
+        };
+      }
+
+      if (store.name.toLowerCase() !== storeNameConfirm.toLowerCase()) {
+        return { 
+          success: false, 
+          data: null, 
+          message: "Konfirmasi nama salah untuk ID toko ini" 
+        };
+      }
+
+      await db.stores.update(numericId, { isArchived: true });
+      return { success: true, data: null };
+    } catch (error) {
+      console.error("Dexie Delete Store Error:", error);
+      return { success: false, data: null, message: "Terjadi kesalahan sistem saat mengarsipkan toko" };
     }
-
-    if (store.name.toLowerCase() !== storeNameConfirm.toLowerCase()) {
-      return { 
-        success: false, 
-        data: null, 
-        message: "Konfirmasi nama salah untuk ID toko ini" 
-      };
-    }
-
-    await db.stores.update(numericId, { isArchived: true });
-    return { success: true, data: null };
   },
 
   restore: async (id: number | string): Promise<ApiResponse<null>> => {
-    const numericId = Number(id);
-    const store = await db.stores.get(numericId);
+    try {
+      const numericId = Number(id);
+      const store = await db.stores.get(numericId);
 
-    if (!store) {
-      return { 
-        success: false, 
-        data: null, 
-        message: "Nama toko tidak ditemukan di sistem" 
-      };
+      if (!store) {
+        return { 
+          success: false, 
+          data: null, 
+          message: "Nama toko tidak ditemukan di sistem" 
+        };
+      }
+
+      await db.stores.update(numericId, { isArchived: false });
+      toast.success("Toko berhasil dipulihkan");
+      return { success: true, data: null };
+    } catch (error) {
+      console.error("Dexie Restore Store Error:", error);
+      toast.error("Gagal memulihkan toko");
+      return { success: false, data: null, message: "Gagal memulihkan toko" };
     }
-
-    await db.stores.update(numericId, { isArchived: false });
-    toast.success("Toko berhasil dipulihkan");
-    return { success: true, data: null };
   },
   getPhoneNumber: async (id: number | string): Promise<ApiResponse<string | undefined>> => {
     try {

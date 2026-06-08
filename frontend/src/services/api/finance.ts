@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { subDays, startOfDay, endOfDay, parseISO, format } from "date-fns";
 import { id } from "date-fns/locale";
+import { toast } from "sonner";
 
 export interface FinanceDashboardData {
   summary: {
@@ -147,7 +148,19 @@ export const financeApi = {
       return result;
     } catch (error) {
       console.error("Gagal memuat data finance:", error);
-      throw error;
+      toast.error("Gagal memuat data finance");
+      return {
+        summary: {
+          income: { totalThisMonth: 0, chartData: [] },
+          receivables: { totalDebt: 0, storeCount: 0 },
+          assets: { totalAssetValue: 0, storeCount: 0 },
+        },
+        lists: {
+          incomes: [],
+          receivables: [],
+          assets: [],
+        },
+      };
     }
   }
 };

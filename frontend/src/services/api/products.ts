@@ -180,44 +180,55 @@ export const productApi = {
   },
 
   delete: async (id: number | string, productNameConfirm: string): Promise<ApiResponse<null>> => {
-    const numericId = Number(id);
-    const product = await db.products.get(numericId);
-    
-    if (!product || product.isArchived) {
-      return { 
-        success: false, 
-        data: null, 
-        message: "Produk tidak ditemukan" 
-      };
-    }
+    try {
+      const numericId = Number(id);
+      const product = await db.products.get(numericId);
+      
+      if (!product || product.isArchived) {
+        return { 
+          success: false, 
+          data: null, 
+          message: "Produk tidak ditemukan" 
+        };
+      }
 
-    if (product.normalizedName !== productNameConfirm.toLowerCase()) {
-      return { 
-        success: false, 
-        data: null, 
-        message: "Konfirmasi nama salah untuk produk ini" 
-      };
-    }
+      if (product.normalizedName !== productNameConfirm.toLowerCase()) {
+        return { 
+          success: false, 
+          data: null, 
+          message: "Konfirmasi nama salah untuk produk ini" 
+        };
+      }
 
-    await db.products.update(numericId, { isArchived: true });
-    return { success: true, data: null };
+      await db.products.update(numericId, { isArchived: true });
+      return { success: true, data: null };
+    } catch (error) {
+      console.error("Dexie Delete Product Error:", error);
+      return { success: false, data: null, message: "Terjadi kesalahan sistem saat mengarsipkan produk" };
+    }
   },
 
   restore: async (id: number | string): Promise<ApiResponse<null>> => {
-    const numericId = Number(id);
-    const product = await db.products.get(numericId);
-    
-    if (!product) {
-      return { 
-        success: false, 
-        data: null, 
-        message: "Produk tidak ditemukan" 
-      };
-    }
+    try {
+      const numericId = Number(id);
+      const product = await db.products.get(numericId);
+      
+      if (!product) {
+        return { 
+          success: false, 
+          data: null, 
+          message: "Produk tidak ditemukan" 
+        };
+      }
 
-    await db.products.update(numericId, { isArchived: false });
-    toast.success("Produk berhasil dipulihkan");
-    return { success: true, data: null };
+      await db.products.update(numericId, { isArchived: false });
+      toast.success("Produk berhasil dipulihkan");
+      return { success: true, data: null };
+    } catch (error) {
+      console.error("Dexie Restore Product Error:", error);
+      toast.error("Gagal memulihkan produk");
+      return { success: false, data: null, message: "Gagal memulihkan produk" };
+    }
   },
 
   adjustStock: async (id: number | string, newStock: number, reason?: string): Promise<ApiResponse<Product | null>> => {

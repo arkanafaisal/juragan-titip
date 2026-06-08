@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { settingsApi } from "@/services/api/settings";
 import type { DbStore } from "@/lib/db";
+import { toast } from "sonner";
 
 export type StoreWithDistance = DbStore & { distance?: number; isOverdue?: boolean };
 
@@ -21,29 +22,35 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 
 export const journeyApi = {
   getStoresRoute: async ({ latitude, longitude }: { latitude?: number; longitude?: number } = {}): Promise<StoreWithDistance[]> => {
-    const overdueDays = settingsApi.getStoreOverdueDays();
-    const now = new Date();
-    
-    const overdueStores = await db.stores
-      .filter(store => {
-        if (store.isArchived) return false;
-        if (!store.lastVisitAt) return true;
-        const lastVisit = new Date(store.lastVisitAt);
-        const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays > overdueDays;
-      })
-      .toArray();
+    try {
+      const overdueDays = settingsApi.getStoreOverdueDays();
+      const now = new Date();
       
-    if (latitude === undefined || longitude === undefined) {
-      return overdueStores;
-    }
-    
-    const processedStores = overdueStores.map(s => {
-      const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
-      return { ...s, distance };
-    });
+      const overdueStores = await db.stores
+        .filter(store => {
+          if (store.isArchived) return false;
+          if (!store.lastVisitAt) return true;
+          const lastVisit = new Date(store.lastVisitAt);
+          const diffTime = Math.abs(now.getTime() - lastVisit.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          return diffDays > overdueDays;
+        })
+        .toArray();
+        
+      if (latitude === undefined || longitude === undefined) {
+        return overdueStores;
+      }
+      
+      const processedStores = overdueStores.map(s => {
+        const distance = calculateDistance(latitude, longitude, s.latitude, s.longitude);
+        return { ...s, distance };
+      });
 
-    return processedStores.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
+      return processedStores.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
+    } catch (error) {
+      console.error("Gagal memuat rute perjalanan:", error);
+      toast.error("Gagal memuat rute perjalanan");
+      return [];
+    }
   }
 };

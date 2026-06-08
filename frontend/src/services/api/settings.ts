@@ -1,6 +1,7 @@
 import { storageGet, storageSet } from "@/lib/storage";
 import { db } from "@/lib/db";
 import { VALIDATION_RULES } from "@/lib/validation-rules";
+import { toast } from "sonner";
 
 const LOW_STOCK_THRESHOLD_KEY = "juragan_titip_low_stock_threshold";
 const CATEGORY_LABELS_KEY = "juragan_titip_category_labels";
@@ -90,12 +91,19 @@ export const settingsApi = {
     localStorage.removeItem(STORE_OVERDUE_DAYS_KEY);
   },
 
-  clearAllData: async (): Promise<void> => {
-    await db.transaction('rw', db.products, db.stores, db.visits, db.inventoryLogs, async () => {
-      await db.products.clear();
-      await db.stores.clear();
-      await db.visits.clear();
-      await db.inventoryLogs.clear();
-    });
+  clearAllData: async (): Promise<boolean> => {
+    try {
+      await db.transaction('rw', db.products, db.stores, db.visits, db.inventoryLogs, async () => {
+        await db.products.clear();
+        await db.stores.clear();
+        await db.visits.clear();
+        await db.inventoryLogs.clear();
+      });
+      return true;
+    } catch (error) {
+      console.error("Gagal menghapus data:", error);
+      toast.error("Terjadi kesalahan saat menghapus data");
+      return false;
+    }
   }
 };
