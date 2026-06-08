@@ -9,7 +9,7 @@ export function BottomTabBar() {
   const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
-  const isFormRoute = /^\/stores\/(new|[^/]+\/edit|[^/]+\/visit)$/.test(location.pathname);
+  const isFormRoute = /^\/(stores\/(new|[^/]+\/edit|[^/]+\/visit)|products\/(new|[^/]+\/edit))$/.test(location.pathname);
 
   const handleNavClick = (e: React.MouseEvent, path: string) => {
     if (path === location.pathname) {
