@@ -117,7 +117,7 @@ export default function SettingsPage() {
   const handleExportBackup = async () => {
     setIsBackupLoading(true);
     toast.info("Mempersiapkan file Excel...");
-    const success = await backupApi.exportDatabaseExcel();
+    const success = await backupApi.exportInteractiveExcel();
     if (success) {
       toast.success("Backup Excel berhasil diunduh!");
     }
