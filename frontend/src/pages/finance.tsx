@@ -40,14 +40,9 @@ export default function FinancePage() {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const result = await financeApi.getDashboardData();
-        setData(result);
-      } catch (error) {
-        console.error("Failed to load finance data:", error);
-      } finally {
-        setLoading(false);
-      }
+      const result = await financeApi.getDashboardData();
+      setData(result);
+      setLoading(false);
     };
     loadData();
   }, []);

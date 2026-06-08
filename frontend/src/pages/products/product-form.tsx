@@ -104,20 +104,16 @@ export default function ProductFormPage() {
     if (!id || !typedName) return;
     setIsDeleting(true);
     setDeleteError(null);
-    try {
-      const response = await productApi.delete(id, typedName);
-      if (response.success) {
-        toast.success("Produk berhasil diarsipkan");
-        navigate("/products", { replace: true });
-      } else {
-        setDeleteError(response.message || "Gagal mengarsipkan produk");
-      }
-    } catch (error) {
-      setDeleteError("Terjadi kesalahan sistem saat mengarsipkan produk.");
-      console.error("Gagal mengarsipkan produk:", error);
-    } finally {
-      setIsDeleting(false);
+    
+    const response = await productApi.delete(id, typedName);
+    if (response.success) {
+      toast.success("Produk berhasil diarsipkan");
+      navigate("/products", { replace: true });
+    } else {
+      setDeleteError(response.message || "Gagal mengarsipkan produk");
     }
+    
+    setIsDeleting(false);
   };
 
   if (isLoading) {

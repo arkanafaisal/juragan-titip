@@ -42,23 +42,20 @@ export default function StoreDetailPage() {
   const fetchStoreData = async () => {
     if (!id) return;
     setIsLoading(true);
-      try {
-        const storeRes = await storeApi.getById(id);
+    
+    const storeRes = await storeApi.getById(id);
 
-        if (storeRes.success && storeRes.data) {
-          setStore(storeRes.data.store);
-          setAnalysis({
-            activeItems: storeRes.data.activeItems,
-            visitHistory: storeRes.data.visitHistory
-          });
-        } else {
-          setError(storeRes.message || "Toko tidak ditemukan");
-        }
-      } catch (err) {
-        setError("Gagal memuat data toko.");
-      } finally {
-        setIsLoading(false);
-      }
+    if (storeRes.success && storeRes.data) {
+      setStore(storeRes.data.store);
+      setAnalysis({
+        activeItems: storeRes.data.activeItems,
+        visitHistory: storeRes.data.visitHistory
+      });
+    } else {
+      setError(storeRes.message || "Toko tidak ditemukan");
+    }
+    
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -68,20 +65,16 @@ export default function StoreDetailPage() {
   const handleRestore = async () => {
     if (!id) return;
     setIsRestoring(true);
-    try {
-      const response = await storeApi.restore(id);
-      if (response.success) {
-        setIsRestoreModalOpen(false);
-        fetchStoreData();
-      } else {
-        toast.error(response.message || "Gagal memulihkan toko");
-      }
-    } catch (error) {
-      console.error("Gagal memulihkan toko:", error);
-      toast.error("Terjadi kesalahan sistem saat memulihkan toko");
-    } finally {
-      setIsRestoring(false);
+    
+    const response = await storeApi.restore(id);
+    if (response.success) {
+      setIsRestoreModalOpen(false);
+      fetchStoreData();
+    } else {
+      toast.error(response.message || "Gagal memulihkan toko");
     }
+    
+    setIsRestoring(false);
   };
 
   if (isLoading) {

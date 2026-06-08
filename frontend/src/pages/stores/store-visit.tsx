@@ -56,42 +56,39 @@ export default function StoreVisitPage() {
     const init = async () => {
       if (!id) return;
       setIsLoading(true);
-      try {
-        const productsFromStorage = await productApi.getAll()
-        setAllProducts(productsFromStorage.data);
+      
+      const productsFromStorage = await productApi.getAll()
+      setAllProducts(productsFromStorage.data);
 
-        const [storeRes, visitsRes] = await Promise.all([ storeApi.getById(id), visitApi.getByStore(id) ]);
-        if (storeRes.success && storeRes.data) setStore(storeRes.data.store);
+      const [storeRes, visitsRes] = await Promise.all([ storeApi.getById(id), visitApi.getByStore(id) ]);
+      if (storeRes.success && storeRes.data) setStore(storeRes.data.store);
+      
+      if (visitsRes.success && visitsRes.data && visitsRes.data.length > 0) {
+        const lastVisit = visitsRes.data[0];
+        setCurrentDebt(lastVisit.currentDebt);
         
-        if (visitsRes.success && visitsRes.data && visitsRes.data.length > 0) {
-          const lastVisit = visitsRes.data[0];
-          setCurrentDebt(lastVisit.currentDebt);
-          
-          const initialOpname = lastVisit.items
-            .filter(item => item.remained > 0)
-            .map(item => {
-               const p = productsFromStorage.data.find(prod => prod.id === item.productId);
-               return {
-                 ...item,
-                 initialStock: item.remained, 
-                 sold: 0,
-                 returned: 0,
-                 remained: item.remained,
-                 costPrice: p ? p.costPrice : (item.costPrice || 0)
-               };
-            });
-          
-          setOpnameItems(initialOpname);
-          
-          if (initialOpname.length === 0) setStep(2); 
-        } else {
-          setStep(2);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsLoading(false);
+        const initialOpname = lastVisit.items
+          .filter(item => item.remained > 0)
+          .map(item => {
+             const p = productsFromStorage.data.find(prod => prod.id === item.productId);
+             return {
+               ...item,
+               initialStock: item.remained, 
+               sold: 0,
+               returned: 0,
+               remained: item.remained,
+               costPrice: p ? p.costPrice : (item.costPrice || 0)
+             };
+          });
+        
+        setOpnameItems(initialOpname);
+        
+        if (initialOpname.length === 0) setStep(2); 
+      } else {
+        setStep(2);
       }
+      
+      setIsLoading(false);
     };
     init();
   }, [id]);
@@ -229,71 +226,68 @@ export default function StoreVisitPage() {
   const handleFinish = async () => {
     if (!id || !store || isVisitEmpty) return;
     setIsSubmitting(true);
-    try {
-      const mergedItemsMap = new Map<number, OpnameItem>();
+    
+    const mergedItemsMap = new Map<number, OpnameItem>();
 
-      opnameItems.forEach(item => {
-        mergedItemsMap.set(item.productId, {
-          productId: item.productId,
-          productName: item.productName,
-          sold: item.sold,
-          returned: item.returned,
-          remained: item.remained,
-          costPrice: item.costPrice,
-          wholesalePrice: item.wholesalePrice
-        });
+    opnameItems.forEach(item => {
+      mergedItemsMap.set(item.productId, {
+        productId: item.productId,
+        productName: item.productName,
+        sold: item.sold,
+        returned: item.returned,
+        remained: item.remained,
+        costPrice: item.costPrice,
+        wholesalePrice: item.wholesalePrice
       });
+    });
 
-      restockItems.forEach(item => {
-        if (item.quantity > 0) {
-          const existing = mergedItemsMap.get(item.productId);
-          if (existing) {
-            existing.remained += item.quantity;
-            existing.wholesalePrice = item.wholesalePrice;
-            existing.costPrice = item.costPrice;
-          } else {
-            mergedItemsMap.set(item.productId, {
-              productId: item.productId,
-              productName: item.productName,
-              sold: 0,
-              returned: 0,
-              remained: item.quantity,
-              costPrice: item.costPrice,
-              wholesalePrice: item.wholesalePrice
-            });
-          }
+    restockItems.forEach(item => {
+      if (item.quantity > 0) {
+        const existing = mergedItemsMap.get(item.productId);
+        if (existing) {
+          existing.remained += item.quantity;
+          existing.wholesalePrice = item.wholesalePrice;
+          existing.costPrice = item.costPrice;
+        } else {
+          mergedItemsMap.set(item.productId, {
+            productId: item.productId,
+            productName: item.productName,
+            sold: 0,
+            returned: 0,
+            remained: item.quantity,
+            costPrice: item.costPrice,
+            wholesalePrice: item.wholesalePrice
+          });
         }
-      });
-
-      
-      const finalItems = Array.from(mergedItemsMap.values()).filter(item => item.remained > 0);
-
-      const restockData = restockItems
-        .filter(item => item.quantity > 0)
-        .map(item => ({ productId: item.productId, productName: item.productName, quantity: item.quantity }));
-
-      const amountPaidNum = parseInt(amountPaidStr.replace(/\D/g, '')) || 0;
-      const totalBilled = currentDebt + subtotal;
-      const remainingDebt = Math.max(0, totalBilled - amountPaidNum);
-      const actualAmountPaid = Math.min(amountPaidNum, totalBilled);
-
-      const result = await visitApi.create({
-        storeId: Number(id), 
-        storeName: store.name, 
-        items: finalItems,
-        amountPaid: actualAmountPaid, 
-        currentDebt: remainingDebt,
-        restockItems: restockData
-      });
-
-      if (result.success) {
-        navigate(`/stores/${id}`);
       }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsSubmitting(false);
+    });
+
+    
+    const finalItems = Array.from(mergedItemsMap.values()).filter(item => item.remained > 0);
+
+    const restockData = restockItems
+      .filter(item => item.quantity > 0)
+      .map(item => ({ productId: item.productId, productName: item.productName, quantity: item.quantity }));
+
+    const amountPaidNum = parseInt(amountPaidStr.replace(/\D/g, '')) || 0;
+    const totalBilled = currentDebt + subtotal;
+    const remainingDebt = Math.max(0, totalBilled - amountPaidNum);
+    const actualAmountPaid = Math.min(amountPaidNum, totalBilled);
+
+    const result = await visitApi.create({
+      storeId: Number(id), 
+      storeName: store.name, 
+      items: finalItems,
+      amountPaid: actualAmountPaid, 
+      currentDebt: remainingDebt,
+      restockItems: restockData
+    });
+
+    if (result.success) {
+      navigate(`/stores/${id}`);
     }
+    
+    setIsSubmitting(false);
   };
 
   const handleHeaderPrevStep = () => {

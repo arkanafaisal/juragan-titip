@@ -69,22 +69,17 @@ export default function JourneyPage() {
   // 1. Muat toko dari IndexedDB
   useEffect(() => {
     const loadStores = async () => {
-      try {
-        setIsLoading(true);
-        const total = await storeApi.countTotal();
-        setTotalStoresCount(total);
-        
-        if (total === 0) {
-          setStores([]);
-        } else {
-          const initialStores = await journeyApi.getStoresRoute();
-          setStores(initialStores);
-        }
-      } catch (error) {
-        showNotif("Gagal memuat data toko.", 'error');
-      } finally {
-        setIsLoading(false);
+      setIsLoading(true);
+      const total = await storeApi.countTotal();
+      setTotalStoresCount(total);
+      
+      if (total === 0) {
+        setStores([]);
+      } else {
+        const initialStores = await journeyApi.getStoresRoute();
+        setStores(initialStores);
       }
+      setIsLoading(false);
     };
     loadStores();
   }, []);
@@ -102,16 +97,13 @@ export default function JourneyPage() {
         const { latitude, longitude } = pos.coords;
         setUserLocation([latitude, longitude]);
         
-        try {
-          const optimalRoute = await journeyApi.getStoresRoute({ latitude, longitude });
-          setStores(optimalRoute);
-          setHasGpsAccess(true);
-          setCurrentIndex(0); 
-          setIsLocating(false);
+        const optimalRoute = await journeyApi.getStoresRoute({ latitude, longitude });
+        setStores(optimalRoute);
+        setHasGpsAccess(true);
+        setCurrentIndex(0); 
+        setIsLocating(false);
+        if (optimalRoute.length > 0) {
           showNotif("Lokasi diperbarui! Menampilkan rute optimal.", 'info');
-        } catch (error) {
-          showNotif("Gagal menghitung rute optimal.", 'error');
-          setIsLocating(false);
         }
       },
       (err) => {

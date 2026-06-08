@@ -33,15 +33,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const result = await dashboardApi.getDashboardData();
-        setData(result);
-      } catch (error) {
-        console.error("Gagal memuat data dashboard:", error);
-        toast.error("Gagal memuat data dashboard");
-      } finally {
-        setIsLoading(false);
-      }
+      const result = await dashboardApi.getDashboardData();
+      setData(result);
+      setIsLoading(false);
     };
     fetchData();
   }, []);

@@ -55,29 +55,24 @@ export default function StoreFormPage() {
   useEffect(() => {
     if (isEditMode && id) {
       const fetchStore = async () => {
-        try {
-          const response = await storeApi.getById(id);
-          if (response.success && response.data) {
-            setFormData({
-              name: response.data.store.name,
-              ownerName: response.data.store.ownerName,
-              phone: response.data.store.phone || "",
-              address: response.data.store.address,
-              notes: response.data.store.notes || "",
-              category: response.data.store.category || "",
-            });
-            setLocation({
-              lat: response.data.store.latitude,
-              lng: response.data.store.longitude,
-            });
-          } else {
-            setError(response.message || "Gagal memuat data toko.");
-          }
-        } catch (err) {
-          setError("Terjadi kesalahan saat memuat data.");
-        } finally {
-          setIsLoadingData(false);
+        const response = await storeApi.getById(id);
+        if (response.success && response.data) {
+          setFormData({
+            name: response.data.store.name,
+            ownerName: response.data.store.ownerName,
+            phone: response.data.store.phone || "",
+            address: response.data.store.address,
+            notes: response.data.store.notes || "",
+            category: response.data.store.category || "",
+          });
+          setLocation({
+            lat: response.data.store.latitude,
+            lng: response.data.store.longitude,
+          });
+        } else {
+          setError(response.message || "Gagal memuat data toko.");
         }
+        setIsLoadingData(false);
       };
       fetchStore();
     }
@@ -128,65 +123,56 @@ export default function StoreFormPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    try {
-      const isDuplicateName = await storeApi.checkDuplicateName(formData.name, isEditMode ? Number(id) : undefined);
-      const isDuplicatePhone = formData.phone ? await storeApi.checkDuplicatePhone(formData.phone, isEditMode ? Number(id) : undefined) : false;
+    const isDuplicateName = await storeApi.checkDuplicateName(formData.name, isEditMode ? Number(id) : undefined);
+    const isDuplicatePhone = formData.phone ? await storeApi.checkDuplicatePhone(formData.phone, isEditMode ? Number(id) : undefined) : false;
 
-      if (isDuplicateName || isDuplicatePhone) {
-        if (isDuplicateName && isDuplicatePhone) {
-          setDuplicateMessage(<>Terdapat toko dengan nama (<strong>{formData.name}</strong>) dan nomor telepon (<strong>{formData.phone}</strong>) yang sama. Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
-        } else if (isDuplicateName) {
-          setDuplicateMessage(<>Terdapat toko dengan nama yang sama (<strong>{formData.name}</strong>). Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
-        } else {
-          setDuplicateMessage(<>Terdapat toko dengan nomor telepon yang sama (<strong>{formData.phone}</strong>). Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
-        }
-        setShowDuplicateModal(true);
-        setIsSubmitting(false);
-        return;
+    if (isDuplicateName || isDuplicatePhone) {
+      if (isDuplicateName && isDuplicatePhone) {
+        setDuplicateMessage(<>Terdapat toko dengan nama (<strong>{formData.name}</strong>) dan nomor telepon (<strong>{formData.phone}</strong>) yang sama. Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
+      } else if (isDuplicateName) {
+        setDuplicateMessage(<>Terdapat toko dengan nama yang sama (<strong>{formData.name}</strong>). Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
+      } else {
+        setDuplicateMessage(<>Terdapat toko dengan nomor telepon yang sama (<strong>{formData.phone}</strong>). Apakah Anda yakin ingin menyimpan toko ini sebagai entri baru?</>);
       }
-
-      await performSave();
-    } catch (err) {
-      setError("Terjadi kesalahan sistem saat mengecek data.");
+      setShowDuplicateModal(true);
       setIsSubmitting(false);
+      return;
     }
+
+    await performSave();
   };
 
   const performSave = async () => {
     setIsSubmitting(true);
     setShowDuplicateModal(false);
-    try {
-      const payload = {
-        ...formData,
-        ...(formData.phone? { phone: formData.phone } : {}),
-        category: formData.category as "1" | "2" | "3" | "4" | "5",
-        latitude: location.lat,
-        longitude: location.lng,
-        activeItemCount: 0
-      };
+    
+    const payload = {
+      ...formData,
+      ...(formData.phone? { phone: formData.phone } : {}),
+      category: formData.category as "1" | "2" | "3" | "4" | "5",
+      latitude: location.lat,
+      longitude: location.lng,
+      activeItemCount: 0
+    };
 
-      let result;
-      if (isEditMode && id) {
-        result = await storeApi.update(id, payload);
-      } else {
-        result = await storeApi.create(payload);
-      }
-
-      if (result.success && result.data) {
-        if (isEditMode) {
-          navigate(`/stores/${id}`);
-        } else {
-          navigate(`/stores/${result.data.id}`, { replace: true }); 
-        }
-      } else {
-        setError(result.message || "Gagal menyimpan data toko.");
-      }
-    } catch (err) {
-      setError("Terjadi kesalahan sistem saat memproses permintaan.");
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
+    let result;
+    if (isEditMode && id) {
+      result = await storeApi.update(id, payload);
+    } else {
+      result = await storeApi.create(payload);
     }
+
+    if (result.success && result.data) {
+      if (isEditMode) {
+        navigate(`/stores/${id}`);
+      } else {
+        navigate(`/stores/${result.data.id}`, { replace: true }); 
+      }
+    } else {
+      setError(result.message || "Gagal menyimpan data toko.");
+    }
+    
+    setIsSubmitting(false);
   };
 
   const handleCancel = () => {
@@ -198,18 +184,15 @@ export default function StoreFormPage() {
     
     setIsArchiving(true);
     setArchiveError(null);
-    try {
-      const response = await storeApi.delete(id, typedName);
-      if (response.success) {
-        navigate("/stores");
-      } else {
-        setArchiveError(response.message || "Gagal mengarsipkan toko");
-      }
-    } catch (err) {
-      setArchiveError("Terjadi kesalahan sistem saat mengarsipkan toko.");
-    } finally {
-      setIsArchiving(false);
+    
+    const response = await storeApi.delete(id, typedName);
+    if (response.success) {
+      navigate("/stores");
+    } else {
+      setArchiveError(response.message || "Gagal mengarsipkan toko");
     }
+    
+    setIsArchiving(false);
   };
 
   if (isLoadingData) {

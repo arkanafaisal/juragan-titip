@@ -116,14 +116,11 @@ export default function SettingsPage() {
   const handleExportBackup = async () => {
     setIsBackupLoading(true);
     toast.info("Mempersiapkan file Excel...");
-    try {
-      await backupApi.exportDatabaseExcel();
+    const success = await backupApi.exportDatabaseExcel();
+    if (success) {
       toast.success("Backup Excel berhasil diunduh!");
-    } catch (error) {
-      toast.error("Gagal melakukan backup data.");
-    } finally {
-      setIsBackupLoading(false);
     }
+    setIsBackupLoading(false);
   };
 
   /*
@@ -164,16 +161,12 @@ export default function SettingsPage() {
 
   const handleResetDataConfirm = async () => {
     setIsResetting(true);
-    try {
-      await settingsApi.clearAllData();
+    const success = await settingsApi.clearAllData();
+    if (success) {
       toast.success("Semua data berhasil dihapus permanen");
       setIsResetModalOpen(false);
-    } catch (error) {
-      console.error("Gagal mereset data:", error);
-      toast.error("Terjadi kesalahan saat menghapus data");
-    } finally {
-      setIsResetting(false);
     }
+    setIsResetting(false);
   };
 
   return (

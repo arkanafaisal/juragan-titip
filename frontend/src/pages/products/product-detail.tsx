@@ -77,20 +77,16 @@ export default function ProductDetailPage() {
   const handleRestore = async () => {
     if (!id) return;
     setIsRestoring(true);
-    try {
-      const response = await productApi.restore(id);
-      if (response.success) {
-        setIsRestoreModalOpen(false);
-        loadData();
-      } else {
-        toast.error(response.message || "Gagal memulihkan produk");
-      }
-    } catch (error) {
-      console.error("Gagal memulihkan:", error);
-      toast.error("Terjadi kesalahan sistem saat memulihkan");
-    } finally {
-      setIsRestoring(false);
+    
+    const response = await productApi.restore(id);
+    if (response.success) {
+      setIsRestoreModalOpen(false);
+      loadData();
+    } else {
+      toast.error(response.message || "Gagal memulihkan produk");
     }
+    
+    setIsRestoring(false);
   };
 
   useEffect(() => {

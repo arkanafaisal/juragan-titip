@@ -131,20 +131,16 @@ export default function ProductListPage() {
     if (!productToDelete || !typedName) return;
     setIsDeleting(true);
     setDeleteError(null);
-    try {
-      const response = await productApi.delete(productToDelete.id, typedName);
-      if (response.success) {
-        setProductToDelete(null);
-        fetchProducts();
-      } else {
-        setDeleteError(response.message || "Gagal menghapus produk");
-      }
-    } catch (error) {
-      setDeleteError("Terjadi kesalahan sistem saat menghapus produk.");
-      console.error("Gagal menghapus produk:", error);
-    } finally {
-      setIsDeleting(false);
+    
+    const response = await productApi.delete(productToDelete.id, typedName);
+    if (response.success) {
+      setProductToDelete(null);
+      fetchProducts();
+    } else {
+      setDeleteError(response.message || "Gagal menghapus produk");
     }
+    
+    setIsDeleting(false);
   };
 
   

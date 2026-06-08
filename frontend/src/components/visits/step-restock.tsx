@@ -31,18 +31,15 @@ export function StepRestock({
     if (!searchProduct.trim()) return;
     
     setIsSearching(true);
-    try {
-      const response = await productApi.getById(searchProduct);
-      if (response.success && response.data) {
-        handleAddRestock(response.data);
-        setSearchProduct("");
-        setIsDropdownOpen(false);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSearching(false);
+    
+    const response = await productApi.getById(searchProduct);
+    if (response.success && response.data) {
+      handleAddRestock(response.data);
+      setSearchProduct("");
+      setIsDropdownOpen(false);
     }
+    
+    setIsSearching(false);
   };
 
   useEffect(() => {
@@ -63,26 +60,23 @@ export function StepRestock({
         return;
       }
       setIsSearching(true);
-      try {
-        let foundProducts: Product[] = [];
-        if (!isNaN(Number(debouncedSearch))) {
-          const byIdResponse = await productApi.getById(debouncedSearch);
-          if (byIdResponse.success && byIdResponse.data) {
-            foundProducts = [byIdResponse.data];
-          }
+      
+      let foundProducts: Product[] = [];
+      if (!isNaN(Number(debouncedSearch))) {
+        const byIdResponse = await productApi.getById(debouncedSearch);
+        if (byIdResponse.success && byIdResponse.data) {
+          foundProducts = [byIdResponse.data];
         }
-        if (foundProducts.length === 0) {
-          const response = await productApi.getAll({ search: debouncedSearch });
-          if (response.success) {
-            foundProducts = response.data;
-          }
-        }
-        setSearchedProducts(foundProducts);
-      } catch (error) {
-        console.error("Gagal mencari produk:", error);
-      } finally {
-        setIsSearching(false);
       }
+      if (foundProducts.length === 0) {
+        const response = await productApi.getAll({ search: debouncedSearch });
+        if (response.success) {
+          foundProducts = response.data;
+        }
+      }
+      setSearchedProducts(foundProducts);
+      
+      setIsSearching(false);
     };
     fetchSearchedProducts();
   }, [debouncedSearch]);
