@@ -66,7 +66,6 @@ db.version(13).stores({
 });
 
 db.version(14).stores({
-  users: '++id, &email',
   products: '++id, &normalizedName, category',
   stores: '++id, normalizedName, phone, lastVisitAt, category',
   visits: '++id, storeId, createdAt',
