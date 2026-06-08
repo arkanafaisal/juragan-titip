@@ -259,8 +259,8 @@ export const backupApi = {
     }
   },
 
-  /*
-  exportToJson: async (): Promise<void> => {
+  
+  exportToJson: async (): Promise<boolean> => {
     try {
       const products = await db.products.toArray();
       const stores = await db.stores.toArray();
@@ -291,9 +291,10 @@ export const backupApi = {
       
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      return true
     } catch (error) {
       console.error("Failed to export backup:", error);
-      throw error;
+      return false
     }
   },
 
@@ -340,5 +341,5 @@ export const backupApi = {
       reader.readAsText(file);
     });
   }
-  */
+  
 };

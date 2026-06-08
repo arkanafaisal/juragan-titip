@@ -1,5 +1,5 @@
-// import { useState, useEffect, useRef } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+// import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import {
@@ -8,7 +8,7 @@ import {
   Package, 
   Database, 
   Download, 
-  // Upload, 
+  Upload, 
   Trash2, 
   Save,
   Store,
@@ -64,7 +64,7 @@ export default function SettingsPage() {
   const [isResetting, setIsResetting] = useState(false);
   const [isBackupLoading, setIsBackupLoading] = useState(false);
 
-  // const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // --- HANDLERS (Mock) ---
   const handleSaveSettings = () => {
@@ -116,15 +116,16 @@ export default function SettingsPage() {
 
   const handleExportBackup = async () => {
     setIsBackupLoading(true);
-    toast.info("Mempersiapkan file Excel...");
-    const success = await backupApi.exportInteractiveExcel();
+    toast.info("Mempersiapkan file JSON...");
+    const success = await backupApi.exportToJson();
     if (success) {
-      toast.success("Backup Excel berhasil diunduh!");
+      toast.success("Backup file berhasil diunduh!");
+    } else {
+      toast.error("Backup file gagal diunduh!");
     }
     setIsBackupLoading(false);
   };
 
-  /*
   const handleImportBackup = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -154,7 +155,6 @@ export default function SettingsPage() {
       fileInputRef.current.value = "";
     }
   };
-  */
 
   const handleResetDataClick = () => {
     setIsResetModalOpen(true);
@@ -422,7 +422,7 @@ export default function SettingsPage() {
               onClick={handleResetSettings}
               className="w-full bg-surface border border-outline-variant text-text-primary hover:bg-surface-container-low font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors mb-4"
             >
-              <RefreshCw className="w-5 h-5" /> Kembalikan Pengaturan ke Bawaan
+              <RefreshCw className="w-5 h-5" /> Kembalikan Pengaturan
             </button>
 
             <button 
@@ -430,10 +430,10 @@ export default function SettingsPage() {
               disabled={isBackupLoading}
               className="w-full bg-surface border border-primary text-primary hover:bg-primary/10 font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
-              <Download className="w-5 h-5" /> Backup Data ke File (Excel)
+              <Download className="w-5 h-5" /> Backup Data ke File (JSON)
             </button>
             
-            {/*
+            
             <button 
               onClick={handleImportBackup}
               disabled={isBackupLoading}
@@ -448,7 +448,7 @@ export default function SettingsPage() {
               ref={fileInputRef} 
               onChange={handleFileChange} 
             />
-            */}
+           
 
             {/* ZONA BERBAHAYA */}
             <SectionCard className="!bg-error/10 !border-error/30 mt-md">
