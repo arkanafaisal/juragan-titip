@@ -114,24 +114,22 @@ export default function StoreListPage() {
   useEffect(() => {
     const fetchStores = async () => {
       setIsLoading(true);
-      try {
-        const response = await storeApi.getAll({
-          search: debouncedSearch,
-          status: filters.status,
-          category: filters.category,
-          visitStatus: filters.visitStatus,
-          isArchived: filters.isArchived,
-          sortBy: filters.sortBy,
-          page: currentPage
-        });
-        if (response.success) {
-          setStores(response.data);
-        }
-      } catch (error) {
-        console.error("Gagal mengambil data toko:", error);
-      } finally {
-        setIsLoading(false);
+      
+      const response = await storeApi.getAll({
+        search: debouncedSearch,
+        status: filters.status,
+        category: filters.category,
+        visitStatus: filters.visitStatus,
+        isArchived: filters.isArchived,
+        sortBy: filters.sortBy,
+        page: currentPage
+      });
+      
+      if (response.success) {
+        setStores(response.data);
       }
+      
+      setIsLoading(false);
     };
 
     fetchStores();

@@ -102,22 +102,20 @@ export default function ProductListPage() {
 
   const fetchProducts = async () => {
     setIsLoading(true);
-    try {
-      const response = await productApi.getAll({
-        search: debouncedSearch,
-        category: filters.category,
-        stockStatus: filters.stock,
-        isArchived: filters.isArchived,
-        page: currentPage
-      });
-      if (response.success) {
-        setProducts(response.data);
-      }
-    } catch (error) {
-      console.error("Gagal mengambil data produk:", error);
-    } finally {
-      setIsLoading(false);
+    
+    const response = await productApi.getAll({
+      search: debouncedSearch,
+      category: filters.category,
+      stockStatus: filters.stock,
+      isArchived: filters.isArchived,
+      page: currentPage
+    });
+    
+    if (response.success) {
+      setProducts(response.data);
     }
+    
+    setIsLoading(false);
   };
 
   useEffect(() => {
