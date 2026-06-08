@@ -33,7 +33,7 @@ export function StepRestock({
     setIsSearching(true);
     
     const response = await productApi.getById(searchProduct);
-    if (response.success && response.data) {
+    if (response.success) {
       handleAddRestock(response.data);
       setSearchProduct("");
       setIsDropdownOpen(false);
@@ -64,7 +64,7 @@ export function StepRestock({
       let foundProducts: Product[] = [];
       if (!isNaN(Number(debouncedSearch))) {
         const byIdResponse = await productApi.getById(debouncedSearch);
-        if (byIdResponse.success && byIdResponse.data) {
+        if (byIdResponse.success) {
           foundProducts = [byIdResponse.data];
         }
       }

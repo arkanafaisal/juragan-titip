@@ -40,7 +40,7 @@ export default function ProductFormPage() {
       }
       setIsLoading(true);
       const res = await productApi.getById(id);
-      if (res.success && res.data) {
+      if (res.success) {
         setFormData({
           name: res.data.name,
           category: res.data.category,
@@ -92,7 +92,7 @@ export default function ProductFormPage() {
       }
     } else {
       const res = await productApi.create(formData as ProductFormData);
-      if (res.success && res.data) {
+      if (res.success) {
         navigate(`/products/${res.data.id}`, { replace: true });
       }
     }

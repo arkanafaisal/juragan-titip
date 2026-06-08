@@ -68,7 +68,7 @@ export default function ProductDetailPage() {
     if (!id) return;
     setIsLoading(true);
     const res = await productApi.getDetailWithLogs(id);
-    if (res.success && res.data) {
+    if (res.success) {
       setData(res.data);
     }
     setIsLoading(false);

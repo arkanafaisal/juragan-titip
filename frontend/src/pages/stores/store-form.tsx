@@ -56,7 +56,7 @@ export default function StoreFormPage() {
     if (isEditMode && id) {
       const fetchStore = async () => {
         const response = await storeApi.getById(id);
-        if (response.success && response.data) {
+        if (response.success) {
           setFormData({
             name: response.data.store.name,
             ownerName: response.data.store.ownerName,
@@ -162,7 +162,7 @@ export default function StoreFormPage() {
       result = await storeApi.create(payload);
     }
 
-    if (result.success && result.data) {
+    if (result.success) {
       if (isEditMode) {
         navigate(`/stores/${id}`);
       } else {

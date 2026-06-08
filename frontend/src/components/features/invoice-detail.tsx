@@ -24,7 +24,7 @@ export function InvoiceDetail({ id, onBack }: InvoiceDetailProps) {
             if (!id) return;
             
             const res = await visitApi.getById(Number(id));
-            if (res.data && isMounted) {
+            if (res.success && isMounted) {
                 setVisit(res.data);
                 const phoneRes = await storeApi.getPhoneNumber(res.data.storeId);
                 if (isMounted && phoneRes.success && phoneRes.data) {

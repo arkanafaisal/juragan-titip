@@ -57,20 +57,21 @@ export default function StoreVisitPage() {
       if (!id) return;
       setIsLoading(true);
       
-      const productsFromStorage = await productApi.getAll()
-      setAllProducts(productsFromStorage.data);
+      const productsFromStorage = await productApi.getAll();
+      const availableProducts = productsFromStorage.success ? productsFromStorage.data : [];
+      setAllProducts(availableProducts);
 
       const [storeRes, visitsRes] = await Promise.all([ storeApi.getById(id), visitApi.getByStore(id) ]);
-      if (storeRes.success && storeRes.data) setStore(storeRes.data.store);
+      if (storeRes.success) setStore(storeRes.data.store);
       
-      if (visitsRes.success && visitsRes.data && visitsRes.data.length > 0) {
+      if (visitsRes.success && visitsRes.data.length > 0) {
         const lastVisit = visitsRes.data[0];
         setCurrentDebt(lastVisit.currentDebt);
         
         const initialOpname = lastVisit.items
           .filter(item => item.remained > 0)
           .map(item => {
-             const p = productsFromStorage.data.find(prod => prod.id === item.productId);
+             const p = availableProducts.find(prod => prod.id === item.productId);
              return {
                ...item,
                initialStock: item.remained, 

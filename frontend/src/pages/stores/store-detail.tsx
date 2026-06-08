@@ -45,7 +45,7 @@ export default function StoreDetailPage() {
     
     const storeRes = await storeApi.getById(id);
 
-    if (storeRes.success && storeRes.data) {
+    if (storeRes.success) {
       setStore(storeRes.data.store);
       setAnalysis({
         activeItems: storeRes.data.activeItems,
