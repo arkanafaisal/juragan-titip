@@ -20,7 +20,6 @@ import {
 import { useState, useEffect } from "react";
 import { dashboardApi, type DashboardData } from "@/services/api/dashboard";
 import { Loader2, Inbox } from "lucide-react";
-import { toast } from "sonner";
 import { InvoiceDetail } from "@/components/features/invoice-detail";
 import { SectionCard } from "@/components/shared/section-card";
 

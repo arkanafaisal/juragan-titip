@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+// import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import {
@@ -7,7 +8,7 @@ import {
   Package, 
   Database, 
   Download, 
-  Upload, 
+  // Upload, 
   Trash2, 
   Save,
   Store,
@@ -63,7 +64,7 @@ export default function SettingsPage() {
   const [isResetting, setIsResetting] = useState(false);
   const [isBackupLoading, setIsBackupLoading] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // const fileInputRef = useRef<HTMLInputElement>(null);
 
   // --- HANDLERS (Mock) ---
   const handleSaveSettings = () => {
