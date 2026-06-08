@@ -1,3 +1,20 @@
+8 June 2026
+<details>
+- updated excel import & function (temporary comment for small build size)
+- updated settings page: enable export JSON format
+- added product analysis sheet on backup excel file format     
+- Updated UI styles for consistency
+- fixed missing confirmation modal on leaving product form      
+- fixed add product router path
+- removed fallback message & response.data check on .success true
+- updated services: complete trycatch guard & discriminated union return type
+- removed unused trycatch & tryfinally block       
+- added backup excel (.xlsx) file format service
+- added exceljs & file-saver package
+- removed db table users
+</details>
+
+
 5 June 2026
 <details>
 - fixed TS unused variables & imports

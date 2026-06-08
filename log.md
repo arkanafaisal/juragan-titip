@@ -1,3 +1,28 @@
+git --no-pager log 34aa8d65c480e34d97f4b53ed27adf8a9a641330..HEAD --pretty=format:"%H %s"
+6112a7bff324a94789a70c792e93e39d3a75c405 remove(backup service): comment excel import & function
+2ecc340f65a988195580d43bf9288f7f08fa6e17 update(settings page): enable export JSON format
+99a6c1252dfc19fb948f988160f12a5fdcda9300 update(backup service): excel export file format
+2b2b4fafb6c868d531bd8502fa57344cb22d72ec update(update & store detail): ui style consistency       
+d6c9c99ae3b4c83def5b9e49c8bd63eb0c26662f update(update & store form): ui style consistency
+5d3f2d0d804519e3d821410614cd5bce88a1331e fix: show product form confirmation modal on leaving      
+11412f7b7323a42dd05d95d3e19f82c671a45b66 fix: add product router path
+d1bea0b5b06543b7d4dca12067f8ccb5f751e7c9 cleanup: unused form property type & validation function  
+0735a55d616eb66de7301bfa957d9d815ac6f041 remove: fallback response message
+b4ef8fa2b9f71911c9160a865ba1dbd8c467a25a remove: remove response.data check on .success true       
+d6573946e0cab80765de9e77ed522b0a0c16563c update(services): discriminated union return type
+f44bd336f5d3a54598c2d0a4223580e214f9037d remove: unused import & variable
+6e97942be0a2b367764ba679ebc390037446c761 remove: unused trycatch
+00ab91b551770093ec70cc0820dcc87cb3a585f5 update(services): add trycatch
+c22d4e96c6f4c79e26205018a73716a3d20a7ea8 refactor: remove try finally
+74cbbec0c554eec38ef4c4dbf987dd66ef79a253 remove(product & store list): unused trycatch block       
+774c2567d071c5e702c34da231f4aa1753265f86 add(settings page): backup .xlsx file format
+df2a91f3dd11853b14d5c29f5bbc6229e6d94798 add(package json): exceljs & file-saver
+bbd067d3660e60299a2805154c9b7c8cf4c52938 remove(db): table users
+
+
+
+
+
 git --no-pager log 605705415a9f54fabe09c438fa287c0d74483850..HEAD --pretty=format:"%H %s"
 c7f09b23db0c9719ae6b0d6aab7582e299a8d1dd fix: TS unused variables & imports
 62547fbc71787d9963411b4d0f475e2c598e369e update(db config): remove unused index & migration config     
