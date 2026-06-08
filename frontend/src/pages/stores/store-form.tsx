@@ -244,7 +244,7 @@ export default function StoreFormPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
                     placeholder="Toko Berkah Jaya" 
                     type="text" 
                     required 
@@ -264,7 +264,7 @@ export default function StoreFormPage() {
                     name="ownerName"
                     value={formData.ownerName}
                     onChange={handleChange}
-                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
                     placeholder="Budi Santoso" 
                     type="text" 
                     required 
@@ -290,7 +290,7 @@ export default function StoreFormPage() {
                         if (val.length > 0 && !val.startsWith("0")) return;
                         handleChange({ target: { name: "phone", value: val } } as any);
                       }}
-                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
+                      className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
                       placeholder="081234567890" 
                       type="tel"
                       minLength={VALIDATION_RULES.PHONE.MIN_LENGTH}
@@ -310,7 +310,7 @@ export default function StoreFormPage() {
                     value={formData.category}
                     onChange={handleChange}
                     required
-                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer"
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer"
                   >
                     <option value="" disabled>Pilih Kategori...</option>
                     <option value="1">{storeCategoryLabels["1"]}</option>
@@ -331,7 +331,7 @@ export default function StoreFormPage() {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
+                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
                   placeholder="Jl. Merdeka No. 123, patokan seberang pom bensin" 
                   rows={3} 
                   required 
@@ -340,25 +340,28 @@ export default function StoreFormPage() {
                   autoComplete="off"
                 />
               </div>
+              <div className="flex flex-col gap-xs">
+              <h3 className="font-caption text-caption text-text-secondary">
+                  Catatan Tambahan (opsional)
+                </h3>
+                <textarea 
+                  id="notes"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
+                  placeholder="Buka Senin-Sabtu, jam 08:00 - 17:00" 
+                  rows={2} 
+                  maxLength={VALIDATION_RULES.STORE.NOTES_MAX}
+                />
+              </div>
             </div>
           </SectionCard>
 
           
-          <SectionCard className="overflow-hidden bg-surface">
-            <h3 className="mb-3 font-h3 text-h3 font-semibold flex items-center gap-sm text-text-primary">
-              Catatan Tambahan (opsional)
-            </h3>
-            <textarea 
-              id="notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
-              placeholder="Buka Senin-Sabtu, jam 08:00 - 17:00" 
-              rows={2} 
-              maxLength={VALIDATION_RULES.STORE.NOTES_MAX}
-            />
-          </SectionCard>
+          {/* <SectionCard className="overflow-hidden bg-surface">
+            
+          </SectionCard> */}
         </div>
 
         
@@ -401,7 +404,7 @@ export default function StoreFormPage() {
                     value={location.lat.toFixed(6)}
                     readOnly
                     type="text" 
-                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 font-data-sm text-data-sm text-text-secondary focus:outline-none cursor-not-allowed" 
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 font-data-sm text-data-sm text-text-secondary focus:outline-none cursor-not-allowed" 
                   />
                 </div>
                 <div className="flex flex-col gap-xs">
@@ -413,7 +416,7 @@ export default function StoreFormPage() {
                     value={location.lng.toFixed(6)}
                     readOnly
                     type="text" 
-                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 font-data-sm text-data-sm text-text-secondary focus:outline-none cursor-not-allowed" 
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 font-data-sm text-data-sm text-text-secondary focus:outline-none cursor-not-allowed" 
                   />
                 </div>
               </div>

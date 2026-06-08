@@ -139,25 +139,25 @@ export default function ProductFormPage() {
 
         {/* INFORMASI DASAR */}
         <SectionCard className="space-y-3">
-          <h3 className="text-h3 font-black mb-2 uppercase">Informasi Dasar</h3>
+          <h3 className="mb-3 font-h3 text-h3 flex items-center text-text-primary">Informasi Dasar</h3>
           <div>
-            <label className="block text-body-sm font-black text-text-secondary mb-1">Nama Produk</label>
+            <label className="font-caption text-caption text-text-secondary">Nama Produk</label>
             <input 
               type="text" 
               name="name"
               value={formData.name || ''} 
               onChange={handleChange}
-              className={`w-full p-3 text-body font-bold text-text-primary bg-surface-container-low border ${errors.name ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all placeholder:text-text-muted`} 
+              className={`w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all`} 
             />
             {errors.name && <p className="text-[10px] font-bold text-error mt-1">{errors.name}</p>}
           </div>
           <div>
-            <label className="block text-body-sm font-black text-text-secondary mb-1">Kategori</label>
+            <label className="font-caption text-caption text-text-secondary">Kategori</label>
             <select 
               name="category"
               value={formData.category || ''} 
               onChange={handleChange}
-              className={`w-full p-3 text-body font-bold text-text-primary bg-surface-container-low border ${errors.category ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all capitalize`} 
+              className={`w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer`} 
             >
               <option value="" disabled className="text-text-muted">Pilih Kategori...</option>
               <option value="1">{categoryLabels["1"]}</option>
@@ -169,13 +169,13 @@ export default function ProductFormPage() {
             {errors.category && <p className="text-[10px] font-bold text-error mt-1">{errors.category}</p>}
           </div>
           <div>
-            <label className="block text-body-sm font-black text-text-secondary mb-1">Deskripsi (Opsional)</label>
+            <label className="font-caption text-caption text-text-secondary">Deskripsi (Opsional)</label>
             <textarea 
               rows={3} 
               name="description"
               value={formData.description || ''} 
               onChange={handleChange}
-              className={`w-full p-3 text-body-sm font-medium text-text-primary bg-surface-container-low border ${errors.description ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all resize-none placeholder:text-text-muted`} 
+              className={`w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all`} 
             />
             {errors.description && <p className="text-[10px] font-bold text-error mt-1">{errors.description}</p>}
           </div>
@@ -183,45 +183,42 @@ export default function ProductFormPage() {
 
         {/* PENGATURAN HARGA */}
         <SectionCard className="space-y-3">
-          <h3 className="text-h3 font-black mb-2 uppercase">Pengaturan Harga</h3>
+          <h3 className="mb-3 font-h3 text-h3 flex items-center text-text-primary">Pengaturan Harga</h3>
           <div>
-            <label className="block text-body-sm font-black text-text-secondary mb-1">Harga Modal (Kulakan)</label>
+            <label className="font-caption text-caption text-text-secondary">Harga Modal (Kulakan)</label>
             <div className="relative">
-              <span className="absolute left-3 top-3.5 text-text-muted font-black text-data-md">Rp</span>
               <input 
                 type="number" 
                 name="costPrice"
                 value={formData.costPrice || ''} 
                 onChange={handleChange}
-                className={`w-full p-3 pl-10 text-data-md font-black text-text-primary bg-surface-container-low border ${errors.costPrice ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all`} 
+                className={`w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all`} 
               />
             </div>
             {errors.costPrice && <p className="text-[10px] font-bold text-error mt-1">{errors.costPrice}</p>}
           </div>
           <div>
-            <label className="block text-body-sm font-black text-text-secondary mb-1">Harga Jual (Grosir/Toko)</label>
+            <label className="font-caption text-caption text-text-secondary">Harga Jual (Grosir/Toko)</label>
             <div className="relative">
-              <span className="absolute left-3 top-3.5 text-text-muted font-black text-data-md">Rp</span>
               <input 
                 type="number" 
                 name="wholesalePrice"
                 value={formData.wholesalePrice || ''} 
                 onChange={handleChange}
-                className={`w-full p-3 pl-10 text-data-md font-black text-primary bg-surface-container-low border ${errors.wholesalePrice ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all`} 
+                className={`w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all`} 
               />
             </div>
             {errors.wholesalePrice && <p className="text-[10px] font-bold text-error mt-1">{errors.wholesalePrice}</p>}
           </div>
           <div>
-            <label className="block text-body-sm font-black text-text-secondary mb-1">Harga Eceran (Ke Konsumen)</label>
+            <label className="font-caption text-caption text-text-secondary">Harga Eceran (Ke Konsumen)</label>
             <div className="relative">
-              <span className="absolute left-3 top-3.5 text-text-muted font-black text-data-md">Rp</span>
               <input 
                 type="number" 
                 name="retailPrice"
                 value={formData.retailPrice || ''} 
                 onChange={handleChange}
-                className={`w-full p-3 pl-10 text-data-md font-black text-text-primary bg-surface-container-low border ${errors.retailPrice ? 'border-error' : ''} rounded-xl focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all`} 
+                className={`w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all`} 
               />
             </div>
             {errors.retailPrice && <p className="text-[10px] font-bold text-error mt-1">{errors.retailPrice}</p>}
