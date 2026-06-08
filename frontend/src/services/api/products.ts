@@ -77,33 +77,33 @@ export const productApi = {
     } catch (error) {
       console.error("Dexie Get All Products Error:", error);
       toast.error("Gagal memuat data produk");
-      return { success: false, data: [], message: "Gagal memuat data produk" };
+      return { success: false, message: "Gagal memuat data produk" };
     }
   },
 
-  getById: async (id: number | string): Promise<ApiResponse<Product | null>> => {
+  getById: async (id: number | string): Promise<ApiResponse<Product>> => {
     try {
       const numericId = Number(id);
       const product = await db.products.get(numericId);
       if (!product) {
         toast.error("Produk tidak ditemukan");
-        return { success: false, data: null, message: "Produk tidak ditemukan" }
+        return { success: false, message: "Produk tidak ditemukan" }
       }
       return { success: true, data: product }
     } catch (error) {
       toast.error("Gagal memuat data produk");
-      return { success: false, data: null, message: "Gagal memuat data produk" };
+      return { success: false, message: "Gagal memuat data produk" };
     }
   },
 
-  getDetailWithLogs: async (id: number | string): Promise<ApiResponse<ProductDetailWithLogs | null>> => {
+  getDetailWithLogs: async (id: number | string): Promise<ApiResponse<ProductDetailWithLogs>> => {
     try {
       const numericId = Number(id);
       const product = await db.products.get(numericId);
       
       if (!product) {
         toast.error("Produk tidak ditemukan");
-        return { success: false, data: null, message: "Produk tidak ditemukan" };
+        return { success: false, message: "Produk tidak ditemukan" };
       }
 
       // Mengambil logs 1 bulan terakhir dan diurutkan berdasarkan createdAt
@@ -123,11 +123,11 @@ export const productApi = {
       };
     } catch (error) {
       toast.error("Gagal memuat detail produk dan riwayat");
-      return { success: false, data: null, message: "Gagal memuat detail produk dan riwayat" };
+      return { success: false, message: "Gagal memuat detail produk dan riwayat" };
     }
   },
 
-  create: async (data: ProductFormData): Promise<ApiResponse<Product | null>> => {
+  create: async (data: ProductFormData): Promise<ApiResponse<Product>> => {
     const normalizedName = data.name.toLowerCase();
     
     const newProduct: Omit<DbProduct, 'id'> = {
@@ -145,19 +145,19 @@ export const productApi = {
     } catch (error: any) {
       if (error.name === 'ConstraintError') {
         toast.error("Nama produk sudah ada di sistem")
-        return { success: false, data: null, message: "Nama produk sudah ada di sistem" }
+        return { success: false, message: "Nama produk sudah ada di sistem" }
       }
       console.error("Dexie Create Product Error:", error);
       toast.error("Gagal menyimpan produk")
-      return { success: false, data: null, message: "Gagal menyimpan produk" }
+      return { success: false, message: "Gagal menyimpan produk" }
     }
   },
 
-  update: async (id: number | string, data: Partial<ProductFormData>): Promise<ApiResponse<Product | null>> => {
+  update: async (id: number | string, data: Partial<ProductFormData>): Promise<ApiResponse<Product>> => {
     const numericId = Number(id);
     const product = await db.products.get(numericId);
     
-    if (!product || product.isArchived) return { success: false, data: null, message: "Produk tidak ditemukan" }
+    if (!product || product.isArchived) return { success: false, message: "Produk tidak ditemukan" }
     
     const updateData: Partial<DbProduct> = { ...data };
     if (data.name) {
@@ -172,10 +172,10 @@ export const productApi = {
     } catch (error: any) {
       if (error instanceof Dexie.ModifyError) {
         toast.error("Nama produk sudah digunakan oleh produk lain")
-        return { success: false, data: null, message: "Nama produk sudah digunakan oleh produk lain" }
+        return { success: false, message: "Nama produk sudah digunakan oleh produk lain" }
       }
       toast.error("Gagal memperbarui produk")
-      return { success: false, data: null, message: "Gagal memperbarui produk" }
+      return { success: false, message: "Gagal memperbarui produk" }
     }
   },
 
@@ -187,7 +187,6 @@ export const productApi = {
       if (!product || product.isArchived) {
         return { 
           success: false, 
-          data: null, 
           message: "Produk tidak ditemukan" 
         };
       }
@@ -195,7 +194,6 @@ export const productApi = {
       if (product.normalizedName !== productNameConfirm.toLowerCase()) {
         return { 
           success: false, 
-          data: null, 
           message: "Konfirmasi nama salah untuk produk ini" 
         };
       }
@@ -204,7 +202,7 @@ export const productApi = {
       return { success: true, data: null };
     } catch (error) {
       console.error("Dexie Delete Product Error:", error);
-      return { success: false, data: null, message: "Terjadi kesalahan sistem saat mengarsipkan produk" };
+      return { success: false, message: "Terjadi kesalahan sistem saat mengarsipkan produk" };
     }
   },
 
@@ -216,7 +214,6 @@ export const productApi = {
       if (!product) {
         return { 
           success: false, 
-          data: null, 
           message: "Produk tidak ditemukan" 
         };
       }
@@ -227,11 +224,11 @@ export const productApi = {
     } catch (error) {
       console.error("Dexie Restore Product Error:", error);
       toast.error("Gagal memulihkan produk");
-      return { success: false, data: null, message: "Gagal memulihkan produk" };
+      return { success: false, message: "Gagal memulihkan produk" };
     }
   },
 
-  adjustStock: async (id: number | string, newStock: number, reason?: string): Promise<ApiResponse<Product | null>> => {
+  adjustStock: async (id: number | string, newStock: number, reason?: string): Promise<ApiResponse<Product>> => {
     const numericId = Number(id);
     
     try {
@@ -257,22 +254,23 @@ export const productApi = {
         
         updatedProduct = await db.products.get(numericId) as Product;
       });
-      
+
+      if (!updatedProduct) { throw new Error("updatedProduct was not created") }
       toast.success("Stok berhasil disesuaikan");
       return { success: true, data: updatedProduct };
     } catch (error: any) {
       console.error("Dexie Adjust Stock Error:", error);
       toast.error(error.message || "Gagal menyesuaikan stok");
-      return { success: false, data: null, message: error.message || "Gagal menyesuaikan stok" };
+      return { success: false, message: error.message || "Gagal menyesuaikan stok" };
     }
   },
 
-  addStock: async (id: number | string, addedStock: number, notes?: string): Promise<ApiResponse<Product | null>> => {
+  addStock: async (id: number | string, addedStock: number, notes?: string): Promise<ApiResponse<Product>> => {
     const numericId = Number(id);
     
     if (addedStock <= 0) {
       toast.error("Jumlah stok tidak valid");
-      return { success: false, data: null, message: "Jumlah stok tidak valid" };
+      return { success: false, message: "Jumlah stok tidak valid" };
     }
 
     try {
@@ -295,13 +293,14 @@ export const productApi = {
         
         updatedProduct = await db.products.get(numericId) as Product;
       });
-      
+
+      if (!updatedProduct) { throw new Error("updatedProduct was not created") }
       toast.success("Stok berhasil ditambah");
       return { success: true, data: updatedProduct };
     } catch (error: any) {
       console.error("Dexie Add Stock Error:", error);
       toast.error(error.message || "Gagal menambah stok");
-      return { success: false, data: null, message: error.message || "Gagal menambah stok" };
+      return { success: false, message: error.message || "Gagal menambah stok" };
     }
   },
 
@@ -309,16 +308,16 @@ export const productApi = {
     id: number | string, 
     resaleQty: number, 
     wasteQty: number
-  ): Promise<ApiResponse<Product | null>> => {
+  ): Promise<ApiResponse<Product>> => {
     const numericId = Number(id);
     
     if (resaleQty < 0 || wasteQty < 0) {
       toast.error("Jumlah tidak valid");
-      return { success: false, data: null, message: "Jumlah tidak valid" };
+      return { success: false, message: "Jumlah tidak valid" };
     }
     
     if (resaleQty === 0 && wasteQty === 0) {
-      return { success: true, data: null };
+      return { success: false, message: "jumlah tidak boleh nol"  };
     }
 
     try {
@@ -366,13 +365,14 @@ export const productApi = {
         
         updatedProduct = await db.products.get(numericId) as Product;
       });
-      
+
+      if (!updatedProduct) { throw new Error("updatedProduct was not created") }
       toast.success("Barang retur berhasil diproses");
       return { success: true, data: updatedProduct };
     } catch (error: any) {
       console.error("Dexie Process Return Error:", error);
       toast.error(error.message || "Gagal memproses barang retur");
-      return { success: false, data: null, message: error.message || "Gagal memproses barang retur" };
+      return { success: false, message: error.message || "Gagal memproses barang retur" };
     }
   },
 }

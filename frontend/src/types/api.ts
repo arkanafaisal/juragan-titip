@@ -1,18 +1,10 @@
-export interface ApiResponse<T> {
-  success: boolean
-  data: T
-  message?: string
-  errors?: Record<string, string[]>
-}
+export type ApiResponse<T> = 
+  | { success: true; data: T }
+  | { success: false; message: string; errors?: Record<string, string[]> };
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  meta: {
-    page: number
-    perPage: number
-    total: number
-    totalPages: number
-  }
-}
+export type PaginatedResponse<T> = 
+  | { success: true; data: T[]; meta: { page: number; perPage: number; total: number; totalPages: number } }
+  | { success: false; message: string; errors?: Record<string, string[]> };
 
 export interface AuthResponse {
   accessToken: string

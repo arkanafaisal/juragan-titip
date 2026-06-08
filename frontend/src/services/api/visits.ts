@@ -7,18 +7,18 @@ export interface CreateVisitPayload extends Omit<Visit, "id" | "createdAt"> {
 }
 
 export const visitApi = {
-  getAll: async (): Promise<ApiResponse<Visit[] | null>> => {
+  getAll: async (): Promise<ApiResponse<Visit[] >> => {
     try {
       const visits = await db.visits.toArray();
       return { success: true, data: visits }
     } catch (error) {
       console.error("Dexie Get All Visits Error:", error);
       toast.error("Gagal memuat kunjungan")
-      return { success: false, data: null, message: "Gagal memuat kunjungan" }
+      return { success: false, message: "Gagal memuat kunjungan" }
     }
   },
 
-  getByStore: async (storeId: number | string, limitCount?: number): Promise<ApiResponse<Visit[] | null>> => {
+  getByStore: async (storeId: number | string, limitCount?: number): Promise<ApiResponse<Visit[] >> => {
     const numericId = Number(storeId);
     try {
       let collection = db.visits.where('storeId').equals(numericId).reverse();
@@ -30,27 +30,27 @@ export const visitApi = {
     } catch (error) {
       console.error("Dexie Get Visits by Store Error:", error);
       toast.error("Gagal memuat kunjungan toko")
-      return { success: false, data: null, message: "Gagal memuat kunjungan toko" }
+      return { success: false, message: "Gagal memuat kunjungan toko" }
     }
   },
 
-  getById: async (id: number | string): Promise<ApiResponse<Visit | null>> => {
+  getById: async (id: number | string): Promise<ApiResponse<Visit >> => {
     const numericId = Number(id);
     try {
       const visit = await db.visits.get(numericId);
       if (!visit) {
         toast.error("Kunjungan tidak ditemukan")
-        return { success: false, data: null, message: "Kunjungan tidak ditemukan" }
+        return { success: false, message: "Kunjungan tidak ditemukan" }
       }
       return { success: true, data: visit }
     } catch (error) {
       console.error("Dexie Get Visit By Id Error:", error);
       toast.error("Gagal memuat kunjungan")
-      return { success: false, data: null, message: "Gagal memuat kunjungan" }
+      return { success: false, message: "Gagal memuat kunjungan" }
     }
   },
 
-  create: async (data: CreateVisitPayload): Promise<ApiResponse<Visit | null>> => {
+  create: async (data: CreateVisitPayload): Promise<ApiResponse<Visit >> => {
     try {
       let createdVisit: Visit | null = null;
 
@@ -120,13 +120,14 @@ export const visitApi = {
         });
       });
 
+      if (!createdVisit) { throw new Error("createdVisit was not created") }
       toast.success("Kunjungan berhasil disimpan");
       return { success: true, data: createdVisit };
     } catch (error: any) {
       console.error("Dexie Create Visit Transaction Error:", error);
       const message = error.message || "Gagal menyimpan kunjungan";
       toast.error(message);
-      return { success: false, data: null, message };
+      return { success: false, message };
     }
   },
 }

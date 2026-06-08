@@ -72,7 +72,7 @@ export const storeApi = {
 
     } catch (error) {
       toast.error("Gagal memuat data toko")
-      return { success: false, data: [], message: "Gagal memuat data toko" }
+      return { success: false, message: "Gagal memuat data toko" }
     }
   },
 
@@ -80,17 +80,17 @@ export const storeApi = {
     store: Store;
     activeItems: { productName: string; remained: number }[];
     visitHistory: Visit[];
-  } | null>> => {
+  }>> => {
     try {
       const numericId = Number(id);
       const store = await db.stores.get(numericId);
       if (!store) {
         toast.error("Toko tidak ditemukan")
-        return { success: false, data: null, message: "Toko tidak ditemukan" }
+        return { success: false, message: "Toko tidak ditemukan" }
       }
 
       const visitRes = await visitApi.getByStore(numericId, 10);
-      const storeVisits = visitRes.success && visitRes.data ? visitRes.data : [];
+      const storeVisits = visitRes.success? visitRes.data : [];
 
       let activeItems: { productName: string; remained: number }[] = [];
       
@@ -112,11 +112,11 @@ export const storeApi = {
       };
     } catch (error) {
       toast.error("Gagal memuat detail toko")
-      return { success: false, data: null, message: "Gagal memuat detail toko" }
+      return { success: false, message: "Gagal memuat detail toko" }
     }
   },
 
-  create: async (data: StoreFormData): Promise<ApiResponse<Store | null>> => {
+  create: async (data: StoreFormData): Promise<ApiResponse<Store >> => {
     const normalizedName = data.name.toLowerCase();
     const newStore: Omit<DbStore, 'id'> = {
       ...data,
@@ -134,15 +134,15 @@ export const storeApi = {
     } catch (error: any) {
       console.error("Dexie Create Store Error:", error);
       toast.error("Gagal menyimpan toko")
-      return { success: false, data: null, message: "Gagal menyimpan toko" }
+      return { success: false, message: "Gagal menyimpan toko" }
     }
   },
 
-  update: async (id: number | string, data: Partial<StoreFormData>): Promise<ApiResponse<Store | null>> => {
+  update: async (id: number | string, data: Partial<StoreFormData>): Promise<ApiResponse<Store >> => {
     const numericId = Number(id);
     const store = await db.stores.get(numericId);
     
-    if (!store) return { success: false, data: null, message: "Toko tidak ditemukan" }
+    if (!store) return { success: false, message: "Toko tidak ditemukan" }
     
     const updateData: Partial<DbStore> = { ...data };
     if (data.name) {
@@ -157,7 +157,7 @@ export const storeApi = {
     } catch (error: any) {
       console.error("Dexie Update Store Error:", error);
       toast.error("Gagal memperbarui toko")
-      return { success: false, data: null, message: "Gagal memperbarui toko" }
+      return { success: false, message: "Gagal memperbarui toko" }
     }
   },
 
@@ -208,7 +208,6 @@ export const storeApi = {
       if (!store) {
         return { 
           success: false, 
-          data: null, 
           message: "Nama toko tidak ditemukan di sistem" 
         };
       }
@@ -216,7 +215,6 @@ export const storeApi = {
       if (store.name.toLowerCase() !== storeNameConfirm.toLowerCase()) {
         return { 
           success: false, 
-          data: null, 
           message: "Konfirmasi nama salah untuk ID toko ini" 
         };
       }
@@ -225,7 +223,7 @@ export const storeApi = {
       return { success: true, data: null };
     } catch (error) {
       console.error("Dexie Delete Store Error:", error);
-      return { success: false, data: null, message: "Terjadi kesalahan sistem saat mengarsipkan toko" };
+      return { success: false, message: "Terjadi kesalahan sistem saat mengarsipkan toko" };
     }
   },
 
@@ -237,7 +235,6 @@ export const storeApi = {
       if (!store) {
         return { 
           success: false, 
-          data: null, 
           message: "Nama toko tidak ditemukan di sistem" 
         };
       }
@@ -248,7 +245,7 @@ export const storeApi = {
     } catch (error) {
       console.error("Dexie Restore Store Error:", error);
       toast.error("Gagal memulihkan toko");
-      return { success: false, data: null, message: "Gagal memulihkan toko" };
+      return { success: false, message: "Gagal memulihkan toko" };
     }
   },
   getPhoneNumber: async (id: number | string): Promise<ApiResponse<string | undefined>> => {
@@ -256,7 +253,7 @@ export const storeApi = {
       const store = await db.stores.get(Number(id));
       return { success: true, data: store?.phone };
     } catch (error) {
-      return { success: false, data: undefined, message: "Gagal mengambil nomor telepon toko" };
+      return { success: false, message: "Gagal mengambil nomor telepon toko" };
     }
   },
 
