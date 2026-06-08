@@ -144,19 +144,19 @@ export default function StoreDetailPage() {
               </div>
 
               <div className="space-y-sm mt-md">
-                <div className="flex items-start gap-xs  text-text-secondary font-body-sm text-body-sm  ">
+                <div className="flex items-start gap-xs  text-text-secondary  ">
                   <MapPin className="w-4 h-4   mt-0.5 shrink-0" />
                   <p>{store.address}</p>
                 </div>
-                <div className="flex items-center gap-xs  text-text-secondary font-body-sm text-body-sm  ">
+                <div className="flex items-center gap-xs  text-text-secondary  ">
                   <User className="w-4 h-4   shrink-0" />
                   <p>{store.ownerName}</p>
                 </div>
-                <div className="flex items-center gap-xs  text-text-secondary font-body-sm text-body-sm  ">
+                <div className="flex items-center gap-xs  text-text-secondary  ">
                   <Phone className="w-4 h-4   shrink-0" />
                   <p>{store.phone}</p>
                 </div>
-                <div className="flex items-start gap-xs  text-text-secondary font-body-sm text-body-sm  ">
+                <div className="flex items-start gap-xs  text-text-secondary  ">
                   <StickyNote className="w-4 h-4   mt-0.5 shrink-0" />
                   <p className={!store.notes ? "italic text-text-muted" : ""}>{store.notes || "Tidak ada catatan."}</p>
                 </div>

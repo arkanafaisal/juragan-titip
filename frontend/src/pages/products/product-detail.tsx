@@ -143,21 +143,18 @@ export default function ProductDetailPage() {
             {categoryLabels[product.category as keyof typeof categoryLabels] || product.category}
           </div>
           
-          {product.description && (
-            <div className="bg-surface-container-low p-3 rounded-xl mb-4 border border-black/5 text-body-sm">
-              <p className="text-text-primary/80">
-                <span className=" text-text-primary mr-1">Deskripsi:</span>
-                {product.description}
-              </p>
+          <div className="space-y-sm mt-2">
+            <div className="flex justify-between items-start gap-4">
+              <span className="text-text-secondary shrink-0">Deskripsi</span>
+              <span className={`text-right ${product.description ? 'text-text-primary' : 'text-text-muted italic text-body-sm'}`}>
+                {product.description || 'Tidak ada deskripsi'}
+              </span>
             </div>
-          )}
-
-          <div className="space-y-3 text-data-md mt-2">
-            <div className="flex justify-between pb-2 border-b border-outline-variant border-dashed">
+            <div className="flex justify-between ">
               <span className="text-text-secondary ">Modal</span>
               <span className=" text-text-primary">Rp {product.costPrice.toLocaleString('id-ID')}</span>
             </div>
-            <div className="flex justify-between pb-2 border-b border-outline-variant border-dashed">
+            <div className="flex justify-between ">
               <span className="text-text-secondary ">Jual (Toko)</span>
               <span className=" text-primary">Rp {product.wholesalePrice.toLocaleString('id-ID')}</span>
             </div>
@@ -172,7 +169,7 @@ export default function ProductDetailPage() {
 
         <SectionCard>
           <h3 className="text-h3  text-text-primary mb-2 uppercase">
-            Stok Utama
+            Stok Gudang
           </h3>
           <div className="flex items-end gap-1.5 mb-4">
             <span className="text-display  text-text-primary leading-none">{product.warehouseStock}</span>
