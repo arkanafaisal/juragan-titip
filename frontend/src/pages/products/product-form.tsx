@@ -84,21 +84,20 @@ export default function ProductFormPage() {
     }
 
     setIsSubmitting(true);
-    try {
-      if (id) {
-        const res = await productApi.update(id, formData);
-        if (res.success) {
-          navigate(`/products/${id}`);
-        }
-      } else {
-        const res = await productApi.create(formData as ProductFormData);
-        if (res.success && res.data) {
-          navigate(`/products/${res.data.id}`, { replace: true });
-        }
+    
+    if (id) {
+      const res = await productApi.update(id, formData);
+      if (res.success) {
+        navigate(`/products/${id}`);
       }
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      const res = await productApi.create(formData as ProductFormData);
+      if (res.success && res.data) {
+        navigate(`/products/${res.data.id}`, { replace: true });
+      }
     }
+    
+    setIsSubmitting(false);
   };
 
   const handleDeleteConfirm = async (typedName?: string) => {

@@ -45,14 +45,13 @@ export function ProcessReturnModal({
     }
 
     setIsSaving(true);
-    try {
-      const res = await productApi.processReturn(productId, rQty, wQty);
-      if (res.success) {
-        onClose();
-      }
-    } finally {
-      setIsSaving(false);
+    
+    const res = await productApi.processReturn(productId, rQty, wQty);
+    if (res.success) {
+      onClose();
     }
+    
+    setIsSaving(false);
   };
 
   return (

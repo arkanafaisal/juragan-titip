@@ -36,14 +36,13 @@ export function AddStockModal({
     }
 
     setIsSaving(true);
-    try {
-      const res = await productApi.addStock(productId, addedStock);
-      if (res.success) {
-        onClose();
-      }
-    } finally {
-      setIsSaving(false);
+    
+    const res = await productApi.addStock(productId, addedStock);
+    if (res.success) {
+      onClose();
     }
+    
+    setIsSaving(false);
   };
 
   return (
