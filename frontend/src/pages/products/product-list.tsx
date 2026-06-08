@@ -124,7 +124,7 @@ export default function ProductListPage() {
   }, [debouncedSearch, filters, currentPage]);
 
   const handleOpenAdd = () => {
-    navigate("/product/new");
+    navigate("/products/new");
   };
 
   const handleDeleteConfirm = async (typedName?: string) => {
