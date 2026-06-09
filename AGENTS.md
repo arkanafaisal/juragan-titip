@@ -61,6 +61,8 @@ Arsitektur menggunakan pola Model-View-Controller (MVC) yang diadaptasi ke dalam
 
 ## 4. AGENT CODING RULES & BEHAVIORS
 
+- **Direct File Editing Only:** Semua modifikasi, penambahan, atau penghapusan isi kode harus dilakukan dengan mengedit file secara langsung menggunakan kapabilitas internal *agent*.
+- **No Terminal Code Manipulation:** Dilarang keras menggunakan perintah terminal (seperti `sed`, `awk`, `echo`, atau *bulk replace*) untuk memanipulasi kode. Terminal HANYA boleh digunakan untuk menjalankan *scripts* (misal: `npm run`, `npx`), menginstal *package*, atau membuat *file/folder* baru.
 - **No Comments Rule:** Jangan PERNAH menambahkan, menghapus, atau memodifikasi komentar dalam baris kode (*inline/block comments*) kecuali diminta secara eksplisit. Tulis kode yang cukup ekspresif (*self-documenting*).
 - **Format Output & Diff:** Kembalikan perubahan kode dalam format Git Diff. Jika hanya memodifikasi blok tertentu, sertakan kode *surrounding* yang cukup (misal keseluruhan *parent block* seperti fungsi, struktur tag HTML/JSX secara lengkap, dsb) untuk menunjukkan konteks struktural tanpa menulis ulang seluruh file secara utuh. Gabungkan modifikasi terdekat menjadi satu blok *diff* jika memungkinkan. Jangan mengubah *whitespace* atau karakter yang tidak relevan dengan konteks perbaikan.
 - **Intent-based Spacing (Blank Lines):** Gunakan satu baris kosong (ENTER) untuk memisahkan blok logika yang memiliki *intent* (tujuan) berbeda di dalam fungsi. Contoh: Pisahkan blok destrukturisasi variabel, blok inisialisasi *hooks*, blok kondisi penjaga (*guard clauses*), dan blok *return*.
