@@ -1,0 +1,80 @@
+import { View, Text, TouchableOpacity } from 'react-native';
+import { usePathname } from 'expo-router';
+import { User } from 'lucide-react-native';
+import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+export function Header() {
+  const pathname = usePathname();
+  const insets = useSafeAreaInsets();
+
+  const getDynamicTitle = (pathname: string) => {
+    const parts = pathname.split('/').filter(Boolean);
+    if (parts.length === 0) return "Dashboard";
+
+    const section = parts[0];
+    const actionOrId = parts[1];
+    const subAction = parts[2];
+
+    const sectionMap: Record<string, string> = {
+      products: "Produk",
+      stores: "Toko",
+      finance: "Keuangan",
+      reports: "Laporan",
+      settings: "Pengaturan"
+    };
+
+    const subject = sectionMap[section] || section;
+
+    if (section === "dashboard") return "Dashboard";
+    if (section === "finance") return "Keuangan";
+    if (section === "reports") {
+      if (actionOrId === "stores") return "Performa Toko";
+      if (actionOrId === "tracking") return "Lacak Barang";
+      if (actionOrId === "financial") return "Laporan Keuangan";
+      return "Laporan";
+    }
+    if (section === "settings") {
+      if (actionOrId === "profile") return "Profil";
+      if (actionOrId === "preferences") return "Preferensi";
+      return "Pengaturan";
+    }
+
+    if (!actionOrId) return `Daftar ${subject}`;
+    if (actionOrId === "new") return `Tambah ${subject}`;
+    if (!subAction) return `Detail ${subject}`;
+    if (subAction === "edit") return `Edit Data ${subject}`;
+    if (subAction === "visit" && section === "stores") return "Kunjungan Toko";
+
+    return "JuraganTitip";
+  };
+
+  const dynamicTitle = getDynamicTitle(pathname);
+
+  return (
+    <View 
+      className="bg-surface-container-lowest border-b border-outline-variant shadow-sm flex-row justify-between items-center w-full px-md shrink-0 z-30"
+      style={{ 
+        paddingTop: insets.top,
+        height: 64 + insets.top
+      }}
+    >
+      <View className="flex-row items-center gap-sm min-w-0 pr-2">
+        <Text className="text-h1 font-bold text-primary-container tracking-tight" numberOfLines={1}>
+          {dynamicTitle}
+        </Text>
+      </View>
+
+      <View className="flex-row items-center gap-sm shrink-0">
+        <View className="relative ml-1 flex-row items-center">
+          <TouchableOpacity 
+            className="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center border border-primary/20"
+            activeOpacity={0.7}
+          >
+            <User size={16} color="#2563eb" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}

@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { BottomTabBar } from '../../components/layout/bottom-tab-bar';
+import { Header } from '../../components/layout/header';
 import { useExitAppConfirmation } from '../../hooks/use-exit-app-confirmation';
 
 export default function TabLayout() {
@@ -9,7 +10,7 @@ export default function TabLayout() {
   return (
     <Tabs 
       tabBar={(props) => <BottomTabBar {...props} />}
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ header: () => <Header /> }}
     >
       <Tabs.Screen
         name="index"
