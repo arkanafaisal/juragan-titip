@@ -17,10 +17,10 @@
   - **Kenapa:** Menjaga konsistensi gaya dengan versi prototipe web yang menggunakan Tailwind.
   - **Bagaimana:** Gunakan atribut `className` pada komponen React Native (View, Text, Pressable). Jangan gunakan `StyleSheet.create` kecuali untuk kasus *edge-case* animasi tingkat rendah.
 
-- **React-Native-Reusables & Lucide Icons**
-  - **Kapan:** Membutuhkan komponen *UI primitif* (Button, Input, Modal, Sheet) atau ikon.
-  - **Kenapa:** Mencegah pembuatan komponen dasar dari nol dan memastikan aksesibilitas (A11y) serta konsistensi desain standar.
-  - **Bagaimana:** Panggil komponen dari folder `components/ui/`. Jangan modifikasi file internal komponen ini kecuali diminta.
+- **Custom UI Components (Just-in-Time) & Lucide Icons**
+  - **Kapan:** Membutuhkan komponen *UI primitif* (Button, Input, Card, Dialog) atau ikon.
+  - **Kenapa:** Menghindari ketergantungan pada *library*/CLI UI eksternal. Memberikan kontrol penuh dan 100% kecocokan dengan gaya prototipe web.
+  - **Bagaimana:** Buat komponen primitif secara manual dari nol dan simpan di `components/ui/` HANYA saat layar yang sedang dikerjakan membutuhkannya. Gunakan `lucide-react-native` untuk ikon.
 
 - **TanStack Query (@tanstack/react-query)**
   - **Kapan:** Melakukan *fetch*, *post*, sinkronisasi, dan memperbarui *Server State* (data dari API).
@@ -61,6 +61,8 @@ Arsitektur menggunakan pola Model-View-Controller (MVC) yang diadaptasi ke dalam
 
 ## 4. AGENT CODING RULES & BEHAVIORS
 
+- **NO UI CLIs:** Dilarang keras menggunakan `react-native-reusables`, Shadcn CLI, atau tool pembuat UI eksternal lainnya. Jangan jalankan perintah `npx` untuk menambah komponen UI.
+- **1:1 Web Prototype Matching:** Saat membuat komponen UI kustom, adaptasi langsung tag HTML dari versi web ke primitif React Native (`div` -> `View`, `p/h1/span` -> `Text`, `button` -> `TouchableOpacity/Pressable`, `input` -> `TextInput`). Gunakan *class* Tailwind yang sama persis dengan prototipe web.
 - **Direct File Editing Only:** Semua modifikasi, penambahan, atau penghapusan isi kode harus dilakukan dengan mengedit file secara langsung menggunakan kapabilitas internal *agent*.
 - **No Terminal Code Manipulation:** Dilarang keras menggunakan perintah terminal (seperti `sed`, `awk`, `echo`, atau *bulk replace*) untuk memanipulasi kode. Terminal HANYA boleh digunakan untuk menjalankan *scripts* (misal: `npm run`, `npx`), menginstal *package*, atau membuat *file/folder* baru.
 - **No Comments Rule:** Jangan PERNAH menambahkan, menghapus, atau memodifikasi komentar dalam baris kode (*inline/block comments*) kecuali diminta secara eksplisit. Tulis kode yang cukup ekspresif (*self-documenting*).
