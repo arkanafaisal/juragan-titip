@@ -53,14 +53,14 @@ export function Header() {
 
   return (
     <View 
-      className="bg-surface-container-lowest border-b border-outline-variant shadow-sm flex-row justify-between items-center w-full px-md shrink-0 z-30"
+      className="bg-primary shadow-sm flex-row justify-between items-center w-full px-md shrink-0 z-30"
       style={{ 
         paddingTop: insets.top,
         height: 64 + insets.top
       }}
     >
       <View className="flex-row items-center gap-sm min-w-0 pr-2">
-        <Text className="text-h1 font-bold text-primary-container tracking-tight" numberOfLines={1}>
+        <Text className="text-h1 font-bold text-on-primary tracking-tight" numberOfLines={1}>
           {dynamicTitle}
         </Text>
       </View>
@@ -68,7 +68,7 @@ export function Header() {
       <View className="flex-row items-center gap-sm shrink-0">
         <View className="relative ml-1 flex-row items-center">
           <TouchableOpacity 
-            className="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center border border-primary/20"
+            className="w-9 h-9 rounded-full bg-surface flex items-center justify-center"
             activeOpacity={0.7}
           >
             <User size={16} color="#2563eb" />
