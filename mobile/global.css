@@ -1,3 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+  /* Chrome, Edge, Safari */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: none;
+  }
+
+  /* IE & old Edge */
+  * {
+    -ms-overflow-style: none;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  button, select {
+    cursor: pointer;
+  }
+}
