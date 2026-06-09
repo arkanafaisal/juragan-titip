@@ -1,3 +1,25 @@
+git --no-pager log 3fcde5697f4a847a6bfed3156d7c8b94a8590310..HEAD --pretty=format:"%H %s"
+43d528d749ae81ec990c9bc33197d3ac44e34a24 add: action toolbar
+0f9d6ce2030850737a1546d903ea096a6e393640 update(header): primary bg color
+da798e739877b0ce70ca44bff40de26c9a5f2d64 add: header
+bb2cc3360a0fcee765cec51ea2acfc70dd43ad11 update(agents rules): prohibit react native reusable usage912b62f7265c53e2a555fa546339ec21248eba25 update(agents rules): prohibit terminal code manipulation
+29c1870310474a97e3600c02a0ec96e5f5eeb46d add: on app leave confirmation modal
+3891b02b507a70053428d514a86b0bc3eb036dd1 update(bottom tab bar): color & padding
+b7df74cbbc8b72eebe717aeb9c9b7e6f69f49489 fix(tailwind config): hsl syntax (comma)
+e2259c6e6e779a0aad8bdb5b1ff1ff33a58a249f add: bottom tab bar
+dd07f7eb2242ffb43d87ca258f2cfa56c0a0597f add: tailwindcss-animate package
+ce20606dc7d0a6e10aba51d1a303debce4953dce update(css): font installation & setup
+57eb3d80cda85d16e99b7c445604d26d0896f700 add: tailwind design tokens
+94739eaa4ad704ddc3c14be07d803d372a626c70 add: packages
+95377abebee73c3678d1eed78f7278ef5cf50d4e delete: react native tabs default files
+4e001ab418254b3a4ac22e5bb786cec7256f3317 update: agent rules
+d8edfedb8347a839f513f23eef294e58e87d44bf add: tailwindcss configuration
+f56f6dcf9d2ce17e3a8217e65536642cc51dbbf5 add expo skills agent
+a31cc6a3daaa5b4463a4c2edf556f693af4890ab install expo init
+
+
+
+
 git --no-pager log 34aa8d65c480e34d97f4b53ed27adf8a9a641330..HEAD --pretty=format:"%H %s"
 6112a7bff324a94789a70c792e93e39d3a75c405 remove(backup service): comment excel import & function
 2ecc340f65a988195580d43bf9288f7f08fa6e17 update(settings page): enable export JSON format

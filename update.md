@@ -1,3 +1,24 @@
+9 June 2026
+<details>
+- added action toolbar
+- updated header bg color (bold primary)
+- added header
+- updated agents rules: prohibit terminal code manipulation & prohibit react native reusable usage
+- added on app leave confirmation modal
+- updated bottom tab bar color & padding
+- fixed tailwind config hsl syntax (comma)
+- added bottom tab bar
+- added tailwindcss-animate package
+- fixed css font installation & setup
+- added tailwind design tokens
+- added packages
+- deleted react native tabs default files
+- updated agent rules (react native focus)
+- added tailwindcss configuration
+- added expo init & agent skills
+</details>
+
+
 8 June 2026
 <details>
 - updated excel import & function (temporary comment for small build size)
