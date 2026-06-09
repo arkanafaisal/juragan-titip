@@ -8,8 +8,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const insets = useSafeAreaInsets();
 
   const getIcon = (routeName: string, isActive: boolean) => {
-    // text-primary-container = #2563eb, text-on-surface-variant = #434655
-    const color = isActive ? '#2563eb' : '#434655';
+    const color = isActive ? '#ffffff' : '#434655'; // on-primary for active
     const size = 20;
 
     switch (routeName) {
@@ -30,8 +29,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
   return (
     <View 
-      className="w-full bg-surface-container-lowest border-t border-outline-variant flex-row justify-between items-center px-1 py-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
-      style={{ paddingBottom: Math.max(insets.bottom, 8) }}
+      className="w-full bg-surface-container-lowest border-t border-outline-variant flex-row justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
     >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
@@ -72,18 +70,17 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             testID={options.tabBarButtonTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            className="flex-1 flex flex-col items-center justify-center py-1"
+            className={`flex-1 flex flex-col items-center justify-center py-2 ${
+              isFocused ? 'bg-primary' : ''
+            }`}
+            style={{ paddingBottom: Math.max(insets.bottom, 8) }}
           >
-            <View 
-              className={`w-12 h-8 rounded-full flex items-center justify-center mb-1 ${
-                isFocused ? 'bg-primary-fixed' : ''
-              }`}
-            >
+            <View className="flex items-center justify-center mb-1">
               {getIcon(route.name, isFocused)}
             </View>
             <Text 
               className={`font-caption text-[10px] text-center px-1 ${
-                isFocused ? 'font-medium text-primary-container' : 'text-on-surface-variant'
+                isFocused ? 'font-medium text-on-primary' : 'text-on-surface-variant'
               }`}
               numberOfLines={1}
             >
