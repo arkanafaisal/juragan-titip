@@ -1,8 +1,11 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { BottomTabBar } from '../../components/layout/bottom-tab-bar';
+import { useExitAppConfirmation } from '../../hooks/use-exit-app-confirmation';
 
 export default function TabLayout() {
+  useExitAppConfirmation();
+
   return (
     <Tabs 
       tabBar={(props) => <BottomTabBar {...props} />}
