@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, BackHandler } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, ScrollView, TouchableOpacity, Alert, BackHandler } from 'react-native';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useCallback } from 'react';
 import { Save, Archive, ChevronDown } from 'lucide-react-native';
 import { useSettingsStore } from '../../api/settings';
 import { Card } from '../../components/ui/card';
@@ -19,17 +19,25 @@ export default function ProductFormScreen() {
   
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   
-  const { control, handleSubmit, formState: { errors }, setValue, watch } = useForm<ProductFormValues>({
+  const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: '',
-      category: '' as any, // initial empty state
+      category: '' as any,
       description: '',
       costPrice: 0,
       wholesalePrice: 0,
       retailPrice: undefined,
     }
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        reset();
+      };
+    }, [reset])
+  );
 
   const onSubmit = (data: ProductFormValues) => {
     console.log("Form Submitted:", data);
@@ -55,7 +63,7 @@ export default function ProductFormScreen() {
   useEffect(() => {
     const backAction = () => {
       handleCancel();
-      return true; // prevent default physical back button behavior
+      return true;
     };
 
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
@@ -80,7 +88,6 @@ export default function ProductFormScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* INFORMASI DASAR */}
           <Card className="flex-col gap-3">
             <Text className="text-h3 font-bold text-text-primary mb-1">Informasi Dasar</Text>
             
@@ -135,7 +142,6 @@ export default function ProductFormScreen() {
             />
           </Card>
 
-          {/* PENGATURAN HARGA */}
           <Card className="flex-col gap-3 mt-4">
             <Text className="text-h3 font-bold text-text-primary mb-1">Pengaturan Harga</Text>
             
@@ -199,7 +205,6 @@ export default function ProductFormScreen() {
             />
           </Card>
 
-          {/* BUTTONS ACTION */}
           <View className="flex-col gap-3 mt-6 pb-8">
             <TouchableOpacity 
               onPress={handleSubmit(onSubmit)}
@@ -224,7 +229,6 @@ export default function ProductFormScreen() {
         </View>
       </ScrollView>
 
-      {/* SELECT CATEGORY MODAL */}
       <BottomModal 
         visible={isCategoryModalOpen} 
         onClose={() => setIsCategoryModalOpen(false)}
