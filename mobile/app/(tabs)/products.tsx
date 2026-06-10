@@ -1,33 +1,48 @@
 import { View, Text, ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ActionToolbar } from '../../components/shared/action-toolbar';
 import { ItemCard } from '../../components/shared/item-card';
+import { useSettingsStore } from '../../api/settings';
 import type { Product } from '../../types';
 
 export default function ProductsScreen() {
   const [searchValue, setSearchValue] = useState('');
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
 
-  const filterGroups = [
+  const categoryLabels = useSettingsStore(state => state.categoryLabels);
+  const lowStockThreshold = useSettingsStore(state => state.lowStockThreshold);
+
+  const filterGroups = useMemo(() => [
     {
       id: "category",
       title: "Kategori Produk",
       options: [
         { label: "Semua", value: "" },
-        { label: "Makanan", value: "1" },
-        { label: "Minuman", value: "2" },
+        ...Object.entries(categoryLabels).map(([key, label]) => ({
+          label,
+          value: key
+        }))
       ]
     },
     {
       id: "stock",
-      title: "Level Stock",
+      title: "Level Stok",
       options: [
         { label: "Semua", value: "" },
-        { label: "Habis", value: "out_of_stock" },
-        { label: "Tersedia", value: "in_stock" }
+        { label: "0", value: "out_of_stock" },
+        { label: `1-${lowStockThreshold}`, value: "low_stock" },
+        { label: `>${lowStockThreshold}`, value: "in_stock" }
+      ]
+    },
+    {
+      id: "isArchived",
+      title: "Status Arsip",
+      options: [
+        { label: "Aktif", value: "" },
+        { label: "Diarsipkan", value: "true" }
       ]
     }
-  ];
+  ], [categoryLabels]);
 
   const handleFilterChange = (groupId: string, value: string) => {
     setActiveFilters(prev => {
@@ -134,7 +149,8 @@ export default function ProductsScreen() {
             <ItemCard 
               key={product.id} 
               product={product} 
-              categoryLabels={{ "1": "Sembako", "2": "Minuman" }} 
+              categoryLabels={categoryLabels} 
+              lowStockThreshold={lowStockThreshold}
             />
           ))}
         </View>
