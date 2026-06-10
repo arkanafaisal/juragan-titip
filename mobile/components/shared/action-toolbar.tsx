@@ -128,7 +128,6 @@ export function ActionToolbar({
                               if (onFilterChange) {
                                 onFilterChange(group.id, opt.value);
                               }
-                              setIsFilterOpen(false);
                             }}
                             className={`px-3 py-1.5 rounded-xl border ${
                               isActive
