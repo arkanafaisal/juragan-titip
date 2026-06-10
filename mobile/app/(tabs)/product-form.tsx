@@ -8,6 +8,7 @@ import { Save, Archive, ChevronDown } from 'lucide-react-native';
 import { useSettingsStore } from '../../api/settings';
 import { Card } from '../../components/ui/card';
 import { BottomModal } from '../../components/ui/bottom-modal';
+import { Input } from '../../components/ui/input';
 import { showLeaveConfirmation } from '@/utils/alerts';
 import { productFormSchema, ProductFormValues } from '../../schemas/product-form';
 
@@ -83,24 +84,20 @@ export default function ProductFormScreen() {
           <Card className="flex-col gap-3">
             <Text className="text-h3 font-bold text-text-primary mb-1">Informasi Dasar</Text>
             
-            <View className="flex-col gap-1">
-              <Text className="text-caption font-medium text-text-secondary">Nama Produk</Text>
-              <Controller
-                control={control}
-                name="name"
-                render={({ field: { onChange, value, onBlur } }) => (
-                  <TextInput
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    className={`w-full bg-surface-variant border ${errors.name ? 'border-error' : 'border-outline-variant'} rounded-lg px-3 py-2 font-body text-body text-text-primary`}
-                    placeholder="kripik singkong (pedas)"
-                    placeholderTextColor="#737686"
-                  />
-                )}
-              />
-              {errors.name && <Text className="text-[10px] font-bold text-error mt-0.5">{errors.name.message}</Text>}
-            </View>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, value, onBlur } }) => (
+                <Input
+                  label="Nama Produk"
+                  error={errors.name?.message}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="kripik singkong (pedas)"
+                />
+              )}
+            />
 
             <View className="flex-col gap-1 mt-1">
               <Text className="text-caption font-medium text-text-secondary">Kategori</Text>
@@ -117,101 +114,89 @@ export default function ProductFormScreen() {
               {errors.category && <Text className="text-[10px] font-bold text-error mt-0.5">{errors.category.message}</Text>}
             </View>
 
-            <View className="flex-col gap-1 mt-1">
-              <Text className="text-caption font-medium text-text-secondary">Deskripsi (Opsional)</Text>
-              <Controller
-                control={control}
-                name="description"
-                render={({ field: { onChange, value, onBlur } }) => (
-                  <TextInput
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    multiline
-                    numberOfLines={3}
-                    className={`w-full bg-surface-variant border ${errors.description ? 'border-error' : 'border-outline-variant'} rounded-lg px-3 py-2 font-body text-body text-text-primary min-h-[80px] text-top`}
-                    placeholder="sedang | 100 gram"
-                    placeholderTextColor="#737686"
-                    style={{ textAlignVertical: 'top' }}
-                  />
-                )}
-              />
-              {errors.description && <Text className="text-[10px] font-bold text-error mt-0.5">{errors.description.message}</Text>}
-            </View>
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, value, onBlur } }) => (
+                <Input
+                  containerClassName="mt-1"
+                  label="Deskripsi (Opsional)"
+                  error={errors.description?.message}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  multiline
+                  numberOfLines={3}
+                  className="min-h-[80px] text-top"
+                  placeholder="sedang | 100 gram"
+                  style={{ textAlignVertical: 'top' }}
+                />
+              )}
+            />
           </Card>
 
           {/* PENGATURAN HARGA */}
           <Card className="flex-col gap-3 mt-4">
             <Text className="text-h3 font-bold text-text-primary mb-1">Pengaturan Harga</Text>
             
-            <View className="flex-col gap-1">
-              <Text className="text-caption font-medium text-text-secondary">Harga Modal - Kulakan</Text>
-              <Controller
-                control={control}
-                name="costPrice"
-                render={({ field: { onChange, value, onBlur } }) => (
-                  <TextInput
-                    value={value ? String(value) : ''}
-                    onChangeText={(val) => {
-                      const numStr = val.replace(/[^0-9]/g, '');
-                      onChange(numStr ? Number(numStr) : 0);
-                    }}
-                    onBlur={onBlur}
-                    keyboardType="numeric"
-                    className={`w-full bg-surface-variant border ${errors.costPrice ? 'border-error' : 'border-outline-variant'} rounded-lg px-3 py-2 font-body text-body text-text-primary`}
-                    placeholder="1000"
-                    placeholderTextColor="#737686"
-                  />
-                )}
-              />
-              {errors.costPrice && <Text className="text-[10px] font-bold text-error mt-0.5">{errors.costPrice.message}</Text>}
-            </View>
+            <Controller
+              control={control}
+              name="costPrice"
+              render={({ field: { onChange, value, onBlur } }) => (
+                <Input
+                  label="Harga Modal - Kulakan"
+                  error={errors.costPrice?.message}
+                  value={value ? String(value) : ''}
+                  onChangeText={(val) => {
+                    const numStr = val.replace(/[^0-9]/g, '');
+                    onChange(numStr ? Number(numStr) : 0);
+                  }}
+                  onBlur={onBlur}
+                  keyboardType="numeric"
+                  placeholder="1000"
+                />
+              )}
+            />
 
-            <View className="flex-col gap-1 mt-1">
-              <Text className="text-caption font-medium text-text-secondary">Harga Jual - Grosir/Toko</Text>
-              <Controller
-                control={control}
-                name="wholesalePrice"
-                render={({ field: { onChange, value, onBlur } }) => (
-                  <TextInput
-                    value={value ? String(value) : ''}
-                    onChangeText={(val) => {
-                      const numStr = val.replace(/[^0-9]/g, '');
-                      onChange(numStr ? Number(numStr) : 0);
-                    }}
-                    onBlur={onBlur}
-                    keyboardType="numeric"
-                    className={`w-full bg-surface-variant border ${errors.wholesalePrice ? 'border-error' : 'border-outline-variant'} rounded-lg px-3 py-2 font-body text-body text-text-primary`}
-                    placeholder="1200"
-                    placeholderTextColor="#737686"
-                  />
-                )}
-              />
-              {errors.wholesalePrice && <Text className="text-[10px] font-bold text-error mt-0.5">{errors.wholesalePrice.message}</Text>}
-            </View>
+            <Controller
+              control={control}
+              name="wholesalePrice"
+              render={({ field: { onChange, value, onBlur } }) => (
+                <Input
+                  containerClassName="mt-1"
+                  label="Harga Jual - Grosir/Toko"
+                  error={errors.wholesalePrice?.message}
+                  value={value ? String(value) : ''}
+                  onChangeText={(val) => {
+                    const numStr = val.replace(/[^0-9]/g, '');
+                    onChange(numStr ? Number(numStr) : 0);
+                  }}
+                  onBlur={onBlur}
+                  keyboardType="numeric"
+                  placeholder="1200"
+                />
+              )}
+            />
 
-            <View className="flex-col gap-1 mt-1">
-              <Text className="text-caption font-medium text-text-secondary">Harga Eceran - Ke Konsumen (opsional)</Text>
-              <Controller
-                control={control}
-                name="retailPrice"
-                render={({ field: { onChange, value, onBlur } }) => (
-                  <TextInput
-                    value={value ? String(value) : ''}
-                    onChangeText={(val) => {
-                      const numStr = val.replace(/[^0-9]/g, '');
-                      onChange(numStr ? Number(numStr) : undefined);
-                    }}
-                    onBlur={onBlur}
-                    keyboardType="numeric"
-                    className={`w-full bg-surface-variant border ${errors.retailPrice ? 'border-error' : 'border-outline-variant'} rounded-lg px-3 py-2 font-body text-body text-text-primary`}
-                    placeholder="1500"
-                    placeholderTextColor="#737686"
-                  />
-                )}
-              />
-              {errors.retailPrice && <Text className="text-[10px] font-bold text-error mt-0.5">{errors.retailPrice.message}</Text>}
-            </View>
+            <Controller
+              control={control}
+              name="retailPrice"
+              render={({ field: { onChange, value, onBlur } }) => (
+                <Input
+                  containerClassName="mt-1"
+                  label="Harga Eceran - Ke Konsumen (opsional)"
+                  error={errors.retailPrice?.message}
+                  value={value ? String(value) : ''}
+                  onChangeText={(val) => {
+                    const numStr = val.replace(/[^0-9]/g, '');
+                    onChange(numStr ? Number(numStr) : undefined);
+                  }}
+                  onBlur={onBlur}
+                  keyboardType="numeric"
+                  placeholder="1500"
+                />
+              )}
+            />
           </Card>
 
           {/* BUTTONS ACTION */}
