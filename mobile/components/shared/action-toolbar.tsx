@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, ScrollView, Pressable } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Search, SlidersHorizontal, Plus, Settings } from 'lucide-react-native';
-
+import { BottomModal } from '../ui/bottom-modal';
 export interface FilterOption {
   label: string;
   value: string;
@@ -39,7 +39,7 @@ export function ActionToolbar({
   isSettingDisabled = false,
 }: ActionToolbarProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
+
   const hasActiveFilter = Object.values(activeFilters).some(val => val !== "" && val !== "name_asc");
 
   return (
@@ -97,61 +97,48 @@ export function ActionToolbar({
       </View>
 
       
-      <Modal
+      <BottomModal
         visible={isFilterOpen}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsFilterOpen(false)}
+        onClose={() => setIsFilterOpen(false)}
       >
-        <Pressable 
-          className="flex-1 bg-black/50 justify-end"
-          onPress={() => setIsFilterOpen(false)}
-        >
-          <Pressable 
-            className="bg-surface w-full rounded-t-3xl p-6 shadow-lg max-h-[80%]"
-            onPress={(e) => e.stopPropagation()}
-          >
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View className="flex-col gap-6 pb-4">
-                {filterGroups.map((group) => (
-                  <View key={group.id} className="flex-col gap-3">
-                    <Text className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">
-                      {group.title}
-                    </Text>
-                    <View className="flex-row flex-wrap gap-2">
-                      {group.options.map((opt) => {
-                        const isActive = (activeFilters[group.id] || "") === opt.value;
-                        return (
-                          <TouchableOpacity
-                            key={opt.value}
-                            onPress={() => {
-                              if (onFilterChange) {
-                                onFilterChange(group.id, opt.value);
-                              }
-                            }}
-                            className={`px-3 py-1.5 rounded-xl border ${
-                              isActive
-                                ? "bg-primary border-primary shadow-sm"
-                                : "bg-surface border-outline-variant"
-                            }`}
-                            activeOpacity={0.7}
-                          >
-                            <Text className={`text-[13px] font-medium ${
-                              isActive ? "text-on-primary" : "text-text-secondary"
-                            }`}>
-                              {opt.label}
-                            </Text>
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                  </View>
-                ))}
+        <View className="flex-col gap-6 pb-4">
+          {filterGroups.map((group) => (
+            <View key={group.id} className="flex-col gap-3">
+              <Text className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">
+                {group.title}
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                {group.options.map((opt) => {
+                  const isActive = (activeFilters[group.id] || "") === opt.value;
+                  return (
+                    <TouchableOpacity
+                      key={opt.value}
+                      onPress={() => {
+                        if (onFilterChange) {
+                          onFilterChange(group.id, opt.value);
+                        }
+                        setIsFilterOpen(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl border ${
+                        isActive
+                          ? "bg-primary border-primary shadow-sm"
+                          : "bg-surface border-outline-variant"
+                      }`}
+                      activeOpacity={0.7}
+                    >
+                      <Text className={`text-[13px] font-medium ${
+                        isActive ? "text-on-primary" : "text-text-secondary"
+                      }`}>
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
+            </View>
+          ))}
+        </View>
+      </BottomModal>
     </View>
   );
 }
