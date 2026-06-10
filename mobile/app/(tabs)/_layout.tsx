@@ -37,6 +37,10 @@ export default function TabLayout() {
         name="product-form"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="product-detail"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }

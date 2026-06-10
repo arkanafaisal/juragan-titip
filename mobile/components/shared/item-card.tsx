@@ -45,7 +45,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
     <Card className={`p-0 bg-surface overflow-hidden mb-4 ${data.category ? catStyle.border : ''}`}>
       <TouchableOpacity 
         activeOpacity={0.7}
-        onPress={() => router.push(`/${isStore ? 'stores' : 'products'}/${data.id}` as any)}
+        onPress={() => router.push(isStore ? `/stores/${data.id}` as any : `/product-detail?id=${data.id}` as any)}
       >
         <View className="flex-row items-start justify-between mb-2">
           <View className="flex-1 mr-2">
