@@ -22,6 +22,8 @@ import { db } from '../db/index';
 import migrations from '../drizzle/migrations';
 import 'react-native-reanimated';
 
+import Toast from 'react-native-toast-message';
+import { toastConfig } from '../config/toastConfig';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
@@ -80,6 +82,7 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
+      <Toast config={toastConfig} />
     </ThemeProvider>
     </QueryClientProvider>
   );
