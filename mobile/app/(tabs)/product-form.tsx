@@ -69,16 +69,18 @@ export default function ProductFormScreen() {
     showLeaveConfirmation(() => router.back());
   };
 
-  useEffect(() => {
-    const backAction = () => {
-      handleCancel();
-      return true;
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const backAction = () => {
+        handleCancel();
+        return true;
+      };
 
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
-    return () => backHandler.remove();
-  }, []);
+      return () => backHandler.remove();
+    }, [])
+  );
 
   const watchedCategory = watch('category');
 
