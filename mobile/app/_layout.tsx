@@ -22,6 +22,10 @@ import { db } from '../db/index';
 import migrations from '../drizzle/migrations';
 import 'react-native-reanimated';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
 export {
   ErrorBoundary,
 } from 'expo-router';
@@ -71,10 +75,12 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
