@@ -34,8 +34,7 @@ export const productFormSchema = z.object({
     
   description: z.string()
     .max(PRODUCT_VALIDATION_RULES.DESC_MAX, `Deskripsi maksimal ${PRODUCT_VALIDATION_RULES.DESC_MAX} karakter`)
-    .optional()
-    .default(""),
+    .optional(),
 })
 // Validasi silang: Harga jual harus lebih besar dari harga modal
 .refine((data) => data.costPrice < data.wholesalePrice, {

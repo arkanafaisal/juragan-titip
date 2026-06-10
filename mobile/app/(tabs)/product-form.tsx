@@ -9,17 +9,7 @@ import { useSettingsStore } from '../../api/settings';
 import { Card } from '../../components/ui/card';
 import { BottomModal } from '../../components/ui/bottom-modal';
 import { showLeaveConfirmation } from '@/utils/alerts';
-
-const productSchema = z.object({
-  name: z.string().min(1, 'Nama produk wajib diisi'),
-  category: z.string().min(1, 'Kategori wajib dipilih'),
-  description: z.string().optional(),
-  costPrice: z.number({ message: "Harus berupa angka" }).min(0, 'Harga modal tidak valid'),
-  wholesalePrice: z.number({ message: "Harus berupa angka" }).min(0, 'Harga jual tidak valid'),
-  retailPrice: z.number({ message: "Harus berupa angka" }).min(0, 'Harga eceran tidak valid'),
-});
-
-type ProductFormData = z.infer<typeof productSchema>;
+import { productFormSchema, ProductFormValues } from '../../schemas/product-form';
 
 export default function ProductFormScreen() {
   const router = useRouter();
@@ -28,19 +18,19 @@ export default function ProductFormScreen() {
   
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   
-  const { control, handleSubmit, formState: { errors }, setValue, watch } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+  const { control, handleSubmit, formState: { errors }, setValue, watch } = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: '',
-      category: '',
+      category: '' as any, // initial empty state
       description: '',
       costPrice: 0,
       wholesalePrice: 0,
-      retailPrice: 0,
+      retailPrice: undefined,
     }
   });
 
-  const onSubmit = (data: ProductFormData) => {
+  const onSubmit = (data: ProductFormValues) => {
     console.log("Form Submitted:", data);
     Alert.alert("Sukses", "Data valid! (Mode UI Only)");
     // router.back();
@@ -210,7 +200,7 @@ export default function ProductFormScreen() {
                     value={value ? String(value) : ''}
                     onChangeText={(val) => {
                       const numStr = val.replace(/[^0-9]/g, '');
-                      onChange(numStr ? Number(numStr) : 0);
+                      onChange(numStr ? Number(numStr) : undefined);
                     }}
                     onBlur={onBlur}
                     keyboardType="numeric"
@@ -261,7 +251,7 @@ export default function ProductFormScreen() {
               <TouchableOpacity
                 key={key}
                 onPress={() => {
-                  setValue('category', key, { shouldValidate: true });
+                  setValue('category', key as ProductFormValues['category'], { shouldValidate: true });
                   setIsCategoryModalOpen(false);
                 }}
                 className={`py-3 px-4 rounded-xl border ${
