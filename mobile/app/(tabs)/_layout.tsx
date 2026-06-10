@@ -11,6 +11,7 @@ export default function TabLayout() {
     <Tabs 
       tabBar={(props) => <BottomTabBar {...props} />}
       screenOptions={{ header: () => <Header /> }}
+      backBehavior="history"
     >
       <Tabs.Screen
         name="index"
