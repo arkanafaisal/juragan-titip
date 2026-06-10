@@ -18,11 +18,11 @@ export default function TabLayout() {
         options={{ title: 'Beranda' }}
       />
       <Tabs.Screen
-        name="products"
+        name="product-list"
         options={{ title: 'Produk' }}
       />
       <Tabs.Screen
-        name="stores"
+        name="store-list"
         options={{ title: 'Toko' }}
       />
       <Tabs.Screen

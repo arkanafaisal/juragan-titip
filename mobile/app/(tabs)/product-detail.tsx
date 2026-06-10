@@ -6,9 +6,9 @@ import {
   Store as StoreIcon, Package, Pencil, Trash2, Scale, SquarePen, ChevronLeft
 } from 'lucide-react-native';
 import { Card } from '../../components/ui/card';
-import { useSettingsStore } from '../../api/settings';
-import { formatRupiah } from '../../lib/utils';
-import { useGetProductById } from '../../api/products';
+import { useSettingsStore } from '../../api/settings.api';
+import { formatRupiah, formatDate } from '../../utils/formatter.util';
+import { useGetProductById } from '../../api/products.api';
 
 // UI Only Imports
 import { EditStockModal } from '../../components/products/edit-stock-modal';
@@ -34,16 +34,6 @@ const getLogConfig = (log: any) => {
   }
 };
 
-const formatDate = (isoString: string) => {
-  const date = new Date(isoString);
-  return new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date).replace('.', ':');
-};
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

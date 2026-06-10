@@ -60,7 +60,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           if (!isNativelyFocused && !event.defaultPrevented) {
             // Hardcoded confirmation logic untuk form pages
             if (activeRouteName === 'product-form') {
-              import('../../utils/alerts').then(({ showLeaveConfirmation }) => {
+              import('../../utils/alerts.util').then(({ showLeaveConfirmation }) => {
                 showLeaveConfirmation(() => navigation.navigate(route.name, route.params));
               });
             } else {

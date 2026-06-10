@@ -3,7 +3,7 @@ import Toast from 'react-native-toast-message';
 import { eq, like, and, gt, lte, SQL } from 'drizzle-orm';
 import { db } from '../db';
 import { products } from '../db/schema';
-import { ProductFormValues } from '../schemas/product-form';
+import { ProductFormValues } from '../schemas/product-form.schema';
 
 export interface GetProductsFilters {
   search?: string;

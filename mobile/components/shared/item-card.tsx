@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MapPin, Store as StoreIcon, History } from 'lucide-react-native';
-import type { Store, Product } from '../../types';
-import { formatRupiah } from '../../lib/utils';
+import type { Store, Product } from '../../types/index.type';
+import { formatRupiah } from '../../utils/formatter.util';
 
 import { Card } from '../ui/card';
 

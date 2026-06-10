@@ -5,13 +5,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback } from 'react';
 import { Save, Archive, ChevronDown } from 'lucide-react-native';
-import { useSettingsStore } from '../../api/settings';
+import { useSettingsStore } from '../../api/settings.api';
 import { Card } from '../../components/ui/card';
 import { BottomModal } from '../../components/ui/bottom-modal';
 import { Input } from '../../components/ui/input';
-import { showLeaveConfirmation } from '@/utils/alerts';
-import { productFormSchema, ProductFormValues } from '../../schemas/product-form';
-import { useAddProduct } from '../../api/products';
+import { showLeaveConfirmation } from '@/utils/alerts.util';
+import { productFormSchema, ProductFormValues } from '../../schemas/product-form.schema';
+import { useAddProduct } from '../../api/products.api';
 
 export default function ProductFormScreen() {
   const router = useRouter();

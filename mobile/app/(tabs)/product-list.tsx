@@ -3,8 +3,8 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'expo-router';
 import { ActionToolbar } from '../../components/shared/action-toolbar';
 import { ItemCard } from '../../components/shared/item-card';
-import { useSettingsStore } from '../../api/settings';
-import { useGetProducts } from '../../api/products';
+import { useSettingsStore } from '../../api/settings.api';
+import { useGetProducts } from '../../api/products.api';
 
 export default function ProductsScreen() {
   const router = useRouter();
