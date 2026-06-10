@@ -33,7 +33,10 @@ export function useAddProduct() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ 
+        queryKey: ['products'],
+        refetchType: 'all'
+      });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Disimpan',
