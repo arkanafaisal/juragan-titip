@@ -1,11 +1,13 @@
 import { View, Text, ScrollView } from 'react-native';
 import { useState, useMemo } from 'react';
+import { useRouter } from 'expo-router';
 import { ActionToolbar } from '../../components/shared/action-toolbar';
 import { ItemCard } from '../../components/shared/item-card';
 import { useSettingsStore } from '../../api/settings';
 import type { Product } from '../../types';
 
 export default function ProductsScreen() {
+  const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
 
@@ -138,7 +140,7 @@ export default function ProductsScreen() {
           filterGroups={filterGroups}
           activeFilters={activeFilters}
           onFilterChange={handleFilterChange}
-          onAddClick={() => console.log('Add clicked')}
+          onAddClick={() => router.push('/product-form')}
           onSettingClick={() => console.log('Setting clicked')}
         />
       </View>

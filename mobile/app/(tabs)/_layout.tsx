@@ -32,6 +32,10 @@ export default function TabLayout() {
         name="settings"
         options={{ title: 'Pengaturan' }}
       />
+      <Tabs.Screen
+        name="product-form"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }

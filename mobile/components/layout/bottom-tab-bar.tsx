@@ -33,6 +33,10 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
+        
+        // Sembunyikan tab yang tidak diinginkan (seperti form)
+        if (options.tabBarButton || route.name === 'product-form') return null;
+
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
@@ -40,7 +44,9 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             ? options.title
             : route.name;
 
-        const isFocused = state.index === index;
+        const activeRouteName = state.routes[state.index].name;
+        // Tetap aktifkan tab produk jika yang sedang dibuka adalah product-form
+        const isFocused = state.index === index || (activeRouteName === 'product-form' && route.name === 'products');
 
         const onPress = () => {
           const event = navigation.emit({
