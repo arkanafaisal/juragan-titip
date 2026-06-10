@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Alert } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { eq, like, and, gt, lte, SQL } from 'drizzle-orm';
 import { db } from '../db';
 import { products } from '../db/schema';
@@ -34,9 +34,18 @@ export function useAddProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil Disimpan',
+        text2: 'Produk baru telah ditambahkan ke database.',
+      });
     },
     onError: (error: Error) => {
-      Alert.alert(error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal Menyimpan',
+        text2: error.message,
+      });
     }
   });
 }

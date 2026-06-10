@@ -47,7 +47,6 @@ export default function ProductFormScreen() {
     } else {
       addProduct.mutate(data, {
         onSuccess: () => {
-          Alert.alert("Sukses", "Produk berhasil ditambahkan!");
           router.back();
         }
       });
