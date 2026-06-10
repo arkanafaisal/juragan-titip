@@ -56,9 +56,16 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             canPreventDefault: true,
           });
 
-          // Izinkan navigasi jika tidak sedang di rute aslinya (misal dari form kembali ke produk)
+          // Izinkan navigasi jika tidak sedang di rute aslinya
           if (!isNativelyFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
+            // Hardcoded confirmation logic untuk form pages
+            if (activeRouteName === 'product-form') {
+              import('../../utils/alerts').then(({ showLeaveConfirmation }) => {
+                showLeaveConfirmation(() => navigation.navigate(route.name, route.params));
+              });
+            } else {
+              navigation.navigate(route.name, route.params);
+            }
           }
         };
 

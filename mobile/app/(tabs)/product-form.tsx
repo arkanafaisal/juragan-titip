@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,6 +8,7 @@ import { Save, Archive, ChevronDown } from 'lucide-react-native';
 import { useSettingsStore } from '../../api/settings';
 import { Card } from '../../components/ui/card';
 import { BottomModal } from '../../components/ui/bottom-modal';
+import { showLeaveConfirmation } from '@/utils/alerts';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Nama produk wajib diisi'),
@@ -56,6 +57,21 @@ export default function ProductFormScreen() {
     );
   };
 
+  const handleCancel = () => {
+    showLeaveConfirmation(() => router.back());
+  };
+
+  useEffect(() => {
+    const backAction = () => {
+      handleCancel();
+      return true; // prevent default physical back button behavior
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove();
+  }, []);
+
   const watchedCategory = watch('category');
 
   return (
@@ -65,7 +81,7 @@ export default function ProductFormScreen() {
           
           <View className="mb-2 flex-row items-center">
             <TouchableOpacity 
-              onPress={() => router.back()}
+              onPress={handleCancel}
               className="flex-row items-center justify-center px-4 py-2 bg-error rounded-xl shadow-sm active:opacity-80"
               activeOpacity={0.7}
             >
