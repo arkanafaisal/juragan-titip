@@ -11,11 +11,13 @@ import { BottomModal } from '../../components/ui/bottom-modal';
 import { Input } from '../../components/ui/input';
 import { showLeaveConfirmation } from '@/utils/alerts';
 import { productFormSchema, ProductFormValues } from '../../schemas/product-form';
+import { useAddProduct } from '../../api/products';
 
 export default function ProductFormScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const categoryLabels = useSettingsStore(state => state.categoryLabels);
+  const addProduct = useAddProduct();
   
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   
@@ -40,9 +42,16 @@ export default function ProductFormScreen() {
   );
 
   const onSubmit = (data: ProductFormValues) => {
-    console.log("Form Submitted:", data);
-    Alert.alert("Sukses", "Data valid! (Mode UI Only)");
-    // router.back();
+    if (id) {
+      Alert.alert("Sukses", "Data valid! (Mode Edit Belum Terhubung)");
+    } else {
+      addProduct.mutate(data, {
+        onSuccess: () => {
+          Alert.alert("Sukses", "Produk berhasil ditambahkan!");
+          router.back();
+        }
+      });
+    }
   };
 
   const handleArchive = () => {
@@ -208,11 +217,14 @@ export default function ProductFormScreen() {
           <View className="flex-col gap-3 mt-6 pb-8">
             <TouchableOpacity 
               onPress={handleSubmit(onSubmit)}
-              className="w-full py-3.5 bg-primary rounded-xl flex-row items-center justify-center gap-2"
+              disabled={addProduct.isPending}
+              className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${addProduct.isPending ? 'bg-primary/70' : 'bg-primary'}`}
               activeOpacity={0.8}
             >
               <Save size={20} color="#ffffff" />
-              <Text className="text-on-primary font-bold">{id ? "SIMPAN PERUBAHAN" : "TAMBAH PRODUK"}</Text>
+              <Text className="text-on-primary font-bold">
+                {addProduct.isPending ? "MENYIMPAN..." : (id ? "SIMPAN PERUBAHAN" : "TAMBAH PRODUK")}
+              </Text>
             </TouchableOpacity>
 
             {id && (
