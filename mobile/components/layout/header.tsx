@@ -1,11 +1,12 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { usePathname } from 'expo-router';
+import { usePathname, useGlobalSearchParams } from 'expo-router';
 import { User } from 'lucide-react-native';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function Header() {
   const pathname = usePathname();
+  const params = useGlobalSearchParams();
   const insets = useSafeAreaInsets();
 
   const getDynamicTitle = (pathname: string) => {
@@ -28,6 +29,7 @@ export function Header() {
 
     if (section === "dashboard") return "Dashboard";
     if (section === "finance") return "Keuangan";
+    if (section === "product-form") return params.id ? "Edit Produk" : "Tambah Produk";
     if (section === "reports") {
       if (actionOrId === "stores") return "Performa Toko";
       if (actionOrId === "tracking") return "Lacak Barang";
