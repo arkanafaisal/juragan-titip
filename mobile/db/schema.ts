@@ -8,7 +8,7 @@ export const products = sqliteTable('products', {
   name: text('name').notNull(),
   
   // normalizedName digunakan untuk fitur pencarian (huruf kecil semua)
-  normalizedName: text('normalized_name').notNull(),
+  normalizedName: text('normalized_name').notNull().unique(),
   
   // Kategori disimpan sebagai text enum
   category: text('category', { enum: ["1", "2", "3", "4", "5"] }).notNull(),
