@@ -1,3 +1,42 @@
+git --no-pager log 79c84e656a361aa37bc397241596eadaa2f59cc8..HEAD --pretty=format:"%H %s"
+068c5a62ba80f2118cecd8ca2bc877bdb5ab9bde fix header title
+574c391280eee05adc44b86c1a6ca6d19e1a0248 update file naming convention
+a6a36cb07f772e1ee16d768c89fe78d50f61b73d fix(product service): query invalidate on inactive type
+c0e67f2a0993a0325f88463bcda2f3482b9d0642 update(product form): toast usage on success and error 
+9386f94dee86857fa4fc5e2a2e0f5bb059641e91 add toast setup
+783294ff658ac8cf7454a885c7d3ca46c0c1a332 update(product detail): get product service integration
+4753b58612001110e32d7faeaf4c59579dddff63 fix(product form): leave  confirmation modal leak
+32c60b075a4ed00ea5d886c0e96b8cef5d6bf97f add product detail
+536ca03d5d7dca50442a5f2af1e90dde93087e19 update(db): migration
+d1150aa1d3c3ec8abad314ddf7ecd549c8817bfb update(product list): get product service integration
+448d0f78136cee5c028172c24f520ad56c310271 update(product form): add product service integration
+ce44941bc8c2f10ea5532dfd55ec9ee3c3811b3a add tanstack query provider
+74ab1be62e6ab6f9f9f2ef640184a9f507b1bf3e add unique constraint on product name
+ce3d894745d443313392a1ebd7e014a14657d93d fix(product form): clear input value on leaving
+08e30a9c9e3e4b095105684887dc01044148620e refactor(product form): reusable text-input component
+b58e2d0553ffd8e0ae0d3ec7c4f8ad1f70f8504a update(product form): label & placeholder wording
+6c24a4242972d6c5353c6c047f401f6f70cd80a1 add input validation on product form
+7e6ca207c5c69288aa32e81c47c12f40ca13d3ab add leaving confirmation modal on product form
+0b34bae84afefdcd64239e19c2ae72f3fd713a8e fix bottom tab bar navigation on non-primary page
+6f4b4ad24c7055a377fece729037b24881c681e5 fix product form header title
+4d9dbc3e8c21bc9a55725658ece3346de27d9f16 fix router back (history)
+baf738a941598cedcc6ccf754848ee3057635e39 add product form (UI, add mode)
+d7d7df5950adb3fbb48f103d29cd72940155bb78 update(action toolbar): modular bottom modal & revert auto-close filter modal
+636052d634b275250d2c262f4b4b7a804637afa6 update: downgrade async storage package version
+df15718ab0a6957b5bebb95a4e558852ff224f71 update(action toolbar): disable auto-close on filter change
+fff262391970c41893c2082fb0ff478ab32ab778 add product preference service (read)
+0eeedf85533d2e5ace5178112007e43762e40a06 add async storage package
+38eac36e40e8d903ccae0dc2153f9a8382efddbe add: item card
+ecc686020b91c0dcf0a888a1c04143608edda12c add drizzle migration setup on main layout
+15996356e7f7b570cdde56b5f02ed60f53c1ead2 add babel inline import plugin (.sql)
+a35120803a3564f476321e2cec1ac471a83b38ec add drizzle migration file
+a67416e6bc07a2dc04e4edda6eeec0e80d8f4474 add db connection config
+608bf889ad27c31dbd0514bb49a8d262f30e33af add product table schema & form type
+
+
+
+
+
 git --no-pager log 3fcde5697f4a847a6bfed3156d7c8b94a8590310..HEAD --pretty=format:"%H %s"
 43d528d749ae81ec990c9bc33197d3ac44e34a24 add: action toolbar
 0f9d6ce2030850737a1546d903ea096a6e393640 update(header): primary bg color
@@ -16,6 +55,7 @@ ce20606dc7d0a6e10aba51d1a303debce4953dce update(css): font installation & setup
 d8edfedb8347a839f513f23eef294e58e87d44bf add: tailwindcss configuration
 f56f6dcf9d2ce17e3a8217e65536642cc51dbbf5 add expo skills agent
 a31cc6a3daaa5b4463a4c2edf556f693af4890ab install expo init
+
 
 
 
@@ -84,6 +124,7 @@ dda8fb86e34bea7464aa8f9b46387f55b833e2d0 update(journey service): merge getIniti
 
 
 
+
 git --no-pager log ef1210ee6671c85943e3b49f8231665bbe231461..HEAD --pretty=format:"%H %s"
 5c1fd2f3098b46c4c7d780c53b5d19010575e615 update(store detail): add back button, change edit delete button & history tabs UI style
 d18313a20c6e3f2e38cd96a3fb2bbce94daf47b4 update(store detail): remove font bold & font black
@@ -111,6 +152,9 @@ ff1daeba4e0a60aacda10493c26c6115d132698b delete: unused files & router config
 358e32aabc011c2cd5313a86790799d4cbc77ac7 add test scripts
 5b70d1363efd274780bf7fb6409b3e5650fab98b cleanup: unused file
 97bc4b84db2bfc720278a920d9ba3bac6b570a22 cleanup: backend & docs folder
+
+
+
 
 
 git --no-pager log 7294658fa2cc2e1841bd7480d6532823f28268d1..HEAD --pretty=format:"%H %s"
@@ -161,29 +205,7 @@ a7b72e1e0f6942c8de1637e422e069be16af8f90 fix(dashboard page): 7 days data
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-D:\Arkana\project\JuraganTitip>git --no-pager log eb80b3455341dcf86f1370ddddea70d78cc91a77..HEAD --pretty=format:"%H %s"
+git --no-pager log eb80b3455341dcf86f1370ddddea70d78cc91a77..HEAD --pretty=format:"%H %s"
 316ca8a7910f3eb4d67a24ae1daae9dbd55a65c2 update(journey page): show user static location
 5cbd453097426874535ce0556400df0aefa11df3 update(page header): hide notification & add full screen mode toggle
 f7154c37122917299009870fda4bccb671da76ae refactor(journey page): journey service

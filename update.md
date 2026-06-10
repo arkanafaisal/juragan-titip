@@ -1,3 +1,31 @@
+10 June 2026
+<details>
+- updated file naming convention
+- fixed product service: query invalidation on inactive query type
+- updated product form: toast usage on success and error 
+- added toast setup
+- updated product detail: get product service integration
+- fixed product form leave confirmation modal leak
+- added product detail (UI)
+- updated product list: get product service integration
+- updated product form: add product service integration
+- added tanstack query provider
+- added unique constraint on product name
+- fixed product form: clear input value on leaving
+- refactored product form reusable text input component
+- added input validation & leave confirmation modal on product form
+- fixed bottom tab bar navigation on non-primary page
+- fixed product form header title
+- fixed router back (history)
+- added product form (UI, add product mode)
+- updated action toolbar: modular bottom modal & revert auto-close filter modal
+- added product preference service (read)
+- added async storage package
+- added item card component
+- added db connection config & drizzle migration setup on main layout
+- added product table schema & form type
+</details>
+
 9 June 2026
 <details>
 - added action toolbar
