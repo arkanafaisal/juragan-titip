@@ -16,25 +16,28 @@ import {
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { useColorScheme, Text, View } from 'react-native';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import { db } from '../db/index';
+import migrations from '../drizzle/migrations';
 import 'react-native-reanimated';
 
-import { useColorScheme } from 'react-native';
-
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const colorScheme = useColorScheme();
+  
+  const { success: migrationsLoaded, error: migrationError } = useMigrations(db, migrations);
+
+  const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     Inter: Inter_400Regular,
     'Inter-Medium': Inter_500Medium,
@@ -46,18 +49,18 @@ export default function RootLayout() {
     'JetBrainsMono-SemiBold': JetBrainsMono_600SemiBold,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+    if (fontError) throw fontError;
+    if (migrationError) throw migrationError;
+  }, [fontError, migrationError]);
 
   useEffect(() => {
-    if (loaded) {
+    if (fontsLoaded && migrationsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontsLoaded, migrationsLoaded]);
 
-  if (!loaded) {
+  if (!fontsLoaded || !migrationsLoaded) {
     return null;
   }
 
