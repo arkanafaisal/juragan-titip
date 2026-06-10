@@ -79,3 +79,24 @@ export function useGetProducts(filters?: GetProductsFilters) {
     }
   });
 }
+
+export function useGetProductById(id?: number) {
+  return useQuery({
+    queryKey: ['products', id],
+    queryFn: async () => {
+      if (!id) throw new Error("ID Produk tidak valid");
+      
+      const result = await db.select()
+        .from(products)
+        .where(eq(products.id, id))
+        .limit(1);
+      
+      if (result.length === 0) {
+        throw new Error("Produk tidak ditemukan");
+      }
+      
+      return result[0];
+    },
+    enabled: !!id,
+  });
+}

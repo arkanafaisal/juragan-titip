@@ -8,6 +8,7 @@ import {
 import { Card } from '../../components/ui/card';
 import { useSettingsStore } from '../../api/settings';
 import { formatRupiah } from '../../lib/utils';
+import { useGetProductById } from '../../api/products';
 
 // UI Only Imports
 import { EditStockModal } from '../../components/products/edit-stock-modal';
@@ -17,19 +18,19 @@ import { ProcessReturnModal } from '../../components/products/process-return-mod
 const getLogConfig = (log: any) => {
   switch (log.type) {
     case 'OLAH_RETUR':
-      return { title: 'OLAH RETUR', desc: `Masuk Gudang: ${log.quantity} Pcs`, icon: RefreshCw, color: '#3b82f6', bg: 'bg-primary/10' };
+      return { title: 'OLAH RETUR', desc: `Masuk Gudang: ${log.quantity} Pcs`, icon: RefreshCw, color: 'text-primary', bg: 'bg-primary/10' };
     case 'BUANG_RUSAK':
-      return { title: 'BUANG / AFKIR', desc: `Dibuang/Rusak: ${Math.abs(log.quantity)} Pcs`, icon: Trash2, color: '#ef4444', bg: 'bg-error/10' };
+      return { title: 'BUANG / AFKIR', desc: `Dibuang/Rusak: ${Math.abs(log.quantity)} Pcs`, icon: Trash2, color: 'text-error', bg: 'bg-error/10' };
     case 'TITIPAN':
-      return { title: 'TITIPAN TOKO', desc: `${log.storeName || 'Toko'}: -${Math.abs(log.quantity)} Pcs`, icon: StoreIcon, color: '#f97316', bg: 'bg-orange-50' };
+      return { title: 'TITIPAN TOKO', desc: `${log.storeName || 'Toko'}: -${Math.abs(log.quantity)} Pcs`, icon: StoreIcon, color: 'text-orange-500', bg: 'bg-orange-50' };
     case 'KOREKSI':
-      return { title: 'KOREKSI STOK', desc: `Penyesuaian: ${log.quantity > 0 ? '+' : ''}${log.quantity} Pcs`, icon: Pencil, color: '#737686', bg: 'bg-surface-variant' };
+      return { title: 'KOREKSI STOK', desc: `Penyesuaian: ${log.quantity > 0 ? '+' : ''}${log.quantity} Pcs`, icon: Pencil, color: 'text-text-secondary', bg: 'bg-surface-variant' };
     case 'KULAKAN':
-      return { title: 'KULAKAN AGEN', desc: `Tambah Stok: ${log.quantity} Pcs`, icon: Package, color: '#10b981', bg: 'bg-success/10' };
+      return { title: 'KULAKAN AGEN', desc: `Tambah Stok: ${log.quantity} Pcs`, icon: Package, color: 'text-success', bg: 'bg-success/10' };
     case 'TARIK_RETUR':
-      return { title: 'TARIK RETUR', desc: `${log.storeName || 'Toko'}: ${log.quantity} Pcs`, icon: RefreshCw, color: '#6366f1', bg: 'bg-indigo-50' };
+      return { title: 'TARIK RETUR', desc: `${log.storeName || 'Toko'}: ${log.quantity} Pcs`, icon: RefreshCw, color: 'text-indigo-500', bg: 'bg-indigo-50' };
     default:
-      return { title: log.type, desc: `${log.quantity} Pcs`, icon: Package, color: '#737686', bg: 'bg-surface-variant' };
+      return { title: log.type, desc: `${log.quantity} Pcs`, icon: Package, color: 'text-text-secondary', bg: 'bg-surface-variant' };
   }
 };
 
@@ -53,20 +54,9 @@ export default function ProductDetailScreen() {
   const [isTambahStokOpen, setIsTambahStokOpen] = useState(false);
   const [isOlahReturOpen, setIsOlahReturOpen] = useState(false);
 
-  // UI ONLY DUMMY DATA
-  const product = {
-    id: Number(id),
-    name: "Produk Contoh (UI Only)",
-    category: "1",
-    description: "Deskripsi produk dummy untuk keperluan desain",
-    costPrice: 50000,
-    wholesalePrice: 55000,
-    retailPrice: 60000,
-    warehouseStock: 120,
-    returnedStock: 5,
-    isArchived: false,
-  };
+  const { data: product, isLoading, isError } = useGetProductById(id ? Number(id) : undefined);
 
+  // UI ONLY DUMMY DATA FOR LOGS
   const logs = [
     { id: 1, type: 'KULAKAN', quantity: 100, createdAt: new Date().toISOString() },
     { id: 2, type: 'KOREKSI', quantity: -2, createdAt: new Date(Date.now() - 86400000).toISOString() },
@@ -77,19 +67,44 @@ export default function ProductDetailScreen() {
     Alert.alert("Pulihkan Produk", "Apakah Anda yakin ingin memulihkan produk ini? (UI ONLY)");
   };
 
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center">
+        <Text className="text-body font-medium text-text-primary">Memuat detail produk...</Text>
+      </View>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center p-4">
+        <Text className="text-body font-medium text-error text-center mb-4">Produk tidak ditemukan atau terjadi kesalahan.</Text>
+        <TouchableOpacity 
+          onPress={() => router.back()}
+          className="px-6 py-3 bg-primary rounded-xl"
+        >
+          <Text className="text-on-primary font-bold">KEMBALI</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+
+
   return (
     <View className="flex-1 bg-background">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="p-4 space-y-4 pb-12">
           
-          <TouchableOpacity 
-            onPress={() => router.back()}
-            className="flex-row items-center self-start mb-2 py-2"
-            activeOpacity={0.7}
-          >
-            <ChevronLeft size={24} color="#1A1C24" />
-            <Text className="text-body font-bold text-text-primary ml-1">KEMBALI</Text>
-          </TouchableOpacity>
+          <View className="mb-2 flex-row items-center">
+            <TouchableOpacity 
+              onPress={() => router.back()}
+              className="flex-row items-center justify-center px-4 py-2 bg-error rounded-xl shadow-sm active:opacity-80"
+              activeOpacity={0.7}
+            >
+              <Text className="text-body-sm font-bold text-on-error">Batal</Text>
+            </TouchableOpacity>
+          </View>
 
           {product.isArchived && (
             <View className="bg-error/10 border border-error/30 rounded-xl p-4 flex-col items-start gap-2 mb-4">
@@ -114,7 +129,7 @@ export default function ProductDetailScreen() {
                 className="p-1.5 shrink-0"
                 activeOpacity={0.7}
               >
-                <SquarePen size={20} color="#f59e0b" />
+                <SquarePen size={20} className="text-warning" />
               </TouchableOpacity>
             </View>
             
@@ -159,7 +174,7 @@ export default function ProductDetailScreen() {
                 className="flex-row items-center justify-center gap-1.5 py-2.5 px-3 bg-warning rounded-xl shrink-0"
                 activeOpacity={0.8}
               >
-                <Pencil size={16} color="#000000" />
+                <Pencil size={16} className="text-on-warning" />
                 <Text className="text-on-warning font-bold">Koreksi</Text>
               </TouchableOpacity>
               <TouchableOpacity 
@@ -167,7 +182,7 @@ export default function ProductDetailScreen() {
                 className="flex-1 py-2.5 px-3 bg-primary rounded-xl flex-row items-center justify-center gap-1.5 shadow-sm"
                 activeOpacity={0.8}
               >
-                <PackagePlus size={20} color="#ffffff" />
+                <PackagePlus size={20} className="text-on-primary" />
                 <Text className="text-on-primary font-bold">Tambah Stok</Text>
               </TouchableOpacity>
             </View>
@@ -184,7 +199,7 @@ export default function ProductDetailScreen() {
               className={`w-full py-3 px-3 rounded-xl flex-row items-center justify-center gap-1.5 ${(!product.returnedStock || product.returnedStock === 0) ? 'bg-surface-variant' : 'bg-success'}`}
               activeOpacity={0.8}
             >
-              <Scale size={16} color={(!product.returnedStock || product.returnedStock === 0) ? '#737686' : '#ffffff'} />
+              <Scale size={16} className={(!product.returnedStock || product.returnedStock === 0) ? 'text-on-surface-variant' : 'text-on-success'} />
               <Text className={`font-bold ${(!product.returnedStock || product.returnedStock === 0) ? 'text-on-surface-variant' : 'text-on-success'}`}>
                 OLAH BARANG RETUR
               </Text>
@@ -208,7 +223,7 @@ export default function ProductDetailScreen() {
                     <View key={log.id} className="flex-row gap-3">
                       <View className="items-center z-10">
                         <View className={`w-8 h-8 rounded-full items-center justify-center ${config.bg}`}>
-                          <Icon size={16} color={config.color} />
+                          <Icon size={16} className={config.color} />
                         </View>
                         {index !== logs.length - 1 && (
                           <View className="w-[1.5px] h-full bg-outline-variant absolute top-8" />
