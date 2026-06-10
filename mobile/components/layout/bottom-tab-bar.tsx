@@ -45,8 +45,9 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             : route.name;
 
         const activeRouteName = state.routes[state.index].name;
+        const isNativelyFocused = state.index === index;
         // Tetap aktifkan tab produk jika yang sedang dibuka adalah product-form
-        const isFocused = state.index === index || (activeRouteName === 'product-form' && route.name === 'products');
+        const isVisuallyFocused = isNativelyFocused || (activeRouteName === 'product-form' && route.name === 'products');
 
         const onPress = () => {
           const event = navigation.emit({
@@ -55,7 +56,8 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             canPreventDefault: true,
           });
 
-          if (!isFocused && !event.defaultPrevented) {
+          // Izinkan navigasi jika tidak sedang di rute aslinya (misal dari form kembali ke produk)
+          if (!isNativelyFocused && !event.defaultPrevented) {
             navigation.navigate(route.name, route.params);
           }
         };
@@ -71,22 +73,22 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           <Pressable
             key={route.key}
             accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityState={isVisuallyFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
             testID={options.tabBarButtonTestID}
             onPress={onPress}
             onLongPress={onLongPress}
             className={`flex-1 flex flex-col items-center justify-center py-2 ${
-              isFocused ? 'bg-primary' : ''
+              isVisuallyFocused ? 'bg-primary' : ''
             }`}
             style={{ paddingBottom: Math.max(insets.bottom, 8) }}
           >
             <View className="flex items-center justify-center mb-1">
-              {getIcon(route.name, isFocused)}
+              {getIcon(route.name, isVisuallyFocused)}
             </View>
             <Text 
               className={`font-caption text-[10px] text-center px-1 ${
-                isFocused ? 'font-medium text-on-primary' : 'text-on-surface-variant'
+                isVisuallyFocused ? 'font-medium text-on-primary' : 'text-on-surface-variant'
               }`}
               numberOfLines={1}
             >
