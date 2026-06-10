@@ -18,8 +18,8 @@ export function Header() {
     const subAction = parts[2];
 
     const sectionMap: Record<string, string> = {
-      products: "Produk",
-      stores: "Toko",
+      "product-list": "Produk",
+      "store-list": "Toko",
       finance: "Keuangan",
       reports: "Laporan",
       settings: "Pengaturan"
@@ -30,6 +30,7 @@ export function Header() {
     if (section === "dashboard") return "Dashboard";
     if (section === "finance") return "Keuangan";
     if (section === "product-form") return params.id ? "Edit Produk" : "Tambah Produk";
+    if (section === "product-detail") return "Detail Produk";
     if (section === "reports") {
       if (actionOrId === "stores") return "Performa Toko";
       if (actionOrId === "tracking") return "Lacak Barang";
