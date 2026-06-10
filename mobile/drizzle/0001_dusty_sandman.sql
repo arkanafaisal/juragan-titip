@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `products_normalized_name_unique` ON `products` (`normalized_name`);
