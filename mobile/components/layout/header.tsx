@@ -76,7 +76,7 @@ export function Header() {
             className="w-9 h-9 rounded-full bg-surface flex items-center justify-center"
             activeOpacity={0.7}
           >
-            <User size={THEME.iconSize['md']} color={THEME.colors['primary']} />
+            <User size={THEME.iconSize['lg']} color={THEME.colors['primary']} />
           </TouchableOpacity>
         </View>
       </View>
