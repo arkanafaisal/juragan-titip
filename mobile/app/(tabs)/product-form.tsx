@@ -9,7 +9,7 @@ import { useSettingsStore } from '../../api/settings.api';
 import { Card } from '../../components/ui/card';
 import { BottomModal } from '../../components/ui/bottom-modal';
 import { Input } from '../../components/ui/input';
-import { showLeaveConfirmation } from '@/utils/alerts.util';
+import { ConfirmModal } from '../../components/ui/modal';
 import { productFormSchema, ProductFormValues } from '../../schemas/product-form.schema';
 import { useAddProduct, useGetProductById, useUpdateProduct } from '../../api/products.api';
 
@@ -23,6 +23,7 @@ export default function ProductFormScreen() {
   const updateProduct = useUpdateProduct();
   
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   
   const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -87,7 +88,7 @@ export default function ProductFormScreen() {
   };
 
   const handleCancel = () => {
-    showLeaveConfirmation(() => router.back());
+    setIsLeaveModalOpen(true);
   };
 
   useFocusEffect(
@@ -301,6 +302,18 @@ export default function ProductFormScreen() {
           </View>
         </View>
       </BottomModal>
+      <ConfirmModal
+        visible={isLeaveModalOpen}
+        title="Keluar dari Form?"
+        message="Perubahan yang belum disimpan akan hilang. Yakin ingin keluar?"
+        cancelText="Batal"
+        confirmText="Keluar"
+        onCancel={() => setIsLeaveModalOpen(false)}
+        onConfirm={() => {
+          setIsLeaveModalOpen(false);
+          router.back();
+        }}
+      />
     </View>
   );
 }

@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Home, Package, Store, Banknote, Settings } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ConfirmModal } from '../ui/modal';
 
-import THEME from '../../constants/css'
+import THEME from '../../constants/css';
 
 export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const [pendingRoute, setPendingRoute] = useState<{ name: string, params: any } | null>(null);
 
   const getIcon = (routeName: string, isActive: boolean) => {
     const color = isActive ? THEME.colors['on-primary'] : THEME.colors['on-surface']; // on-primary for active
@@ -62,9 +64,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           if (!isNativelyFocused && !event.defaultPrevented) {
             // Hardcoded confirmation logic untuk form pages
             if (activeRouteName === 'product-form') {
-              import('../../utils/alerts.util').then(({ showLeaveConfirmation }) => {
-                showLeaveConfirmation(() => navigation.navigate(route.name, route.params));
-              });
+              setPendingRoute({ name: route.name, params: route.params });
             } else {
               navigation.navigate(route.name, route.params);
             }
@@ -106,6 +106,20 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           </Pressable>
         );
       })}
+      <ConfirmModal
+        visible={!!pendingRoute}
+        title="Keluar dari Form?"
+        message="Perubahan yang belum disimpan akan hilang. Yakin ingin keluar?"
+        cancelText="Batal"
+        confirmText="Keluar"
+        onCancel={() => setPendingRoute(null)}
+        onConfirm={() => {
+          if (pendingRoute) {
+            navigation.navigate(pendingRoute.name, pendingRoute.params);
+          }
+          setPendingRoute(null);
+        }}
+      />
     </View>
   );
 }
