@@ -7,6 +7,7 @@ import { useAddStock } from '../../api/products.api';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addStockSchema, AddStockPayload } from '../../schemas/product-form.schema';
+import THEME from '../../constants/css'
 
 interface AddStockModalProps {
   isOpen: boolean;
@@ -82,7 +83,7 @@ export function AddStockModal({ isOpen, onClose, productId }: AddStockModalProps
           className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${isSaving ? 'opacity-50' : ''} bg-primary`}
           activeOpacity={0.8}
         >
-          {isSaving ? <Loader2 size={20} color="#ffffff" /> : <PackagePlus size={20} color="#ffffff" />}
+          {isSaving ? <Loader2 size={THEME.iconSize['md']} color={THEME.colors['on-primary']} /> : <PackagePlus size={THEME.iconSize['md']} color={THEME.colors['on-primary']} />}
           <Text className="font-bold text-on-primary">
             {isSaving ? "MEMPROSES..." : "SIMPAN STOK"}
           </Text>

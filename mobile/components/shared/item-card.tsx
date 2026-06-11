@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { MapPin, Store as StoreIcon, History } from 'lucide-react-native';
 import type { Store, Product } from '../../types/index.type';
 import { formatRupiah } from '../../utils/formatter.util';
+import THEME from '../../constants/css';
 
 import { Card } from '../ui/card';
 
@@ -64,7 +65,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
               <View className={`flex-row items-center gap-1 px-2 py-0.5 rounded-md ${
                 (data as Store).lastVisitAt ? 'bg-success' : 'bg-error'
               }`}>
-                <History size={12} color={(data as Store).lastVisitAt ? "#ffffff" : "#ffffff"} />
+                <History size={12} color={(data as Store).lastVisitAt ? THEME.colors['on-success'] : THEME.colors['on-error']} />
                 <Text className={`text-[10px] font-caption ${
                   (data as Store).lastVisitAt ? 'text-on-success' : 'text-on-error'
                 }`}>
@@ -77,7 +78,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
         
         {isStore && (
           <View className="flex-row items-start gap-1 mb-4">
-            <MapPin size={16} color="#737686" className="mt-0.5" />
+            <MapPin size={THEME.iconSize['sm']} color={THEME.colors['outline']} className="mt-0.5" />
             <Text className="text-body-sm text-text-secondary flex-1" numberOfLines={2}>
               {(data as Store).address}
             </Text>
@@ -122,7 +123,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
             className="flex-1 border border-outline-variant bg-on-background/85 py-2 rounded-lg flex-row items-center justify-center gap-1"
             activeOpacity={0.7}
           >
-            <MapPin size={16} color="#ffffff" />
+            <MapPin size={THEME.iconSize['sm']} color={THEME.colors['on-primary']} />
             <Text className="text-on-primary text-body-sm font-medium">Maps</Text>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -130,7 +131,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
             className="flex-1 bg-primary py-2 rounded-lg flex-row items-center justify-center gap-1"
             activeOpacity={0.7}
           >
-            <StoreIcon size={16} color="#ffffff" />
+            <StoreIcon size={THEME.iconSize['sm']} color={THEME.colors['on-primary']} />
             <Text className="text-on-primary text-body-sm font-medium">Kunjungi</Text>
           </TouchableOpacity>
         </View>

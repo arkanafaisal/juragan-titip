@@ -7,6 +7,7 @@ import { useProcessReturn } from '../../api/products.api';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { processReturnSchema, ProcessReturnPayload } from '../../schemas/product-form.schema';
+import THEME from '../../constants/css';
 
 interface ProcessReturnModalProps {
   isOpen: boolean;
@@ -62,7 +63,7 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
       <View className="space-y-4 mb-6">
         <View className="p-4 rounded-2xl border border-success bg-[#f0fdf4]">
           <View className="flex-row items-center gap-1.5 mb-2">
-            <RefreshCw size={16} color="#10b981" />
+            <RefreshCw size={THEME.iconSize['sm']} color={THEME.colors['success']} />
             <Text className="font-body-sm font-bold text-success">SIAP JUAL LAGI?</Text>
           </View>
           <Controller
@@ -88,7 +89,7 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
         
         <View className="p-4 rounded-2xl border border-error bg-[#fef2f2]">
           <View className="flex-row items-center gap-1.5 mb-2">
-            <Trash2 size={16} color="#ef4444" />
+            <Trash2 size={THEME.iconSize['sm']} color={THEME.colors['error']} />
             <Text className="font-body-sm font-bold text-error">BASI / RUSAK (Dibuang)?</Text>
           </View>
           <Controller
@@ -129,9 +130,9 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
           className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${isSaving ? 'opacity-50' : ''} bg-warning`}
           activeOpacity={0.8}
         >
-          {isSaving ? <Loader2 size={20} color="#ffffff" /> : <Scale size={20} color="#ffffff" />}
+          {isSaving ? <Loader2 size={THEME.iconSize['md']} color={THEME.colors['on-warning']} /> : <Scale size={THEME.iconSize['md']} color={THEME.colors['on-warning']} />}
           <Text className="font-bold text-on-warning">
-            {isSaving ? "MEMPROSES..." : "SIMPAN SORTIR"}
+            {isSaving ? "MEMPROSES..." : "SELESAI OLAH"}
           </Text>
         </TouchableOpacity>
       </View>

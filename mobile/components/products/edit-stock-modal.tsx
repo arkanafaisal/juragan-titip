@@ -7,6 +7,7 @@ import { useEditStock } from '../../api/products.api';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { editStockSchema, EditStockPayload } from '../../schemas/product-form.schema';
+import THEME from '../../constants/css'
 
 interface EditStockModalProps {
   isOpen: boolean;
@@ -101,7 +102,7 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
           className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${isSubmitting ? 'opacity-50' : ''} bg-primary`}
           activeOpacity={0.8}
         >
-          {isSubmitting && <Loader2 size={20} color="#ffffff" />}
+          {isSubmitting && <Loader2 size={THEME.iconSize['md']} color={THEME.colors['on-primary']} />}
           <Text className="font-bold text-on-primary">
             {isSubmitting ? "MEMPROSES..." : "SESUAIKAN STOK"}
           </Text>

@@ -4,6 +4,8 @@ import { User } from 'lucide-react-native';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import THEME from '../../constants/css'
+
 export function Header() {
   const pathname = usePathname();
   const params = useGlobalSearchParams();
@@ -74,7 +76,7 @@ export function Header() {
             className="w-9 h-9 rounded-full bg-surface flex items-center justify-center"
             activeOpacity={0.7}
           >
-            <User size={16} color="#2563eb" />
+            <User size={THEME.iconSize['md']} color={THEME.colors['primary']} />
           </TouchableOpacity>
         </View>
       </View>

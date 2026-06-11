@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Search, SlidersHorizontal, Plus, Settings } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
+import THEME from '../../constants/css';
+
 export interface FilterOption {
   label: string;
   value: string;
@@ -47,13 +49,13 @@ export function ActionToolbar({
       <View className="flex-row items-center gap-2 mb-md w-full">
         
         <View className="relative flex-1 flex-row items-center bg-surface border border-outline-variant rounded-md px-3 h-10">
-          <Search size={16} color="#737686" />
+          <Search size={THEME.iconSize['sm']} color={THEME.colors['outline']} />
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={searchPlaceholder}
             className="flex-1 ml-2 text-body text-text-primary py-0 h-full"
-            placeholderTextColor="#737686"
+            placeholderTextColor={THEME.colors['outline']}
             style={{ includeFontPadding: false }}
           />
         </View>
@@ -65,7 +67,7 @@ export function ActionToolbar({
           className={`w-10 h-10 rounded-md border border-outline-variant items-center justify-center bg-surface ${isSettingDisabled ? 'opacity-50' : ''}`}
           activeOpacity={0.7}
         >
-          <Settings size={16} color="#0b1c30" />
+          <Settings size={THEME.iconSize['sm']} color={THEME.colors['on-surface']} />
         </TouchableOpacity>
 
         
@@ -75,14 +77,14 @@ export function ActionToolbar({
             className="w-10 h-10 rounded-md border border-outline-variant items-center justify-center bg-surface relative"
             activeOpacity={0.7}
           >
-            <SlidersHorizontal size={16} color="#0b1c30" />
+            <SlidersHorizontal size={THEME.iconSize['sm']} color={THEME.colors['on-surface']} />
             {hasActiveFilter && (
               <View className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary border-2 border-surface" />
             )}
           </TouchableOpacity>
         ) : (
           <View className="w-10 h-10 rounded-md border border-outline-variant items-center justify-center bg-surface opacity-50">
-            <SlidersHorizontal size={16} color="#0b1c30" />
+            <SlidersHorizontal size={THEME.iconSize['sm']} color={THEME.colors['on-surface']} />
           </View>
         )}
 
@@ -92,7 +94,7 @@ export function ActionToolbar({
           className="w-10 h-10 rounded-md bg-success items-center justify-center"
           activeOpacity={0.7}
         >
-          <Plus size={16} color="#ffffff" />
+          <Plus size={THEME.iconSize['sm']} color={THEME.colors['on-success']} />
         </TouchableOpacity>
       </View>
 

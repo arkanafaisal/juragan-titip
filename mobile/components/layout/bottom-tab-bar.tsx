@@ -4,12 +4,14 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Home, Package, Store, Banknote, Settings } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import THEME from '../../constants/css'
+
 export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   const getIcon = (routeName: string, isActive: boolean) => {
-    const color = isActive ? '#ffffff' : '#434655'; // on-primary for active
-    const size = 20;
+    const color = isActive ? THEME.colors['on-primary'] : THEME.colors['on-surface']; // on-primary for active
+    const size = THEME.iconSize['md'];
 
     switch (routeName) {
       case 'index':

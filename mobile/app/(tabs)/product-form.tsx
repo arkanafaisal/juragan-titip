@@ -13,6 +13,8 @@ import { showLeaveConfirmation } from '@/utils/alerts.util';
 import { productFormSchema, ProductFormValues } from '../../schemas/product-form.schema';
 import { useAddProduct, useGetProductById, useUpdateProduct } from '../../api/products.api';
 
+import THEME from '../../constants/css'
+
 export default function ProductFormScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -154,7 +156,7 @@ export default function ProductFormScreen() {
                 <Text className={`font-body text-body ${watchedCategory ? 'text-text-primary' : 'text-text-secondary'}`}>
                   {watchedCategory ? categoryLabels[watchedCategory as keyof typeof categoryLabels] : 'Pilih Kategori...'}
                 </Text>
-                <ChevronDown size={18} color="#737686" />
+                <ChevronDown size={THEME.iconSize['md']} color={THEME.colors['on-surface-variant']} />
               </TouchableOpacity>
               {errors.category && <Text className="text-[10px] font-bold text-error mt-0.5">{errors.category.message}</Text>}
             </View>
@@ -250,7 +252,7 @@ export default function ProductFormScreen() {
               className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${addProduct.isPending || updateProduct.isPending ? 'bg-primary/70' : 'bg-primary'}`}
               activeOpacity={0.8}
             >
-              <Save size={20} color="#ffffff" />
+              <Save size={THEME.iconSize['md']} color={THEME.colors['on-primary']} />
               <Text className="text-on-primary font-bold">
                 {addProduct.isPending || updateProduct.isPending ? "MENYIMPAN..." : (id ? "SIMPAN PERUBAHAN" : "TAMBAH PRODUK")}
               </Text>
@@ -262,7 +264,7 @@ export default function ProductFormScreen() {
                 className="w-full py-3.5 bg-error rounded-xl flex-row items-center justify-center gap-2"
                 activeOpacity={0.8}
               >
-                <Archive size={20} color="#ffffff" />
+                <Archive size={THEME.iconSize['md']} color={THEME.colors['on-error']} />
                 <Text className="text-on-error font-bold">ARSIPKAN PRODUK</Text>
               </TouchableOpacity>
             )}
