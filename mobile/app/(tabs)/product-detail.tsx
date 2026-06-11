@@ -7,7 +7,7 @@ import {
 } from 'lucide-react-native';
 import { Card } from '../../components/ui/card';
 import { useSettingsStore } from '../../api/settings.api';
-import { formatRupiah, formatDate } from '../../utils/formatter.util';
+import { formatRupiah, formatDate, formatRelativeTime } from '../../utils/formatter.util';
 import { useGetProductById, useRecoverProduct, useGetProductInventoryLogs } from '../../api/products.api';
 
 // UI Only Imports
@@ -85,7 +85,7 @@ export default function ProductDetailScreen() {
   return (
     <View className="flex-1 bg-background">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="p-4 space-y-4 pb-12">
+        <View className="p-4 space-y-4 pb-4">
           
           <View className="mb-2 flex-row items-center">
             <TouchableOpacity 
@@ -232,7 +232,9 @@ export default function ProductDetailScreen() {
                       <View className="flex-1 pb-2">
                         <View className="flex-col mb-1">
                           <Text className="text-body-sm font-bold text-text-primary">{config.title}</Text>
-                          <Text className="text-caption text-text-secondary">{formatDate(log.createdAt)}</Text>
+                          <Text className="text-caption text-text-secondary">
+                            {formatDate(log.createdAt)} • {formatRelativeTime(log.createdAt)}
+                          </Text>
                         </View>
                         <Text className="text-body-sm font-medium text-text-primary">
                           <Text className="text-text-secondary">↳ </Text>{config.desc}
