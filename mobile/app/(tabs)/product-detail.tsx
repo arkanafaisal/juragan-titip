@@ -18,19 +18,19 @@ import { ProcessReturnModal } from '../../components/products/process-return-mod
 const getLogConfig = (log: any) => {
   switch (log.type) {
     case 'OLAH_RETUR':
-      return { title: 'OLAH RETUR', desc: `Masuk Gudang: ${log.quantity} Pcs`, icon: RefreshCw, color: 'text-primary', bg: 'bg-primary/10' };
+      return { title: 'OLAH RETUR', desc: `Masuk Gudang: ${log.quantity} Pcs`, icon: RefreshCw, color: 'hsl(161, 64%, 39%)' };
     case 'BUANG_RUSAK':
-      return { title: 'BUANG / AFKIR', desc: `Dibuang/Rusak: ${Math.abs(log.quantity)} Pcs`, icon: Trash2, color: 'text-error', bg: 'bg-error/10' };
+      return { title: 'BUANG / AFKIR', desc: `Dibuang/Rusak: ${Math.abs(log.quantity)} Pcs`, icon: Trash2, color: '#ba1a1a' };
     case 'TITIPAN':
-      return { title: 'TITIPAN TOKO', desc: `${log.storeName || 'Toko'}: -${Math.abs(log.quantity)} Pcs`, icon: StoreIcon, color: 'text-orange-500', bg: 'bg-orange-50' };
+      return { title: 'TITIPAN TOKO', desc: `${log.storeName || 'Toko'}: -${Math.abs(log.quantity)} Pcs`, icon: StoreIcon, color: 'hsl(221, 83%, 53%)' };
     case 'KOREKSI':
-      return { title: 'KOREKSI STOK', desc: `Penyesuaian: ${log.quantity > 0 ? '+' : ''}${log.quantity} Pcs`, icon: Pencil, color: 'text-text-secondary', bg: 'bg-surface-variant' };
+      return { title: 'KOREKSI STOK', desc: `Penyesuaian: ${log.quantity > 0 ? '+' : ''}${log.quantity} Pcs`, icon: Pencil, color: 'hsl(38, 92%, 50%)' };
     case 'KULAKAN':
-      return { title: 'KULAKAN AGEN', desc: `Tambah Stok: ${log.quantity} Pcs`, icon: Package, color: 'text-success', bg: 'bg-success/10' };
+      return { title: 'KULAKAN AGEN', desc: `Tambah Stok: ${log.quantity} Pcs`, icon: Package, color: 'hsl(221, 83%, 53%)' };
     case 'TARIK_RETUR':
-      return { title: 'TARIK RETUR', desc: `${log.storeName || 'Toko'}: ${log.quantity} Pcs`, icon: RefreshCw, color: 'text-indigo-500', bg: 'bg-indigo-50' };
+      return { title: 'TARIK RETUR', desc: `${log.storeName || 'Toko'}: ${log.quantity} Pcs`, icon: RefreshCw, color: 'hsl(38, 92%, 50%)' };
     default:
-      return { title: log.type, desc: `${log.quantity} Pcs`, icon: Package, color: 'text-text-secondary', bg: 'bg-surface-variant' };
+      return { title: log.type, desc: `${log.quantity} Pcs`, icon: Package, color: 'hsl(215, 16%, 47%)' };
   }
 };
 
@@ -119,7 +119,7 @@ export default function ProductDetailScreen() {
                 className="p-1.5 shrink-0"
                 activeOpacity={0.7}
               >
-                <SquarePen size={20} className="text-warning" />
+                <SquarePen size={20} color="hsl(38, 92%, 50%)" />
               </TouchableOpacity>
             </View>
             
@@ -164,7 +164,7 @@ export default function ProductDetailScreen() {
                 className="flex-row items-center justify-center gap-1.5 py-2.5 px-3 bg-warning rounded-xl shrink-0"
                 activeOpacity={0.8}
               >
-                <Pencil size={16} className="text-on-warning" />
+                <Pencil size={16} color="#0b1c30" />
                 <Text className="text-on-warning font-bold">Koreksi</Text>
               </TouchableOpacity>
               <TouchableOpacity 
@@ -172,7 +172,7 @@ export default function ProductDetailScreen() {
                 className="flex-1 py-2.5 px-3 bg-primary rounded-xl flex-row items-center justify-center gap-1.5 shadow-sm"
                 activeOpacity={0.8}
               >
-                <PackagePlus size={20} className="text-on-primary" />
+                <PackagePlus size={20} color="#ffffff" />
                 <Text className="text-on-primary font-bold">Tambah Stok</Text>
               </TouchableOpacity>
             </View>
@@ -189,7 +189,7 @@ export default function ProductDetailScreen() {
               className={`w-full py-3 px-3 rounded-xl flex-row items-center justify-center gap-1.5 ${(!product.returnedStock || product.returnedStock === 0) ? 'bg-surface-variant' : 'bg-success'}`}
               activeOpacity={0.8}
             >
-              <Scale size={16} className={(!product.returnedStock || product.returnedStock === 0) ? 'text-on-surface-variant' : 'text-on-success'} />
+              <Scale size={16} color={(!product.returnedStock || product.returnedStock === 0) ? '#434655' : '#ffffff'} />
               <Text className={`font-bold ${(!product.returnedStock || product.returnedStock === 0) ? 'text-on-surface-variant' : 'text-on-success'}`}>
                 OLAH BARANG RETUR
               </Text>
@@ -212,8 +212,8 @@ export default function ProductDetailScreen() {
                   return (
                     <View key={log.id} className="flex-row gap-3">
                       <View className="items-center z-10">
-                        <View className={`w-8 h-8 rounded-full items-center justify-center ${config.bg}`}>
-                          <Icon size={16} className={config.color} />
+                        <View className="w-8 h-8 rounded-full items-center justify-center" style={{ backgroundColor: '#e5e7eb' }}>
+                          <Icon size={16} color={config.color} />
                         </View>
                         {index !== logs.length - 1 && (
                           <View className="w-[1.5px] h-full bg-outline-variant absolute top-8" />
