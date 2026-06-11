@@ -97,7 +97,7 @@ export default function ProductDetailScreen() {
               className="flex-row items-center justify-center px-4 py-2 bg-error rounded-xl shadow-sm active:opacity-80"
               activeOpacity={0.7}
             >
-              <Text className="text-body-sm font-bold text-on-error">Batal</Text>
+              <Text className="text-body-sm font-bold text-on-error">kembali</Text>
             </TouchableOpacity>
           </View>
 
