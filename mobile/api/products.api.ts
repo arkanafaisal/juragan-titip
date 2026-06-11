@@ -58,6 +58,53 @@ export function useAddProduct() {
   });
 }
 
+export interface UpdateProductPayload {
+  id: number;
+  data: ProductFormValues;
+}
+
+export function useUpdateProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: UpdateProductPayload) => {
+      try {
+        const result = await db.update(products)
+          .set({
+            normalizedName: data.name.toLowerCase(),
+            ...data
+          })
+          .where(eq(products.id, id))
+          .returning();
+          
+        if (result.length === 0) throw new Error("Produk tidak ditemukan");
+        return result[0];
+      } catch (error: any) {
+        if (error.message?.includes('UNIQUE constraint failed: products.normalized_name')) {
+          throw new Error(`Produk dengan nama "${data.name}" sudah ada di database.`);
+        }
+        throw new Error(error.message || "Terjadi kesalahan sistem saat memperbarui produk.");
+      }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil Diperbarui',
+        text2: 'Data produk telah diperbarui.',
+      });
+    },
+    onError: (error: Error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal Memperbarui',
+        text2: error.message,
+      });
+    }
+  });
+}
+
 export function useGetProducts(filters?: GetProductsFilters) {
   return useQuery({
     queryKey: ['products', filters],

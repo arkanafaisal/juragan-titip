@@ -11,13 +11,14 @@ import { BottomModal } from '../../components/ui/bottom-modal';
 import { Input } from '../../components/ui/input';
 import { showLeaveConfirmation } from '@/utils/alerts.util';
 import { productFormSchema, ProductFormValues } from '../../schemas/product-form.schema';
-import { useAddProduct } from '../../api/products.api';
+import { useAddProduct, useGetProductById, useUpdateProduct } from '../../api/products.api';
 
 export default function ProductFormScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const categoryLabels = useSettingsStore(state => state.categoryLabels);
   const addProduct = useAddProduct();
+  const updateProduct = useUpdateProduct();
   
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   
@@ -33,6 +34,21 @@ export default function ProductFormScreen() {
     }
   });
 
+  const { data: product, isLoading } = useGetProductById(id ? Number(id) : undefined);
+
+  useEffect(() => {
+    if (product) {
+      reset({
+        name: product.name,
+        category: product.category as any,
+        description: product.description || '',
+        costPrice: product.costPrice,
+        wholesalePrice: product.wholesalePrice,
+        retailPrice: product.retailPrice || undefined,
+      });
+    }
+  }, [product, reset]);
+
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -43,7 +59,11 @@ export default function ProductFormScreen() {
 
   const onSubmit = (data: ProductFormValues) => {
     if (id) {
-      Alert.alert("Sukses", "Data valid! (Mode Edit Belum Terhubung)");
+      updateProduct.mutate({ id: Number(id), data }, {
+        onSuccess: () => {
+          router.back();
+        }
+      });
     } else {
       addProduct.mutate(data, {
         onSuccess: () => {
@@ -82,6 +102,14 @@ export default function ProductFormScreen() {
   );
 
   const watchedCategory = watch('category');
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center">
+        <Text className="text-body font-medium text-text-primary">Memuat data produk...</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background">
@@ -218,13 +246,13 @@ export default function ProductFormScreen() {
           <View className="flex-col gap-3 mt-6 pb-8">
             <TouchableOpacity 
               onPress={handleSubmit(onSubmit)}
-              disabled={addProduct.isPending}
-              className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${addProduct.isPending ? 'bg-primary/70' : 'bg-primary'}`}
+              disabled={addProduct.isPending || updateProduct.isPending}
+              className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${addProduct.isPending || updateProduct.isPending ? 'bg-primary/70' : 'bg-primary'}`}
               activeOpacity={0.8}
             >
               <Save size={20} color="#ffffff" />
               <Text className="text-on-primary font-bold">
-                {addProduct.isPending ? "MENYIMPAN..." : (id ? "SIMPAN PERUBAHAN" : "TAMBAH PRODUK")}
+                {addProduct.isPending || updateProduct.isPending ? "MENYIMPAN..." : (id ? "SIMPAN PERUBAHAN" : "TAMBAH PRODUK")}
               </Text>
             </TouchableOpacity>
 
