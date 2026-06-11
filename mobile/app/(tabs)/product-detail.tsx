@@ -140,11 +140,11 @@ export default function ProductDetailScreen() {
               </View>
               <View className="flex-row justify-between mb-2">
                 <Text className="text-text-secondary">Jual (Toko)</Text>
-                <Text className="text-primary font-bold">{formatRupiah(product.wholesalePrice)}</Text>
+                <Text className="text-primary font-medium">{formatRupiah(product.wholesalePrice)}</Text>
               </View>
               <View className="flex-row justify-between">
                 <Text className="text-text-secondary">Harga Ecer</Text>
-                <Text className={`font-medium ${product.retailPrice ? 'text-text-primary' : 'text-text-secondary italic text-body-sm'}`}>
+                <Text className={`${product.retailPrice ? 'font-medium text-text-primary font-medium' : 'text-right flex-1 text-text-secondary italic text-body-sm'}`}>
                   {product.retailPrice ? formatRupiah(product.retailPrice) : 'Belum diatur'}
                 </Text>
               </View>
