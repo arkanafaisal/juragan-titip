@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { Search, SlidersHorizontal, Plus, Settings } from 'lucide-react-native';
+import React, { useState, useMemo } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { Search, SlidersHorizontal, Plus, Settings, X } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
 import THEME from '../../constants/css';
 
@@ -22,8 +22,8 @@ interface ActionToolbarProps {
   filterGroups?: FilterGroup[];
   activeFilters?: Record<string, string>;
   onFilterChange?: (groupId: string, value: string) => void;
+  onResetFilters?: () => void;
   onAddClick: () => void;
-  addLabel?: string;
   onSettingClick?: () => void;
   isSettingDisabled?: boolean;
 }
@@ -36,17 +36,36 @@ export function ActionToolbar({
   activeFilters = {},
   onFilterChange,
   onAddClick,
-  addLabel = "Tambah",
   onSettingClick,
   isSettingDisabled = false,
+  onResetFilters,
 }: ActionToolbarProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const hasActiveFilter = Object.values(activeFilters).some(val => val !== "" && val !== "name_asc");
 
+  const activeFilterChips = useMemo(() => {
+    return Object.entries(activeFilters).map(([key, value]) => {
+      if (value === "" || value === "name_asc") return null;
+      
+      const group = filterGroups.find(g => g.id === key);
+      const option = group?.options.find(o => o.value === value);
+      
+      let title = group?.title || key;
+      if (title === "Kategori Produk") title = "Kategori";
+      if (title === "Status Arsip") title = "Status";
+      
+      const optionLabel = option?.label || value;
+      return {
+        key,
+        label: `${title}: ${optionLabel}`
+      };
+    }).filter(Boolean) as { key: string, label: string }[];
+  }, [activeFilters, filterGroups]);
+
   return (
     <View className="w-full z-10">
-      <View className="flex-row items-center gap-2 mb-md w-full">
+      <View className="flex-row items-center gap-2 mb-sm w-full">
         
         <View className="relative flex-1 flex-row items-center bg-surface border border-outline-variant rounded-md px-3 h-10">
           <Search size={THEME.iconSize['sm']} color={THEME.colors['outline']} />
@@ -98,7 +117,43 @@ export function ActionToolbar({
         </TouchableOpacity>
       </View>
 
-      
+      {activeFilterChips.length > 0 && (
+        <View className="-mx-4 px-4 pb-2">
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            className="mt-1 flex-row"
+            contentContainerStyle={{ gap: 8, paddingRight: 32 }}
+          >
+            {onResetFilters && (
+              <TouchableOpacity 
+                onPress={onResetFilters}
+                className="bg-error px-3 py-1.5 rounded-full justify-center items-center shrink-0"
+                activeOpacity={0.8}
+              >
+                <Text className="text-on-error text-xs font-bold">Reset</Text>
+              </TouchableOpacity>
+            )}
+
+            {activeFilterChips.map((chip) => (
+              <View 
+                key={chip.key}
+                className="bg-primary flex-row items-center pl-3 pr-2 py-1 rounded-full shrink-0 gap-1.5"
+              >
+                <Text className="text-on-primary text-xs font-medium">{chip.label}</Text>
+                <TouchableOpacity 
+                  onPress={() => onFilterChange && onFilterChange(chip.key, "")}
+                  className="ml-1"
+                  activeOpacity={0.7}
+                >
+                  <X size={THEME.iconSize['sm']} color={THEME.colors['on-primary']} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       <BottomModal
         visible={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
