@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
-import { eq, like, and, gt, lte, SQL, sql } from 'drizzle-orm';
+import { eq, like, and, gt, lte, SQL, sql, asc } from 'drizzle-orm';
 import { db } from '../db';
 import { products } from '../db/schema';
 import { 
@@ -139,7 +139,8 @@ export function useGetProducts(filters?: GetProductsFilters) {
 
       return await db.select()
         .from(products)
-        .where(queryConditions.length > 0 ? and(...queryConditions) : undefined);
+        .where(queryConditions.length > 0 ? and(...queryConditions) : undefined)
+        .orderBy(asc(products.name));
     }
   });
 }
