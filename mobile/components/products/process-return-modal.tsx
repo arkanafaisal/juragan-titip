@@ -3,6 +3,10 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { RefreshCw, Trash2, Scale, Loader2 } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
 import { Input } from '../ui/input';
+import { useProcessReturn } from '../../api/products.api';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { processReturnSchema, ProcessReturnPayload } from '../../schemas/product-form.schema';
 
 interface ProcessReturnModalProps {
   isOpen: boolean;
@@ -12,40 +16,40 @@ interface ProcessReturnModalProps {
 }
 
 export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }: ProcessReturnModalProps) {
-  const [resaleQty, setResaleQty] = useState('');
-  const [wasteQty, setWasteQty] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const { mutate: processReturn, isPending: isSaving } = useProcessReturn();
+
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<ProcessReturnPayload>({
+    resolver: zodResolver(processReturnSchema),
+    defaultValues: {
+      id: productId ? Number(productId) : 0,
+      resaleQty: undefined as any,
+      wasteQty: undefined as any,
+    }
+  });
 
   useEffect(() => {
     if (isOpen) {
-      setResaleQty('');
-      setWasteQty('');
+      reset({ id: productId ? Number(productId) : 0, resaleQty: undefined as any, wasteQty: undefined as any });
     }
-  }, [isOpen]);
+  }, [isOpen, productId, reset]);
 
-  const handleSave = () => {
-    if (!productId) return;
-    
-    const rQty = parseInt(resaleQty) || 0;
-    const wQty = parseInt(wasteQty) || 0;
-    
-    if (rQty === 0 && wQty === 0) {
-      Alert.alert("Error", "Masukkan jumlah barang yang diolah");
-      return;
-    }
+  const onSubmit = (data: ProcessReturnPayload) => {
+    const rQty = data.resaleQty || 0;
+    const wQty = data.wasteQty || 0;
     
     if (rQty + wQty > returnedStock) {
       Alert.alert("Error", "Total melebihi jumlah retur yang ada");
       return;
     }
 
-    setIsSaving(true);
-    // UI ONLY: Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      Alert.alert("Sukses", "Barang retur berhasil diolah! (UI Only)");
-      onClose();
-    }, 1000);
+    processReturn(
+      { id: data.id, resaleQty: rQty, wasteQty: wQty },
+      {
+        onSuccess: () => {
+          onClose();
+        }
+      }
+    );
   };
 
   return (
@@ -61,13 +65,24 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
             <RefreshCw size={16} color="#10b981" />
             <Text className="font-body-sm font-bold text-success">SIAP JUAL LAGI?</Text>
           </View>
-          <Input
-            value={resaleQty}
-            onChangeText={(val) => setResaleQty(val.replace(/[^0-9]/g, ''))}
-            keyboardType="numeric"
-            placeholder="0"
-            className="text-success font-bold"
-            containerClassName="mb-0"
+          <Controller
+            control={control}
+            name="resaleQty"
+            render={({ field: { onChange, value, onBlur } }) => (
+              <Input
+                value={value !== undefined ? String(value) : ''}
+                onChangeText={(val) => {
+                  const num = Number(val);
+                  onChange(val? Number(val) : undefined);
+                }}
+                onBlur={onBlur}
+                keyboardType="numeric"
+                placeholder="0"
+                className="text-success font-bold"
+                containerClassName="mb-0"
+                error={errors.resaleQty?.message}
+              />
+            )}
           />
         </View>
         
@@ -76,13 +91,24 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
             <Trash2 size={16} color="#ef4444" />
             <Text className="font-body-sm font-bold text-error">BASI / RUSAK (Dibuang)?</Text>
           </View>
-          <Input
-            value={wasteQty}
-            onChangeText={(val) => setWasteQty(val.replace(/[^0-9]/g, ''))}
-            keyboardType="numeric"
-            placeholder="0"
-            className="text-error font-bold"
-            containerClassName="mb-0"
+          <Controller
+            control={control}
+            name="wasteQty"
+            render={({ field: { onChange, value, onBlur } }) => (
+              <Input
+                value={value !== undefined ? String(value) : ''}
+                onChangeText={(val) => {
+                  const num = Number(val);
+                  onChange(val === '' || isNaN(num) ? undefined : num);
+                }}
+                onBlur={onBlur}
+                keyboardType="numeric"
+                placeholder="0"
+                className="text-error font-bold"
+                containerClassName="mb-0"
+                error={errors.wasteQty?.message}
+              />
+            )}
           />
         </View>
       </View>
@@ -98,9 +124,9 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
         </TouchableOpacity>
         
         <TouchableOpacity 
-          onPress={handleSave} 
-          disabled={isSaving || (!resaleQty && !wasteQty)}
-          className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${(isSaving || (!resaleQty && !wasteQty)) ? 'opacity-50' : ''} bg-warning`}
+          onPress={handleSubmit(onSubmit)} 
+          disabled={isSaving}
+          className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${isSaving ? 'opacity-50' : ''} bg-warning`}
           activeOpacity={0.8}
         >
           {isSaving ? <Loader2 size={20} color="#ffffff" /> : <Scale size={20} color="#ffffff" />}

@@ -1,9 +1,14 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
-import { eq, like, and, gt, lte, SQL } from 'drizzle-orm';
+import { eq, like, and, gt, lte, SQL, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { products } from '../db/schema';
-import { ProductFormValues } from '../schemas/product-form.schema';
+import { 
+  ProductFormValues, 
+  AddStockPayload, 
+  EditStockPayload, 
+  ProcessReturnPayload 
+} from '../schemas/product-form.schema';
 
 export interface GetProductsFilters {
   search?: string;
@@ -110,5 +115,126 @@ export function useGetProductById(id?: number) {
       return result[0];
     },
     enabled: !!id,
+  });
+}
+
+
+export function useAddStock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, addedStock }: AddStockPayload) => {
+      if (addedStock <= 0) throw new Error("Jumlah stok harus lebih dari 0");
+      
+      const result = await db.update(products)
+        .set({ warehouseStock: sql`${products.warehouseStock} + ${addedStock}` })
+        .where(eq(products.id, id))
+        .returning();
+        
+      if (result.length === 0) throw new Error("Produk tidak ditemukan");
+      return result[0];
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      Toast.show({
+        type: 'success',
+        text1: 'Stok Ditambahkan',
+        text2: 'Stok baru berhasil ditambahkan.',
+      });
+    },
+    onError: (error: Error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal Menambah Stok',
+        text2: error.message,
+      });
+    }
+  });
+}
+
+
+export function useEditStock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, newStock }: EditStockPayload) => {
+      if (newStock < 0) throw new Error("Stok tidak boleh kurang dari 0");
+      
+      const result = await db.update(products)
+        .set({ warehouseStock: newStock })
+        .where(eq(products.id, id))
+        .returning();
+        
+      if (result.length === 0) throw new Error("Produk tidak ditemukan");
+      return result[0];
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      Toast.show({
+        type: 'success',
+        text1: 'Stok Dikoreksi',
+        text2: 'Jumlah stok berhasil disesuaikan.',
+      });
+    },
+    onError: (error: Error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal Mengoreksi Stok',
+        text2: error.message,
+      });
+    }
+  });
+}
+
+
+export function useProcessReturn() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, resaleQty, wasteQty }: ProcessReturnPayload) => {
+      if (resaleQty < 0 || wasteQty < 0) throw new Error("Jumlah tidak valid");
+      if (resaleQty === 0 && wasteQty === 0) throw new Error("Tidak ada barang yang diolah");
+      
+      const totalProcessed = resaleQty + wasteQty;
+      
+      // Verifikasi ketersediaan stok retur
+      const currentProduct = await db.select({ returnedStock: products.returnedStock })
+        .from(products)
+        .where(eq(products.id, id))
+        .limit(1);
+        
+      if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
+      if (currentProduct[0].returnedStock < totalProcessed) {
+        throw new Error("Total olah melebihi jumlah retur yang ada");
+      }
+      
+      const result = await db.update(products)
+        .set({ 
+          warehouseStock: sql`${products.warehouseStock} + ${resaleQty}`,
+          returnedStock: sql`${products.returnedStock} - ${totalProcessed}`
+        })
+        .where(eq(products.id, id))
+        .returning();
+        
+      return result[0];
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      Toast.show({
+        type: 'success',
+        text1: 'Retur Diolah',
+        text2: 'Barang retur berhasil disortir.',
+      });
+    },
+    onError: (error: Error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal Mengolah Retur',
+        text2: error.message,
+      });
+    }
   });
 }

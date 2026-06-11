@@ -3,6 +3,10 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { PackagePlus, Loader2 } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
 import { Input } from '../ui/input';
+import { useAddStock } from '../../api/products.api';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { addStockSchema, AddStockPayload } from '../../schemas/product-form.schema';
 
 interface AddStockModalProps {
   isOpen: boolean;
@@ -11,31 +15,28 @@ interface AddStockModalProps {
 }
 
 export function AddStockModal({ isOpen, onClose, productId }: AddStockModalProps) {
-  const [stock, setStock] = useState<string>('');
-  const [isSaving, setIsSaving] = useState(false);
+  const { mutate: addStock, isPending: isSaving } = useAddStock();
+
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<AddStockPayload>({
+    resolver: zodResolver(addStockSchema),
+    defaultValues: {
+      id: productId ? Number(productId) : 0,
+      addedStock: undefined as any,
+    }
+  });
 
   useEffect(() => {
     if (isOpen) {
-      setStock('');
+      reset({ id: productId ? Number(productId) : 0, addedStock: undefined as any });
     }
-  }, [isOpen]);
+  }, [isOpen, productId, reset]);
 
-  const handleSave = () => {
-    if (!productId) return;
-    
-    const addedStock = parseInt(stock);
-    if (isNaN(addedStock) || addedStock <= 0) {
-      Alert.alert("Error", "Jumlah stok tidak valid");
-      return;
-    }
-
-    setIsSaving(true);
-    // UI ONLY: Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      Alert.alert("Sukses", "Stok berhasil ditambahkan! (UI Only)");
-      onClose();
-    }, 1000);
+  const onSubmit = (data: AddStockPayload) => {
+    addStock(data, {
+      onSuccess: () => {
+        onClose();
+      }
+    });
   };
 
   return (
@@ -46,12 +47,22 @@ export function AddStockModal({ isOpen, onClose, productId }: AddStockModalProps
       </Text>
       
       <View className="mb-6">
-        <Input
-          value={stock}
-          onChangeText={(val) => setStock(val.replace(/[^0-9]/g, ''))}
-          keyboardType="numeric"
-          placeholder="0"
-          className="text-center font-bold text-[24px]"
+        <Controller
+          control={control}
+          name="addedStock"
+          render={({ field: { onChange, value, onBlur } }) => (
+            <Input
+              value={value ? String(value) : ''}
+              onChangeText={(val) => {
+                onChange(val ? Number(val) : 0);
+              }}
+              onBlur={onBlur}
+              keyboardType="numeric"
+              placeholder="0"
+              className="text-center font-bold text-[24px]"
+              error={errors.addedStock?.message}
+            />
+          )}
         />
       </View>
 
@@ -66,9 +77,9 @@ export function AddStockModal({ isOpen, onClose, productId }: AddStockModalProps
         </TouchableOpacity>
         
         <TouchableOpacity 
-          onPress={handleSave} 
-          disabled={isSaving || !stock}
-          className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${(isSaving || !stock) ? 'opacity-50' : ''} bg-primary`}
+          onPress={handleSubmit(onSubmit)} 
+          disabled={isSaving}
+          className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${isSaving ? 'opacity-50' : ''} bg-primary`}
           activeOpacity={0.8}
         >
           {isSaving ? <Loader2 size={20} color="#ffffff" /> : <PackagePlus size={20} color="#ffffff" />}

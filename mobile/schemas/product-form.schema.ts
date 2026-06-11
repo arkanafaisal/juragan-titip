@@ -35,12 +35,37 @@ export const productFormSchema = z.object({
   description: z.string()
     .max(PRODUCT_VALIDATION_RULES.DESC_MAX, `Deskripsi maksimal ${PRODUCT_VALIDATION_RULES.DESC_MAX} karakter`)
     .optional(),
-})
-// Validasi silang: Harga jual harus lebih besar dari harga modal
-.refine((data) => data.costPrice < data.wholesalePrice, {
+}).refine((data) => data.costPrice < data.wholesalePrice, {
   message: "Harga jual harus lebih besar dari modal",
   path: ["wholesalePrice"], // Error akan diarahkan ke field wholesalePrice
 });
 
 // Tipe yang akan digunakan oleh React Hook Form di UI
 export type ProductFormValues = z.infer<typeof productFormSchema>;
+
+// ==========================================
+// Skema Operasi Stok & Retur
+// ==========================================
+
+export const addStockSchema = z.object({
+  id: z.number(),
+  addedStock: z.number().int().positive("Jumlah stok harus lebih dari 0"),
+});
+export type AddStockPayload = z.infer<typeof addStockSchema>;
+
+export const editStockSchema = z.object({
+  id: z.number(),
+  newStock: z.number().int().min(0, "Stok tidak boleh kurang dari 0"),
+  reason: z.string().optional(),
+});
+export type EditStockPayload = z.infer<typeof editStockSchema>;
+
+export const processReturnSchema = z.object({
+  id: z.number(),
+  resaleQty: z.number().int().min(0, "Jumlah tidak valid"),
+  wasteQty: z.number().int().min(0, "Jumlah tidak valid"),
+}).refine((data) => data.resaleQty > 0 || data.wasteQty > 0, {
+  message: "Tidak ada barang yang diolah",
+  path: ["resaleQty"],
+});
+export type ProcessReturnPayload = z.infer<typeof processReturnSchema>;

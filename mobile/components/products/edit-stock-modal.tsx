@@ -3,6 +3,10 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Loader2 } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
 import { Input } from '../ui/input';
+import { useEditStock } from '../../api/products.api';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { editStockSchema, EditStockPayload } from '../../schemas/product-form.schema';
 
 interface EditStockModalProps {
   isOpen: boolean;
@@ -12,28 +16,29 @@ interface EditStockModalProps {
 }
 
 export function EditStockModal({ isOpen, onClose, currentStock, productId }: EditStockModalProps) {
-  const [newStock, setNewStock] = useState<string>('');
-  const [reason, setReason] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutate: editStock, isPending: isSubmitting } = useEditStock();
+
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<EditStockPayload>({
+    resolver: zodResolver(editStockSchema),
+    defaultValues: {
+      id: productId ? Number(productId) : 0,
+      newStock: currentStock,
+      reason: '',
+    }
+  });
 
   useEffect(() => {
     if (isOpen) {
-      setNewStock(currentStock.toString());
-      setReason('');
+      reset({ id: productId ? Number(productId) : 0, newStock: currentStock, reason: '' });
     }
-  }, [isOpen, currentStock]);
+  }, [isOpen, productId, currentStock, reset]);
 
-  const handleSubmit = () => {
-    const stockVal = parseInt(newStock);
-    if (isNaN(stockVal) || stockVal < 0) return;
-    
-    setIsSubmitting(true);
-    // UI ONLY: Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      Alert.alert("Sukses", "Stok berhasil dikoreksi! (UI Only)");
-      onClose();
-    }, 1000);
+  const onSubmit = (data: EditStockPayload) => {
+    editStock(data, {
+      onSuccess: () => {
+        onClose();
+      }
+    });
   };
 
   return (
@@ -44,20 +49,39 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
       </Text>
       
       <View className="space-y-4 mb-6">
-        <Input
-          label="Jumlah stok FISIK saat ini?"
-          value={newStock}
-          onChangeText={(val) => setNewStock(val.replace(/[^0-9]/g, ''))}
-          keyboardType="numeric"
-          placeholder={currentStock.toString()}
-          containerClassName="mb-4"
+        <Controller
+          control={control}
+          name="newStock"
+          render={({ field: { onChange, value, onBlur } }) => (
+            <Input
+              label="Jumlah stok di gudang saat ini?"
+              value={value !== undefined ? String(value) : ''}
+              onChangeText={(val) => {
+                const number = Number(val)
+                onChange(isNaN(number)? 0 : number);
+              }}
+              onBlur={onBlur}
+              keyboardType="numeric"
+              placeholder={currentStock.toString()}
+              containerClassName="mb-4"
+              error={errors.newStock?.message}
+            />
+          )}
         />
         
-        <Input
-          label="Alasan (Opsional)"
-          value={reason}
-          onChangeText={setReason}
-          placeholder="Misal: Salah ketik, Barang hilang"
+        <Controller
+          control={control}
+          name="reason"
+          render={({ field: { onChange, value, onBlur } }) => (
+            <Input
+              label="Alasan (Opsional)"
+              value={value || ''}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="Misal: Salah ketik, Barang hilang"
+              error={errors.reason?.message}
+            />
+          )}
         />
       </View>
 
@@ -72,7 +96,7 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
         </TouchableOpacity>
         
         <TouchableOpacity 
-          onPress={handleSubmit} 
+          onPress={handleSubmit(onSubmit)} 
           disabled={isSubmitting}
           className={`flex-[2] py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 ${isSubmitting ? 'opacity-50' : ''} bg-primary`}
           activeOpacity={0.8}
