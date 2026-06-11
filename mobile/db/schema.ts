@@ -1,6 +1,17 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
+export const INVENTORY_LOG_TYPES = [
+  "KULAKAN", 
+  "KOREKSI", 
+  "TARIK_RETUR", 
+  "OLAH_RETUR", 
+  "BUANG_RUSAK", 
+  "TITIPAN"
+] as const;
+
+export type InventoryLogType = typeof INVENTORY_LOG_TYPES[number];
+
 export const products = sqliteTable('products', {
   // ID otomatis digenerate oleh SQLite
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -34,3 +45,26 @@ export const products = sqliteTable('products', {
 // Ekstraksi tipe untuk digunakan oleh TanStack Query / Service layer
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
+
+export const inventoryLogs = sqliteTable('inventory_logs', {
+  // ID otomatis digenerate oleh SQLite
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  
+  // Relasi ke tabel products (restrict delete untuk menjaga integritas log)
+  productId: integer('product_id').notNull().references(() => products.id, { onDelete: 'restrict' }),
+  
+  // Tipe aktivitas log
+  type: text('type', { enum: INVENTORY_LOG_TYPES }).notNull(),
+  
+  // Jumlah perubahan stok (bisa positif atau negatif)
+  quantity: integer('quantity').notNull(),
+  
+  // Opsional: Untuk mencatat nama toko saat tipe aktivitas adalah TITIPAN atau TARIK_RETUR
+  storeName: text('store_name'),
+  
+  // Timestamp otomatis saat log dibuat
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+export type InventoryLog = typeof inventoryLogs.$inferSelect;
+export type InsertInventoryLog = typeof inventoryLogs.$inferInsert;
