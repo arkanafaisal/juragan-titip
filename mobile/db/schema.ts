@@ -39,7 +39,7 @@ export const products = sqliteTable('products', {
   isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
   
   // Timestamp otomatis saat baris dibuat
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
 // Ekstraksi tipe untuk digunakan oleh TanStack Query / Service layer
@@ -63,8 +63,8 @@ export const inventoryLogs = sqliteTable('inventory_logs', {
   storeName: text('store_name'),
   
   // Timestamp otomatis saat log dibuat
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
 export type InventoryLog = typeof inventoryLogs.$inferSelect;
-export type InsertInventoryLog = typeof inventoryLogs.$inferInsert;
+export type InsertInventoryLog = typeof inventoryLogs.$inferInsert;

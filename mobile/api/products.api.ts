@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
-import { eq, like, and, gt, lte, SQL, sql, asc } from 'drizzle-orm';
+import { eq, like, and, gt, gte, lte, SQL, sql, asc, desc } from 'drizzle-orm';
 import { db } from '../db';
-import { products } from '../db/schema';
+import { products, inventoryLogs } from '../db/schema';
 import { 
   ProductFormValues, 
   AddStockPayload, 
@@ -166,6 +166,26 @@ export function useGetProductById(id?: number) {
   });
 }
 
+export function useGetProductInventoryLogs(productId?: number) {
+  return useQuery({
+    queryKey: ['inventoryLogs', productId],
+    queryFn: async () => {
+      if (!productId) throw new Error("ID Produk tidak valid");
+      
+      return await db.select()
+        .from(inventoryLogs)
+        .where(
+          and(
+            eq(inventoryLogs.productId, productId),
+            gte(inventoryLogs.createdAt, sql`datetime('now', '-30 days')`)
+          )
+        )
+        .orderBy(desc(inventoryLogs.createdAt));
+    },
+    enabled: !!productId,
+  });
+}
+
 
 export function useAddStock() {
   const queryClient = useQueryClient();
@@ -174,17 +194,29 @@ export function useAddStock() {
     mutationFn: async ({ id, addedStock }: AddStockPayload) => {
       if (addedStock <= 0) throw new Error("Jumlah stok harus lebih dari 0");
       
-      const result = await db.update(products)
-        .set({ warehouseStock: sql`${products.warehouseStock} + ${addedStock}` })
-        .where(and(eq(products.id, id), eq(products.isArchived, false)))
-        .returning();
+      const result = await db.transaction(async (tx) => {
+        const updatedProduct = await tx.update(products)
+          .set({ warehouseStock: sql`${products.warehouseStock} + ${addedStock}` })
+          .where(and(eq(products.id, id), eq(products.isArchived, false)))
+          .returning();
+          
+        if (updatedProduct.length === 0) throw new Error("Produk tidak ditemukan");
         
-      if (result.length === 0) throw new Error("Produk tidak ditemukan");
-      return result[0];
+        await tx.insert(inventoryLogs).values({
+          productId: id,
+          type: "KULAKAN",
+          quantity: addedStock,
+        });
+        
+        return updatedProduct[0];
+      });
+      
+      return result;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
       Toast.show({
         type: 'success',
         text1: 'Stok Ditambahkan',
@@ -209,17 +241,39 @@ export function useEditStock() {
     mutationFn: async ({ id, newStock }: EditStockPayload) => {
       if (newStock < 0) throw new Error("Stok tidak boleh kurang dari 0");
       
-      const result = await db.update(products)
-        .set({ warehouseStock: newStock })
-        .where(and(eq(products.id, id), eq(products.isArchived, false)))
-        .returning();
+      const result = await db.transaction(async (tx) => {
+        const currentProduct = await tx.select({ warehouseStock: products.warehouseStock })
+          .from(products)
+          .where(and(eq(products.id, id), eq(products.isArchived, false)))
+          .limit(1);
+          
+        if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
         
-      if (result.length === 0) throw new Error("Produk tidak ditemukan");
-      return result[0];
+        const diff = newStock - currentProduct[0].warehouseStock;
+        
+        const updatedProduct = await tx.update(products)
+          .set({ warehouseStock: newStock })
+          .where(eq(products.id, id))
+          .returning();
+          
+        // Log jika terjadi perubahan stok
+        if (diff !== 0) {
+          await tx.insert(inventoryLogs).values({
+            productId: id,
+            type: "KOREKSI",
+            quantity: diff,
+          });
+        }
+        
+        return updatedProduct[0];
+      });
+      
+      return result;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
       Toast.show({
         type: 'success',
         text1: 'Stok Dikoreksi',
@@ -247,30 +301,51 @@ export function useProcessReturn() {
       
       const totalProcessed = resaleQty + wasteQty;
       
-      // Verifikasi ketersediaan stok retur
-      const currentProduct = await db.select({ returnedStock: products.returnedStock })
-        .from(products)
-        .where(and(eq(products.id, id), eq(products.isArchived, false)))
-        .limit(1);
+      const result = await db.transaction(async (tx) => {
+        // Verifikasi ketersediaan stok retur
+        const currentProduct = await tx.select({ returnedStock: products.returnedStock })
+          .from(products)
+          .where(and(eq(products.id, id), eq(products.isArchived, false)))
+          .limit(1);
+          
+        if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
+        if (currentProduct[0].returnedStock < totalProcessed) {
+          throw new Error("Total olah melebihi jumlah retur yang ada");
+        }
         
-      if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
-      if (currentProduct[0].returnedStock < totalProcessed) {
-        throw new Error("Total olah melebihi jumlah retur yang ada");
-      }
+        const updatedProduct = await tx.update(products)
+          .set({ 
+            warehouseStock: sql`${products.warehouseStock} + ${resaleQty}`,
+            returnedStock: sql`${products.returnedStock} - ${totalProcessed}`
+          })
+          .where(eq(products.id, id))
+          .returning();
+          
+        if (resaleQty > 0) {
+          await tx.insert(inventoryLogs).values({
+            productId: id,
+            type: "OLAH_RETUR",
+            quantity: resaleQty, // Positif karena masuk ke stok gudang
+          });
+        }
+        
+        if (wasteQty > 0) {
+          await tx.insert(inventoryLogs).values({
+            productId: id,
+            type: "BUANG_RUSAK",
+            quantity: -wasteQty, // Negatif karena dibuang dari stok
+          });
+        }
+        
+        return updatedProduct[0];
+      });
       
-      const result = await db.update(products)
-        .set({ 
-          warehouseStock: sql`${products.warehouseStock} + ${resaleQty}`,
-          returnedStock: sql`${products.returnedStock} - ${totalProcessed}`
-        })
-        .where(and(eq(products.id, id), eq(products.isArchived, false)))
-        .returning();
-        
-      return result[0];
+      return result;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
       Toast.show({
         type: 'success',
         text1: 'Retur Diolah',

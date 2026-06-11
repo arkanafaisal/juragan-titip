@@ -8,7 +8,7 @@ import {
 import { Card } from '../../components/ui/card';
 import { useSettingsStore } from '../../api/settings.api';
 import { formatRupiah, formatDate } from '../../utils/formatter.util';
-import { useGetProductById, useRecoverProduct } from '../../api/products.api';
+import { useGetProductById, useRecoverProduct, useGetProductInventoryLogs } from '../../api/products.api';
 
 // UI Only Imports
 import { ConfirmModal } from '../../components/ui/modal';
@@ -17,8 +17,9 @@ import { AddStockModal } from '../../components/products/add-stock-modal';
 import { ProcessReturnModal } from '../../components/products/process-return-modal';
 
 import THEME from '../../constants/css.js';
+import { InventoryLog } from '@/db/schema';
 
-const getLogConfig = (log: any) => {
+const getLogConfig = (log: InventoryLog) => {
   switch (log.type) {
     case 'OLAH_RETUR':
       return { title: 'OLAH RETUR', desc: `Masuk Gudang: ${log.quantity} Pcs`, icon: RefreshCw, color: THEME.colors['success'] };
@@ -51,12 +52,7 @@ export default function ProductDetailScreen() {
   const { data: product, isLoading, isError } = useGetProductById(id ? Number(id) : undefined);
   const { mutate: recoverProduct, isPending: isRecovering } = useRecoverProduct();
 
-  // UI ONLY DUMMY DATA FOR LOGS
-  const logs = [
-    { id: 1, type: 'KULAKAN', quantity: 100, createdAt: new Date().toISOString() },
-    { id: 2, type: 'KOREKSI', quantity: -2, createdAt: new Date(Date.now() - 86400000).toISOString() },
-    { id: 3, type: 'TARIK_RETUR', quantity: 5, storeName: 'Toko Makmur', createdAt: new Date(Date.now() - 172800000).toISOString() },
-  ];
+  const { data: logs = [], isLoading: isLogsLoading } = useGetProductInventoryLogs(id ? Number(id) : undefined);
 
   const handleRestore = () => {
     setIsRestoreModalOpen(true);
@@ -212,9 +208,11 @@ export default function ProductDetailScreen() {
               <Text className="text-h3 font-bold text-text-primary uppercase">Riwayat Aktivitas ( 30 hari )</Text>
             </View>
 
-            <View className="flex-col gap-5 relative">
-              {logs.length === 0 ? (
-                <Text className="text-body-sm font-medium text-center text-text-secondary">Belum ada riwayat aktivitas</Text>
+            <View className="flex-col gap-3 relative">
+              {isLogsLoading ? (
+                <Text className="text-body-sm font-medium text-center text-text-secondary py-4">Memuat riwayat...</Text>
+              ) : logs.length === 0 ? (
+                <Text className="text-body-sm font-medium text-center text-text-secondary py-4">Belum ada riwayat aktivitas</Text>
               ) : (
                 logs.map((log, index) => {
                   const config = getLogConfig(log);
