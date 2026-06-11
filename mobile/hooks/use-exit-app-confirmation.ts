@@ -1,23 +1,16 @@
-import { useEffect } from 'react';
-import { BackHandler, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
+import { BackHandler } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 
 export function useExitAppConfirmation() {
   const router = useRouter();
   const pathname = usePathname();
+  const [isExitModalVisible, setIsExitModalVisible] = useState(false);
 
   useEffect(() => {
     const onBackPress = () => {
       if (!router.canGoBack() && pathname === '/') {
-        Alert.alert(
-          'Keluar Aplikasi',
-          'Apakah Anda yakin ingin keluar dari aplikasi?',
-          [
-            { text: 'Batal', style: 'cancel', onPress: () => {} },
-            { text: 'Keluar', style: 'destructive', onPress: () => BackHandler.exitApp() },
-          ],
-          { cancelable: true }
-        );
+        setIsExitModalVisible(true);
         return true;
       }
       return false;
@@ -26,4 +19,15 @@ export function useExitAppConfirmation() {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => backHandler.remove();
   }, [router, pathname]);
+
+  const confirmExit = () => {
+    setIsExitModalVisible(false);
+    BackHandler.exitApp();
+  };
+
+  const cancelExit = () => {
+    setIsExitModalVisible(false);
+  };
+
+  return { isExitModalVisible, confirmExit, cancelExit };
 }
