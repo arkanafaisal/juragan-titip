@@ -8,9 +8,10 @@ import {
 import { Card } from '../../components/ui/card';
 import { useSettingsStore } from '../../api/settings.api';
 import { formatRupiah, formatDate } from '../../utils/formatter.util';
-import { useGetProductById } from '../../api/products.api';
+import { useGetProductById, useRecoverProduct } from '../../api/products.api';
 
 // UI Only Imports
+import { ConfirmModal } from '../../components/ui/modal';
 import { EditStockModal } from '../../components/products/edit-stock-modal';
 import { AddStockModal } from '../../components/products/add-stock-modal';
 import { ProcessReturnModal } from '../../components/products/process-return-modal';
@@ -45,8 +46,10 @@ export default function ProductDetailScreen() {
   const [isKoreksiOpen, setIsKoreksiOpen] = useState(false);
   const [isTambahStokOpen, setIsTambahStokOpen] = useState(false);
   const [isOlahReturOpen, setIsOlahReturOpen] = useState(false);
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
 
   const { data: product, isLoading, isError } = useGetProductById(id ? Number(id) : undefined);
+  const { mutate: recoverProduct, isPending: isRecovering } = useRecoverProduct();
 
   // UI ONLY DUMMY DATA FOR LOGS
   const logs = [
@@ -56,7 +59,7 @@ export default function ProductDetailScreen() {
   ];
 
   const handleRestore = () => {
-    Alert.alert("Pulihkan Produk", "Apakah Anda yakin ingin memulihkan produk ini? (UI ONLY)");
+    setIsRestoreModalOpen(true);
   };
 
   if (isLoading) {
@@ -105,10 +108,13 @@ export default function ProductDetailScreen() {
               </Text>
               <TouchableOpacity 
                 onPress={handleRestore}
-                className="py-1.5 px-4 bg-error rounded-lg active:opacity-80 mt-1"
+                disabled={isRecovering}
+                className={`py-1.5 px-4 bg-error rounded-lg mt-1 ${isRecovering ? 'opacity-50' : 'active:opacity-80'}`}
                 activeOpacity={0.7}
               >
-                <Text className="text-on-error text-body-sm font-bold">Pulihkan Produk</Text>
+                <Text className="text-on-error text-body-sm font-bold">
+                  {isRecovering ? 'Memulihkan...' : 'Pulihkan Produk'}
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -118,10 +124,11 @@ export default function ProductDetailScreen() {
               <Text className="text-h2 font-bold text-text-primary flex-1 mr-2">{product.name}</Text>
               <TouchableOpacity 
                 onPress={() => router.push(`/product-form?id=${product.id}`)}
+                disabled={product.isArchived}
                 className="p-1.5 shrink-0"
                 activeOpacity={0.7}
               >
-                <SquarePen size={THEME.iconSize['md']} color={THEME.colors['warning']} />
+                <SquarePen size={THEME.iconSize['md']} color={product.isArchived ? THEME.colors['outline'] : THEME.colors['warning']} />
               </TouchableOpacity>
             </View>
             
@@ -163,19 +170,21 @@ export default function ProductDetailScreen() {
             <View className="flex-row gap-2">
               <TouchableOpacity 
                 onPress={() => setIsKoreksiOpen(true)}
-                className="flex-row items-center justify-center gap-1.5 py-2.5 px-3 bg-warning rounded-xl shrink-0"
+                disabled={product.isArchived}
+                className={`flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shrink-0 ${product.isArchived ? 'bg-surface-variant' : 'bg-warning'}`}
                 activeOpacity={0.8}
               >
-                <Pencil size={THEME.iconSize['sm']} color={THEME.colors['on-warning']} />
-                <Text className="text-on-warning font-bold">Koreksi</Text>
+                <Pencil size={THEME.iconSize['sm']} color={product.isArchived ? THEME.colors['on-surface-variant'] : THEME.colors['on-warning']} />
+                <Text className={`font-bold ${product.isArchived ? 'text-on-surface-variant' : 'text-on-warning'}`}>Koreksi</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 onPress={() => setIsTambahStokOpen(true)}
-                className="flex-1 py-2.5 px-3 bg-primary rounded-xl flex-row items-center justify-center gap-1.5 shadow-sm"
+                disabled={product.isArchived}
+                className={`flex-1 py-2.5 px-3 rounded-xl flex-row items-center justify-center gap-1.5 shadow-sm ${product.isArchived ? 'bg-surface-variant' : 'bg-primary'}`}
                 activeOpacity={0.8}
               >
-                <PackagePlus size={THEME.iconSize['md']} color={THEME.colors['on-primary']} />
-                <Text className="text-on-primary font-bold">Tambah Stok</Text>
+                <PackagePlus size={THEME.iconSize['md']} color={product.isArchived ? THEME.colors['on-surface-variant'] : THEME.colors['on-primary']} />
+                <Text className={`font-bold ${product.isArchived ? 'text-on-surface-variant' : 'text-on-primary'}`}>Tambah Stok</Text>
               </TouchableOpacity>
             </View>
           </Card>
@@ -187,12 +196,12 @@ export default function ProductDetailScreen() {
             </Text>
             <TouchableOpacity 
               onPress={() => setIsOlahReturOpen(true)}
-              disabled={!product.returnedStock || product.returnedStock === 0}
-              className={`w-full py-3 px-3 rounded-xl flex-row items-center justify-center gap-1.5 ${(!product.returnedStock || product.returnedStock === 0) ? 'bg-surface-variant' : 'bg-success'}`}
+              disabled={product.isArchived || !product.returnedStock || product.returnedStock === 0}
+              className={`w-full py-3 px-3 rounded-xl flex-row items-center justify-center gap-1.5 ${(product.isArchived || !product.returnedStock || product.returnedStock === 0) ? 'bg-surface-variant' : 'bg-success'}`}
               activeOpacity={0.8}
             >
-              <Scale size={THEME.iconSize['sm']} color={(!product.returnedStock || product.returnedStock === 0) ? THEME.colors['on-surface-variant'] : THEME.colors['on-success']} />
-              <Text className={`font-bold ${(!product.returnedStock || product.returnedStock === 0) ? 'text-on-surface-variant' : 'text-on-success'}`}>
+              <Scale size={THEME.iconSize['sm']} color={(product.isArchived || !product.returnedStock || product.returnedStock === 0) ? THEME.colors['on-surface-variant'] : THEME.colors['on-success']} />
+              <Text className={`font-bold ${(product.isArchived || !product.returnedStock || product.returnedStock === 0) ? 'text-on-surface-variant' : 'text-on-success'}`}>
                 OLAH BARANG RETUR
               </Text>
             </TouchableOpacity>
@@ -257,6 +266,20 @@ export default function ProductDetailScreen() {
         onClose={() => setIsOlahReturOpen(false)} 
         returnedStock={product.returnedStock} 
         productId={product.id}
+      />
+      
+      <ConfirmModal
+        visible={isRestoreModalOpen}
+        title="Pulihkan Produk"
+        message="Apakah Anda yakin ingin memulihkan produk ini agar kembali aktif?"
+        onCancel={() => setIsRestoreModalOpen(false)}
+        onConfirm={() => {
+          if (product) {
+            recoverProduct(product.id);
+          }
+          setIsRestoreModalOpen(false);
+        }}
+        confirmText="Pulihkan"
       />
 
     </View>

@@ -318,3 +318,35 @@ export function useArchiveProduct() {
     }
   });
 }
+
+export function useRecoverProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const result = await db.update(products)
+        .set({ isArchived: false })
+        .where(eq(products.id, id))
+        .returning();
+        
+      if (result.length === 0) throw new Error("Produk tidak ditemukan atau sudah aktif");
+      return result[0];
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', id] });
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil Dipulihkan',
+        text2: 'Produk telah aktif kembali dan muncul di daftar utama.',
+      });
+    },
+    onError: (error: Error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal Memulihkan',
+        text2: error.message,
+      });
+    }
+  });
+}
