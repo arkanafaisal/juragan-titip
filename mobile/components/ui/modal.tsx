@@ -82,9 +82,10 @@ interface InputConfirmModalProps {
   expectedInput: string;
   onCancel: () => void;
   onConfirm: () => void;
+  confirmText?: string;
 }
 
-export function InputConfirmModal({ visible, title, message, expectedInput, onCancel, onConfirm }: InputConfirmModalProps) {
+export function InputConfirmModal({ visible, title, message, expectedInput, onCancel, onConfirm, confirmText = 'Reset' }: InputConfirmModalProps) {
   const [inputValue, setInputValue] = useState('');
   const isMatch = inputValue === expectedInput;
 
@@ -106,7 +107,7 @@ export function InputConfirmModal({ visible, title, message, expectedInput, onCa
       <Text className="text-body text-on-primary mt-2">{message}</Text>
       
       <View className="mt-4">
-        <Text className="text-caption font-medium text-text-muted mb-1">Ketik "{expectedInput}" untuk konfirmasi</Text>
+        <Text className="text-caption font-medium text-on-primary mb-1">Ketik "{expectedInput}" untuk konfirmasi</Text>
         <TextInput
           value={inputValue}
           onChangeText={setInputValue}
@@ -132,7 +133,7 @@ export function InputConfirmModal({ visible, title, message, expectedInput, onCa
           className={`flex-1 py-3 rounded-xl items-center justify-center ${isMatch ? 'bg-error' : 'bg-outline-variant'}`}
           activeOpacity={isMatch ? 0.8 : 1}
         >
-          <Text className={isMatch ? 'text-on-error text-h3 font-bold' : 'text-surface text-h3 font-bold'}>Reset</Text>
+          <Text className={isMatch ? 'text-on-error text-h3 font-bold' : 'text-surface text-h3 font-bold'}>{confirmText}</Text>
         </TouchableOpacity>
       </View>
     </BaseModal>

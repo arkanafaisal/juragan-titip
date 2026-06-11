@@ -313,8 +313,9 @@ export default function ProductFormScreen() {
         <InputConfirmModal
           visible={isArchiveModalOpen}
           title="Arsipkan Produk"
-          message="Tindakan ini permanen. Histori barang ini di invoice sebelumnya tetap aman, namun Anda tidak bisa lagi menambahkannya ke kunjungan baru."
+          message="Histori kunjungan dengan produk ini tetap aman, namun Anda tidak bisa menambahkannya ke kunjungan baru selama diarsipkan."
           expectedInput={product.name}
+          confirmText="Arsipkan"
           onCancel={() => setIsArchiveModalOpen(false)}
           onConfirm={() => {
             archiveProduct.mutate(Number(id), {
