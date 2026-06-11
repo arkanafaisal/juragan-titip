@@ -1,3 +1,32 @@
+11 June 2026
+<details>
+- added db: stores table & migration
+- added export, import & reset database feature
+- added package: document picker, file system, sharing       
+- refactored db schema: separate entity schema file
+- updated product detail: fix logs hour & add relative time 
+- removed process return reason field
+- updated product detail: get product inventory logs service integration
+- added db inventory-log table & migration
+- updated action toolbar: add reset button & active filter chips
+- updated header: profile icon size
+- updated product detail: back button text
+- updated product form: archive confirm modal text
+- updated product detail: recover product service integration
+- updated product form: archive product service integration 
+- updated leave form confirmation:from alert to custom modal
+- fixed product form: active bottom tab bar
+- updated get all product service: abjad ascending
+- updated hardcoded style value into constant css usage
+- refactored css value into constant for icon style usage
+- updated product form: edit product service integration    
+- updated product detail: edit product services integration (add stock, edit stock, process return)
+- updated product detail: empty state text style
+- updated exit app confirmation: change system alert to custom modal usage
+- added modal component
+- fixed product detail: icons color
+</details>
+
 10 June 2026
 <details>
 - updated file naming convention

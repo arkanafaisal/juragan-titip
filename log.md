@@ -1,3 +1,36 @@
+git --no-pager log 6876ac8c6fc1066b0e71b42bbde280b18d67e478..HEAD --pretty=format:"%H %s"
+98cd27807a1d49dc35e8a1b3777aa9a6c5a5e1bd update(db): migration
+d037f6eb8f291f8566a78d8d1d9cb79f7fa02f11 add(db): stores table
+150d77ce91fa376435bba25a73456fca183f68f2 add export, import & reset database feature
+644cf04d8c9a620e04dc684ad8c7ded53255c959 add(package): document picker, file system, sharing       
+bc004aa59c745e89798919898813975f20a7c904 refactor(db schema): separate entity schema file
+7929104c5d3570811d4abaefdc329442bc3d5ba8 update(product detail): fix logs hour & add relative time 
+ad5f95d0124cedd32ed28317138186c4118ecda9 update(process return): remove reason field
+2d345c35f637d1421a430fb0d56ee25678388be0 update(product detail): get product inventory logs service integration
+ee8a5908eeff329faf5b9d5e9afbf35bee35695a update(db): migration
+2b0049acb17c4e5b991f513c5a17beea468c52a4 add(db) inventory-log table
+fd337627b1ac3c805adaf448e1d4c9a058a4381e update(action toolbar): add reset button & active filter chips
+2c314a8b6d46c26a340e490cbabc7d9821f80aba update(header): profile icon size
+09b28190fbb4e17f094b87b5da6a77b428e0eae7 update(product detail): back button text
+587772bbdeb5c4e578c4c75f304288f119e203d4 update(product form): archive confirm modal text
+a0f1a6e0dba5048b257abbcb4d0e47b3efd81cd5 update(product detail): recover product service integration
+aa83242dbb3632c32d250bb6a5962b5a5c424b9d update(product form): archive product service integration 
+d7f078f2459e1f2183462cbb0eac2e4a667f09d4 update: leave form confirmation (from alert to custom modal)
+b165d5898fd473ae93438d633c79a4a16b19af97 fix(product form): active bottom tab bar
+681f1b6289bcc7c77cd6fc40e38ad332b5936875 refactor hardcoded style value into constants
+02c82e65195d5255d93d9843b598c00c9266ac36 update(product service): abjad ascending getAll
+154db2b7f8fd18a631579cd0d4e585c85a58d6ef refactor: extract css value for icon style usage
+c01786e81ca3aef45dd750aa85504bef3f17718e update(product form): edit product service integration    
+4c2e9f2be904cf743dc562a76ad5f6e3db4aefe1 update(product detail): edit product services integration 
+(add stock, edit stock, process return)
+93536e2b34240f930fefc172138b7ccbf5accee2 update(product detail): empty state text style
+023982099909b741fc5a10da0d270494b1712333 update(exit app confirmation): change system alert to custom modal
+84e615c254a4b9ff0d437f5db1231e0cb9f1a2b3 add modal component
+80b0c356510722e1a5f7c42a44d20d0ff976e579 fix(product detail): icons color
+
+
+
+
 git --no-pager log 79c84e656a361aa37bc397241596eadaa2f59cc8..HEAD --pretty=format:"%H %s"
 068c5a62ba80f2118cecd8ca2bc877bdb5ab9bde fix header title
 574c391280eee05adc44b86c1a6ca6d19e1a0248 update file naming convention
