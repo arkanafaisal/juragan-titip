@@ -9,9 +9,9 @@ import { useSettingsStore } from '../../api/settings.api';
 import { Card } from '../../components/ui/card';
 import { BottomModal } from '../../components/ui/bottom-modal';
 import { Input } from '../../components/ui/input';
-import { ConfirmModal } from '../../components/ui/modal';
+import { ConfirmModal, InputConfirmModal } from '../../components/ui/modal';
 import { productFormSchema, ProductFormValues } from '../../schemas/product-form.schema';
-import { useAddProduct, useGetProductById, useUpdateProduct } from '../../api/products.api';
+import { useAddProduct, useGetProductById, useUpdateProduct, useArchiveProduct } from '../../api/products.api';
 
 import THEME from '../../constants/css'
 
@@ -21,9 +21,11 @@ export default function ProductFormScreen() {
   const categoryLabels = useSettingsStore(state => state.categoryLabels);
   const addProduct = useAddProduct();
   const updateProduct = useUpdateProduct();
+  const archiveProduct = useArchiveProduct();
   
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   
   const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -77,14 +79,7 @@ export default function ProductFormScreen() {
   };
 
   const handleArchive = () => {
-    Alert.alert(
-      "Arsipkan Produk",
-      "Tindakan ini permanen. Histori barang ini di invoice sebelumnya tetap aman, namun Anda tidak bisa lagi menambahkannya ke kunjungan baru.",
-      [
-        { text: "Batal", style: "cancel" },
-        { text: "Arsipkan", style: "destructive", onPress: () => console.log("Archived") }
-      ]
-    );
+    setIsArchiveModalOpen(true);
   };
 
   const handleCancel = () => {
@@ -314,6 +309,23 @@ export default function ProductFormScreen() {
           router.back();
         }}
       />
+      {id && product && (
+        <InputConfirmModal
+          visible={isArchiveModalOpen}
+          title="Arsipkan Produk"
+          message="Tindakan ini permanen. Histori barang ini di invoice sebelumnya tetap aman, namun Anda tidak bisa lagi menambahkannya ke kunjungan baru."
+          expectedInput={product.name}
+          onCancel={() => setIsArchiveModalOpen(false)}
+          onConfirm={() => {
+            archiveProduct.mutate(Number(id), {
+              onSuccess: () => {
+                setIsArchiveModalOpen(false);
+                router.back();
+              }
+            });
+          }}
+        />
+      )}
     </View>
   );
 }

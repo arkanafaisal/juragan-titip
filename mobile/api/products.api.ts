@@ -74,7 +74,7 @@ export function useUpdateProduct() {
             normalizedName: data.name.toLowerCase(),
             ...data
           })
-          .where(eq(products.id, id))
+          .where(and(eq(products.id, id), eq(products.isArchived, false)))
           .returning();
           
         if (result.length === 0) throw new Error("Produk tidak ditemukan");
@@ -176,7 +176,7 @@ export function useAddStock() {
       
       const result = await db.update(products)
         .set({ warehouseStock: sql`${products.warehouseStock} + ${addedStock}` })
-        .where(eq(products.id, id))
+        .where(and(eq(products.id, id), eq(products.isArchived, false)))
         .returning();
         
       if (result.length === 0) throw new Error("Produk tidak ditemukan");
@@ -211,7 +211,7 @@ export function useEditStock() {
       
       const result = await db.update(products)
         .set({ warehouseStock: newStock })
-        .where(eq(products.id, id))
+        .where(and(eq(products.id, id), eq(products.isArchived, false)))
         .returning();
         
       if (result.length === 0) throw new Error("Produk tidak ditemukan");
@@ -250,7 +250,7 @@ export function useProcessReturn() {
       // Verifikasi ketersediaan stok retur
       const currentProduct = await db.select({ returnedStock: products.returnedStock })
         .from(products)
-        .where(eq(products.id, id))
+        .where(and(eq(products.id, id), eq(products.isArchived, false)))
         .limit(1);
         
       if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
@@ -263,7 +263,7 @@ export function useProcessReturn() {
           warehouseStock: sql`${products.warehouseStock} + ${resaleQty}`,
           returnedStock: sql`${products.returnedStock} - ${totalProcessed}`
         })
-        .where(eq(products.id, id))
+        .where(and(eq(products.id, id), eq(products.isArchived, false)))
         .returning();
         
       return result[0];
@@ -281,6 +281,38 @@ export function useProcessReturn() {
       Toast.show({
         type: 'error',
         text1: 'Gagal Mengolah Retur',
+        text2: error.message,
+      });
+    }
+  });
+}
+
+export function useArchiveProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const result = await db.update(products)
+        .set({ isArchived: true })
+        .where(eq(products.id, id))
+        .returning();
+        
+      if (result.length === 0) throw new Error("Produk tidak ditemukan atau sudah diarsipkan");
+      return result[0];
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', id] });
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil Diarsipkan',
+        text2: 'Produk telah diarsipkan dan tidak akan muncul di daftar utama.',
+      });
+    },
+    onError: (error: Error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal Mengarsipkan',
         text2: error.message,
       });
     }
