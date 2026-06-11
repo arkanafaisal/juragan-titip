@@ -56,7 +56,6 @@ export type AddStockPayload = z.infer<typeof addStockSchema>;
 export const editStockSchema = z.object({
   id: z.number(),
   newStock: z.number().int().min(0, "Stok tidak boleh kurang dari 0"),
-  reason: z.string().optional(),
 });
 export type EditStockPayload = z.infer<typeof editStockSchema>;
 

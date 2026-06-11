@@ -24,13 +24,12 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
     defaultValues: {
       id: productId ? Number(productId) : 0,
       newStock: currentStock,
-      reason: '',
     }
   });
 
   useEffect(() => {
     if (isOpen) {
-      reset({ id: productId ? Number(productId) : 0, newStock: currentStock, reason: '' });
+      reset({ id: productId ? Number(productId) : 0, newStock: currentStock });
     }
   }, [isOpen, productId, currentStock, reset]);
 
@@ -49,7 +48,7 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
         Tercatat di aplikasi: <Text className="font-bold text-primary">{currentStock} Pcs</Text>
       </Text>
       
-      <View className="space-y-4 mb-6">
+      <View className="space-y-4">
         <Controller
           control={control}
           name="newStock"
@@ -66,21 +65,6 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
               placeholder={currentStock.toString()}
               containerClassName="mb-4"
               error={errors.newStock?.message}
-            />
-          )}
-        />
-        
-        <Controller
-          control={control}
-          name="reason"
-          render={({ field: { onChange, value, onBlur } }) => (
-            <Input
-              label="Alasan (Opsional)"
-              value={value || ''}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Misal: Salah ketik, Barang hilang"
-              error={errors.reason?.message}
             />
           )}
         />
