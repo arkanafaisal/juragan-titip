@@ -49,7 +49,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
         const activeRouteName = state.routes[state.index].name;
         const isNativelyFocused = state.index === index;
         // Tetap aktifkan tab produk jika yang sedang dibuka adalah product-form
-        const isVisuallyFocused = isNativelyFocused || (activeRouteName === 'product-form' && route.name === 'products');
+        const isVisuallyFocused = isNativelyFocused || ((activeRouteName === 'product-form' || activeRouteName === 'product-detail') && route.name === 'product-list');
 
         const onPress = () => {
           const event = navigation.emit({
