@@ -27,7 +27,7 @@
     "expo-file-system": "~55.0.22",
     "expo-font": "~55.0.8",
     "expo-linking": "~55.0.15",
-    "expo-location": "^56.0.17",
+    "expo-location": "~55.1.10",
     "expo-router": "~55.0.16",
     "expo-sharing": "~55.0.20",
     "expo-splash-screen": "~55.0.21",
