@@ -1,12 +1,13 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MapPin, Store as StoreIcon, History } from 'lucide-react-native';
-import type { Store, Product } from '../../types/index.type';
 import { formatRupiah } from '../../utils/formatter.util';
 import THEME from '../../constants/css';
 
 import { Card } from '../ui/card';
+import { Store } from '../../db/schema/stores.schema';
+import { Product } from '../../db/schema/products.schema';
+
 
 const getCategoryStyles = (category?: string) => {
   if (category === "1") return { bg: "bg-primary", text: "text-on-primary", border: "border-info/40" };
@@ -46,7 +47,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
     <Card className={`p-0 bg-surface overflow-hidden mb-4 ${data.category ? catStyle.border : ''}`}>
       <TouchableOpacity 
         activeOpacity={0.7}
-        onPress={() => router.push(isStore ? `/stores/${data.id}` as any : `/product-detail?id=${data.id}` as any)}
+        onPress={() => router.push(isStore ? `/store-detail?id=${data.id}` as any : `/product-detail?id=${data.id}` as any)}
       >
         <View className="flex-row items-start justify-between mb-2">
           <View className="flex-1 mr-2">
@@ -75,7 +76,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
             )}
           </View>
         </View>
-        
+
         {isStore && (
           <View className="flex-row items-start gap-1 mb-4">
             <MapPin size={THEME.iconSize['sm']} color={THEME.colors['outline']} className="mt-0.5" />
@@ -127,7 +128,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
             <Text className="text-on-primary text-body-sm font-medium">Maps</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            onPress={() => router.push(`/stores/${data.id}/visit` as any)}
+            onPress={() => router.push(`/store-visit?id=${data.id}` as any)}
             className="flex-1 bg-primary py-2 rounded-lg flex-row items-center justify-center gap-1"
             activeOpacity={0.7}
           >

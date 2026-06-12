@@ -110,3 +110,42 @@ export function useGetStores(filters?: GetStoresFilters) {
     }
   });
 }
+
+export function useGetStoreById(id?: number) {
+  return useQuery({
+    queryKey: ['store', id],
+    queryFn: async () => {
+      if (!id) return null;
+      try {
+        const storeData = await db.select()
+          .from(stores)
+          .where(eq(stores.id, id))
+          .limit(1);
+
+        if (storeData.length === 0) {
+          throw new Error("Toko tidak ditemukan");
+        }
+
+        // Mock data analisis (Titipan aktif & Riwayat Kunjungan)
+        const analysis = {
+          activeItems: [
+            { productName: "Keripik Singkong", remained: 15 },
+            { productName: "Kacang Polong", remained: 8 },
+          ],
+          visitHistory: [
+            { id: 1, amountPaid: 150000, createdAt: new Date().toISOString() },
+            { id: 2, amountPaid: 50000, createdAt: new Date(Date.now() - 86400000 * 7).toISOString() }
+          ]
+        };
+
+        return {
+          store: storeData[0],
+          ...analysis
+        };
+      } catch (error: any) {
+        throw new Error(error.message || "Gagal memuat detail toko.");
+      }
+    },
+    enabled: !!id
+  });
+}
