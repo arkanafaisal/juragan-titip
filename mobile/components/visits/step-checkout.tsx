@@ -113,7 +113,7 @@ export function StepCheckout({
   return (
     <View className="flex-1 flex-col pb-4">
       <View className="mb-4 px-4">
-        <Text className="text-h3 font-bold text-text-primary mb-1">Tagihan & Sisa Stok</Text>
+        <Text className="text-h3 font-bold text-text-primary mb-1">Tagihan dan rincian produk</Text>
         <Text className="text-body-sm text-text-secondary">Periksa kembali ringkasan sebelum menyimpan kunjungan.</Text>
       </View>
 
@@ -123,7 +123,7 @@ export function StepCheckout({
         <Card className="flex-col !p-0 overflow-hidden mb-4">
           <View className="bg-surface-container-low px-4 py-3 border-b border-outline-variant flex-row items-center gap-2">
             <DollarSign size={18} color={THEME.colors.primary} />
-            <Text className="font-bold text-text-primary text-body">Ringkas Tagihan</Text>
+            <Text className="font-bold text-text-primary text-body">Ringkasan Tagihan</Text>
           </View>
           
           <View className="p-4 flex-col gap-2">
@@ -219,10 +219,10 @@ export function StepCheckout({
           </View>
         </Card>
 
-        {/* RINGKASAN STOK DITINGGALKAN */}
+        {/* RINGKASAN PRODUK DI TOKO */}
         <Card className="flex-col !p-0 overflow-hidden mb-24">
           <View className="bg-surface-container-low px-4 py-3 border-b border-outline-variant">
-            <Text className="font-bold text-text-primary text-body">Stok Ditinggalkan</Text>
+            <Text className="font-bold text-text-primary text-body">Produk di Toko</Text>
           </View>
           
           <View className="p-4 flex-col gap-3">
@@ -230,9 +230,13 @@ export function StepCheckout({
               <View key={item.productId} className="flex-row justify-between items-center">
                 <View className="flex-1">
                   <Text className="text-text-primary font-medium">{item.productName}</Text>
-                  <Text className="text-caption text-text-secondary">
-                    {item.initialStock > 0 && `Awal: ${item.initialStock}`} 
-                    {item.restock > 0 && ` | + Baru: ${item.restock}`}
+                  <Text className="text-[10px] text-text-secondary mt-1">
+                    {[
+                      item.initialStock > 0 ? `+${item.initialStock} awal` : null,
+                      item.sold > 0 ? `-${item.sold} laku` : null,
+                      item.returned > 0 ? `-${item.returned} retur` : null,
+                      item.restock > 0 ? `+${item.restock} baru` : null
+                    ].filter(Boolean).join('   ')}
                   </Text>
                 </View>
                 <View className="bg-primary/10 px-2 py-1 rounded-md">
@@ -241,7 +245,7 @@ export function StepCheckout({
               </View>
             ))}
             {displayStockItems.length === 0 && (
-              <Text className="text-text-secondary text-center italic py-2">Tidak ada stok yang ditinggalkan</Text>
+              <Text className="text-text-secondary text-center italic py-2">Tidak ada produk di toko</Text>
             )}
           </View>
         </Card>
