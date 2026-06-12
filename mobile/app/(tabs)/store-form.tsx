@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, BackHandler } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { View, Text, ScrollView, TouchableOpacity, BackHandler, ActivityIndicator } from 'react-native';
+import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, Save, MapPin } from 'lucide-react-native';
 
@@ -13,11 +14,14 @@ import { BottomModal } from '@/components/ui/bottom-modal';
 import { MapPicker } from '../../components/shared/map-picker';
 
 import { storeFormSchema, StoreFormValues } from '../../schemas/store-form.schema';
-import { useAddStore } from '../../api/stores.api';
+import { useAddStore, useUpdateStore, useGetStoreById } from '../../api/stores.api';
 import { useSettingsStore } from '../../api/settings.api';
 
 export default function StoreFormScreen() {
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const storeId = id ? Number(id) : undefined;
+  const isEdit = !!storeId;
   
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -26,6 +30,8 @@ export default function StoreFormScreen() {
   const storeCategoryLabels = useSettingsStore(state => state.storeCategoryLabels);
   
   const addStore = useAddStore();
+  const updateStore = useUpdateStore();
+  const { data: storeData, isLoading: isLoadingStore } = useGetStoreById(storeId);
 
   const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<StoreFormValues>({
     resolver: zodResolver(storeFormSchema),
@@ -63,28 +69,63 @@ export default function StoreFormScreen() {
       // Cleanup & Reset form on leave/enter
       return () => {
         backHandler.remove();
-        reset({
-          name: '',
-          ownerName: '',
-          phone: '',
-          address: '',
-          category: '' as any,
-          notes: '',
-          latitude: 0,
-          longitude: 0,
-        });
+        if (!isEdit) {
+          reset({
+            name: '',
+            ownerName: '',
+            phone: '',
+            address: '',
+            category: '' as any,
+            notes: '',
+            latitude: 0,
+            longitude: 0,
+          });
+        }
       };
-    }, [reset])
+    }, [reset, isEdit])
   );
 
+  useEffect(() => {
+    if (isEdit && storeData?.store) {
+      const s = storeData.store;
+      reset({
+        name: s.name,
+        ownerName: s.ownerName,
+        phone: s.phone || '',
+        address: s.address,
+        category: s.category as any,
+        notes: s.notes || '',
+        latitude: s.latitude,
+        longitude: s.longitude,
+      });
+    }
+  }, [storeData, isEdit, reset]);
+
   const onSubmit = (data: StoreFormValues) => {
-    addStore.mutate(data, {
-      onSuccess: () => {
-        router.back();
-      },
-      onError: (err) => showError('Gagal Menyimpan', err.message)
-    });
+    if (isEdit && storeId) {
+      updateStore.mutate({ id: storeId, data }, {
+        onSuccess: () => {
+          router.back();
+        },
+        onError: (err) => showError('Gagal Memperbarui', err.message)
+      });
+    } else {
+      addStore.mutate(data, {
+        onSuccess: () => {
+          router.back();
+        },
+        onError: (err) => showError('Gagal Menyimpan', err.message)
+      });
+    }
   };
+
+  if (isEdit && isLoadingStore) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" color={THEME.colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background">
@@ -192,8 +233,9 @@ export default function StoreFormScreen() {
 
             <View className="mt-1 flex-col gap-3">
               <MapPicker 
-                initialLatitude={watchedCategory ? -6.200000 : undefined} 
-                initialLongitude={watchedCategory ? 106.816666 : undefined} 
+                key={isEdit ? (isLoadingStore ? 'loading' : `loaded-${storeId}`) : 'new'}
+                initialLatitude={isEdit && storeData?.store ? storeData.store.latitude : (watchedCategory ? -6.200000 : undefined)} 
+                initialLongitude={isEdit && storeData?.store ? storeData.store.longitude : (watchedCategory ? 106.816666 : undefined)} 
                 onLocationChange={(lat, lng) => {
                   setValue('latitude', lat, { shouldValidate: true, shouldDirty: true });
                   setValue('longitude', lng, { shouldValidate: true, shouldDirty: true });
@@ -260,13 +302,13 @@ export default function StoreFormScreen() {
           <View className="flex-col gap-3 mt-6 pb-8">
             <TouchableOpacity 
               onPress={handleSubmit(onSubmit)}
-              disabled={addStore.isPending}
-              className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${addStore.isPending ? 'bg-primary/70' : 'bg-primary'}`}
+              disabled={addStore.isPending || updateStore.isPending}
+              className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${(addStore.isPending || updateStore.isPending) ? 'bg-primary/70' : 'bg-primary'}`}
               activeOpacity={0.8}
             >
               <Save size={THEME.iconSize['md']} color={THEME.colors['on-primary']} />
               <Text className="text-on-primary font-bold">
-                {addStore.isPending ? "MENYIMPAN..." : "TAMBAH TOKO"}
+                {(addStore.isPending || updateStore.isPending) ? "MENYIMPAN..." : (isEdit ? "SIMPAN PERUBAHAN" : "TAMBAH TOKO")}
               </Text>
             </TouchableOpacity>
           </View>

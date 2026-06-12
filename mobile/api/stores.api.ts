@@ -149,3 +149,25 @@ export function useGetStoreById(id?: number) {
     enabled: !!id
   });
 }
+
+export function useUpdateStore() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<typeof stores.$inferInsert> }) => {
+      try {
+        await db.update(stores)
+          .set({
+            ...data,
+            ...(data.name ? { normalizedName: data.name.toLowerCase() } : {})
+          })
+          .where(eq(stores.id, id));
+      } catch (error: any) {
+        throw new Error(error.message || "Gagal memperbarui toko ke database.");
+      }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
+      queryClient.invalidateQueries({ queryKey: ['store', variables.id] });
+    }
+  });
+}
