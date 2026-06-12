@@ -1,4 +1,6 @@
-{
+import 'dotenv/config'
+
+export default {
   "expo": {
     "name": "mobile",
     "slug": "mobile",
@@ -16,6 +18,12 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "id.my.arkanafaisal.juragantitip",
+      "config": {
+        "googleMaps": {
+          "apiKey": process.env.GOOGLE_MAPS_API_KEY
+        }
+      },
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
