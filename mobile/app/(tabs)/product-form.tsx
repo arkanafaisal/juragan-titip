@@ -75,7 +75,14 @@ export default function ProductFormScreen() {
   useFocusEffect(
     useCallback(() => {
       return () => {
-        reset();
+        reset({
+          name: '',
+          category: '' as any,
+          description: '',
+          costPrice: 0,
+          wholesalePrice: 0,
+          retailPrice: undefined,
+        });
       };
     }, [reset])
   );
