@@ -149,10 +149,18 @@ interface InfoModalProps {
   title: string;
   message: string;
   onClose: () => void;
+  onContinue?: () => void;
   buttonText?: string;
 }
 
-export function InfoModal({ visible, title, message, onClose, buttonText = 'Tutup' }: InfoModalProps) {
+export function InfoModal({ visible, title, message, onClose, onContinue, buttonText = 'Tutup' }: InfoModalProps) {
+  const handlePress = () => {
+    onClose();
+    if (onContinue) {
+      onContinue();
+    }
+  };
+
   return (
     <BaseModal visible={visible} onClose={onClose}>
       <Text className="text-h2 font-bold text-on-primary text-center">{title}</Text>
@@ -160,7 +168,7 @@ export function InfoModal({ visible, title, message, onClose, buttonText = 'Tutu
       
       <View className="mt-6">
         <TouchableOpacity 
-          onPress={onClose} 
+          onPress={handlePress} 
           className="w-full bg-warning py-3 rounded-xl items-center justify-center"
           activeOpacity={0.8}
         >
