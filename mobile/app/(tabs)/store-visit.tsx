@@ -1,15 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { ChevronLeft, CheckCircle2 } from 'lucide-react-native';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Toast from 'react-native-toast-message';
+
 import THEME from '../../constants/css';
+import { StepOpname } from '../../components/visits/step-opname';
+import { StepRestock, ProductLight } from '../../components/visits/step-restock';
+import { StepCheckout } from '../../components/visits/step-checkout';
+import { ConfirmModal, InfoModal } from '../../components/ui/modal';
 
-import { StepOpname, OpnameItem } from '../../components/visits/step-opname';
-import { StepRestock, RestockItem, ProductLight } from '../../components/visits/step-restock';
-import { StepCheckout, BillingItem, StockItem } from '../../components/visits/step-checkout';
-import { ConfirmModal } from '../../components/ui/modal';
+import { useGetStoreById } from '../../api/stores.api';
+import { useGetProducts } from '../../api/products.api';
+import { useGetLastVisit, useCreateVisit } from '../../api/visits.api';
+import { visitFormSchema, VisitFormValues } from '../../schemas/visit.schema';
 
-// Komponen Step Indicator
 const StepIndicator = ({ current, target, label, num }: any) => {
   const isPast = current > target;
   const isActive = current === target;
@@ -33,165 +40,191 @@ export default function StoreVisitScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
   
-  // Dummy data
-  const storeName = "Toko Dummy " + (params.id || "123");
-  const [currentDebt] = useState(150000); // 150k debt dummy
+  const storeIdNum = parseInt(params.id as string) || 0;
   
+  // 1. Fetch Store
+  const { data: storeData, isLoading: isStoreLoading } = useGetStoreById(storeIdNum);
+  const store = storeData?.store;
+  const storeName = store?.name || "Memuat...";
+  
+  // 2. Fetch Last Visit
+  const { data: lastVisit, isLoading: isVisitLoading } = useGetLastVisit(storeIdNum, store?.lastVisitAt);
+  const currentDebt = lastVisit?.debt || 0;
+  
+  // 3. Fetch All Products (isArchived: false)
+  const { data: productsData, isLoading: isProductsLoading } = useGetProducts({ isArchived: 'false' });
+  const allProducts: ProductLight[] = useMemo(() => {
+    if (!productsData) return [];
+    return productsData.map(p => ({
+      id: p.id,
+      name: p.name,
+      costPrice: p.costPrice,
+      wholesalePrice: p.wholesalePrice,
+      warehouseStock: p.warehouseStock
+    }));
+  }, [productsData]);
+
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [amountPaidStr, setAmountPaidStr] = useState("");
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // DUMMY STATE
-  const [opnameItems, setOpnameItems] = useState<OpnameItem[]>([
-    { productId: 1, productName: 'Roti Bakar Sari', initialStock: 10, sold: 0, returned: 0, remained: 10, costPrice: 4000, wholesalePrice: 5000 },
-    { productId: 2, productName: 'Kripik Pisang', initialStock: 5, sold: 0, returned: 0, remained: 5, costPrice: 8000, wholesalePrice: 10000 },
-  ]);
+  // Reset inisialisasi setiap kali halaman ini dibuka/difokuskan
+  useFocusEffect(
+    useCallback(() => {
+      setIsInitialized(false);
+      setStep(1);
+      // Eksekusi ini setelah methods dideklarasikan, jadi kita panggil di bawah jika methods belum ada.
+    }, [storeIdNum])
+  );
 
-  const [allProducts] = useState<ProductLight[]>([
-    { id: 1, name: 'Roti Bakar Sari', costPrice: 4000, wholesalePrice: 5000, warehouseStock: 100 },
-    { id: 2, name: 'Kripik Pisang', costPrice: 8000, wholesalePrice: 10000, warehouseStock: 50 },
-    { id: 3, name: 'Kacang Garuda', costPrice: 2000, wholesalePrice: 2500, warehouseStock: 200 },
-    { id: 4, name: 'Minuman Ale-Ale', costPrice: 1000, wholesalePrice: 1500, warehouseStock: 300 },
-  ]);
-
-  const [restockItems, setRestockItems] = useState<RestockItem[]>([]);
-
-  // Format IDR
-  const formatCurrency = (value: number) => {
-    return 'Rp ' + value.toLocaleString('id-ID');
-  };
-
-  // ================= STEP 1: OPNAME LOGIC =================
-  const handleOpnameChange = (productId: number, field: 'sold' | 'returned', value: number) => {
-    setOpnameItems(prev => prev.map(item => {
-      if (item.productId === productId) {
-        const num = isNaN(value) || value < 0 ? 0 : value;
-        const updated = { ...item, [field]: num };
-        if (updated.sold + updated.returned > updated.initialStock) return item; 
-        updated.remained = updated.initialStock - updated.sold - updated.returned;
-        return updated;
+  // RHF Setup
+  const methods = useForm<VisitFormValues>({
+    resolver: zodResolver(visitFormSchema),
+    defaultValues: {
+      storeId: storeIdNum,
+      storeName: '',
+      opnameItems: [],
+      restockItems: [],
+      checkout: {
+        amountPaid: 0,
+        subtotalLaku: 0,
+        oldDebt: 0
       }
-      return item;
-    }));
-  };
+    }
+  });
 
-  // ================= STEP 2: RESTOCK LOGIC =================
-  const suggestedProducts = useMemo(() => {
-    const restockedIds = restockItems.map(i => i.productId);
-    return opnameItems
-      .filter(i => !restockedIds.includes(i.productId) && i.remained <= 2)
-      .map(i => ({ id: i.productId, name: i.productName }));
-  }, [opnameItems, restockItems]);
+  const { reset, watch, handleSubmit } = methods;
+  const opnameItems = watch('opnameItems');
+  const restockItems = watch('restockItems');
 
-  const handleAddRestock = (product: { id: number; name: string }) => {
-    if (restockItems.some(i => i.productId === product.id)) return;
-    
-    const fullProduct = allProducts.find(p => p.id === product.id);
-    if (!fullProduct) return;
-    
-    setRestockItems(prev => [...prev, {
-      productId: fullProduct.id, 
-      productName: fullProduct.name, 
-      quantity: 1, 
-      costPrice: fullProduct.costPrice, 
-      wholesalePrice: fullProduct.wholesalePrice, 
-      _warehouseStock: fullProduct.warehouseStock 
-    }]);
-  };
+  useFocusEffect(
+    useCallback(() => {
+      reset(); // Hapus form state lama seketika
+    }, [reset, storeIdNum])
+  );
 
-  const handleRestockQuantity = (productId: number, qty: number) => {
-    setRestockItems(prev => prev.map(item => {
-      if (item.productId === productId) {
-        let finalQty = isNaN(qty) || qty < 0 ? 0 : qty;
-        if (finalQty > item._warehouseStock) finalQty = item._warehouseStock;
-        return { ...item, quantity: finalQty };
-      }
-      return item;
-    }));
-  };
+  // Initialize Form Data
+  useEffect(() => {
+    if (store && !isInitialized && !isVisitLoading && !isProductsLoading) {
+      let mapped: any[] = [];
+      let skipOpname = false;
 
-  const handleRemoveRestock = (productId: number) => {
-    setRestockItems(prev => prev.filter(i => i.productId !== productId));
-  };
-
-  // ================= STEP 3: CHECKOUT LOGIC =================
-  const isVisitEmpty = opnameItems.length === 0 && restockItems.filter(i => i.quantity > 0).length === 0;
-
-  const billingItems = useMemo(() => {
-    const items: BillingItem[] = [];
-    opnameItems.forEach(item => {
-      if (item.sold > 0) {
-        items.push({ id: `${item.productId}_sold`, name: item.productName, type: 'sold', qty: item.sold, price: item.wholesalePrice });
-      }
-    });
-    return items;
-  }, [opnameItems]);
-
-  const displayStockItems = useMemo(() => {
-    const map = new Map<number, StockItem>();
-    
-    opnameItems.forEach(item => {
-      map.set(item.productId, { 
-        productId: item.productId, 
-        productName: item.productName, 
-        initialStock: item.initialStock,
-        sold: item.sold,
-        returned: item.returned,
-        remained: item.remained,
-        restock: 0,
-        total: item.remained
-      });
-    });
-    
-    restockItems.forEach(item => {
-      if (item.quantity > 0) {
-        const existing = map.get(item.productId);
-        if (existing) {
-          existing.restock = item.quantity;
-          existing.total += item.quantity;
-        } else {
-          map.set(item.productId, { 
-            productId: item.productId, 
-            productName: item.productName, 
-            initialStock: 0,
+      if (!store.lastVisitAt || !lastVisit) {
+        skipOpname = true;
+      } else if (lastVisit && lastVisit.items) {
+        mapped = lastVisit.items.map((item: any) => {
+          const remainedPrev = (item.initialStock - item.sold - item.returned) + item.restocked;
+          return {
+            productId: item.productId,
+            productName: item.product?.name || 'Produk Dihapus',
+            initialStock: remainedPrev,
             sold: 0,
             returned: 0,
-            remained: 0,
-            restock: item.quantity,
-            total: item.quantity
-          });
-        }
+            remained: remainedPrev,
+            costPrice: item.product?.costPrice || 0,
+            wholesalePrice: item.product?.wholesalePrice || item.price
+          };
+        }).filter((i: any) => i.initialStock > 0);
+
+        if (mapped.length === 0) skipOpname = true;
       }
-    });
-    
-    return Array.from(map.values());
-  }, [opnameItems, restockItems]);
 
-  const subtotal = billingItems.reduce((acc, item) => acc + (item.qty * item.price), 0);
+      reset({
+        storeId: storeIdNum,
+        storeName: store.name,
+        opnameItems: mapped,
+        restockItems: [],
+        checkout: {
+          amountPaid: 0,
+          subtotalLaku: 0,
+          oldDebt: lastVisit?.debt || 0
+        }
+      });
 
-  // NAVIGATION HANDLERS
+      if (skipOpname && step === 1) {
+        setStep(2);
+      }
+      setIsInitialized(true);
+    }
+  }, [store, lastVisit, isVisitLoading, isProductsLoading, isInitialized, step, reset, storeIdNum]);
+
+  // Suggestions for Restock (Items from last visit that are not yet in restock list)
+  const suggestedProducts = useMemo(() => {
+    if (!lastVisit?.items) return [];
+    const restockedIds = restockItems?.map(i => i.productId) || [];
+    return lastVisit.items
+      .map(item => allProducts.find(p => p.id === item.productId))
+      .filter(p => p && !restockedIds.includes(p.id)) as ProductLight[];
+  }, [lastVisit, allProducts, restockItems]);
+
   const handleHeaderPrevStep = () => {
     if (step === 3) setStep(2);
     else if (step === 2) {
-      if (opnameItems.length > 0) setStep(1);
-      else router.back();
+      if (opnameItems?.length > 0) setStep(1);
+      else setShowCancelModal(true);
     }
-    else if (step === 1) router.back();
+    else if (step === 1) setShowCancelModal(true);
   };
 
-  const handlePrevStepFromRestock = () => {
-    if (opnameItems.length > 0) setStep(1);
-    else router.back();
+  const handleNextToCheckout = () => {
+    const isFirstVisit = !store?.lastVisitAt;
+    const totalRemained = opnameItems?.reduce((acc, item) => acc + item.remained, 0) || 0;
+    const totalRestocked = restockItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+    
+    if (isFirstVisit && totalRemained + totalRestocked === 0) {
+      Toast.show({
+        type: 'error',
+        text1: 'Kunjungan Perdana',
+        text2: 'Kunjungan pertama harus menitipkan minimal 1 barang baru.'
+      });
+      return;
+    }
+    setStep(3);
   };
 
-  const handleFinish = () => {
-    setIsSubmitting(true);
-    // Simulate API Call
-    setTimeout(() => {
-      setIsSubmitting(false);
+  const createVisit = useCreateVisit();
+
+  const onValidSubmit = async (data: VisitFormValues) => {
+    try {
+      await createVisit.mutateAsync(data);
+      reset();
+      setIsInitialized(false);
       router.back();
-    }, 1500);
+    } catch (e) {
+      // Error is handled by toast in API hook
+    }
+  };
+
+  const onInvalidSubmit = (errors: any) => {
+    let msg = '';
+    
+    if (errors.checkout?.amountPaid) msg += `• Pembayaran: ${errors.checkout.amountPaid.message}\n`;
+    if (errors.opnameItems) {
+      if (Array.isArray(errors.opnameItems)) {
+        errors.opnameItems.forEach((err: any, idx: number) => {
+           if (err?.sold) msg += `• Opname Baris ${idx+1} Laku: ${err.sold.message}\n`;
+           if (err?.returned) msg += `• Opname Baris ${idx+1} Retur: ${err.returned.message}\n`;
+           if (err?.root) msg += `• Opname Baris ${idx+1}: ${err.root.message}\n`;
+        });
+      } else if (errors.opnameItems.message) {
+        msg += `• Opname: ${errors.opnameItems.message}\n`;
+      }
+    }
+    if (errors.restockItems) {
+      if (Array.isArray(errors.restockItems)) {
+        errors.restockItems.forEach((err: any, idx: number) => {
+           if (err?.quantity) msg += `• Restock Baris ${idx+1} Qty: ${err.quantity.message}\n`;
+        });
+      } else if (errors.restockItems.message) {
+        msg += `• Restock: ${errors.restockItems.message}\n`;
+      }
+    }
+    
+    setErrorModalMessage(msg.trim() || 'Terdapat isian yang tidak valid. Mohon periksa kembali.');
+    setShowErrorModal(true);
   };
 
   return (
@@ -219,44 +252,36 @@ export default function StoreVisitScreen() {
         </View>
       </View>
 
-      {/* CONTENT PER STEP */}
-      {step === 1 && (
-        <StepOpname 
-          opnameItems={opnameItems}
-          handleOpnameChange={handleOpnameChange}
-          onNext={() => setStep(2)}
-        />
-      )}
+      <FormProvider {...methods}>
+        {step === 1 && (
+          <StepOpname 
+            onNext={() => setStep(2)}
+          />
+        )}
 
-      {step === 2 && (
-        <StepRestock 
-          allProducts={allProducts}
-          restockItems={restockItems}
-          suggestedProducts={suggestedProducts}
-          handleAddRestock={handleAddRestock}
-          handleRestockQuantity={handleRestockQuantity}
-          handleRemoveRestock={handleRemoveRestock}
-          onNext={() => setStep(3)}
-          onPrev={handlePrevStepFromRestock}
-          formatCurrency={formatCurrency}
-        />
-      )}
+        {step === 2 && (
+          <StepRestock 
+            allProducts={allProducts}
+            suggestedProducts={suggestedProducts}
+            onNext={handleNextToCheckout}
+            onPrev={() => {
+              if (opnameItems?.length > 0) setStep(1);
+              else router.back();
+            }}
+            formatCurrency={(val: number) => 'Rp ' + val.toLocaleString('id-ID')}
+          />
+        )}
 
-      {step === 3 && (
-        <StepCheckout 
-          billingItems={billingItems}
-          displayStockItems={displayStockItems}
-          subtotal={subtotal}
-          currentDebt={currentDebt}
-          isSubmitting={isSubmitting}
-          isNextDisabled={isVisitEmpty}
-          localAmountPaid={amountPaidStr}
-          setLocalAmountPaid={setAmountPaidStr}
-          onPrev={() => setStep(2)}
-          onFinish={handleFinish}
-          formatCurrency={formatCurrency}
-        />
-      )}
+        {step === 3 && (
+          <StepCheckout 
+            currentDebt={currentDebt}
+            isSubmitting={createVisit.isPending}
+            onPrev={() => setStep(2)}
+            onFinish={handleSubmit(onValidSubmit, onInvalidSubmit)}
+            formatCurrency={(val: number) => 'Rp ' + val.toLocaleString('id-ID')}
+          />
+        )}
+      </FormProvider>
 
       <ConfirmModal
         visible={showWarningModal}
@@ -268,6 +293,29 @@ export default function StoreVisitScreen() {
         }}
         onConfirm={() => setShowWarningModal(false)}
         confirmText="Tetap Lanjutkan"
+      />
+
+      <ConfirmModal
+        visible={showCancelModal}
+        title="Batalkan Kunjungan?"
+        message="Data kunjungan yang belum disimpan akan hilang. Yakin ingin membatalkan?"
+        onCancel={() => setShowCancelModal(false)}
+        onConfirm={() => {
+          setShowCancelModal(false);
+          reset();
+          setIsInitialized(false);
+          router.back();
+        }}
+        confirmText="Ya, Batalkan"
+        cancelText="Kembali"
+      />
+
+      <InfoModal
+        visible={showErrorModal}
+        title="Validasi Gagal"
+        message={errorModalMessage}
+        onClose={() => setShowErrorModal(false)}
+        buttonText="Mengerti"
       />
     </View>
   );
