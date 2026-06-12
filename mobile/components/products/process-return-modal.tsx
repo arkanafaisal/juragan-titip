@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { RefreshCw, Trash2, Scale, Loader2 } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
+import { InfoModal } from '../ui/modal';
 import { Input } from '../ui/input';
 import { useProcessReturn } from '../../api/products.api';
 import { useForm, Controller } from 'react-hook-form';
@@ -18,6 +19,7 @@ interface ProcessReturnModalProps {
 
 export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }: ProcessReturnModalProps) {
   const { mutate: processReturn, isPending: isSaving } = useProcessReturn();
+  const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string}>({ visible: false, title: '', message: '' });
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm<ProcessReturnPayload>({
     resolver: zodResolver(processReturnSchema),
@@ -39,7 +41,7 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
     const wQty = data.wasteQty || 0;
     
     if (rQty + wQty > returnedStock) {
-      Alert.alert("Error", "Total melebihi jumlah retur yang ada");
+      setErrorInfo({ visible: true, title: 'Error Validasi', message: 'Total melebihi jumlah retur yang ada' });
       return;
     }
 
@@ -48,13 +50,15 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
       {
         onSuccess: () => {
           onClose();
-        }
+        },
+        onError: (err) => setErrorInfo({ visible: true, title: 'Gagal Mengolah Retur', message: err.message })
       }
     );
   };
 
   return (
-    <BottomModal visible={isOpen} onClose={onClose}>
+    <>
+      <BottomModal visible={isOpen} onClose={onClose}>
       <Text className="text-h3 font-bold text-text-primary mb-1">Sortir Barang Retur</Text>
       <Text className="text-body-sm text-text-secondary mb-5">
         Belum Diolah: <Text className="font-bold text-error">{returnedStock} Pcs</Text>
@@ -136,6 +140,13 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
           </Text>
         </TouchableOpacity>
       </View>
-    </BottomModal>
+      </BottomModal>
+      <InfoModal
+        visible={errorInfo.visible}
+        title={errorInfo.title}
+        message={errorInfo.message}
+        onClose={() => setErrorInfo({ ...errorInfo, visible: false })}
+      />
+    </>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Loader2 } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
+import { InfoModal } from '../ui/modal';
 import { Input } from '../ui/input';
 import { useEditStock } from '../../api/products.api';
 import { useForm, Controller } from 'react-hook-form';
@@ -18,6 +19,7 @@ interface EditStockModalProps {
 
 export function EditStockModal({ isOpen, onClose, currentStock, productId }: EditStockModalProps) {
   const { mutate: editStock, isPending: isSubmitting } = useEditStock();
+  const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string}>({ visible: false, title: '', message: '' });
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm<EditStockPayload>({
     resolver: zodResolver(editStockSchema),
@@ -37,12 +39,14 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
     editStock(data, {
       onSuccess: () => {
         onClose();
-      }
+      },
+      onError: (err) => setErrorInfo({ visible: true, title: 'Gagal Koreksi Stok', message: err.message })
     });
   };
 
   return (
-    <BottomModal visible={isOpen} onClose={onClose}>
+    <>
+      <BottomModal visible={isOpen} onClose={onClose}>
       <Text className="text-h3 font-bold text-text-primary mb-1">Koreksi Stok Utama</Text>
       <Text className="text-body-sm text-text-secondary mb-5">
         Tercatat di aplikasi: <Text className="font-bold text-primary">{currentStock} Pcs</Text>
@@ -92,6 +96,13 @@ export function EditStockModal({ isOpen, onClose, currentStock, productId }: Edi
           </Text>
         </TouchableOpacity>
       </View>
-    </BottomModal>
+      </BottomModal>
+      <InfoModal
+        visible={errorInfo.visible}
+        title={errorInfo.title}
+        message={errorInfo.message}
+        onClose={() => setErrorInfo({ ...errorInfo, visible: false })}
+      />
+    </>
   );
 }

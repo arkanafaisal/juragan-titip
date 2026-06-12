@@ -9,7 +9,7 @@ import { useSettingsStore } from '../../api/settings.api';
 import { Card } from '../../components/ui/card';
 import { BottomModal } from '../../components/ui/bottom-modal';
 import { Input } from '../../components/ui/input';
-import { ConfirmModal, InputConfirmModal } from '../../components/ui/modal';
+import { ConfirmModal, InputConfirmModal, InfoModal } from '../../components/ui/modal';
 import { productFormSchema, ProductFormValues } from '../../schemas/product-form.schema';
 import { useAddProduct, useGetProductById, useUpdateProduct, useArchiveProduct } from '../../api/products.api';
 
@@ -26,6 +26,13 @@ export default function ProductFormScreen() {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string; onContinue?: () => void; buttonText?: string}>({ visible: false, title: '', message: '' });
+
+  const showError = (title: string, message: string, onContinue?: () => void, buttonText?: string) => {
+    setIsCategoryModalOpen(false);
+    setIsArchiveModalOpen(false);
+    setErrorInfo({ visible: true, title, message, onContinue, buttonText });
+  };
   
   const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -39,7 +46,7 @@ export default function ProductFormScreen() {
     }
   });
 
-  const { data: product, isLoading } = useGetProductById(id ? Number(id) : undefined);
+  const { data: product, isLoading, isError, error } = useGetProductById(id ? Number(id) : undefined);
 
   useEffect(() => {
     if (product) {
@@ -54,6 +61,17 @@ export default function ProductFormScreen() {
     }
   }, [product, reset]);
 
+  useEffect(() => {
+    if (isError && error) {
+      showError(
+        "Gagal Memuat Data",
+        (error as Error).message,
+        () => router.back(),
+        "Kembali"
+      );
+    }
+  }, [isError, error, router]);
+
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -67,13 +85,15 @@ export default function ProductFormScreen() {
       updateProduct.mutate({ id: Number(id), data }, {
         onSuccess: () => {
           router.back();
-        }
+        },
+        onError: (err) => showError('Gagal Memperbarui', err.message)
       });
     } else {
       addProduct.mutate(data, {
         onSuccess: () => {
           router.back();
-        }
+        },
+        onError: (err) => showError('Gagal Menyimpan', err.message)
       });
     }
   };
@@ -322,11 +342,20 @@ export default function ProductFormScreen() {
               onSuccess: () => {
                 setIsArchiveModalOpen(false);
                 router.back();
-              }
+              },
+              onError: (err) => showError('Gagal Mengarsipkan', err.message)
             });
           }}
         />
       )}
+      <InfoModal
+        visible={errorInfo.visible}
+        title={errorInfo.title}
+        message={errorInfo.message}
+        buttonText={errorInfo.buttonText}
+        onContinue={errorInfo.onContinue}
+        onClose={() => setErrorInfo({ ...errorInfo, visible: false })}
+      />
     </View>
   );
 }

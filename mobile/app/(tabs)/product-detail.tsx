@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { 
@@ -11,7 +11,7 @@ import { formatRupiah, formatDate, formatRelativeTime } from '../../utils/format
 import { useGetProductById, useRecoverProduct, useGetProductInventoryLogs } from '../../api/products.api';
 
 // UI Only Imports
-import { ConfirmModal } from '../../components/ui/modal';
+import { ConfirmModal, InfoModal } from '../../components/ui/modal';
 import { EditStockModal } from '../../components/products/edit-stock-modal';
 import { AddStockModal } from '../../components/products/add-stock-modal';
 import { ProcessReturnModal } from '../../components/products/process-return-modal';
@@ -48,11 +48,29 @@ export default function ProductDetailScreen() {
   const [isTambahStokOpen, setIsTambahStokOpen] = useState(false);
   const [isOlahReturOpen, setIsOlahReturOpen] = useState(false);
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string; onContinue?: () => void; buttonText?: string}>({ visible: false, title: '', message: '' });
 
-  const { data: product, isLoading, isError } = useGetProductById(id ? Number(id) : undefined);
+  const { data: product, isLoading, isError: isProductError, error: productError } = useGetProductById(id ? Number(id) : undefined);
   const { mutate: recoverProduct, isPending: isRecovering } = useRecoverProduct();
 
-  const { data: logs = [], isLoading: isLogsLoading } = useGetProductInventoryLogs(id ? Number(id) : undefined);
+  const { data: logs = [], isLoading: isLogsLoading, isError: isLogsError, error: logsError } = useGetProductInventoryLogs(id ? Number(id) : undefined);
+
+  const showError = (title: string, message: string, onContinue?: () => void, buttonText?: string) => {
+    setIsRestoreModalOpen(false);
+    setErrorInfo({ visible: true, title, message, onContinue, buttonText });
+  };
+
+  useEffect(() => {
+    if (isProductError && productError) {
+      showError('Gagal Memuat Produk', (productError as Error).message, () => router.back(), 'Kembali');
+    }
+  }, [isProductError, productError, router]);
+
+  useEffect(() => {
+    if (isLogsError && logsError) {
+      showError('Gagal Memuat Riwayat', (logsError as Error).message, undefined, 'Lanjutkan');
+    }
+  }, [isLogsError, logsError]);
 
   const handleRestore = () => {
     setIsRestoreModalOpen(true);
@@ -66,7 +84,7 @@ export default function ProductDetailScreen() {
     );
   }
 
-  if (isError || !product) {
+  if (isProductError || !product) {
     return (
       <View className="flex-1 bg-background items-center justify-center p-4">
         <Text className="text-body font-medium text-error text-center mb-4">Produk tidak ditemukan atau terjadi kesalahan.</Text>
@@ -76,6 +94,14 @@ export default function ProductDetailScreen() {
         >
           <Text className="text-on-primary font-bold">KEMBALI</Text>
         </TouchableOpacity>
+        <InfoModal
+          visible={errorInfo.visible}
+          title={errorInfo.title}
+          message={errorInfo.message}
+          buttonText={errorInfo.buttonText}
+          onContinue={errorInfo.onContinue}
+          onClose={() => setErrorInfo({ ...errorInfo, visible: false })}
+        />
       </View>
     );
   }
@@ -275,13 +301,23 @@ export default function ProductDetailScreen() {
         onCancel={() => setIsRestoreModalOpen(false)}
         onConfirm={() => {
           if (product) {
-            recoverProduct(product.id);
+            recoverProduct(product.id, {
+              onError: (err) => showError('Gagal Memulihkan', err.message)
+            });
           }
           setIsRestoreModalOpen(false);
         }}
         confirmText="Pulihkan"
       />
 
+      <InfoModal
+        visible={errorInfo.visible}
+        title={errorInfo.title}
+        message={errorInfo.message}
+        buttonText={errorInfo.buttonText}
+        onContinue={errorInfo.onContinue}
+        onClose={() => setErrorInfo({ ...errorInfo, visible: false })}
+      />
     </View>
   );
 }

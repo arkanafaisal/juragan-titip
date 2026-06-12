@@ -28,10 +28,10 @@ export function useAddProduct() {
           normalizedName: data.name.toLowerCase(),
           ...data
         }).returning();
-        
+
         return result[0];
       } catch (error: any) {
-        if (error.message?.includes('UNIQUE constraint failed: products.normalized_name')) {
+        if (error?.message?.includes('UNIQUE constraint failed')) {
           throw new Error(`Produk dengan nama "${data.name}" sudah ada di database.`);
         }
         throw new Error("Terjadi kesalahan sistem saat menyimpan produk.");
@@ -46,13 +46,6 @@ export function useAddProduct() {
         type: 'success',
         text1: 'Berhasil Disimpan',
         text2: 'Produk baru telah ditambahkan ke database.',
-      });
-    },
-    onError: (error: Error) => {
-      Toast.show({
-        type: 'error',
-        text1: 'Gagal Menyimpan',
-        text2: error.message,
       });
     }
   });
@@ -80,10 +73,13 @@ export function useUpdateProduct() {
         if (result.length === 0) throw new Error("Produk tidak ditemukan");
         return result[0];
       } catch (error: any) {
-        if (error.message?.includes('UNIQUE constraint failed: products.normalized_name')) {
+        if (error?.message?.includes('UNIQUE constraint failed')) {
           throw new Error(`Produk dengan nama "${data.name}" sudah ada di database.`);
         }
-        throw new Error(error.message || "Terjadi kesalahan sistem saat memperbarui produk.");
+        if (error?.message === "Produk tidak ditemukan") {
+          throw error;
+        }
+        throw new Error("Terjadi kesalahan sistem saat memperbarui produk.");
       }
     },
     onSuccess: (_, variables) => {
@@ -93,13 +89,6 @@ export function useUpdateProduct() {
         type: 'success',
         text1: 'Berhasil Diperbarui',
         text2: 'Data produk telah diperbarui.',
-      });
-    },
-    onError: (error: Error) => {
-      Toast.show({
-        type: 'error',
-        text1: 'Gagal Memperbarui',
-        text2: error.message,
       });
     }
   });
@@ -137,10 +126,14 @@ export function useGetProducts(filters?: GetProductsFilters) {
 
       const queryConditions = conditions.filter(Boolean) as SQL<unknown>[];
 
-      return await db.select()
-        .from(products)
-        .where(queryConditions.length > 0 ? and(...queryConditions) : undefined)
-        .orderBy(asc(products.name));
+      try {
+        return await db.select()
+          .from(products)
+          .where(queryConditions.length > 0 ? and(...queryConditions) : undefined)
+          .orderBy(asc(products.name));
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat mengambil daftar produk.");
+      }
     }
   });
 }
@@ -151,10 +144,15 @@ export function useGetProductById(id?: number) {
     queryFn: async () => {
       if (!id) throw new Error("ID Produk tidak valid");
       
-      const result = await db.select()
-        .from(products)
-        .where(eq(products.id, id))
-        .limit(1);
+      let result;
+      try {
+        result = await db.select()
+          .from(products)
+          .where(eq(products.id, id))
+          .limit(1);
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat mengambil detail produk.");
+      }
       
       if (result.length === 0) {
         throw new Error("Produk tidak ditemukan");
@@ -172,15 +170,19 @@ export function useGetProductInventoryLogs(productId?: number) {
     queryFn: async () => {
       if (!productId) throw new Error("ID Produk tidak valid");
       
-      return await db.select()
-        .from(inventoryLogs)
-        .where(
-          and(
-            eq(inventoryLogs.productId, productId),
-            gte(inventoryLogs.createdAt, sql`datetime('now', '-30 days')`)
+      try {
+        return await db.select()
+          .from(inventoryLogs)
+          .where(
+            and(
+              eq(inventoryLogs.productId, productId),
+              gte(inventoryLogs.createdAt, sql`datetime('now', '-30 days')`)
+            )
           )
-        )
-        .orderBy(desc(inventoryLogs.createdAt));
+          .orderBy(desc(inventoryLogs.createdAt));
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat mengambil riwayat produk.");
+      }
     },
     enabled: !!productId,
   });
@@ -194,24 +196,30 @@ export function useAddStock() {
     mutationFn: async ({ id, addedStock }: AddStockPayload) => {
       if (addedStock <= 0) throw new Error("Jumlah stok harus lebih dari 0");
       
-      const result = await db.transaction(async (tx) => {
-        const updatedProduct = await tx.update(products)
-          .set({ warehouseStock: sql`${products.warehouseStock} + ${addedStock}` })
-          .where(and(eq(products.id, id), eq(products.isArchived, false)))
-          .returning();
+      let updatedProduct;
+      try {
+        updatedProduct = await db.transaction(async (tx) => {
+          const updated = await tx.update(products)
+            .set({ warehouseStock: sql`${products.warehouseStock} + ${addedStock}` })
+            .where(and(eq(products.id, id), eq(products.isArchived, false)))
+            .returning();
+            
+          if (updated.length > 0) {
+            await tx.insert(inventoryLogs).values({
+              productId: id,
+              type: "KULAKAN",
+              quantity: addedStock,
+            });
+          }
           
-        if (updatedProduct.length === 0) throw new Error("Produk tidak ditemukan");
-        
-        await tx.insert(inventoryLogs).values({
-          productId: id,
-          type: "KULAKAN",
-          quantity: addedStock,
+          return updated;
         });
-        
-        return updatedProduct[0];
-      });
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat menambah stok.");
+      }
       
-      return result;
+      if (updatedProduct.length === 0) throw new Error("Produk tidak ditemukan");
+      return updatedProduct[0];
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -221,13 +229,6 @@ export function useAddStock() {
         type: 'success',
         text1: 'Stok Ditambahkan',
         text2: 'Stok baru berhasil ditambahkan.',
-      });
-    },
-    onError: (error: Error) => {
-      Toast.show({
-        type: 'error',
-        text1: 'Gagal Menambah Stok',
-        text2: error.message,
       });
     }
   });
@@ -241,34 +242,45 @@ export function useEditStock() {
     mutationFn: async ({ id, newStock }: EditStockPayload) => {
       if (newStock < 0) throw new Error("Stok tidak boleh kurang dari 0");
       
-      const result = await db.transaction(async (tx) => {
-        const currentProduct = await tx.select({ warehouseStock: products.warehouseStock })
+      let currentProduct;
+      try {
+        currentProduct = await db.select()
           .from(products)
           .where(and(eq(products.id, id), eq(products.isArchived, false)))
           .limit(1);
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat memverifikasi data produk.");
+      }
           
-        if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
-        
-        const diff = newStock - currentProduct[0].warehouseStock;
-        
-        const updatedProduct = await tx.update(products)
-          .set({ warehouseStock: newStock })
-          .where(eq(products.id, id))
-          .returning();
-          
-        // Log jika terjadi perubahan stok
-        if (diff !== 0) {
+      if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
+      
+      const diff = newStock - currentProduct[0].warehouseStock;
+      
+      if (diff === 0) {
+        return currentProduct[0];
+      }
+      
+      let updatedProduct;
+      try {
+        updatedProduct = await db.transaction(async (tx) => {
+          const updated = await tx.update(products)
+            .set({ warehouseStock: newStock })
+            .where(eq(products.id, id))
+            .returning();
+            
           await tx.insert(inventoryLogs).values({
             productId: id,
             type: "KOREKSI",
             quantity: diff,
           });
-        }
-        
-        return updatedProduct[0];
-      });
+          
+          return updated;
+        });
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat mengoreksi stok.");
+      }
       
-      return result;
+      return updatedProduct[0];
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -278,13 +290,6 @@ export function useEditStock() {
         type: 'success',
         text1: 'Stok Dikoreksi',
         text2: 'Jumlah stok berhasil disesuaikan.',
-      });
-    },
-    onError: (error: Error) => {
-      Toast.show({
-        type: 'error',
-        text1: 'Gagal Mengoreksi Stok',
-        text2: error.message,
       });
     }
   });
@@ -301,46 +306,55 @@ export function useProcessReturn() {
       
       const totalProcessed = resaleQty + wasteQty;
       
-      const result = await db.transaction(async (tx) => {
-        // Verifikasi ketersediaan stok retur
-        const currentProduct = await tx.select({ returnedStock: products.returnedStock })
+      let currentProduct;
+      try {
+        currentProduct = await db.select({ returnedStock: products.returnedStock })
           .from(products)
           .where(and(eq(products.id, id), eq(products.isArchived, false)))
           .limit(1);
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat memverifikasi data produk.");
+      }
           
-        if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
-        if (currentProduct[0].returnedStock < totalProcessed) {
-          throw new Error("Total olah melebihi jumlah retur yang ada");
-        }
-        
-        const updatedProduct = await tx.update(products)
-          .set({ 
-            warehouseStock: sql`${products.warehouseStock} + ${resaleQty}`,
-            returnedStock: sql`${products.returnedStock} - ${totalProcessed}`
-          })
-          .where(eq(products.id, id))
-          .returning();
-          
-        if (resaleQty > 0) {
-          await tx.insert(inventoryLogs).values({
-            productId: id,
-            type: "OLAH_RETUR",
-            quantity: resaleQty, // Positif karena masuk ke stok gudang
-          });
-        }
-        
-        if (wasteQty > 0) {
-          await tx.insert(inventoryLogs).values({
-            productId: id,
-            type: "BUANG_RUSAK",
-            quantity: -wasteQty, // Negatif karena dibuang dari stok
-          });
-        }
-        
-        return updatedProduct[0];
-      });
+      if (currentProduct.length === 0) throw new Error("Produk tidak ditemukan");
+      if (currentProduct[0].returnedStock < totalProcessed) {
+        throw new Error("Total olah melebihi jumlah retur yang ada");
+      }
       
-      return result;
+      let updatedProduct;
+      try {
+        updatedProduct = await db.transaction(async (tx) => {
+          const updated = await tx.update(products)
+            .set({ 
+              warehouseStock: sql`${products.warehouseStock} + ${resaleQty}`,
+              returnedStock: sql`${products.returnedStock} - ${totalProcessed}`
+            })
+            .where(eq(products.id, id))
+            .returning();
+            
+          if (resaleQty > 0) {
+            await tx.insert(inventoryLogs).values({
+              productId: id,
+              type: "OLAH_RETUR",
+              quantity: resaleQty,
+            });
+          }
+          
+          if (wasteQty > 0) {
+            await tx.insert(inventoryLogs).values({
+              productId: id,
+              type: "BUANG_RUSAK",
+              quantity: -wasteQty,
+            });
+          }
+          
+          return updated;
+        });
+      } catch (error) {
+        throw new Error("Terjadi kesalahan sistem saat mengolah retur.");
+      }
+      
+      return updatedProduct[0];
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -351,13 +365,6 @@ export function useProcessReturn() {
         text1: 'Retur Diolah',
         text2: 'Barang retur berhasil disortir.',
       });
-    },
-    onError: (error: Error) => {
-      Toast.show({
-        type: 'error',
-        text1: 'Gagal Mengolah Retur',
-        text2: error.message,
-      });
     }
   });
 }
@@ -367,10 +374,15 @@ export function useArchiveProduct() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const result = await db.update(products)
-        .set({ isArchived: true })
-        .where(eq(products.id, id))
-        .returning();
+      let result;
+      try {
+        result = await db.update(products)
+          .set({ isArchived: true })
+          .where(eq(products.id, id))
+          .returning();
+      } catch (error: any) {
+        throw new Error("Terjadi kesalahan sistem saat mengarsipkan produk.");
+      }
         
       if (result.length === 0) throw new Error("Produk tidak ditemukan atau sudah diarsipkan");
       return result[0];
@@ -383,13 +395,6 @@ export function useArchiveProduct() {
         text1: 'Berhasil Diarsipkan',
         text2: 'Produk telah diarsipkan dan tidak akan muncul di daftar utama.',
       });
-    },
-    onError: (error: Error) => {
-      Toast.show({
-        type: 'error',
-        text1: 'Gagal Mengarsipkan',
-        text2: error.message,
-      });
     }
   });
 }
@@ -399,10 +404,15 @@ export function useRecoverProduct() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const result = await db.update(products)
-        .set({ isArchived: false })
-        .where(eq(products.id, id))
-        .returning();
+      let result;
+      try {
+        result = await db.update(products)
+          .set({ isArchived: false })
+          .where(eq(products.id, id))
+          .returning();
+      } catch (error: any) {
+        throw new Error("Terjadi kesalahan sistem saat memulihkan produk.");
+      }
         
       if (result.length === 0) throw new Error("Produk tidak ditemukan atau sudah aktif");
       return result[0];
@@ -414,13 +424,6 @@ export function useRecoverProduct() {
         type: 'success',
         text1: 'Berhasil Dipulihkan',
         text2: 'Produk telah aktif kembali dan muncul di daftar utama.',
-      });
-    },
-    onError: (error: Error) => {
-      Toast.show({
-        type: 'error',
-        text1: 'Gagal Memulihkan',
-        text2: error.message,
       });
     }
   });

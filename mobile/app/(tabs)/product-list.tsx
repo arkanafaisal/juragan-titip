@@ -1,10 +1,11 @@
 import { View, Text, ScrollView } from 'react-native';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { ActionToolbar } from '../../components/shared/action-toolbar';
 import { ItemCard } from '../../components/shared/item-card';
 import { useSettingsStore } from '../../api/settings.api';
 import { useGetProducts } from '../../api/products.api';
+import { InfoModal } from '../../components/ui/modal';
 
 export default function ProductsScreen() {
   const router = useRouter();
@@ -14,13 +15,21 @@ export default function ProductsScreen() {
   const categoryLabels = useSettingsStore(state => state.categoryLabels);
   const lowStockThreshold = useSettingsStore(state => state.lowStockThreshold);
 
-  const { data: products = [], isLoading } = useGetProducts({
+  const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string; onContinue?: () => void; buttonText?: string}>({ visible: false, title: '', message: '' });
+
+  const { data: products = [], isLoading, isError, error } = useGetProducts({
     search: searchValue,
     category: activeFilters.category,
     isArchived: activeFilters.isArchived,
     stock: activeFilters.stock,
     lowStockThreshold
   });
+
+  useEffect(() => {
+    if (isError && error) {
+      setErrorInfo({ visible: true, title: 'Gagal Memuat Produk', message: (error as Error).message, buttonText: 'Tutup' });
+    }
+  }, [isError, error]);
 
   const filterGroups = useMemo(() => [
     {
@@ -85,6 +94,8 @@ export default function ProductsScreen() {
         <View className="mt-2 pb-8">
           {isLoading ? (
             <Text className="text-center mt-8 font-body text-text-secondary">Memuat data produk...</Text>
+          ) : isError ? (
+            <Text className="text-center mt-8 font-body font-bold text-error">Gagal memuat daftar produk.</Text>
           ) : products.length === 0 ? (
             <Text className="text-center mt-8 font-body text-text-secondary">
               {searchValue || Object.keys(activeFilters).length > 0 ? "Tidak ada produk yang sesuai dengan filter." : "Belum ada produk. Tambahkan produk pertama Anda!"}
@@ -101,6 +112,15 @@ export default function ProductsScreen() {
           )}
         </View>
       </ScrollView>
+
+      <InfoModal
+        visible={errorInfo.visible}
+        title={errorInfo.title}
+        message={errorInfo.message}
+        buttonText={errorInfo.buttonText}
+        onContinue={errorInfo.onContinue}
+        onClose={() => setErrorInfo({ ...errorInfo, visible: false })}
+      />
     </View>
   );
 }

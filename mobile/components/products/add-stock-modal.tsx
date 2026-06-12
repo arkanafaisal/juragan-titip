@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { PackagePlus, Loader2 } from 'lucide-react-native';
 import { BottomModal } from '../ui/bottom-modal';
+import { InfoModal } from '../ui/modal';
 import { Input } from '../ui/input';
 import { useAddStock } from '../../api/products.api';
 import { useForm, Controller } from 'react-hook-form';
@@ -17,6 +18,7 @@ interface AddStockModalProps {
 
 export function AddStockModal({ isOpen, onClose, productId }: AddStockModalProps) {
   const { mutate: addStock, isPending: isSaving } = useAddStock();
+  const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string}>({ visible: false, title: '', message: '' });
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm<AddStockPayload>({
     resolver: zodResolver(addStockSchema),
@@ -36,12 +38,14 @@ export function AddStockModal({ isOpen, onClose, productId }: AddStockModalProps
     addStock(data, {
       onSuccess: () => {
         onClose();
-      }
+      },
+      onError: (err) => setErrorInfo({ visible: true, title: 'Gagal Menambah Stok', message: err.message })
     });
   };
 
   return (
-    <BottomModal visible={isOpen} onClose={onClose}>
+    <>
+      <BottomModal visible={isOpen} onClose={onClose}>
       <Text className="text-h3 font-bold text-text-primary mb-1">Tambah Stok</Text>
       <Text className="text-body-sm text-text-secondary mb-5">
         Masukkan jumlah barang baru dari pabrik/agen.
@@ -89,6 +93,13 @@ export function AddStockModal({ isOpen, onClose, productId }: AddStockModalProps
           </Text>
         </TouchableOpacity>
       </View>
-    </BottomModal>
+      </BottomModal>
+      <InfoModal
+        visible={errorInfo.visible}
+        title={errorInfo.title}
+        message={errorInfo.message}
+        onClose={() => setErrorInfo({ ...errorInfo, visible: false })}
+      />
+    </>
   );
 }
