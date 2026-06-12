@@ -18,9 +18,9 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     switch (routeName) {
       case 'index':
         return <Home size={size} color={color} />;
-      case 'products':
+      case 'product-list':
         return <Package size={size} color={color} />;
-      case 'stores':
+      case 'store-list':
         return <Store size={size} color={color} />;
       case 'finance':
         return <Banknote size={size} color={color} />;
@@ -39,7 +39,8 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
         const { options } = descriptors[route.key];
         
         // Sembunyikan tab yang tidak diinginkan (seperti form)
-        if (options.tabBarButton || route.name === 'product-form') return null;
+        const nonPrimaryRoute =  new Set(['product-form', 'store-form', 'store-detail', 'store-visit', 'product-detail']);
+        if (options.tabBarButton || nonPrimaryRoute.has(route.name)) return null;
 
         const label =
           options.tabBarLabel !== undefined
@@ -50,8 +51,11 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
         const activeRouteName = state.routes[state.index].name;
         const isNativelyFocused = state.index === index;
-        // Tetap aktifkan tab produk jika yang sedang dibuka adalah product-form
-        const isVisuallyFocused = isNativelyFocused || ((activeRouteName === 'product-form' || activeRouteName === 'product-detail') && route.name === 'product-list');
+        
+        // Tetap aktifkan tab jika yang sedang dibuka adalah sub-halamannya
+        const isProductSubPage = (activeRouteName === 'product-form' || activeRouteName === 'product-detail') && route.name === 'product-list';
+        const isStoreSubPage = (activeRouteName === 'store-form' || activeRouteName === 'store-detail' || activeRouteName === 'store-visit') && route.name === 'store-list';
+        const isVisuallyFocused = isNativelyFocused || isProductSubPage || isStoreSubPage;
 
         const onPress = () => {
           const event = navigation.emit({
@@ -63,7 +67,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           // Izinkan navigasi jika tidak sedang di rute aslinya
           if (!isNativelyFocused && !event.defaultPrevented) {
             // Hardcoded confirmation logic untuk form pages
-            if (activeRouteName === 'product-form') {
+            if (activeRouteName === 'product-form' || activeRouteName === 'store-form') {
               setPendingRoute({ name: route.name, params: route.params });
             } else {
               navigation.navigate(route.name, route.params);

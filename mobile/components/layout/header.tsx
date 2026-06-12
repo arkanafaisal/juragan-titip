@@ -33,6 +33,9 @@ export function Header() {
     if (section === "finance") return "Keuangan";
     if (section === "product-form") return params.id ? "Edit Produk" : "Tambah Produk";
     if (section === "product-detail") return "Detail Produk";
+    if (section === "store-form") return params.id ? "Edit Toko" : "Tambah Toko";
+    if (section === "store-detail") return "Detail Toko";
+    if (section === "store-visit") return "Kunjungan Toko";
     if (section === "reports") {
       if (actionOrId === "stores") return "Performa Toko";
       if (actionOrId === "tracking") return "Lacak Barang";
