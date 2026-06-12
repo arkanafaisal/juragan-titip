@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, BackHandler } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, Save, MapPin } from 'lucide-react-native';
@@ -27,7 +27,7 @@ export default function StoreFormScreen() {
   
   const addStore = useAddStore();
 
-  const { control, handleSubmit, formState: { errors, isDirty }, setValue, watch } = useForm<StoreFormValues>({
+  const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<StoreFormValues>({
     resolver: zodResolver(storeFormSchema),
     defaultValues: {
       name: '',
@@ -48,12 +48,34 @@ export default function StoreFormScreen() {
   };
 
   const handleCancel = () => {
-    if (isDirty) {
-      setIsLeaveModalOpen(true);
-    } else {
-      router.back();
-    }
+    setIsLeaveModalOpen(true);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      // Hardware back press handler
+      const backAction = () => {
+        handleCancel();
+        return true;
+      };
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+      // Cleanup & Reset form on leave/enter
+      return () => {
+        backHandler.remove();
+        reset({
+          name: '',
+          ownerName: '',
+          phone: '',
+          address: '',
+          category: '' as any,
+          notes: '',
+          latitude: 0,
+          longitude: 0,
+        });
+      };
+    }, [reset])
+  );
 
   const onSubmit = (data: StoreFormValues) => {
     addStore.mutate(data, {

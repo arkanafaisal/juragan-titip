@@ -38,13 +38,15 @@ export const storeFormSchema = z.object({
     message: "Koordinat latitude tidak valid atau belum diisi"
   })
     .min(-90, "Latitude tidak boleh kurang dari -90")
-    .max(90, "Latitude tidak boleh lebih dari 90"),
+    .max(90, "Latitude tidak boleh lebih dari 90")
+    .refine(val => val !== 0, "Koordinat latitude wajib diisi via GPS/Peta"),
   
   longitude: z.number({
     message: "Koordinat longitude tidak valid atau belum diisi"
   })
     .min(-180, "Longitude tidak boleh kurang dari -180")
-    .max(180, "Longitude tidak boleh lebih dari 180"),
+    .max(180, "Longitude tidak boleh lebih dari 180")
+    .refine(val => val !== 0, "Koordinat longitude wajib diisi via GPS/Peta"),
   
   category: z.enum(["1", "2", "3", "4", "5"], {
     error: "Kategori toko wajib dipilih",
