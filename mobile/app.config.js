@@ -40,7 +40,9 @@ export default {
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-sharing"
+      "expo-sharing",
+      "expo-notifications",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true
