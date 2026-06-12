@@ -7,7 +7,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { sql } from 'drizzle-orm';
 import { db } from '../db';
-import { products, inventoryLogs } from '../db/schema';
+import { products, inventoryLogs, stores } from '../db/schema';
 
 // ==========================================
 // 1. TIPE & KONSTANTA (Sesuai dengan file lama Anda)
@@ -109,7 +109,8 @@ export const useCheckDatabaseHasData = () => {
     queryFn: async () => {
       const pCount = await db.select({ count: sql<number>`count(*)` }).from(products);
       const lCount = await db.select({ count: sql<number>`count(*)` }).from(inventoryLogs);
-      return (pCount[0].count + lCount[0].count) > 0;
+      const sCount = await db.select({ count: sql<number>`count(*)` }).from(stores);
+      return (pCount[0].count + lCount[0].count + sCount[0].count) > 0;
     }
   });
 };
@@ -119,13 +120,15 @@ export const useExportDatabase = () => {
     mutationFn: async () => {
       const allProducts = await db.select().from(products);
       const allLogs = await db.select().from(inventoryLogs);
+      const allStores = await db.select().from(stores);
 
       const exportData = {
         version: 1,
         exportDate: new Date().toISOString(),
         data: {
           products: allProducts,
-          inventoryLogs: allLogs
+          inventoryLogs: allLogs,
+          stores: allStores
         }
       };
 
@@ -176,6 +179,7 @@ export const useImportDatabase = () => {
         // Hapus data lama
         await tx.delete(inventoryLogs);
         await tx.delete(products);
+        await tx.delete(stores);
         
         // Insert ulang jika ada
         if (parsed.data.products && parsed.data.products.length > 0) {
@@ -185,6 +189,10 @@ export const useImportDatabase = () => {
         if (parsed.data.inventoryLogs && parsed.data.inventoryLogs.length > 0) {
           await tx.insert(inventoryLogs).values(parsed.data.inventoryLogs);
         }
+        
+        if (parsed.data.stores && parsed.data.stores.length > 0) {
+          await tx.insert(stores).values(parsed.data.stores);
+        }
       });
       
       return true;
@@ -193,6 +201,7 @@ export const useImportDatabase = () => {
       if (didImport) {
         queryClient.invalidateQueries({ queryKey: ['products'] });
         queryClient.invalidateQueries({ queryKey: ['inventoryLogs'] });
+        queryClient.invalidateQueries({ queryKey: ['stores'] });
         queryClient.invalidateQueries({ queryKey: ['checkDatabaseHasData'] });
       }
     }
@@ -206,11 +215,12 @@ export const useResetDatabase = () => {
       await db.transaction(async (tx) => {
         await tx.delete(inventoryLogs);
         await tx.delete(products);
+        await tx.delete(stores);
       });
       
       // Opsional: hapus urutan auto increment agar kembali mulai dari 1
       try {
-        await db.run(sql`DELETE FROM sqlite_sequence WHERE name IN ('products', 'inventory_logs')`);
+        await db.run(sql`DELETE FROM sqlite_sequence WHERE name IN ('products', 'inventory_logs', 'stores')`);
       } catch (e) {
         // Abaikan jika tabel sqlite_sequence belum ada
       }
@@ -218,6 +228,7 @@ export const useResetDatabase = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs'] });
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
       queryClient.invalidateQueries({ queryKey: ['checkDatabaseHasData'] });
     }
   });
