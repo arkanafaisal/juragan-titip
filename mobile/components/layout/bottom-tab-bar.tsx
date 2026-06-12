@@ -67,7 +67,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           // Izinkan navigasi jika tidak sedang di rute aslinya
           if (!isNativelyFocused && !event.defaultPrevented) {
             // Hardcoded confirmation logic untuk form pages
-            if (activeRouteName === 'product-form' || activeRouteName === 'store-form') {
+            if (activeRouteName === 'product-form' || activeRouteName === 'store-form' || activeRouteName === 'store-visit') {
               setPendingRoute({ name: route.name, params: route.params });
             } else {
               navigation.navigate(route.name, route.params);

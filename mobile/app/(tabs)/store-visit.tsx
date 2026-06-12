@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { ChevronLeft, CheckCircle2 } from 'lucide-react-native';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
@@ -104,6 +104,26 @@ export default function StoreVisitScreen() {
     useCallback(() => {
       reset(); // Hapus form state lama seketika
     }, [reset, storeIdNum])
+  );
+
+  // Mencegat Navigasi (Hardware Back)
+  useFocusEffect(
+    useCallback(() => {
+      const backAction = () => {
+        if (step === 3) {
+          setStep(2);
+        } else if (step === 2 && opnameItems?.length > 0) {
+          setStep(1);
+        } else {
+          setShowCancelModal(true);
+        }
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+      return () => backHandler.remove();
+    }, [step, opnameItems?.length])
   );
 
   // Initialize Form Data
