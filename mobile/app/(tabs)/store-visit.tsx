@@ -95,7 +95,7 @@ export default function StoreVisitScreen() {
       const backAction = () => {
         if (step === 3) {
           setStep(2);
-        } else if (step === 2 && opnameItems?.length > 0) {
+        } else if (step === 2) {
           setStep(1);
         } else {
           setShowCancelModal(true);
@@ -113,11 +113,8 @@ export default function StoreVisitScreen() {
   useEffect(() => {
     if (store && !isInitialized && !isVisitLoading && !isProductsLoading) {
       let mapped: any[] = [];
-      let skipOpname = false;
 
-      if (!store.lastVisitAt || !lastVisit) {
-        skipOpname = true;
-      } else if (lastVisit && lastVisit.items) {
+      if (lastVisit && lastVisit.items) {
         mapped = lastVisit.items.map((item: any) => {
           const remainedPrev = (item.initialStock - item.sold - item.returned) + item.restocked;
           return {
@@ -131,8 +128,6 @@ export default function StoreVisitScreen() {
             wholesalePrice: item.product?.wholesalePrice || item.price
           };
         }).filter((i: any) => i.initialStock > 0);
-
-        if (mapped.length === 0) skipOpname = true;
       }
 
       reset({
@@ -147,12 +142,9 @@ export default function StoreVisitScreen() {
         }
       });
 
-      if (skipOpname && step === 1) {
-        setStep(2);
-      }
       setIsInitialized(true);
     }
-  }, [store, lastVisit, isVisitLoading, isProductsLoading, isInitialized, step, reset, storeIdNum]);
+  }, [store, lastVisit, isVisitLoading, isProductsLoading, isInitialized, reset, storeIdNum]);
 
   // Suggestions for Restock (Items from last visit that are not yet in restock list)
   const suggestedProducts = useMemo(() => {
@@ -165,23 +157,18 @@ export default function StoreVisitScreen() {
 
   const handleHeaderPrevStep = () => {
     if (step === 3) setStep(2);
-    else if (step === 2) {
-      if (opnameItems?.length > 0) setStep(1);
-      else setShowCancelModal(true);
-    }
+    else if (step === 2) setStep(1);
     else if (step === 1) setShowCancelModal(true);
   };
 
   const handleNextToCheckout = () => {
-    const isFirstVisit = !store?.lastVisitAt;
-    const totalRemained = opnameItems?.reduce((acc, item) => acc + item.remained, 0) || 0;
     const totalRestocked = restockItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
     
-    if (isFirstVisit && totalRemained + totalRestocked === 0) {
+    if (opnameItems?.length === 0 && totalRestocked === 0) {
       Toast.show({
         type: 'error',
-        text1: 'Kunjungan Perdana',
-        text2: 'Kunjungan pertama harus menitipkan minimal 1 barang baru.'
+        text1: 'Toko Kosong',
+        text2: 'Tidak ada barang di toko saat ini. Anda harus menitipkan minimal 1 barang baru.'
       });
       return;
     }
@@ -247,10 +234,7 @@ export default function StoreVisitScreen() {
             allProducts={allProducts}
             suggestedProducts={suggestedProducts}
             onNext={handleNextToCheckout}
-            onPrev={() => {
-              if (opnameItems?.length > 0) setStep(1);
-              else router.back();
-            }}
+            onPrev={() => setStep(1)}
             formatCurrency={(val: number) => 'Rp ' + val.toLocaleString('id-ID')}
           />
         )}
