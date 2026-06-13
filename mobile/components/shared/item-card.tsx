@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MapPin, Store as StoreIcon, History } from 'lucide-react-native';
-import { formatRupiah } from '../../utils/formatter.util';
+import { formatRupiah, formatRelativeTime } from '../../utils/formatter.util';
 import THEME from '../../constants/css';
 
 import { Card } from '../ui/card';
@@ -70,7 +70,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
                 <Text className={`text-[10px] font-caption ${
                   (data as Store).lastVisitAt ? 'text-on-success' : 'text-on-error'
                 }`}>
-                  {(data as Store).lastVisitAt ? new Date((data as Store).lastVisitAt!).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : "Belum pernah"}
+                  {(data as Store).lastVisitAt ? formatRelativeTime((data as Store).lastVisitAt!) : "Belum pernah"}
                 </Text>
               </View>
             )}
