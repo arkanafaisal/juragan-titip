@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 import { products } from './products.schema';
 
@@ -20,7 +20,9 @@ export const inventoryLogs = sqliteTable('inventory_logs', {
   quantity: integer('quantity').notNull(),
   storeName: text('store_name'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
-});
+}, (table) => ({
+  productIdx: index('inventory_log_product_idx').on(table.productId)
+}));
 
 export type InventoryLog = typeof inventoryLogs.$inferSelect;
 export type InsertInventoryLog = typeof inventoryLogs.$inferInsert;

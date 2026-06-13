@@ -1,4 +1,4 @@
-import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, integer, text, index } from 'drizzle-orm/sqlite-core';
 import { sql, relations } from 'drizzle-orm';
 import { stores } from './stores.schema';
 import { products } from './products.schema';
@@ -10,7 +10,9 @@ export const visits = sqliteTable('visits', {
   amountPaid: integer('amount_paid').notNull().default(0), // Kas dibayar
   debt: integer('debt').notNull().default(0), // Total piutang toko setelah kunjungan ini
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
-});
+}, (table) => ({
+  storeIdx: index('visit_store_idx').on(table.storeId)
+}));
 
 export const visitItems = sqliteTable('visit_items', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -21,7 +23,10 @@ export const visitItems = sqliteTable('visit_items', {
   returned: integer('returned').notNull().default(0),
   restocked: integer('restocked').notNull().default(0),
   price: integer('price').notNull(), // Harga partai/wholesale saat dikunjungi
-});
+}, (table) => ({
+  visitIdx: index('visit_item_visit_idx').on(table.visitId),
+  productIdx: index('visit_item_product_idx').on(table.productId)
+}));
 
 export const visitsRelations = relations(visits, ({ one, many }) => ({
   store: one(stores, {

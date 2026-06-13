@@ -6,6 +6,7 @@ import m0001 from './0001_dusty_sandman.sql';
 import m0002 from './0002_wild_randall_flagg.sql';
 import m0003 from './0003_chilly_skullbuster.sql';
 import m0004 from './0004_robust_deathstrike.sql';
+import m0005 from './0005_cold_sabra.sql';
 
   export default {
     journal,
@@ -14,7 +15,8 @@ import m0004 from './0004_robust_deathstrike.sql';
 m0001,
 m0002,
 m0003,
-m0004
+m0004,
+m0005
     }
   }
   
