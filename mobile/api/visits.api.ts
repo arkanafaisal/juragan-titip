@@ -102,10 +102,19 @@ export function useCreateVisit() {
         
         // --- A. Hitung Subtotal dan Piutang ---
         let subtotal = 0;
+        let newAssetValue = 0;
         const opnameItemsMerged = data.opnameItems.map(item => {
           subtotal += (item.sold * item.wholesalePrice);
+          newAssetValue += ((item.initialStock - item.sold - item.returned) * item.wholesalePrice);
           return item;
         });
+
+        // Tambahkan nilai aset dari restock
+        for (const item of data.restockItems) {
+          if (item.quantity > 0) {
+            newAssetValue += (item.quantity * item.wholesalePrice);
+          }
+        }
 
         const totalBilled = data.checkout.oldDebt + subtotal;
         
@@ -204,7 +213,8 @@ export function useCreateVisit() {
         await tx.update(stores)
           .set({
             debt: newDebt,
-            lastVisitAt: now
+            lastVisitAt: now,
+            assetValue: newAssetValue
           })
           .where(eq(stores.id, data.storeId));
 
