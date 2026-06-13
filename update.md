@@ -1,3 +1,30 @@
+12 June 2026
+<details>
+- updated step checkout: text & opname product detail
+- fixed store visit: leaving confirmation modal on hardware press & bottom tab bar navigation
+- updated store visit: service integration
+- updated db: register & migration visit table
+- added db: visit & visit item table
+- updated settings: add custom settings feature
+- added store visit UI
+- updated store form: add edit mode
+- added store detail page (UI & getById service integration)
+- updated map picker: add view mode
+- updated dev build config
+- added packages: notification, datepicker, charts
+- fixed store form: header title & bottom tab bar active tab & required lng lat field & exit form confirmation
+- added store list page (UI & service integration)
+- added store form (create mode)
+- added store service (create & get)
+- fixed package: downgrade expo location version
+- updated app config: add package name & google maps apikey config
+- added package: dotenv, expo-location & react-native-maps
+- fixed product form: reset field
+- updated error services handling with modal
+- updated modal: add custom onclick handler
+- updated settings service: add stores into backup data  
+</details>
+
 11 June 2026
 <details>
 - added db: stores table & migration

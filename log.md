@@ -1,3 +1,35 @@
+git --no-pager log 25d4fd985f9804025b431872acd008547352464b..HEAD --pretty=format:"%H %s"
+9c6768b9fe89c8c01aa8398ffcfcf31539b489dd update(step checkout): text & opname product detail
+094d0e5b15d530164cbfdfcfa58f24df12aac085 fix(store visit): leaving confirmation modal on hardware press & bottom tab bar navigation
+6c4a6895988767ddefea7692c38d6f431fd7be9f update(store visit): visit service integration
+388646c5c0e21b7ce8d8e0e49c7b5e231a972624 update(db): register store table
+dd6eabfe131561af1e298273e115b5aa04925158 update(db): visit & visitItems migration
+aef5f70af8211d5a15bc0269293f27c3a4be95fe add(db): visit & visit item table
+3399ae092976bfe68430c00d12d633fd5d9aa83c update(settings): add custom settings feature
+54694f6fdfc95c4206c01c827fe206d4c24e68fb add store visit
+a8acf6897c83c45ce9f10f471b8c40e1f460af09 update(store form): edit mode
+f63f3f79a62364c525523b9cabac09d73f35b129 add store detail page & getById store service
+e6395e38f34b3fdd49588ef70feedabacf38c0e3 update(map picker): view mode
+b37f222ebfea330dd2b966e88da6705aa4d60988 update: dev build config
+6a1f5345082f676ea9762989eefd136b41cafbb0 add(packages): notification, datepicker, charts
+6d669a81f682408bfeda7a3bdac6cdca3794db48 fix(store form): required lng lat field & exit form confirmation
+14d51c75bcb2bd75eb3f413d3b9fdaa8deef5072 fix(store form): header title & bottom tab bar active tab  
+cb1f7fbd3a388e069bf372024f7b8eb5ccdd8fc3 add store list
+76ac9c15b4e0bf004d3c62aaaa01c031f4197473 add store form (create)
+05117adf6fa241eb453d8a353cf64e310b971a36 add store service (create & get)
+b32b0c659915bad50d9a563942bd671e05b39e50 fix(package): downgrade expo location version
+13ed0f678d4aa90ad3e3399b2dc9fa4856d15ab4 add(package): dotenv
+36f3b251fac43215057c83f2de6d1a78aee0127a update(app config): add package name & google maps apikey config
+12a31406446b1f80439c5dbf78746769092cbd81 add(package): expo-location & react-native-maps
+e330cac94c5c835aabf1b0fa4e1f8fd9d3de65f9 fix(product form): reset field
+d075e583e0b1a9bb4d13a47b094865ec9106c194 update: error services handling with modal
+8f564b8a73ff981086c1404680a8af5b331d736f update(modal): add custom onclick handler
+49f558e1fab7f104188db30091ec57a41d27084c update(settings service): add stores into backup data  
+
+
+
+
+
 git --no-pager log 6876ac8c6fc1066b0e71b42bbde280b18d67e478..HEAD --pretty=format:"%H %s"
 98cd27807a1d49dc35e8a1b3777aa9a6c5a5e1bd update(db): migration
 d037f6eb8f291f8566a78d8d1d9cb79f7fa02f11 add(db): stores table
