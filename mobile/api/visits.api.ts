@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { db } from '../db';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { visits, visitItems, stores, products, inventoryLogs } from '../db/schema';
 import { VisitFormValues } from '../schemas/visit.schema';
 import Toast from 'react-native-toast-message';
@@ -35,7 +35,64 @@ export function useGetLastVisit(storeId: number, lastVisitAt?: string | null) {
   });
 }
 
-// 2. Buat Kunjungan Baru
+// 2. Ambil Riwayat & Analisis Kunjungan Toko (90 Hari Terakhir)
+export function useGetStoreVisitsAnalysis(storeId?: number) {
+  return useQuery({
+    queryKey: ['storeVisitsAnalysis', storeId],
+    queryFn: async () => {
+      if (!storeId) return null;
+
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+      const recentVisits = await db.query.visits.findMany({
+        where: and(
+          eq(visits.storeId, storeId),
+          // Menggunakan sql untuk literal comparison datetime ISO8601 di sqlite
+          sql`${visits.createdAt} >= ${ninetyDaysAgo.toISOString()}`
+        ),
+        orderBy: (visits, { desc }) => [desc(visits.createdAt)],
+        with: {
+          items: {
+            with: {
+              product: true
+            }
+          }
+        }
+      });
+
+      // Mapping visitHistory
+      const visitHistory = recentVisits.map(v => ({
+        id: v.id,
+        amountPaid: v.amountPaid,
+        createdAt: v.createdAt
+      }));
+
+      // Mapping activeItems (dari kunjungan paling terakhir)
+      let activeItems: any[] = [];
+      if (recentVisits.length > 0) {
+        const lastV = recentVisits[0]; // Kunjungan terbaru
+        lastV.items.forEach(item => {
+          const remained = (item.initialStock - item.sold - item.returned) + item.restocked;
+          if (remained > 0) {
+            activeItems.push({
+              productName: item.product?.name || 'Produk Dihapus',
+              remained: remained
+            });
+          }
+        });
+      }
+
+      return {
+        visitHistory,
+        activeItems
+      };
+    },
+    enabled: !!storeId,
+  });
+}
+
+// 3. Buat Kunjungan Baru
 export function useCreateVisit() {
   const queryClient = useQueryClient();
 
