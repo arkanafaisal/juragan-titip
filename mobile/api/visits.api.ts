@@ -234,3 +234,56 @@ export function useCreateVisit() {
     }
   });
 }
+
+// 4. Ambil Detail Kunjungan by ID (Invoice)
+export function useGetVisitById(id?: number) {
+  return useQuery({
+    queryKey: ['visit', id],
+    queryFn: async () => {
+      if (!id) return null;
+      
+      const visitData = await db.query.visits.findFirst({
+        where: eq(visits.id, id),
+        with: {
+          store: true,
+          items: {
+            with: {
+              product: true
+            }
+          }
+        }
+      });
+
+      if (!visitData) return null;
+
+      // Format ulang data agar mirip dengan struktur respons yang dibutuhkan komponen UI invoice
+      // karena prototype web menggunakan visit.items dengan properti tambahan
+      const mappedItems = visitData.items.map(item => {
+        const remained = (item.initialStock - item.sold - item.returned) + item.restocked;
+        return {
+          productId: item.productId,
+          productName: item.product?.name || 'Produk Dihapus',
+          initialStock: item.initialStock,
+          sold: item.sold,
+          returned: item.returned,
+          restocked: item.restocked,
+          remained: remained,
+          wholesalePrice: item.price,
+        };
+      });
+
+      return {
+        id: visitData.id,
+        storeId: visitData.storeId,
+        storeName: visitData.store?.name || 'Toko Dihapus',
+        storePhone: visitData.store?.phone || '',
+        subtotal: visitData.subtotal,
+        amountPaid: visitData.amountPaid,
+        currentDebt: visitData.debt,
+        createdAt: visitData.createdAt,
+        items: mappedItems,
+      };
+    },
+    enabled: !!id,
+  });
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Package, History } from 'lucide-react-native';
 import { Card } from '../ui/card';
 import THEME from '../../constants/css';
@@ -11,6 +12,7 @@ interface StoreTabsSectionProps {
 }
 
 export function StoreTabsSection({ activeItems, visitHistory, formatDate }: StoreTabsSectionProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'titipan' | 'riwayat'>('titipan');
 
   return (
@@ -62,6 +64,7 @@ export function StoreTabsSection({ activeItems, visitHistory, formatDate }: Stor
               {visitHistory.map((visit) => (
                 <TouchableOpacity 
                   key={visit.id} 
+                  onPress={() => router.push(`/visit-invoice?id=${visit.id}`)}
                   className="w-full flex-row justify-between items-center p-3 border border-outline-variant rounded-lg bg-surface"
                   activeOpacity={0.7}
                 >

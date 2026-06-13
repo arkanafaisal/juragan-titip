@@ -39,7 +39,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
         const { options } = descriptors[route.key];
         
         // Sembunyikan tab yang tidak diinginkan (seperti form)
-        const nonPrimaryRoute =  new Set(['product-form', 'store-form', 'store-detail', 'store-visit', 'product-detail']);
+        const nonPrimaryRoute =  new Set(['product-form', 'store-form', 'store-detail', 'store-visit', 'product-detail', 'visit-invoice']);
         if (options.tabBarButton || nonPrimaryRoute.has(route.name)) return null;
 
         const label =
@@ -54,7 +54,7 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
         
         // Tetap aktifkan tab jika yang sedang dibuka adalah sub-halamannya
         const isProductSubPage = (activeRouteName === 'product-form' || activeRouteName === 'product-detail') && route.name === 'product-list';
-        const isStoreSubPage = (activeRouteName === 'store-form' || activeRouteName === 'store-detail' || activeRouteName === 'store-visit') && route.name === 'store-list';
+        const isStoreSubPage = (activeRouteName === 'store-form' || activeRouteName === 'store-detail' || activeRouteName === 'store-visit' || activeRouteName === 'visit-invoice') && route.name === 'store-list';
         const isVisuallyFocused = isNativelyFocused || isProductSubPage || isStoreSubPage;
 
         const onPress = () => {
