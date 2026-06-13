@@ -10,11 +10,11 @@ import { Product } from '../../db/schema/products.schema';
 
 
 const getCategoryStyles = (category?: string) => {
-  if (category === "1") return { bg: "bg-primary", text: "text-on-primary", border: "border-info/40" };
-  if (category === "2") return { bg: "bg-success", text: "text-on-success", border: "border-success/40" };
-  if (category === "3") return { bg: "bg-warning", text: "text-on-warning", border: "border-warning/40" };
-  if (category === "4") return { bg: "bg-secondary", text: "text-on-secondary", border: "border-secondary/40" };
-  if (category === "5") return { bg: "bg-on-background", text: "text-on-primary", border: "border-on-background/40" };
+  if (category === "1") return { bg: "bg-primary", text: "text-on-primary", border: "border-primary" };
+  if (category === "2") return { bg: "bg-success", text: "text-on-success", border: "border-success" };
+  if (category === "3") return { bg: "bg-warning", text: "text-on-warning", border: "border-warning" };
+  if (category === "4") return { bg: "bg-secondary", text: "text-on-secondary", border: "border-secondary" };
+  if (category === "5") return { bg: "bg-background", text: "text-on-background", border: "border-background" };
   return { bg: "bg-surface-variant", text: "text-on-surface-variant", border: "border-outline-variant" };
 };
 
@@ -44,7 +44,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
     : ((data as Product).description || "Belum ada deskripsi");
 
   return (
-    <Card className={`p-0 bg-surface overflow-hidden mb-4 ${data.category ? catStyle.border : ''}`}>
+    <Card className={`p-0 bg-surface overflow-hidden mb-4 border-2 ${data.category ? catStyle.border : ''}`}>
       <TouchableOpacity 
         activeOpacity={0.7}
         onPress={() => router.push(isStore ? `/store-detail?id=${data.id}` as any : `/product-detail?id=${data.id}` as any)}
@@ -70,7 +70,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
                 <Text className={`text-[10px] font-caption ${
                   (data as Store).lastVisitAt ? 'text-on-success' : 'text-on-error'
                 }`}>
-                  {(data as Store).lastVisitAt ? new Date((data as Store).lastVisitAt!).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : "Belum dikunjungi"}
+                  {(data as Store).lastVisitAt ? new Date((data as Store).lastVisitAt!).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : "Belum pernah"}
                 </Text>
               </View>
             )}
@@ -86,7 +86,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
           </View>
         )}
 
-        <View className="flex-row justify-between mb-2 mt-4">
+        <View className={`flex-row justify-between mt-4 ${isStore? "mb-2" : ""}`}>
           <View className="flex-col gap-0.5 flex-1">
             <View className="flex-row items-center gap-1">
               <Text className="text-caption text-text-secondary">{isStore ? "Nilai Aset" : "Jumlah Stok"}</Text>
@@ -118,7 +118,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
       </TouchableOpacity>
 
       {isStore && (
-        <View className="p-3 bg-surface-bright flex-row gap-3">
+        <View className="bg-surface-bright flex-row gap-3">
           <TouchableOpacity 
             onPress={() => Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${(data as Store).latitude},${(data as Store).longitude}`)}
             className="flex-1 border border-outline-variant bg-on-background/85 py-2 rounded-lg flex-row items-center justify-center gap-1"
