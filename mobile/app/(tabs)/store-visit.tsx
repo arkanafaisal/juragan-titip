@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { ChevronLeft, CheckCircle2 } from 'lucide-react-native';
+import { VisitHeader } from '../../components/visits/visit-header';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Toast from 'react-native-toast-message';
@@ -17,24 +17,7 @@ import { useGetProducts } from '../../api/products.api';
 import { useGetLastVisit, useCreateVisit } from '../../api/visits.api';
 import { visitFormSchema, VisitFormValues } from '../../schemas/visit.schema';
 
-const StepIndicator = ({ current, target, label, num }: any) => {
-  const isPast = current > target;
-  const isActive = current === target;
-  
-  return (
-    <View className="flex-row items-center gap-1">
-      {isPast ? (
-        <CheckCircle2 size={THEME.iconSize.xl} color={THEME.colors.success} />
-      ) : (
-        <View className={`w-8 h-8 rounded-full items-center justify-center ${isActive ? 'bg-primary' : 'bg-surface-container-high'}`}>
-          <Text className={`text-h3 font-bold ${isActive ? 'text-on-primary' : 'text-text-secondary'}`}>
-            {num}
-          </Text>
-        </View>
-      )}
-    </View>
-  );
-};
+
 
 export default function StoreVisitScreen() {
   const params = useLocalSearchParams();
@@ -250,27 +233,7 @@ export default function StoreVisitScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* HEADER WIZARD */}
-      <View className="flex-row items-center justify-between bg-surface p-4 border-b border-outline-variant mb-4">
-        <View className="flex-row items-center flex-1">
-          <TouchableOpacity 
-            onPress={handleHeaderPrevStep} 
-            className="p-1 rounded-lg"
-          >
-            <ChevronLeft size={THEME.iconSize.lg} color={THEME.colors['text-secondary']} />
-          </TouchableOpacity>
-          <Text className="font-h4 text-h4 font-bold text-text-primary truncate flex-1" numberOfLines={1}>
-            {storeName}
-          </Text>
-        </View>
-        
-        <View className="flex-row items-center ml-2 shrink-0">
-          <StepIndicator current={step} target={1} label="Opname" num="1" />
-          <View className={`w-2 h-[1px] ${step < 2? 'bg-outline-variant' :  step == 2? 'bg-primary' : 'bg-success'}`} />
-          <StepIndicator current={step} target={2} label="Restock" num="2" />
-          <View className={`w-2 h-[1px] ${step < 3? 'bg-outline-variant' : 'bg-primary'}`} />
-          <StepIndicator current={step} target={3} label="Checkout" num="3" />
-        </View>
-      </View>
+      <VisitHeader storeName={storeName} step={step} onPrevStep={handleHeaderPrevStep} />
 
       <FormProvider {...methods}>
         {step === 1 && (
