@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -18,6 +18,7 @@ import THEME from '../../constants/css'
 export default function ProductFormScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const scrollViewRef = useRef<ScrollView>(null);
   const categoryLabels = useSettingsStore(state => state.categoryLabels);
   const addProduct = useAddProduct();
   const updateProduct = useUpdateProduct();
@@ -105,6 +106,10 @@ export default function ProductFormScreen() {
     }
   };
 
+  const onInvalidSubmit = () => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  };
+
   const handleArchive = () => {
     setIsArchiveModalOpen(true);
   };
@@ -138,7 +143,7 @@ export default function ProductFormScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollViewRef} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="p-4 space-y-4">
           
           <View className="mb-2 flex-row items-center">
@@ -270,7 +275,7 @@ export default function ProductFormScreen() {
 
           <View className="flex-col gap-3 mt-6 pb-8">
             <TouchableOpacity 
-              onPress={handleSubmit(onSubmit)}
+              onPress={handleSubmit(onSubmit, onInvalidSubmit)}
               disabled={addProduct.isPending || updateProduct.isPending}
               className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${addProduct.isPending || updateProduct.isPending ? 'bg-primary/70' : 'bg-primary'}`}
               activeOpacity={0.8}

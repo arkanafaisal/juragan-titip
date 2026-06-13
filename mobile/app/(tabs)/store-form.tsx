@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, BackHandler, ActivityIndicator } from 'react-native';
 import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -22,6 +22,7 @@ export default function StoreFormScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const storeId = id ? Number(id) : undefined;
   const isEdit = !!storeId;
+  const scrollViewRef = useRef<ScrollView>(null);
   
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -119,6 +120,10 @@ export default function StoreFormScreen() {
     }
   };
 
+  const onInvalidSubmit = () => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  };
+
   if (isEdit && isLoadingStore) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
@@ -129,7 +134,7 @@ export default function StoreFormScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollViewRef} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="p-4 space-y-4">
           
           <View className="mb-2 flex-row items-center">
@@ -301,7 +306,7 @@ export default function StoreFormScreen() {
 
           <View className="flex-col gap-3 mt-6 pb-8">
             <TouchableOpacity 
-              onPress={handleSubmit(onSubmit)}
+              onPress={handleSubmit(onSubmit, onInvalidSubmit)}
               disabled={addStore.isPending || updateStore.isPending}
               className={`w-full py-3.5 rounded-xl flex-row items-center justify-center gap-2 ${(addStore.isPending || updateStore.isPending) ? 'bg-primary/70' : 'bg-primary'}`}
               activeOpacity={0.8}
