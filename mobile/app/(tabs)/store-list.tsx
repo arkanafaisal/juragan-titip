@@ -60,7 +60,7 @@ export default function StoresScreen() {
           onFilterChange={handleFilterChange}
           onResetFilters={() => setActiveFilters({})}
           onAddClick={() => router.push('/store-form' as any)}
-          onSettingClick={() => console.log('Store Setting clicked')}
+          onSettingClick={() => router.push('/settings' as any)}
         />
       </View>
       

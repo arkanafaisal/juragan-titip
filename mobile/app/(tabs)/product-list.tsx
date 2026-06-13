@@ -57,7 +57,7 @@ export default function ProductsScreen() {
           onFilterChange={handleFilterChange}
           onResetFilters={() => setActiveFilters({})}
           onAddClick={() => router.push('/product-form')}
-          onSettingClick={() => console.log('Setting clicked')}
+          onSettingClick={() => router.push('/settings' as any)}
         />
       </View>
       

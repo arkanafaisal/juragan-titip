@@ -67,13 +67,23 @@ export function ActionToolbar({
     <View className="w-full z-10">
       <View className="flex-row items-center gap-2 mb-sm w-full">
         
-        <View className="relative flex-1 flex-row items-center bg-surface border border-outline-variant rounded-md px-3 h-10">
-          <Search size={THEME.iconSize['sm']} color={THEME.colors['outline']} />
+        <View className={`relative flex-1 flex-row items-center border rounded-md px-3 h-10 ${
+          searchValue 
+            ? 'bg-primary/10 border-primary' 
+            : 'bg-surface border-outline-variant'
+        }`}>
+          {searchValue ? (
+            <TouchableOpacity onPress={() => onSearchChange('')} activeOpacity={0.7} className="mr-1 bg-error rounded-full">
+              <X size={THEME.iconSize['md']} color={THEME.colors['on-error']} />
+            </TouchableOpacity>
+          ) : (
+            <Search size={THEME.iconSize['md']} color={THEME.colors['outline']} />
+          )}
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={searchPlaceholder}
-            className="flex-1 ml-2 text-body text-text-primary py-0 h-full"
+            className={`flex-1 ml-1 text-body py-0 h-full ${searchValue ? 'text-primary font-medium' : 'text-text-primary'}`}
             placeholderTextColor={THEME.colors['outline']}
             style={{ includeFontPadding: false }}
           />
