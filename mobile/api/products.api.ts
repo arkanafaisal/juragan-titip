@@ -2,7 +2,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { eq, like, and, gt, gte, lte, SQL, sql, asc, desc } from 'drizzle-orm';
 import { db } from '../db';
-import { products, inventoryLogs } from '../db/schema';
+import { products, inventoryLogs, InventoryLogType } from '../db/schema';
 import { 
   ProductFormValues, 
   AddStockPayload, 
@@ -164,21 +164,25 @@ export function useGetProductById(id?: number) {
   });
 }
 
-export function useGetProductInventoryLogs(productId?: number) {
+export function useGetProductInventoryLogs(productId?: number, typeFilter?: InventoryLogType) {
   return useQuery({
-    queryKey: ['inventoryLogs', productId],
+    queryKey: ['inventoryLogs', productId, typeFilter],
     queryFn: async () => {
       if (!productId) throw new Error("ID Produk tidak valid");
       
+      const conditions: any[] = [
+        eq(inventoryLogs.productId, productId),
+        gte(inventoryLogs.createdAt, sql`datetime('now', '-30 days')`)
+      ];
+
+      if (typeFilter) {
+        conditions.push(eq(inventoryLogs.type, typeFilter as any));
+      }
+
       try {
         return await db.select()
           .from(inventoryLogs)
-          .where(
-            and(
-              eq(inventoryLogs.productId, productId),
-              gte(inventoryLogs.createdAt, sql`datetime('now', '-30 days')`)
-            )
-          )
+          .where(and(...conditions))
           .orderBy(desc(inventoryLogs.createdAt));
       } catch (error) {
         throw new Error("Terjadi kesalahan sistem saat mengambil riwayat produk.");

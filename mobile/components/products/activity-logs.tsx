@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { RefreshCw, Trash2, Store as StoreIcon, Pencil, Package } from 'lucide-react-native';
 import THEME from '../../constants/css';
 import { formatDate, formatRelativeTime } from '../../utils/formatter.util';
 
-const getLogConfig = (log: any) => {
+import { InventoryLogType, inventoryLogs } from '../../db/schema';
+
+type InventoryLog = typeof inventoryLogs.$inferSelect;
+
+const getLogConfig = (log: InventoryLog) => {
   switch (log.type) {
     case 'OLAH_RETUR':
       return { title: 'OLAH RETUR', desc: `Masuk Gudang: ${log.quantity} Pcs`, icon: RefreshCw, color: THEME.colors['success'] };
@@ -24,19 +28,58 @@ const getLogConfig = (log: any) => {
 };
 
 interface ActivityLogsProps {
-  logs: any[];
+  logs: InventoryLog[];
   isLoading: boolean;
+  filterValue?: InventoryLogType;
+  onFilterChange?: (value: InventoryLogType) => void;
 }
 
-export function ActivityLogs({ logs, isLoading }: ActivityLogsProps) {
+const FILTER_OPTIONS: { label: string; value: InventoryLogType }[] = [
+  { label: 'Titipan', value: 'TITIPAN' },
+  { label: 'Tarik Retur', value: 'TARIK_RETUR' },
+  { label: 'Olah Retur', value: 'OLAH_RETUR' },
+  { label: 'Kulakan', value: 'KULAKAN' },
+  { label: 'Buang', value: 'BUANG_RUSAK' },
+  { label: 'Koreksi', value: 'KOREKSI' },
+];
+
+export function ActivityLogs({ logs, isLoading, filterValue, onFilterChange }: ActivityLogsProps) {
   return (
     <View className="bg-surface p-4 rounded-2xl border border-outline-variant mt-2 mb-4">
-      <View className="border-b pb-3 mb-4 border-outline-variant">
+      <View className="border-b pb-3 mb-4 border-outline-variant flex-row justify-between items-center">
         <Text className="text-h3 font-bold text-text-primary uppercase">Riwayat Aktivitas ( 30 hari )</Text>
       </View>
 
-      <View className="flex-col gap-3 relative">
-        {isLoading ? (
+      {onFilterChange && (
+        <View className="mb-4">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+            {FILTER_OPTIONS.map((opt) => {
+              const isActive = filterValue === opt.value;
+              return (
+                <TouchableOpacity 
+                  key={opt.value}
+                  onPress={() => onFilterChange && onFilterChange(opt.value)}
+                  className={`mr-2 px-3 py-1.5 rounded-full border ${isActive ? 'bg-primary border-primary' : 'bg-surface border-outline-variant'}`}
+                  activeOpacity={0.7}
+                >
+                  <Text className={`text-body-sm font-medium ${isActive ? 'text-on-primary' : 'text-text-secondary'}`}>
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
+
+      <ScrollView 
+        style={{ height: 350 }}
+        className="overflow-hidden" 
+        showsVerticalScrollIndicator={true}
+        nestedScrollEnabled={true}
+      >
+        <View className="flex-col gap-3 relative pb-4">
+          {isLoading ? (
           <Text className="text-body-sm font-medium text-center text-text-secondary py-4">Memuat riwayat...</Text>
         ) : logs.length === 0 ? (
           <Text className="text-body-sm font-medium text-center text-text-secondary py-4">Belum ada riwayat aktivitas</Text>
@@ -71,7 +114,8 @@ export function ActivityLogs({ logs, isLoading }: ActivityLogsProps) {
             );
           })
         )}
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }

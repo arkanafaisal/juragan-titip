@@ -23,6 +23,7 @@ import { WarehouseStockCard } from '../../components/products/warehouse-stock-ca
 import { ReturnManagementCard } from '../../components/products/return-management-card';
 import { ActivityLogs } from '../../components/products/activity-logs';
 import { BackButton } from '../../components/shared/back-button';
+import { InventoryLogType } from '../../db/schema';
 
 
 export default function ProductDetailScreen() {
@@ -34,12 +35,13 @@ export default function ProductDetailScreen() {
   const [isAddStockOpen, setIsAddStockOpen] = useState(false);
   const [isProcessReturnOpen, setIsProcessReturnOpen] = useState(false);
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [logTypeFilter, setLogTypeFilter] = useState<InventoryLogType>('TITIPAN');
   const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string; onContinue?: () => void; buttonText?: string}>({ visible: false, title: '', message: '' });
 
   const { data: product, isLoading, isError: isProductError, error: productError } = useGetProductById(id ? Number(id) : undefined);
   const { mutate: recoverProduct, isPending: isRecovering } = useRecoverProduct();
 
-  const { data: logs = [], isLoading: isLogsLoading, isError: isLogsError, error: logsError } = useGetProductInventoryLogs(id ? Number(id) : undefined);
+  const { data: logs = [], isLoading: isLogsLoading, isError: isLogsError, error: logsError } = useGetProductInventoryLogs(id ? Number(id) : undefined, logTypeFilter);
 
   const showError = (title: string, message: string, onContinue?: () => void, buttonText?: string) => {
     setIsRestoreModalOpen(false);
@@ -136,7 +138,12 @@ export default function ProductDetailScreen() {
             onProcessReturn={() => setIsProcessReturnOpen(true)} 
           />
 
-          <ActivityLogs logs={logs} isLoading={isLogsLoading} />
+          <ActivityLogs 
+            logs={logs} 
+            isLoading={isLogsLoading} 
+            filterValue={logTypeFilter}
+            onFilterChange={setLogTypeFilter}
+          />
 
         </View>
       </ScrollView>
