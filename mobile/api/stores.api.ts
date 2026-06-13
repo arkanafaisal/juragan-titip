@@ -126,22 +126,7 @@ export function useGetStoreById(id?: number) {
           throw new Error("Toko tidak ditemukan");
         }
 
-        // Mock data analisis (Titipan aktif & Riwayat Kunjungan)
-        const analysis = {
-          activeItems: [
-            { productName: "Keripik Singkong", remained: 15 },
-            { productName: "Kacang Polong", remained: 8 },
-          ],
-          visitHistory: [
-            { id: 1, amountPaid: 150000, createdAt: new Date().toISOString() },
-            { id: 2, amountPaid: 50000, createdAt: new Date(Date.now() - 86400000 * 7).toISOString() }
-          ]
-        };
-
-        return {
-          store: storeData[0],
-          ...analysis
-        };
+        return storeData[0];
       } catch (error: any) {
         throw new Error(error.message || "Gagal memuat detail toko.");
       }

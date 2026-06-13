@@ -44,7 +44,7 @@ export default function StoreVisitScreen() {
   
   // 1. Fetch Store
   const { data: storeData, isLoading: isStoreLoading } = useGetStoreById(storeIdNum);
-  const store = storeData?.store;
+  const store = storeData;
   const storeName = store?.name || "Memuat...";
   
   // 2. Fetch Last Visit

@@ -86,8 +86,8 @@ export default function StoreFormScreen() {
   );
 
   useEffect(() => {
-    if (isEdit && storeData?.store) {
-      const s = storeData.store;
+    if (isEdit && storeData) {
+      const s = storeData;
       reset({
         name: s.name,
         ownerName: s.ownerName,
@@ -234,8 +234,8 @@ export default function StoreFormScreen() {
             <View className="mt-1 flex-col gap-3">
               <MapPicker 
                 key={isEdit ? (isLoadingStore ? 'loading' : `loaded-${storeId}`) : 'new'}
-                initialLatitude={isEdit && storeData?.store ? storeData.store.latitude : (watchedCategory ? -6.200000 : undefined)} 
-                initialLongitude={isEdit && storeData?.store ? storeData.store.longitude : (watchedCategory ? 106.816666 : undefined)} 
+                initialLatitude={isEdit && storeData? storeData.latitude : (watchedCategory ? -6.200000 : undefined)} 
+                initialLongitude={isEdit && storeData? storeData.longitude : (watchedCategory ? 106.816666 : undefined)} 
                 onLocationChange={(lat, lng) => {
                   setValue('latitude', lat, { shouldValidate: true, shouldDirty: true });
                   setValue('longitude', lng, { shouldValidate: true, shouldDirty: true });
