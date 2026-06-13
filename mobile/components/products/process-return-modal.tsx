@@ -64,11 +64,11 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
         Belum Diolah: <Text className="font-bold text-error">{returnedStock} Pcs</Text>
       </Text>
       
-      <View className="space-y-4 mb-6">
-        <View className="p-4 rounded-2xl border border-success bg-[#f0fdf4]">
-          <View className="flex-row items-center gap-1.5 mb-2">
-            <RefreshCw size={THEME.iconSize['sm']} color={THEME.colors['success']} />
-            <Text className="font-body-sm font-bold text-success">SIAP JUAL LAGI?</Text>
+      <View className="flex-col gap-4 mb-6">
+        <View className="p-4 rounded-2xl bg-success shadow-sm">
+          <View className="flex-row items-center gap-1.5 mb-3">
+            <RefreshCw size={THEME.iconSize['sm']} color={THEME.colors['on-success']} />
+            <Text className="font-body-sm font-bold text-on-success">SIAP JUAL LAGI?</Text>
           </View>
           <Controller
             control={control}
@@ -78,12 +78,12 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
                 value={value !== undefined ? String(value) : ''}
                 onChangeText={(val) => {
                   const num = Number(val);
-                  onChange(val? Number(val) : undefined);
+                  onChange(val === '' || isNaN(num) ? undefined : num);
                 }}
                 onBlur={onBlur}
                 keyboardType="numeric"
                 placeholder="0"
-                className="text-success font-bold"
+                className="bg-white text-success font-bold text-h3 text-center py-1"
                 containerClassName="mb-0"
                 error={errors.resaleQty?.message}
               />
@@ -91,10 +91,10 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
           />
         </View>
         
-        <View className="p-4 rounded-2xl border border-error bg-[#fef2f2]">
-          <View className="flex-row items-center gap-1.5 mb-2">
-            <Trash2 size={THEME.iconSize['sm']} color={THEME.colors['error']} />
-            <Text className="font-body-sm font-bold text-error">BASI / RUSAK (Dibuang)?</Text>
+        <View className="p-4 rounded-2xl bg-error shadow-sm">
+          <View className="flex-row items-center gap-1.5 mb-3">
+            <Trash2 size={THEME.iconSize['sm']} color={THEME.colors['on-error']} />
+            <Text className="font-body-sm font-bold text-on-error">BASI / RUSAK (Dibuang)?</Text>
           </View>
           <Controller
             control={control}
@@ -109,7 +109,7 @@ export function ProcessReturnModal({ isOpen, onClose, returnedStock, productId }
                 onBlur={onBlur}
                 keyboardType="numeric"
                 placeholder="0"
-                className="text-error font-bold"
+                className="bg-white text-error font-bold text-h3 text-center py-1"
                 containerClassName="mb-0"
                 error={errors.wasteQty?.message}
               />
