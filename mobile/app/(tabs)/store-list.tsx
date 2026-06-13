@@ -6,6 +6,7 @@ import { ItemCard } from '../../components/shared/item-card';
 import { useGetStores } from '../../api/stores.api';
 import { useSettingsStore } from '../../api/settings.api';
 import { InfoModal } from '../../components/ui/modal';
+import { getStoreFilterGroups } from '../../utils/filter-configs';
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -37,55 +38,7 @@ export default function StoresScreen() {
     });
   }
 
-  const filterGroups = useMemo(() => {
-    return [
-      {
-        id: "category",
-        title: "Kategori Toko",
-        options: [
-          { label: "Semua", value: "" },
-          ...Object.entries(storeCategoryLabels).map(([key, label]) => ({
-            label,
-            value: key
-          }))
-        ]
-      },
-      {
-        id: "status",
-        title: "Status Operasional",
-        options: [
-          { label: "Semua", value: "" },
-          { label: "Lunas", value: "lunas" },
-          { label: "Piutang", value: "piutang" }
-        ]
-      },
-      {
-        id: "visitStatus",
-        title: "Kunjungan Toko",
-        options: [
-          { label: "Semua", value: "" },
-          { label: `> ${overdueDays} Hari`, value: "overdue" }
-        ]
-      },
-      {
-        id: "sortBy",
-        title: "Urutkan Berdasarkan",
-        options: [
-          { label: "Default (A-Z)", value: "" },
-          { label: "Kunjungan Terbaru", value: "lastVisitDesc" },
-          { label: "Kunjungan Terlama", value: "lastVisitAsc" }
-        ]
-      },
-      {
-        id: "isArchived",
-        title: "Status Arsip",
-        options: [
-          { label: "Aktif", value: "" },
-          { label: "Diarsipkan", value: "true" }
-        ]
-      }
-    ];
-  }, [storeCategoryLabels, overdueDays]);
+  const filterGroups = useMemo(() => getStoreFilterGroups(storeCategoryLabels, overdueDays), [storeCategoryLabels, overdueDays]);
 
   const handleFilterChange = (groupId: string, value: string) => {
     setActiveFilters(prev => {

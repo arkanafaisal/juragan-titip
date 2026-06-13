@@ -6,6 +6,7 @@ import { ItemCard } from '../../components/shared/item-card';
 import { useSettingsStore } from '../../api/settings.api';
 import { useGetProducts } from '../../api/products.api';
 import { InfoModal } from '../../components/ui/modal';
+import { getProductFilterGroups } from '../../utils/filter-configs';
 
 export default function ProductsScreen() {
   const router = useRouter();
@@ -31,37 +32,7 @@ export default function ProductsScreen() {
     }
   }, [isError, error]);
 
-  const filterGroups = useMemo(() => [
-    {
-      id: "category",
-      title: "Kategori Produk",
-      options: [
-        { label: "Semua", value: "" },
-        ...Object.entries(categoryLabels).map(([key, label]) => ({
-          label,
-          value: key
-        }))
-      ]
-    },
-    {
-      id: "stock",
-      title: "Level Stok",
-      options: [
-        { label: "Semua", value: "" },
-        { label: "0", value: "out_of_stock" },
-        { label: `1-${lowStockThreshold}`, value: "low_stock" },
-        { label: `>${lowStockThreshold}`, value: "in_stock" }
-      ]
-    },
-    {
-      id: "isArchived",
-      title: "Status Arsip",
-      options: [
-        { label: "Aktif", value: "" },
-        { label: "Diarsipkan", value: "true" }
-      ]
-    }
-  ], [categoryLabels, lowStockThreshold]);
+  const filterGroups = useMemo(() => getProductFilterGroups(categoryLabels, lowStockThreshold), [categoryLabels, lowStockThreshold]);
 
   const handleFilterChange = (groupId: string, value: string) => {
     setActiveFilters(prev => {
