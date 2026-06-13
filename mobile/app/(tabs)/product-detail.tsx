@@ -22,6 +22,7 @@ import { ProductInfoCard } from '../../components/products/product-info-card';
 import { WarehouseStockCard } from '../../components/products/warehouse-stock-card';
 import { ReturnManagementCard } from '../../components/products/return-management-card';
 import { ActivityLogs } from '../../components/products/activity-logs';
+import { BackButton } from '../../components/shared/back-button';
 
 
 export default function ProductDetailScreen() {
@@ -98,15 +99,7 @@ export default function ProductDetailScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="p-4 space-y-4 pb-4">
           
-          <View className="mb-2 flex-row items-center">
-            <TouchableOpacity 
-              onPress={() => router.back()}
-              className="flex-row items-center justify-center px-4 py-2 bg-error rounded-xl shadow-sm active:opacity-80"
-              activeOpacity={0.7}
-            >
-              <Text className="text-body-sm font-bold text-on-error">kembali</Text>
-            </TouchableOpacity>
-          </View>
+          <BackButton />
 
           {product.isArchived && (
             <View className="bg-error/10 border border-error/30 rounded-xl p-4 flex-col items-start gap-2 mb-4">
