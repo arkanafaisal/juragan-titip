@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Toast from 'react-native-toast-message';
 import { ArrowRight, ArrowLeft, CheckCircle2, Loader2, ChevronLeft } from 'lucide-react-native';
 
 import THEME from '../../constants/css';
@@ -124,20 +123,14 @@ export default function StoreVisitScreen() {
   useFocusEffect(
     useCallback(() => {
       const backAction = () => {
-        if (step === 3) {
-          setStep(2);
-        } else if (step === 2) {
-          setStep(1);
-        } else {
-          handleCancelVisit();
-        }
+        handleCancelVisit();
         return true;
       };
 
       const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
       return () => backHandler.remove();
-    }, [step, opnameItems?.length, handleCancelVisit])
+    }, [opnameItems?.length, handleCancelVisit])
   );
 
   // Initialize Form Data
@@ -196,10 +189,12 @@ export default function StoreVisitScreen() {
     const totalRestocked = restockItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
     
     if (opnameItems?.length === 0 && totalRestocked === 0) {
-      Toast.show({
-        type: 'error',
-        text1: 'Toko Kosong',
-        text2: 'Tidak ada barang di toko saat ini. Anda harus menitipkan minimal 1 barang baru.'
+      setInfoModal({
+        visible: true,
+        title: "Toko Kosong",
+        message: "Tidak ada barang di toko saat ini. Anda harus menitipkan minimal 1 barang baru.",
+        buttonText: "Mengerti",
+        onClose: () => setInfoModal(prev => ({ ...prev, visible: false }))
       });
       return;
     }
