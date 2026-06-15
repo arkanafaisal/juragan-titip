@@ -1,3 +1,37 @@
+git --no-pager log 55bc2a0715ff908b46000b93389fb5611efc07ad..HEAD --pretty=format:"%H %s"
+c56cc65017433110e1468314d2d6f78c3974bac4 add dashboard page (UI)
+fe7b54cd756c71d65214e6399234f68781673970 update assets
+99e5f9e2cc7c491ac92d13a4eff517417e15ba5c update(packages): change xlsx to exceljs
+3442d7eb2cc68ac5e79e99b7482262e13f319eb1 update(store-visit): modal message on empty store & reduce 
+hardwareBackPress interception
+8153c55d0319b445a54db9f0a8e6201b4d670850 refactor(store-visit): reusable modal component
+a6c9cb8f24fb11827784451ddfdcca107c21e5c6 refactor(store visit): separate & reposition component     
+2fdfc1def0b9e00ee20808796d358b52971e3975 update(visit invoice): get profile integration
+24296dc5e779063208ba76ce32869497f1b3438e update(settings): excel export
+7065afa3713c8ccec56707f4b865189bb640a87a update(header): profile menu feature
+bab86359c3e75a4d249bb9d5053d66b49e82056e update(db): indexing
+6b57eb0d4cf165ef4b31783bc2e46e14d1a97774 update(action toolbar): search bar reset button & on-active style, settings button redirect
+918a0b6d3363caafd751363e5d74e757f3387c8a fix(create visit service): update store assetValue
+9aa3d08e63992e0bdb5bcc1c9ec01e05c8408ace update(process return modal): gap & color
+b3e5624f6e82e45260195196995e7e80f8978267 update(item card): relative time value last visit label    
+c3b08183c311a43fee4fb547544d4cebc0e6457e add visit invoice (page, service, header, bottom tab bar, navigation
+add58d4eb36600bb87ba5961da308c7d2d644c9f update(store visit): remove step 1 auto-skip & toast message
+45ea1da33c843e241412662306b9d638f073ecf5 update(product & store form): scroll to top on error       
+6345f15b85013b105284cf502f03d9511dd86720 update(product detail): inventory logs filter
+d1e0baf1705434287013deb984b69775fe4432c4 refactor(product & store list): filter configs
+688510dba2bb5bed18e6b3292fa8027e23aaa030 refactor(product detail): back button component
+b730dc5885099bb0a8fdf52cd24b17e6ce3bd1d1 refactor(store detail): modular back button & sections component
+3230b3362de86137a9df6a4b229baa033b6dfb89 refactor(store visit): modular header & step indicator component
+562f20483f563916f74a0723e798879160591014 refactor(store detail): modular component
+9cba130aab454ebf30da024d8a9e7f831174a38c update(store detail): get store visit history service integration
+7ec0b3ff5a0b9f1cf7cc24c4565d50113e9cba06 update(store service): remove store visit history dummy data
+955d4979d28f03bb7f6bc8940aaae1b4a4b65582 add(package): xlsx
+64badf6cbf71b3514369b0dc52fa3c356db39b12 update(item card): css & text
+
+
+
+
+
 git --no-pager log 25d4fd985f9804025b431872acd008547352464b..HEAD --pretty=format:"%H %s"
 9c6768b9fe89c8c01aa8398ffcfcf31539b489dd update(step checkout): text & opname product detail
 094d0e5b15d530164cbfdfcfa58f24df12aac085 fix(store visit): leaving confirmation modal on hardware press & bottom tab bar navigation

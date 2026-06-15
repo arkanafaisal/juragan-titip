@@ -1,3 +1,36 @@
+15 June 2026
+<details>
+- added dashboard page (UI)
+- updated logo assets
+- updated packages: change xlsx to exceljs
+- updated store-visit: modal-type message on empty store & reduce hardwareBackPress interception
+- refactored store visit: separate & reposition component, reusable modal component
+- updated visit invoice: get profile integration
+- updated settings service & page: excel export 
+- added profile menu feature (header)
+</details>
+
+13 June 2026
+<details>
+- updated db: indexing
+- updated action toolbar: search bar reset button & on-active style, settings button redirect
+- fixed create visit service: updated store assetValue
+- updated process return modal gap & color
+- updated item card: relative last visit label value    
+- added visit invoice (page, service, header, bottom tab bar, navigation)
+- updated store visit: remove step 1 auto-skip & toast message
+- updated product & store form: scroll to top on error       
+- added inventory logs filter on product detail
+- refactored product & store list filter configs
+- refactored product detail back button component
+- refactored store detail back button & sections component
+- refactored store visit header & step indicator component
+- updated store detail: get store visit history service integration
+- removed store service's visit history dummy data
+- added package: xlsx
+- updated item card: css & text
+</details>
+
 12 June 2026
 <details>
 - updated step checkout: text & opname product detail
