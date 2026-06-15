@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { useForm, FormProvider, useWatch } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Toast from 'react-native-toast-message';
 import { ArrowRight, ArrowLeft, CheckCircle2, Loader2, ChevronLeft } from 'lucide-react-native';
@@ -48,11 +48,25 @@ export default function StoreVisitScreen() {
   }, [productsData]);
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorModalMessage, setErrorModalMessage] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
+
+  const [confirmModal, setConfirmModal] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    confirmText: 'Ya',
+    cancelText: 'Batal',
+    onConfirm: () => {},
+    onCancel: () => {},
+  });
+
+  const [infoModal, setInfoModal] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    buttonText: 'OK',
+    onClose: () => {},
+  });
 
   // Reset inisialisasi setiap kali halaman ini dibuka/difokuskan
   useFocusEffect(
@@ -83,6 +97,23 @@ export default function StoreVisitScreen() {
   const opnameItems = watch('opnameItems');
   const restockItems = watch('restockItems');
 
+  const handleCancelVisit = useCallback(() => {
+    setConfirmModal({
+      visible: true,
+      title: "Batalkan Kunjungan?",
+      message: "Data kunjungan yang belum disimpan akan hilang. Yakin ingin membatalkan?",
+      confirmText: "Ya, Batalkan",
+      cancelText: "Kembali",
+      onCancel: () => setConfirmModal(prev => ({ ...prev, visible: false })),
+      onConfirm: () => {
+        setConfirmModal(prev => ({ ...prev, visible: false }));
+        reset();
+        setIsInitialized(false);
+        router.back();
+      }
+    });
+  }, [reset, router]);
+
   useFocusEffect(
     useCallback(() => {
       reset(); // Hapus form state lama seketika
@@ -98,7 +129,7 @@ export default function StoreVisitScreen() {
         } else if (step === 2) {
           setStep(1);
         } else {
-          setShowCancelModal(true);
+          handleCancelVisit();
         }
         return true;
       };
@@ -106,7 +137,7 @@ export default function StoreVisitScreen() {
       const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
       return () => backHandler.remove();
-    }, [step, opnameItems?.length])
+    }, [step, opnameItems?.length, handleCancelVisit])
   );
 
   // Initialize Form Data
@@ -158,7 +189,7 @@ export default function StoreVisitScreen() {
   const handleHeaderPrevStep = () => {
     if (step === 3) setStep(2);
     else if (step === 2) setStep(1);
-    else if (step === 1) setShowCancelModal(true);
+    else if (step === 1) handleCancelVisit();
   };
 
   const handleNextToCheckout = () => {
@@ -213,8 +244,13 @@ export default function StoreVisitScreen() {
       }
     }
     
-    setErrorModalMessage(msg.trim() || 'Terdapat isian yang tidak valid. Mohon periksa kembali.');
-    setShowErrorModal(true);
+    setInfoModal({
+      visible: true,
+      title: "Validasi Gagal",
+      message: msg.trim() || 'Terdapat isian yang tidak valid. Mohon periksa kembali.',
+      buttonText: "Mengerti",
+      onClose: () => setInfoModal(prev => ({ ...prev, visible: false }))
+    });
   };
 
   return (
@@ -251,38 +287,21 @@ export default function StoreVisitScreen() {
       />
 
       <ConfirmModal
-        visible={showWarningModal}
-        title="Toko Sudah Dikunjungi"
-        message="Sistem mencatat sudah ada nota kunjungan untuk toko ini hari ini. Lanjutkan buat nota ganda?"
-        onCancel={() => {
-          setShowWarningModal(false);
-          router.back();
-        }}
-        onConfirm={() => setShowWarningModal(false)}
-        confirmText="Tetap Lanjutkan"
-      />
-
-      <ConfirmModal
-        visible={showCancelModal}
-        title="Batalkan Kunjungan?"
-        message="Data kunjungan yang belum disimpan akan hilang. Yakin ingin membatalkan?"
-        onCancel={() => setShowCancelModal(false)}
-        onConfirm={() => {
-          setShowCancelModal(false);
-          reset();
-          setIsInitialized(false);
-          router.back();
-        }}
-        confirmText="Ya, Batalkan"
-        cancelText="Kembali"
+        visible={confirmModal.visible}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        cancelText={confirmModal.cancelText}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={confirmModal.onCancel}
       />
 
       <InfoModal
-        visible={showErrorModal}
-        title="Validasi Gagal"
-        message={errorModalMessage}
-        onClose={() => setShowErrorModal(false)}
-        buttonText="Mengerti"
+        visible={infoModal.visible}
+        title={infoModal.title}
+        message={infoModal.message}
+        buttonText={infoModal.buttonText}
+        onClose={infoModal.onClose}
       />
     </View>
   );
