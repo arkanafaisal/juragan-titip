@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { VisitHeader } from '../../components/visits/visit-header';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Toast from 'react-native-toast-message';
+import { ArrowRight, ArrowLeft, CheckCircle2, Loader2, ChevronLeft } from 'lucide-react-native';
 
 import THEME from '../../constants/css';
 import { StepOpname } from '../../components/visits/step-opname';
@@ -221,34 +221,34 @@ export default function StoreVisitScreen() {
     <View className="flex-1 bg-background">
       {/* HEADER WIZARD */}
       <VisitHeader storeName={storeName} step={step} onPrevStep={handleHeaderPrevStep} />
-
+      
       <FormProvider {...methods}>
         {step === 1 && (
-          <StepOpname 
-            onNext={() => setStep(2)}
-          />
+          <StepOpname/>
         )}
 
         {step === 2 && (
           <StepRestock 
             allProducts={allProducts}
             suggestedProducts={suggestedProducts}
-            onNext={handleNextToCheckout}
-            onPrev={() => setStep(1)}
-            formatCurrency={(val: number) => 'Rp ' + val.toLocaleString('id-ID')}
           />
         )}
 
         {step === 3 && (
           <StepCheckout 
             currentDebt={currentDebt}
-            isSubmitting={createVisit.isPending}
-            onPrev={() => setStep(2)}
-            onFinish={handleSubmit(onValidSubmit, onInvalidSubmit)}
-            formatCurrency={(val: number) => 'Rp ' + val.toLocaleString('id-ID')}
           />
         )}
       </FormProvider>
+
+      {/* FIXED FOOTER DARI PARENT */}
+      <FixedFooter 
+        step={step}
+        setStep={setStep}
+        handleNextToCheckout={handleNextToCheckout}
+        isPending={createVisit.isPending}
+        onFinish={handleSubmit(onValidSubmit, onInvalidSubmit)}
+      />
 
       <ConfirmModal
         visible={showWarningModal}
@@ -287,3 +287,157 @@ export default function StoreVisitScreen() {
     </View>
   );
 }
+
+
+interface VisitHeaderProps {
+  storeName: string;
+  step: 1 | 2 | 3;
+  onPrevStep: () => void;
+}
+
+function VisitHeader({ storeName, step, onPrevStep }: VisitHeaderProps) {
+  const headerText = {
+    header: ["Cek Titipan Lama (Opname)", "Titip Barang Baru (Restock)", "Tagihan dan rincian produk"],
+    subHeader: ["Berapa banyak barang yang laku dan yang harus ditarik/retur?", "Pilih barang dari gudang untuk dititipkan ke toko ini.", "Periksa kembali ringkasan sebelum menyimpan kunjungan."]
+  }
+  return (
+    <View className='border-b border-outline-variant bg-surface'>
+      <View className="flex-row items-center justify-between  px-4 py-2">
+        <View className="flex-row items-center flex-1">
+          <TouchableOpacity 
+            onPress={onPrevStep} 
+            className="p-1 rounded-lg"
+          >
+            <ChevronLeft size={THEME.iconSize.lg} color={THEME.colors['text-secondary']} />
+          </TouchableOpacity>
+          <Text className="font-h4 text-h4 font-bold text-text-primary truncate flex-1" numberOfLines={1}>
+            {storeName}
+          </Text>
+        </View>
+        
+        <View className="flex-row items-center ml-2 shrink-0">
+          <StepIndicator current={step} target={1} num="1" />
+          <View className={`w-2 h-[1px] ${step < 2? 'bg-outline-variant' :  step == 2? 'bg-primary' : 'bg-success'}`} />
+          <StepIndicator current={step} target={2} num="2" />
+          <View className={`w-2 h-[1px] ${step < 3? 'bg-outline-variant' : 'bg-primary'}`} />
+          <StepIndicator current={step} target={3} num="3" />
+        </View>
+      </View>
+
+      <View className="mb-2 px-4">
+        <Text className="text-h3 font-bold text-text-primary mb-1">{headerText.header[step-1]}</Text>
+        <Text className="text-body-sm text-text-secondary">{headerText.subHeader[step-1]}</Text>
+      </View>
+    </View>
+  );
+};
+
+
+interface FixedFooterProps {
+  step: 1 | 2 | 3;
+  setStep: (step: 1 | 2 | 3) => void;
+  handleNextToCheckout: () => void;
+  isPending: boolean;
+  onFinish: () => void;
+}
+
+function FixedFooter({
+  step,
+  setStep,
+  handleNextToCheckout,
+  isPending,
+  onFinish
+}: FixedFooterProps) {
+  return (
+    <View className="absolute bottom-0 inset-x-0 px-4 py-2 bg-surface border-t border-outline-variant flex-row gap-3">
+      {step === 1 && (
+        <TouchableOpacity 
+          onPress={() => setStep(2)}
+          className="w-full bg-success py-3 rounded-xl flex-row items-center justify-center gap-2 shadow-sm"
+          activeOpacity={0.8}
+        >
+          <Text className="text-on-success font-bold">Lanjutkan ke Restock</Text>
+          <ArrowRight size={20} color={THEME.colors['on-success']} />
+        </TouchableOpacity>
+      )}
+      
+      {step === 2 && (
+        <>
+          <TouchableOpacity 
+            onPress={() => setStep(1)}
+            className="flex-1 bg-error py-3 rounded-xl flex-row items-center justify-center gap-2 shadow-sm"
+          >
+            <ArrowLeft size={20} color={THEME.colors['on-error']} />
+            <Text className="text-on-error font-bold">Kembali</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={handleNextToCheckout}
+            className="flex-1 bg-success py-3 rounded-xl flex-row items-center justify-center gap-2 shadow-sm"
+            activeOpacity={0.8}
+          >
+            <Text className="text-on-success font-bold">Lanjut</Text>
+            <ArrowRight size={20} color={THEME.colors['on-success']} />
+          </TouchableOpacity>
+        </>
+      )}
+
+      {step === 3 && (
+        <>
+          <TouchableOpacity 
+            onPress={() => setStep(2)}
+            className="flex-1 bg-error py-3 rounded-xl flex-row items-center justify-center gap-2 shadow-sm"
+            disabled={isPending}
+          >
+            <ArrowLeft size={20} color={THEME.colors['on-error']} />
+            <Text className="text-on-error font-bold">Kembali</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={onFinish}
+            disabled={isPending}
+            className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 shadow-sm ${isPending ? 'bg-surface-variant' : 'bg-success'}`}
+            activeOpacity={0.8}
+          >
+            {isPending ? <Loader2 size={20} color={THEME.colors['on-primary']} className="animate-spin" /> : <CheckCircle2 size={20} color={THEME.colors['on-success']} />}
+            <Text className={`${isPending ? 'text-text-secondary' : 'text-on-success'} font-bold`}>Selesaikan</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+interface StepIndicatorProps {
+  current: number;
+  target: number;
+  num: string | number;
+}
+
+function StepIndicator ({ current, target, num }: StepIndicatorProps) {
+  const isPast = current > target;
+  const isActive = current === target;
+  
+  return (
+    <View className="flex-row items-center gap-1">
+      {isPast ? (
+        <CheckCircle2 size={THEME.iconSize.xl} color={THEME.colors.success} />
+      ) : (
+        <View className={`w-8 h-8 rounded-full items-center justify-center ${isActive ? 'bg-primary' : 'bg-surface-container-high'}`}>
+          <Text className={`text-h3 font-bold ${isActive ? 'text-on-primary' : 'text-text-secondary'}`}>
+            {num}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+};
