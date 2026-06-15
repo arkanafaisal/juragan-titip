@@ -34,6 +34,9 @@ export function BaseModal({ visible, children, onClose }: BaseModalProps) {
 // 2. CONFIRM MODAL (Contoh: Keluar Aplikasi)
 // Tombol: Kiri (Batal), Kanan (Ya/Aksi)
 // ==========================================
+import { Loader2 } from 'lucide-react-native';
+import THEME from '../../constants/css';
+
 interface ConfirmModalProps {
   visible: boolean;
   title: string;
@@ -42,18 +45,20 @@ interface ConfirmModalProps {
   onConfirm: () => void;
   confirmText?: string;
   cancelText?: string;
+  isLoading?: boolean;
 }
 
-export function ConfirmModal({ visible, title, message, onCancel, onConfirm, confirmText = 'Ya', cancelText = 'Batal' }: ConfirmModalProps) {
+export function ConfirmModal({ visible, title, message, onCancel, onConfirm, confirmText = 'Ya', cancelText = 'Batal', isLoading = false }: ConfirmModalProps) {
   return (
-    <BaseModal visible={visible} onClose={onCancel}>
+    <BaseModal visible={visible} onClose={isLoading ? undefined : onCancel}>
       <Text className="text-h2 font-bold text-on-primary text-center">{title}</Text>
       <Text className="text-body text-on-primary text-center mt-2">{message}</Text>
       
       <View className="flex-row gap-3 mt-6">
         <TouchableOpacity 
           onPress={onCancel} 
-          className="flex-1 bg-success py-3 rounded-xl items-center justify-center"
+          disabled={isLoading}
+          className={`flex-1 py-3 rounded-xl items-center justify-center ${isLoading ? 'bg-outline-variant' : 'bg-success'}`}
           activeOpacity={0.8}
         >
           <Text className="text-on-success text-h3 font-bold">{cancelText}</Text>
@@ -61,10 +66,12 @@ export function ConfirmModal({ visible, title, message, onCancel, onConfirm, con
 
         <TouchableOpacity 
           onPress={onConfirm} 
-          className="flex-1 bg-error py-3 rounded-xl items-center justify-center"
+          disabled={isLoading}
+          className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${isLoading ? 'bg-outline-variant' : 'bg-error'}`}
           activeOpacity={0.8}
         >
-          <Text className="text-on-error text-h3 font-bold">{confirmText}</Text>
+          {isLoading && <Loader2 size={16} color={THEME.colors['on-error']} />}
+          <Text className="text-on-error text-h3 font-bold">{isLoading ? 'Proses...' : confirmText}</Text>
         </TouchableOpacity>
       </View>
     </BaseModal>
@@ -83,16 +90,17 @@ interface InputConfirmModalProps {
   onCancel: () => void;
   onConfirm: () => void;
   confirmText?: string;
+  isLoading?: boolean;
 }
 
-export function InputConfirmModal({ visible, title, message, expectedInput, onCancel, onConfirm, confirmText = 'Reset' }: InputConfirmModalProps) {
+export function InputConfirmModal({ visible, title, message, expectedInput, onCancel, onConfirm, confirmText = 'Reset', isLoading = false }: InputConfirmModalProps) {
   const [inputValue, setInputValue] = useState('');
   const isMatch = inputValue === expectedInput;
 
   const handleConfirm = () => {
     if (isMatch) {
       onConfirm();
-      setInputValue(''); // Reset input setelah sukses
+      // Tidak mereset input disini agar modal masih menampilkan input saat loading
     }
   };
 
@@ -102,7 +110,7 @@ export function InputConfirmModal({ visible, title, message, expectedInput, onCa
   };
 
   return (
-    <BaseModal visible={visible} onClose={handleCancel}>
+    <BaseModal visible={visible} onClose={isLoading ? undefined : handleCancel}>
       <Text className="text-h2 font-bold text-on-primary">{title}</Text>
       <Text className="text-body text-on-primary mt-2">{message}</Text>
       
@@ -111,9 +119,10 @@ export function InputConfirmModal({ visible, title, message, expectedInput, onCa
         <TextInput
           value={inputValue}
           onChangeText={setInputValue}
+          editable={!isLoading}
           placeholder={expectedInput}
           placeholderTextColor="#9ca3af"
-          className="border border-outline-variant bg-surface-container-lowest rounded-xl p-3 text-body text-text-primary"
+          className={`border bg-surface-container-lowest rounded-xl p-3 text-body text-text-primary ${isLoading ? 'border-outline/50 opacity-50' : 'border-outline-variant'}`}
           autoCapitalize="none"
         />
       </View>
@@ -121,7 +130,8 @@ export function InputConfirmModal({ visible, title, message, expectedInput, onCa
       <View className="flex-row gap-3 mt-6">
         <TouchableOpacity 
           onPress={handleCancel} 
-          className="flex-1 bg-success py-3 rounded-xl items-center justify-center"
+          disabled={isLoading}
+          className={`flex-1 py-3 rounded-xl items-center justify-center ${isLoading ? 'bg-outline-variant' : 'bg-success'}`}
           activeOpacity={0.8}
         >
           <Text className="text-on-success text-h3 font-bold">Batal</Text>
@@ -129,11 +139,14 @@ export function InputConfirmModal({ visible, title, message, expectedInput, onCa
 
         <TouchableOpacity 
           onPress={handleConfirm} 
-          disabled={!isMatch}
-          className={`flex-1 py-3 rounded-xl items-center justify-center ${isMatch ? 'bg-error' : 'bg-outline-variant'}`}
-          activeOpacity={isMatch ? 0.8 : 1}
+          disabled={!isMatch || isLoading}
+          className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${isMatch && !isLoading ? 'bg-error' : 'bg-outline-variant'}`}
+          activeOpacity={isMatch && !isLoading ? 0.8 : 1}
         >
-          <Text className={isMatch ? 'text-on-error text-h3 font-bold' : 'text-surface text-h3 font-bold'}>{confirmText}</Text>
+          {isLoading && <Loader2 size={16} color={THEME.colors['on-error']} />}
+          <Text className={isMatch ? 'text-on-error text-h3 font-bold' : 'text-surface text-h3 font-bold'}>
+            {isLoading ? 'Proses...' : confirmText}
+          </Text>
         </TouchableOpacity>
       </View>
     </BaseModal>

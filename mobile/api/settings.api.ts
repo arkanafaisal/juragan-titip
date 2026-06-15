@@ -120,87 +120,127 @@ export const useCheckDatabaseHasData = () => {
   });
 };
 
+// export const useExportDatabase = () => {
+//   return useMutation({
+//     mutationFn: async () => {
+//       const allProducts = await db.select().from(products);
+//       const allLogs = await db.select().from(inventoryLogs);
+//       const allStores = await db.select().from(stores);
+// 
+//       const exportData = {
+//         version: 1,
+//         exportDate: new Date().toISOString(),
+//         data: {
+//           products: allProducts,
+//           inventoryLogs: allLogs,
+//           stores: allStores
+//         }
+//       };
+// 
+//       const jsonString = JSON.stringify(exportData, null, 2);
+//       
+//       const fileUri = FileSystem.documentDirectory + 'juragantitip_backup.json';
+//       await FileSystem.writeAsStringAsync(fileUri, jsonString, { encoding: FileSystem.EncodingType.UTF8 });
+//       
+//       const canShare = await Sharing.isAvailableAsync();
+//       if (canShare) {
+//         await Sharing.shareAsync(fileUri, {
+//           mimeType: 'application/json',
+//           dialogTitle: 'Simpan Backup Database JuraganTitip'
+//         });
+//       } else {
+//         throw new Error("Fitur berbagi tidak tersedia di perangkat ini");
+//       }
+//     }
+//   });
+// };
+
 export const useExportDatabase = () => {
   return useMutation({
     mutationFn: async () => {
-      const allProducts = await db.select().from(products);
-      const allLogs = await db.select().from(inventoryLogs);
-      const allStores = await db.select().from(stores);
-
-      const exportData = {
-        version: 1,
-        exportDate: new Date().toISOString(),
-        data: {
-          products: allProducts,
-          inventoryLogs: allLogs,
-          stores: allStores
-        }
-      };
-
-      const jsonString = JSON.stringify(exportData, null, 2);
-      
-      const fileUri = FileSystem.documentDirectory + 'juragantitip_backup.json';
-      await FileSystem.writeAsStringAsync(fileUri, jsonString, { encoding: FileSystem.EncodingType.UTF8 });
-      
-      const canShare = await Sharing.isAvailableAsync();
-      if (canShare) {
-        await Sharing.shareAsync(fileUri, {
-          mimeType: 'application/json',
-          dialogTitle: 'Simpan Backup Database JuraganTitip'
-        });
-      } else {
-        throw new Error("Fitur berbagi tidak tersedia di perangkat ini");
-      }
+      const { exportDatabaseToExcel } = await import('./excel.backup');
+      return exportDatabaseToExcel();
     }
   });
 };
+
+// export const useImportDatabase = () => {
+//   const queryClient = useQueryClient();
+//   return useMutation({
+//     mutationFn: async () => {
+//       const result = await DocumentPicker.getDocumentAsync({
+//         type: ['application/json', '*/*'],
+//         copyToCacheDirectory: true
+//       });
+// 
+//       if (result.canceled) return false;
+// 
+//       const file = result.assets[0];
+//       const jsonString = await FileSystem.readAsStringAsync(file.uri, { encoding: FileSystem.EncodingType.UTF8 });
+//       
+//       let parsed;
+//       try {
+//         parsed = JSON.parse(jsonString);
+//       } catch (e) {
+//         throw new Error("Format file JSON rusak dan tidak bisa dibaca.");
+//       }
+// 
+//       if (!parsed.version || !parsed.data) {
+//         throw new Error("File tidak valid. Pastikan file ini adalah hasil export dari JuraganTitip.");
+//       }
+// 
+//       await db.transaction(async (tx) => {
+//         // Hapus data lama
+//         await tx.delete(inventoryLogs);
+//         await tx.delete(products);
+//         await tx.delete(stores);
+//         
+//         // Insert ulang jika ada
+//         if (parsed.data.products && parsed.data.products.length > 0) {
+//           await tx.insert(products).values(parsed.data.products);
+//         }
+//         
+//         if (parsed.data.inventoryLogs && parsed.data.inventoryLogs.length > 0) {
+//           await tx.insert(inventoryLogs).values(parsed.data.inventoryLogs);
+//         }
+//         
+//         if (parsed.data.stores && parsed.data.stores.length > 0) {
+//           await tx.insert(stores).values(parsed.data.stores);
+//         }
+//       });
+//       
+//       return true;
+//     },
+//     onSuccess: (didImport) => {
+//       if (didImport) {
+//         queryClient.invalidateQueries({ queryKey: ['products'] });
+//         queryClient.invalidateQueries({ queryKey: ['inventoryLogs'] });
+//         queryClient.invalidateQueries({ queryKey: ['stores'] });
+//         queryClient.invalidateQueries({ queryKey: ['checkDatabaseHasData'] });
+//       }
+//     }
+//   });
+// };
 
 export const useImportDatabase = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/json', '*/*'],
+        type: [
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
+          'application/vnd.ms-excel',
+          '*/*'
+        ],
         copyToCacheDirectory: true
       });
 
       if (result.canceled) return false;
 
       const file = result.assets[0];
-      const jsonString = await FileSystem.readAsStringAsync(file.uri, { encoding: FileSystem.EncodingType.UTF8 });
-      
-      let parsed;
-      try {
-        parsed = JSON.parse(jsonString);
-      } catch (e) {
-        throw new Error("Format file JSON rusak dan tidak bisa dibaca.");
-      }
-
-      if (!parsed.version || !parsed.data) {
-        throw new Error("File tidak valid. Pastikan file ini adalah hasil export dari JuraganTitip.");
-      }
-
-      await db.transaction(async (tx) => {
-        // Hapus data lama
-        await tx.delete(inventoryLogs);
-        await tx.delete(products);
-        await tx.delete(stores);
-        
-        // Insert ulang jika ada
-        if (parsed.data.products && parsed.data.products.length > 0) {
-          await tx.insert(products).values(parsed.data.products);
-        }
-        
-        if (parsed.data.inventoryLogs && parsed.data.inventoryLogs.length > 0) {
-          await tx.insert(inventoryLogs).values(parsed.data.inventoryLogs);
-        }
-        
-        if (parsed.data.stores && parsed.data.stores.length > 0) {
-          await tx.insert(stores).values(parsed.data.stores);
-        }
-      });
-      
-      return true;
+      const { importDatabaseFromExcel } = await import('./excel.backup');
+      const res = await importDatabaseFromExcel(file.uri);
+      return res.success;
     },
     onSuccess: (didImport) => {
       if (didImport) {

@@ -279,7 +279,7 @@ export default function SettingsScreen() {
             </View>
             <View className="flex-1">
               <Text className="text-h4 font-bold text-on-primary">Export Database</Text>
-              <Text className="text-caption text-on-primary mt-1">Simpan data ke file JSON</Text>
+              <Text className="text-caption text-on-primary mt-1">Simpan data ke file Excel</Text>
             </View>
           </TouchableOpacity>
 
@@ -320,30 +320,33 @@ export default function SettingsScreen() {
       <ConfirmModal
         visible={exportModalVisible}
         title="Export Database"
-        message="Simpan seluruh data stok dan riwayat ke dalam file JSON yang bisa disimpan atau dibagikan."
+        message="Simpan seluruh data stok dan riwayat ke dalam file Excel yang bisa disimpan atau dibagikan."
         onCancel={() => setExportModalVisible(false)}
         onConfirm={handleExport}
         confirmText="Expor"
+        isLoading={isExporting}
       />
 
       {hasData ? (
         <InputConfirmModal
           visible={importModalVisible}
           title="Peringatan Timpa Data!"
-          message="Aplikasi mendeteksi adanya data. Jika Anda memulihkan data dari file, maka SEMUA data yang ada di aplikasi saat ini akan DIHAPUS dan digantikan sepenuhnya oleh data dari file backup."
+          message="Aplikasi mendeteksi adanya data. Jika Anda memulihkan data dari file Excel, maka SEMUA data yang ada di aplikasi saat ini akan DIHAPUS dan digantikan sepenuhnya oleh data dari file backup."
           expectedInput="timpa data"
           onCancel={() => setImportModalVisible(false)}
           onConfirm={handleImport}
           confirmText="Timpa Data"
+          isLoading={isImporting}
         />
       ) : (
         <ConfirmModal
           visible={importModalVisible}
           title="Import Database"
-          message="Pilih file backup (.json) untuk memulihkan data Anda."
+          message="Pilih file backup (.xlsx) untuk memulihkan data Anda."
           onCancel={() => setImportModalVisible(false)}
           onConfirm={handleImport}
           confirmText="Pilih File"
+          isLoading={isImporting}
         />
       )}
 
@@ -355,6 +358,7 @@ export default function SettingsScreen() {
         onCancel={() => setResetModalVisible(false)}
         onConfirm={handleReset}
         confirmText="Reset data"
+        isLoading={isResetting}
       />
 
       <ConfirmModal
