@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { usePathname, useGlobalSearchParams } from 'expo-router';
 import { User } from 'lucide-react-native';
 import React from 'react';
+import { ProfileMenu } from './profile-menu';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import THEME from '../../constants/css'
@@ -76,12 +77,7 @@ export function Header() {
 
       <View className="flex-row items-center gap-sm shrink-0">
         <View className="relative ml-1 flex-row items-center">
-          <TouchableOpacity 
-            className="w-9 h-9 rounded-full bg-surface flex items-center justify-center"
-            activeOpacity={0.7}
-          >
-            <User size={THEME.iconSize['lg']} color={THEME.colors['primary']} />
-          </TouchableOpacity>
+          <ProfileMenu />
         </View>
       </View>
     </View>

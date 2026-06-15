@@ -48,12 +48,14 @@ interface SettingsState {
   storeCategoryLabels: CategoryLabels;
   lowStockThreshold: number;
   storeOverdueDays: number;
+  profile: { name: string; phone: string };
 
   // --- Fungsi Pengubah (Actions) ---
   setCategoryLabels: (labels: CategoryLabels) => void;
   setStoreCategoryLabels: (labels: CategoryLabels) => void;
   setLowStockThreshold: (threshold: number) => void;
   setStoreOverdueDays: (days: number) => void;
+  setProfile: (profile: { name: string; phone: string }) => void;
   
   // Fungsi tambahan untuk mereset semua pengaturan ke bawaan pabrik
   resetSettings: () => void;
@@ -70,18 +72,21 @@ export const useSettingsStore = create<SettingsState>()(
       storeCategoryLabels: DEFAULT_STORE_CATEGORY_LABELS,
       lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD,
       storeOverdueDays: DEFAULT_STORE_OVERDUE_DAYS,
+      profile: { name: '', phone: '' },
 
       // Logika untuk mengubah state
       setCategoryLabels: (labels) => set({ categoryLabels: labels }),
       setStoreCategoryLabels: (labels) => set({ storeCategoryLabels: labels }),
       setLowStockThreshold: (threshold) => set({ lowStockThreshold: threshold }),
       setStoreOverdueDays: (days) => set({ storeOverdueDays: days }),
+      setProfile: (profile) => set({ profile }),
 
       resetSettings: () => set({
         categoryLabels: DEFAULT_CATEGORY_LABELS,
         storeCategoryLabels: DEFAULT_STORE_CATEGORY_LABELS,
         lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD,
         storeOverdueDays: DEFAULT_STORE_OVERDUE_DAYS,
+        profile: { name: '', phone: '' },
       }),
     }),
     {
