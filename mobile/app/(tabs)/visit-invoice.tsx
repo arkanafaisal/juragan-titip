@@ -10,6 +10,8 @@ import { BackButton } from '../../components/shared/back-button';
 import { formatDate, formatRupiah } from '../../utils/formatter.util';
 import { sendVisitReceiptWA } from '../../utils/whatsapp.util';
 import { ZigZagEdge } from '../../components/shared/zigzag-edge';
+import { useSettingsStore } from '../../api/settings.api';
+import { InfoModal } from '../../components/ui/modal';
 
 export default function VisitInvoiceScreen() {
   const router = useRouter();
@@ -18,9 +20,17 @@ export default function VisitInvoiceScreen() {
 
   const { data: visit, isLoading, isError } = useGetVisitById(visitId);
 
-  // Hardcode sesuai prototype (Belum ada pengaturan profil/telepon pengguna native)
-  const BUSINESS_NAME = "NAMA USAHA ANDA"; 
-  const currentUserPhone = ""; 
+  const profile = useSettingsStore(state => state.profile);
+  const [isProfileModalVisible, setIsProfileModalVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!profile.name) {
+      setIsProfileModalVisible(true);
+    }
+  }, [profile.name]);
+
+  const BUSINESS_NAME = profile.name || "NAMA USAHA ANDA"; 
+  const currentUserPhone = profile.phone || "";
 
   // Keajaiban Matematika
   const subtotalLaku = useMemo(() => {
@@ -237,6 +247,13 @@ export default function VisitInvoiceScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <InfoModal
+        visible={isProfileModalVisible}
+        title="Profil Usaha Belum Diatur"
+        message="Mohon atur profil usaha (Nama & No WhatsApp) melalui menu profil di pojok kanan atas layar agar informasi ini bisa tampil di kop surat struk Anda."
+        onClose={() => setIsProfileModalVisible(false)}
+      />
     </View>
   );
 }
