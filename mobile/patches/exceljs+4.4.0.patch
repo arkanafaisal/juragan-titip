@@ -1,0 +1,13 @@
+diff --git a/node_modules/exceljs/package.json b/node_modules/exceljs/package.json
+index 7a70a5e..f2149c8 100644
+--- a/node_modules/exceljs/package.json
++++ b/node_modules/exceljs/package.json
+@@ -16,7 +16,7 @@
+     "node": ">=8.3.0"
+   },
+   "main": "./excel.js",
+-  "browser": "./dist/exceljs.min.js",
++  "browser": "./dist/exceljs.bare.min.js",
+   "types": "./index.d.ts",
+   "files": [
+     "dist",
