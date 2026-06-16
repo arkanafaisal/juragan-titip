@@ -128,8 +128,9 @@ const generateDisplaySheet = (
 // ==========================================
 // 4. FUNGSI UTAMA EXPORT (BACKUP)
 // ==========================================
-export const exportDatabaseToExcel = async () => {
+export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) => {
   try {
+    if (onProgress) onProgress('Mengambil data dari database...');
     // 1. Ambil Seluruh Data Utuh dari Database
     const rawProducts = await db.select().from(products);
     const rawStores = await db.select().from(stores);
@@ -147,6 +148,7 @@ export const exportDatabaseToExcel = async () => {
     rawStores.sort(sortByArchivedAndName);
 
     // 3. Inisiasi Mesin Excel
+    if (onProgress) onProgress('Menyusun format Excel...');
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Juragan Titip App';
 

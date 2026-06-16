@@ -157,9 +157,9 @@ export const useCheckDatabaseHasData = () => {
 
 export const useExportDatabase = () => {
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (onProgress?: (msg: string) => void) => {
       const { exportDatabaseToExcel } = await import('./excel.backup');
-      return exportDatabaseToExcel();
+      return exportDatabaseToExcel(onProgress);
     }
   });
 };

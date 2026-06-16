@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Download, Upload, Trash2, Database, AlertTriangle, Loader2, Package, Store, ChevronDown, ChevronUp, RefreshCw, Save } from 'lucide-react-native';
-import { ConfirmModal, InputConfirmModal } from '../../components/ui/modal';
+import { ConfirmModal, InputConfirmModal, BaseModal } from '../../components/ui/modal';
 import { 
   useExportDatabase, 
   useImportDatabase, 
@@ -53,6 +53,7 @@ export default function SettingsScreen() {
   const [importModalVisible, setImportModalVisible] = useState(false);
   const [resetModalVisible, setResetModalVisible] = useState(false);
   const [resetSettingsModalVisible, setResetSettingsModalVisible] = useState(false);
+  const [exportProgress, setExportProgress] = useState<string>('');
 
   // Initialize React Hook Form
   const { control, handleSubmit, reset, formState: { errors } } = useForm<SettingsFormData>({
@@ -87,13 +88,15 @@ export default function SettingsScreen() {
   };
 
   const handleExport = () => {
-    exportDb(undefined, {
+    exportDb(setExportProgress, {
       onSuccess: () => {
         setExportModalVisible(false);
+        setExportProgress('');
         Toast.show({ type: 'success', text1: 'Export Berhasil' });
       },
       onError: (err) => {
         setExportModalVisible(false);
+        setExportProgress('');
         Toast.show({ type: 'error', text1: 'Export Gagal', text2: err.message });
       }
     });
@@ -317,15 +320,34 @@ export default function SettingsScreen() {
       </ScrollView>
 
       {/* MODALS */}
-      <ConfirmModal
-        visible={exportModalVisible}
-        title="Export Database"
-        message="Simpan seluruh data stok dan riwayat ke dalam file Excel yang bisa disimpan atau dibagikan."
-        onCancel={() => setExportModalVisible(false)}
-        onConfirm={handleExport}
-        confirmText="Expor"
-        isLoading={isExporting}
-      />
+      <BaseModal visible={exportModalVisible} onClose={isExporting ? undefined : () => setExportModalVisible(false)}>
+        <Text className="text-h2 font-bold text-on-primary text-center">Export Database</Text>
+        <Text className="text-body text-on-primary text-center mt-2">
+          {isExporting ? (exportProgress || 'Menyiapkan backup...') : 'Simpan seluruh data stok dan riwayat ke dalam file Excel yang bisa disimpan atau dibagikan.'}
+        </Text>
+        
+        <View className="flex-row gap-3 mt-6">
+          {!isExporting && (
+            <TouchableOpacity 
+              onPress={() => setExportModalVisible(false)} 
+              className="flex-1 py-3 rounded-xl items-center justify-center bg-success"
+              activeOpacity={0.8}
+            >
+              <Text className="text-on-success text-h3 font-bold">Batal</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity 
+            onPress={handleExport} 
+            disabled={isExporting}
+            className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${isExporting ? 'bg-outline-variant' : 'bg-error'}`}
+            activeOpacity={0.8}
+          >
+            {isExporting && <Loader2 size={16} color={THEME.colors['on-error']} />}
+            <Text className="text-on-error text-h3 font-bold">{isExporting ? 'Proses...' : 'Expor'}</Text>
+          </TouchableOpacity>
+        </View>
+      </BaseModal>
 
       {hasData ? (
         <InputConfirmModal
