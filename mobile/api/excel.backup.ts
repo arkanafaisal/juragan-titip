@@ -1,245 +1,309 @@
-// mobile/services/excel.service.ts
-
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+import { Buffer } from 'buffer';
 import { db } from '../db';
-import { products, stores, visits, inventoryLogs, visitItems } from '../db/schema';
-import { asc } from 'drizzle-orm';
+import { products, stores, visits, visitItems, inventoryLogs } from '../db/schema';
+import { useSettingsStore } from './settings.api';
 
 // ==========================================
-// 1. CONFIG URUTAN KOLOM & HEADER
+// 1. KONFIGURASI GLOBAL
 // ==========================================
-const DISPLAY_CONFIG = {
-  products: [
-    { header: 'ID', rawKey: 'id', width: 8 },
-    { header: 'Nama Produk', rawKey: 'name', width: 30 },
-    { header: 'Kategori', rawKey: 'category', width: 15 },
-    { header: 'Modal', rawKey: 'costPrice', width: 15 },
-    { header: 'Grosir (Toko)', rawKey: 'wholesalePrice', width: 15 },
-    { header: 'Eceran', rawKey: 'retailPrice', width: 15 },
-    { header: 'Stok Gudang', rawKey: 'warehouseStock', width: 15 },
-    { header: 'Stok Retur', rawKey: 'returnedStock', width: 15 },
-    { header: 'Deskripsi', rawKey: 'description', width: 30 },
-    { header: 'Status Arsip', rawKey: 'isArchived', width: 15 },
-  ],
-  stores: [
-    { header: 'ID', rawKey: 'id', width: 8 },
-    { header: 'Nama Toko', rawKey: 'name', width: 30 },
-    { header: 'Pemilik', rawKey: 'ownerName', width: 20 },
-    { header: 'No WhatsApp', rawKey: 'phone', width: 18 },
-    { header: 'Alamat', rawKey: 'address', width: 35 },
-    { header: 'Hutang', rawKey: 'debt', width: 15 },
-    { header: 'Nilai Aset', rawKey: 'assetValue', width: 15 },
-    { header: 'Kunjungan Terakhir', rawKey: 'lastVisitAt', width: 25 },
-    { header: 'Catatan', rawKey: 'notes', width: 30 },
-    { header: 'Status Arsip', rawKey: 'isArchived', width: 15 },
-  ]
+const PASSWORD_LOCK = 'juragan123'; // Sandi untuk membuka gembok sheet
+
+// ==========================================
+// 2. HELPER: MEMBUAT SHEET RAW (TERSEMBUNYI)
+// ==========================================
+const generateHiddenSheets = (workbook: ExcelJS.Workbook, data: any) => {
+  // A. Buat Sheet Config (Untuk referensi VLOOKUP kategori)
+  const wsConfig = workbook.addWorksheet('_Config', { state: 'hidden' });
+  wsConfig.columns = [
+    { header: 'ID_Prod', key: 'p_id' }, { header: 'Label_Prod', key: 'p_label' },
+    { header: 'ID_Toko', key: 's_id' }, { header: 'Label_Toko', key: 's_label' }
+  ];
+
+  const { categoryLabels, storeCategoryLabels } = useSettingsStore.getState();
+
+  for (let i = 1; i <= 5; i++) {
+    const id = String(i) as "1" | "2" | "3" | "4" | "5";
+    wsConfig.addRow({
+      p_id: id, p_label: categoryLabels[id],
+      s_id: id, s_label: storeCategoryLabels[id]
+    });
+  }
+
+  // B. Fungsi Penulis Raw Data 100% (Menjaga agar nama key sama dengan DB)
+  const addRaw = (sheetName: string, rows: any[]) => {
+    const ws = workbook.addWorksheet(sheetName, { state: 'hidden' });
+    if (rows.length === 0) return ws;
+    
+    // Tulis Header menggunakan Object Keys dari baris pertama
+    const headers = Object.keys(rows[0]);
+    ws.addRow(headers);
+    
+    // Tulis Data
+    rows.forEach(row => {
+      ws.addRow(headers.map(key => row[key]));
+    });
+    return ws;
+  };
+
+  // Simpan SELURUH tabel untuk backup yang aman
+  addRaw('_Raw_Products', data.products);
+  addRaw('_Raw_Stores', data.stores);
+  addRaw('_Raw_Visits', data.visits);
+  addRaw('_Raw_VisitItems', data.visitItems);
+  addRaw('_Raw_InventoryLogs', data.inventoryLogs);
 };
 
 // ==========================================
-// 2. HELPER BUILDER SHEET DISPLAY (GET FORMULA)
+// 3. HELPER: MEMBUAT SHEET DISPLAY (TAMPILAN)
 // ==========================================
-function buildDisplaySheet(data: any[], config: any[], rawSheetName: string) {
-  // Jika kosong, hanya buat headernya
-  if (data.length === 0) return XLSX.utils.aoa_to_sheet([config.map(c => c.header)]);
-  
-  const rawKeys = Object.keys(data[0]);
-  const wsData: any[][] = [config.map(c => c.header)];
-  
-  for (let r = 0; r < data.length; r++) {
-    const rowData = [];
-    const isArchived = data[r].isArchived;
-    
-    for (let c = 0; c < config.length; c++) {
-      const rawColIdx = rawKeys.indexOf(config[c].rawKey);
+const generateDisplaySheet = (
+  workbook: ExcelJS.Workbook,
+  sheetName: string,
+  rawSheetName: string,
+  columnsConfig: any[],
+  dataLength: number,
+  rawDataArray: any[]
+) => {
+  // Aktifkan Freeze Panes pada baris pertama
+  const ws = workbook.addWorksheet(sheetName, {
+    views: [{ state: 'frozen', ySplit: 1 }] 
+  });
+
+  // Setup Header dan Lebar Kolom
+  ws.columns = columnsConfig.map(col => ({
+    header: col.header,
+    width: col.width,
+    style: { alignment: { horizontal: col.align || 'left', vertical: 'middle' } }
+  }));
+
+  // Styling Visual Header (Background Biru, Font Putih, Bold)
+  const headerRow = ws.getRow(1);
+  headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0284C7' } };
+  headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+
+  // Generate Data Menggunakan Rumus yang Mengambil dari Sheet Raw
+  for (let r = 0; r < dataLength; r++) {
+    const rowIndex = r + 2; 
+    const row = ws.getRow(rowIndex);
+    const isArchived = rawDataArray[r]?.isArchived;
+
+    columnsConfig.forEach((col, colIdx) => {
+      const cell = row.getCell(colIdx + 1);
       
-      if (rawColIdx === -1) {
-        rowData.push(''); // Skip jika key tidak ditemukan di raw
-        continue;
+      if (col.customFormula) {
+        cell.value = { formula: col.customFormula(rowIndex) };
+      } else if (col.isDate) {
+        // Tampilkan raw date string sebagai teks biasa agar aman dibaca
+        cell.value = { formula: `${rawSheetName}!${col.rawCol}${rowIndex}` }; 
+      } else {
+        cell.value = { formula: `${rawSheetName}!${col.rawCol}${rowIndex}` };
       }
-      
-      // GET dari raw sheet. Contoh: '_raw_products'!B2
-      const rawCellRef = `'${rawSheetName}'!${XLSX.utils.encode_col(rawColIdx)}${r + 2}`;
-      const cell: any = { f: rawCellRef };
-      
-      // Styling warna abu-abu & cetak miring untuk row yang Diarsipkan
-      // Note: Hanya dirender oleh Excel jika menggunakan xlsx-js-style
-      if (isArchived) {
-        cell.s = { 
-          fill: { fgColor: { rgb: "FFF2F2F2" } }, 
-          font: { italic: true, color: { rgb: "FF888888" } } 
-        };
-      }
-      
-      rowData.push(cell);
+
+      // Format Angka Ribuan
+      if (col.isCurrency || col.isNumber) cell.numFmt = '#,##0'; 
+    });
+
+    // Terapkan Gaya "Arsip" (Abu-abu & Coret) jika isArchived = true
+    if (isArchived) {
+      row.eachCell({ includeEmpty: true }, (c) => {
+        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } };
+        c.font = { strike: true, color: { argb: 'FF888888' } };
+      });
     }
-    wsData.push(rowData);
   }
-  
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
-  
-  // Set Lebar Kolom
-  ws['!cols'] = config.map(c => ({ wch: c.width }));
-  
-  // Set Fitur Sort & Filter di Table Header
-  const endColRef = XLSX.utils.encode_col(config.length - 1);
-  ws['!autofilter'] = { ref: `A1:${endColRef}${data.length + 1}` };
-  
-  return ws;
-}
+
+  // Kunci Sheet (Protect) - Hanya mengizinkan Copy/Select Text
+  ws.protect(PASSWORD_LOCK, {
+    selectLockedCells: true,
+    selectUnlockedCells: true,
+    formatColumns: true, // Izinkan pengguna menyesuaikan lebar kolom secara manual jika mau
+    spinCount: 1
+  });
+};
 
 // ==========================================
-// 3. EXPORT / BACKUP (GENERATE XLSX)
+// 4. FUNGSI UTAMA EXPORT (BACKUP)
 // ==========================================
 export const exportDatabaseToExcel = async () => {
   try {
-    // Ambil Data Utuh, Default Sort A-Z
-    const productsData = await db.select().from(products).orderBy(asc(products.name));
-    const storesData = await db.select().from(stores).orderBy(asc(stores.name));
-    const visitsData = await db.select().from(visits);
-    const visitItemsData = await db.select().from(visitItems);
-    const logsData = await db.select().from(inventoryLogs);
+    // 1. Ambil Seluruh Data Utuh dari Database
+    const rawProducts = await db.select().from(products);
+    const rawStores = await db.select().from(stores);
+    const rawVisits = await db.select().from(visits);
+    const rawVisitItems = await db.select().from(visitItems);
+    const rawInventoryLogs = await db.select().from(inventoryLogs);
 
-    const wb = XLSX.utils.book_new();
+    // 2. Logika Sorting (A-Z, lalu Arsip diletakkan di paling bawah)
+    const sortByArchivedAndName = (a: any, b: any) => {
+      if (a.isArchived !== b.isArchived) return a.isArchived ? 1 : -1;
+      if (a.name && b.name) return a.name.localeCompare(b.name);
+      return 0;
+    };
+    rawProducts.sort(sortByArchivedAndName);
+    rawStores.sort(sortByArchivedAndName);
 
-    // --- A. BUAT SHEET RAW (UTUH & MENTAH) ---
-    const rawProductsWs = XLSX.utils.json_to_sheet(productsData);
-    const rawStoresWs = XLSX.utils.json_to_sheet(storesData);
-    const rawVisitsWs = XLSX.utils.json_to_sheet(visitsData);
-    const rawVisitItemsWs = XLSX.utils.json_to_sheet(visitItemsData);
-    const rawLogsWs = XLSX.utils.json_to_sheet(logsData);
+    // 3. Inisiasi Mesin Excel
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'Juragan Titip App';
 
-    // Sembunyikan Raw Sheets (Hidden)
-    // Catatan: Beberapa aplikasi Excel di HP mengabaikan properti ini.
-    rawProductsWs['!SheetProps'] = { hidden: 1 };
-    rawStoresWs['!SheetProps'] = { hidden: 1 };
-    rawVisitsWs['!SheetProps'] = { hidden: 1 };
-    rawVisitItemsWs['!SheetProps'] = { hidden: 1 };
-    rawLogsWs['!SheetProps'] = { hidden: 1 };
-
-    XLSX.utils.book_append_sheet(wb, rawProductsWs, '_raw_products');
-    XLSX.utils.book_append_sheet(wb, rawStoresWs, '_raw_stores');
-    XLSX.utils.book_append_sheet(wb, rawVisitsWs, '_raw_visits');
-    XLSX.utils.book_append_sheet(wb, rawVisitItemsWs, '_raw_visit_items');
-    XLSX.utils.book_append_sheet(wb, rawLogsWs, '_raw_logs');
-
-    // --- B. BUAT SHEET DISPLAY (BERISI FORMULA GET) ---
-    const displayProductsWs = buildDisplaySheet(productsData, DISPLAY_CONFIG.products, '_raw_products');
-    const displayStoresWs = buildDisplaySheet(storesData, DISPLAY_CONFIG.stores, '_raw_stores');
-
-    // Buat Sheet Display Kunjungan secara Manual (karena butuh agregasi item)
-    const displayVisitsData = [['ID Nota', 'Nama Toko', 'Tanggal', 'Subtotal Laku', 'Dibayar', 'Sisa Hutang', 'Detail Barang (Bawa, Laku, Retur)']];
-    
-    visitsData.forEach(v => {
-      const store = storesData.find(s => s.id === v.storeId);
-      const items = visitItemsData.filter(vi => vi.visitId === v.id);
-      
-      const itemsString = items.map(i => {
-        const prod = productsData.find(p => p.id === i.productId);
-        const name = prod ? prod.name : `Produk ID ${i.productId}`;
-        return `- ${name} (Bawa: ${i.restocked}, Laku: ${i.sold}, Retur: ${i.returned})`;
-      }).join('\n');
-
-      displayVisitsData.push([
-        v.id,
-        store ? store.name : `Toko ID ${v.storeId}`,
-        v.createdAt,
-        v.subtotal,
-        v.amountPaid,
-        v.debt,
-        itemsString || '-'
-      ]);
+    // 4. Generate Hidden Raw Sheets (Menampung ke-5 Tabel)
+    generateHiddenSheets(workbook, { 
+      products: rawProducts, stores: rawStores, visits: rawVisits, 
+      visitItems: rawVisitItems, inventoryLogs: rawInventoryLogs 
     });
 
-    const displayVisitsWs = XLSX.utils.aoa_to_sheet(displayVisitsData);
-    displayVisitsWs['!cols'] = [
-      { wch: 10 }, { wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 60 }
-    ];
-    // Terapkan Wrap Text pada kolom Detail Barang
-    for (let r = 1; r < displayVisitsData.length; r++) {
-       const cellAddress = XLSX.utils.encode_cell({ c: 6, r: r });
-       if (displayVisitsWs[cellAddress]) {
-           displayVisitsWs[cellAddress].s = { alignment: { wrapText: true } };
-       }
-    }
+    // 5. Generate Display: Produk
+    // Raw Map Products: A=id, B=name, C=normalized, D=category, E=cost, F=wholesale, G=retail, H=warehouseStock, I=returnedStock, J=desc, K=isArchived, L=createdAt
+    generateDisplaySheet(workbook, '1. Produk', '_Raw_Products', [
+      { header: 'Nama Produk', rawCol: 'B', width: 30 },
+      { header: 'Deskripsi', rawCol: 'J', width: 35 },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Products!D${r}, _Config!A:B, 2, FALSE)` },
+      { header: 'Stok Gudang', rawCol: 'H', width: 15, align: 'right', isNumber: true },
+      { header: 'Stok Retur', rawCol: 'I', width: 15, align: 'right', isNumber: true },
+      { header: 'Harga Modal', rawCol: 'E', width: 18, align: 'right', isCurrency: true },
+      { header: 'Harga Grosir', rawCol: 'F', width: 18, align: 'right', isCurrency: true },
+      { header: 'Harga Eceran', rawCol: 'G', width: 18, align: 'right', isCurrency: true },
+      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Products!K${r}=1, "Diarsipkan", "Aktif")` }
+    ], rawProducts.length, rawProducts);
 
-    XLSX.utils.book_append_sheet(wb, displayProductsWs, 'Daftar Produk');
-    XLSX.utils.book_append_sheet(wb, displayStoresWs, 'Daftar Toko');
-    XLSX.utils.book_append_sheet(wb, displayVisitsWs, 'Daftar Kunjungan');
+    // 6. Generate Display: Toko
+    // Raw Map Stores: A=id, B=name, C=normalized, D=owner, E=phone, F=address, G=lat, H=lng, I=notes, J=debt, K=assetValue, L=lastVisit, M=category, N=isArchived, O=createdAt
+    generateDisplaySheet(workbook, '2. Toko', '_Raw_Stores', [
+      { header: 'Nama Toko', rawCol: 'B', width: 28 },
+      { header: 'Nama Pemilik', rawCol: 'D', width: 20 },
+      { header: 'Nomor Telepon', rawCol: 'E', width: 18 },
+      { header: 'Alamat Lengkap', rawCol: 'F', width: 40 },
+      { header: 'Catatan Khusus', rawCol: 'I', width: 30 },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Stores!M${r}, _Config!C:D, 2, FALSE)` },
+      { header: 'Total Hutang', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
+      { header: 'Nilai Aset Titipan', rawCol: 'K', width: 18, align: 'right', isCurrency: true },
+      { header: 'Kunjungan Terakhir', rawCol: 'L', width: 22, isDate: true, align: 'right' },
+      { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & _Raw_Stores!G${r} & "," & _Raw_Stores!H${r}, "Buka Peta")` },
+      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Stores!N${r}=1, "Diarsipkan", "Aktif")` }
+    ], rawStores.length, rawStores);
 
-    // --- C. WRITE DAN SHARE ---
-    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
-    
-    // Penamaan file dengan timestamp
+    // 7. Generate Display: Kunjungan (Header Nota Utama)
+    // Raw Map Visits: A=id, B=storeId, C=subtotal, D=amountPaid, E=debt, F=createdAt
+    generateDisplaySheet(workbook, '3. Kunjungan', '_Raw_Visits', [
+      { header: 'ID Nota', rawCol: 'A', width: 12, align: 'center' },
+      { header: 'Total Nilai Laku', rawCol: 'C', width: 20, align: 'right', isCurrency: true },
+      { header: 'Tunai Dibayar', rawCol: 'D', width: 20, align: 'right', isCurrency: true },
+      { header: 'Sisa Hutang Tercatat', rawCol: 'E', width: 20, align: 'right', isCurrency: true },
+      { header: 'Waktu Transaksi', rawCol: 'F', width: 25, isDate: true, align: 'right' }
+    ], rawVisits.length, rawVisits);
+
+    // 8. Tulis Buffer dan Bagikan
+    const buffer = await workbook.xlsx.writeBuffer();
+    const base64Data = Buffer.from(buffer).toString('base64'); 
+
     const dateStr = new Date().toISOString().split('T')[0];
-    const uri = `${FileSystem.documentDirectory}Backup_JuraganTitip_${dateStr}.xlsx`;
+    const fileUri = `${FileSystem.documentDirectory}Laporan_JuraganTitip_${dateStr}.xlsx`;
     
-    await FileSystem.writeAsStringAsync(uri, wbout, { encoding: FileSystem.EncodingType.Base64 });
-    await Sharing.shareAsync(uri, { mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    await FileSystem.writeAsStringAsync(fileUri, base64Data, { encoding: FileSystem.EncodingType.Base64 });
+    
+    const canShare = await Sharing.isAvailableAsync();
+    if (canShare) {
+      await Sharing.shareAsync(fileUri, {
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        dialogTitle: 'Bagikan Laporan Excel'
+      });
+    }
 
     return true;
   } catch (error) {
-    console.error("Gagal melakukan export Excel:", error);
+    console.error("Gagal melakukan export ExcelJS:", error);
     throw error;
   }
 };
 
 // ==========================================
-// 4. IMPORT / REVERSE / RESTORE (PARSE DARI RAW)
+// 5. FUNGSI UTAMA IMPORT (RESTORE DATA)
 // ==========================================
 export const importDatabaseFromExcel = async (fileUri: string) => {
   try {
     const fileBase64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
-    const wb = XLSX.read(fileBase64, { type: 'base64' });
+    const buffer = Buffer.from(fileBase64, 'base64');
 
-    // 1. Validasi Keberadaan Sheet Raw
-    const rawProductsSheet = wb.Sheets['_raw_products'];
-    const rawStoresSheet = wb.Sheets['_raw_stores'];
-    const rawVisitsSheet = wb.Sheets['_raw_visits'];
-    const rawVisitItemsSheet = wb.Sheets['_raw_visit_items'];
-    const rawLogsSheet = wb.Sheets['_raw_logs'];
+    const workbook = new ExcelJS.Workbook();
+    // Gunakan 'as any' untuk membungkam error tipe TypeScript terkait polyfill Buffer
+    await workbook.xlsx.load(buffer as any);
+
+    // Tarik seluruh 5 sheet raw yang tersembunyi
+    const rawProductsSheet = workbook.getWorksheet('_Raw_Products');
+    const rawStoresSheet = workbook.getWorksheet('_Raw_Stores');
+    const rawVisitsSheet = workbook.getWorksheet('_Raw_Visits');
+    const rawVisitItemsSheet = workbook.getWorksheet('_Raw_VisitItems');
+    const rawLogsSheet = workbook.getWorksheet('_Raw_InventoryLogs');
 
     if (!rawProductsSheet || !rawStoresSheet) {
-      throw new Error("File tidak valid. Tidak ditemukan data '_raw' di dalam file backup ini.");
+      throw new Error("File tidak valid. Tidak ditemukan data utuh '_Raw' di dalam file backup ini.");
     }
 
-    // 2. Parse Raw JSON
-    const parsedProducts = XLSX.utils.sheet_to_json(rawProductsSheet);
-    const parsedStores = XLSX.utils.sheet_to_json(rawStoresSheet);
-    const parsedVisits = rawVisitsSheet ? XLSX.utils.sheet_to_json(rawVisitsSheet) : [];
-    const parsedVisitItems = rawVisitItemsSheet ? XLSX.utils.sheet_to_json(rawVisitItemsSheet) : [];
-    const parsedLogs = rawLogsSheet ? XLSX.utils.sheet_to_json(rawLogsSheet) : [];
+    // Helper Parser dari Sheet ExcelJS ke Array of Objects JSON
+    const parseSheet = (sheet: ExcelJS.Worksheet | undefined) => {
+      const data: any[] = [];
+      if (!sheet) return data;
 
-    // 3. Normalisasi Format Tipe Data Boolean (karena Excel kadang mengubah true/false jadi string)
+      let keys: string[] = [];
+      sheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) {
+          row.eachCell((cell, colNumber) => {
+            keys[colNumber] = cell.value?.toString() || '';
+          });
+        } else {
+          const rowData: any = {};
+          row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+            const key = keys[colNumber];
+            // Format cell.value kadang mengembalikan object untuk formula, ambil hasil valuenya.
+            let cellValue = cell.value;
+            if (cellValue && typeof cellValue === 'object' && 'result' in cellValue) {
+              cellValue = (cellValue as any).result;
+            }
+            if (key) rowData[key] = cellValue;
+          });
+          data.push(rowData);
+        }
+      });
+      return data;
+    };
+
+    // Parse Data & Normalisasi Boolean (karena tipe bolean SQLite sering berubah saat melewati Excel)
     const mapBooleans = (item: any) => ({
       ...item,
-      isArchived: item.isArchived === 'true' || item.isArchived === true,
+      isArchived: item.isArchived === 'true' || item.isArchived === true || item.isArchived === 1,
     });
 
-    const finalProducts = parsedProducts.map(mapBooleans);
-    const finalStores = parsedStores.map(mapBooleans);
+    const finalProducts = parseSheet(rawProductsSheet).map(mapBooleans);
+    const finalStores = parseSheet(rawStoresSheet).map(mapBooleans);
+    const finalVisits = parseSheet(rawVisitsSheet);
+    const finalVisitItems = parseSheet(rawVisitItemsSheet);
+    const finalLogs = parseSheet(rawLogsSheet);
 
-    // 4. Eksekusi Restore dalam Transaction
+    // Eksekusi Restore dalam DB Transaction Drizzle
     await db.transaction(async (tx) => {
-      // Hapus data lama (Mulai dari child ke parent untuk menghindari Error Foreign Key)
+      // Hapus berurutan dari tabel paling anak (Child) ke tabel induk (Parent)
+      // Ini WAJIB untuk menghindari error "FOREIGN KEY constraint failed"
       await tx.delete(visitItems);
       await tx.delete(inventoryLogs);
       await tx.delete(visits);
       await tx.delete(products);
       await tx.delete(stores);
 
-      // Insert data baru hasil parse excel
+      // Insert ulang data secara berurutan dari Induk ke Anak
       if (finalStores.length > 0) await tx.insert(stores).values(finalStores as any);
       if (finalProducts.length > 0) await tx.insert(products).values(finalProducts as any);
-      if (parsedVisits.length > 0) await tx.insert(visits).values(parsedVisits as any);
-      if (parsedVisitItems.length > 0) await tx.insert(visitItems).values(parsedVisitItems as any);
-      if (parsedLogs.length > 0) await tx.insert(inventoryLogs).values(parsedLogs as any);
+      if (finalVisits.length > 0) await tx.insert(visits).values(finalVisits as any);
+      if (finalVisitItems.length > 0) await tx.insert(visitItems).values(finalVisitItems as any);
+      if (finalLogs.length > 0) await tx.insert(inventoryLogs).values(finalLogs as any);
     });
 
     return { success: true, message: "Restore data berhasil!" };
   } catch (error) {
-    console.error("Gagal melakukan import Excel:", error);
+    console.error("Gagal melakukan import ExcelJS:", error);
     throw error;
   }
 };
