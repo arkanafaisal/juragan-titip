@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { useSettingsStore } from './settings.api';
 import { eq, like, and, gt, gte, lte, SQL, sql, asc, desc } from 'drizzle-orm';
 import { db } from '../db';
 import { products, inventoryLogs, InventoryLogType } from '../db/schema';
@@ -42,6 +43,7 @@ export function useAddProduct() {
         queryKey: ['products'],
         refetchType: 'all'
       });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Disimpan',
@@ -85,6 +87,7 @@ export function useUpdateProduct() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Diperbarui',
@@ -229,6 +232,7 @@ export function useAddStock() {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
       Toast.show({
         type: 'success',
         text1: 'Stok Ditambahkan',
@@ -290,6 +294,7 @@ export function useEditStock() {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
       Toast.show({
         type: 'success',
         text1: 'Stok Dikoreksi',
@@ -364,6 +369,7 @@ export function useProcessReturn() {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
       Toast.show({
         type: 'success',
         text1: 'Retur Diolah',
@@ -394,6 +400,7 @@ export function useArchiveProduct() {
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', id] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Diarsipkan',
@@ -424,11 +431,38 @@ export function useRecoverProduct() {
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', id] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Dipulihkan',
         text2: 'Produk telah aktif kembali dan muncul di daftar utama.',
       });
+    }
+  });
+}
+
+// Tambahan: Query untuk Produk Habis & Stok Menipis
+export function useGetCriticalStockProducts() {
+  const lowStockThreshold = useSettingsStore(state => state.lowStockThreshold);
+
+  return useQuery({
+    queryKey: ['criticalStockProducts', lowStockThreshold],
+    queryFn: async () => {
+      const results = await db.query.products.findMany({
+        where: and(
+          eq(products.isArchived, false),
+          lte(products.warehouseStock, lowStockThreshold)
+        ),
+        orderBy: (products, { asc }) => [asc(products.warehouseStock)]
+      });
+
+      const outOfStock = results.filter(p => p.warehouseStock === 0);
+      const lowStock = results.filter(p => p.warehouseStock > 0 && p.warehouseStock <= lowStockThreshold);
+
+      return {
+        outOfStock,
+        lowStock
+      };
     }
   });
 }

@@ -4,15 +4,13 @@ import { sql } from 'drizzle-orm';
 import { visits } from '../db/schema';
 
 export interface DashboardData {
-  weeklyRevenue: number;
   totalVisitsThisWeek: number;
   chartData: { label: string; value: number }[];
-  todayHistory: {
+  recentHistory: {
     id: number;
     time: string;
     store: string;
-    amount: number;
-    isDebt: boolean;
+    restockedItems: { name: string; quantity: number }[];
   }[];
 }
 
@@ -39,7 +37,6 @@ export function useGetDashboardData() {
         orderBy: (visits, { desc }) => [desc(visits.createdAt)]
       });
 
-      let weeklyRevenue = 0;
       let totalVisitsThisWeek = recentVisits.length;
 
       // 1. Inisialisasi map untuk grafik 7 hari terakhir (Map mempertahankan urutan insert)
@@ -58,7 +55,7 @@ export function useGetDashboardData() {
         chartMap.set(dateKey, { label: dayNames[d.getDay()], value: 0 });
       }
 
-      const todayHistory: DashboardData['todayHistory'] = [];
+      const recentHistory: DashboardData['recentHistory'] = [];
       const todayDateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
       // 2. Loop data kunjungan untuk agregasi
@@ -75,32 +72,29 @@ export function useGetDashboardData() {
           existing.value += 1;
         }
 
-        // b. Hitung Pemasukan = Uang yang dibayar pada kunjungan tersebut (amountPaid)
-        weeklyRevenue += v.amountPaid;
-
-        // c. Masukkan ke riwayat hari ini jika tanggal cocok
-        if (visitDateKey === todayDateKey) {
-          const hours = String(visitDate.getHours()).padStart(2, '0');
-          const minutes = String(visitDate.getMinutes()).padStart(2, '0');
-          
-          // isDebt = jumlah yang dibayar kas < dari subtotal barang laku
-          const isDebt = v.amountPaid < v.subtotal;
-          
-          todayHistory.push({
-            id: v.id,
-            time: `${hours}:${minutes}`,
-            store: v.store?.name || 'Toko Dihapus',
-            amount: v.amountPaid,
-            isDebt
-          });
-        }
+        // c. Masukkan ke riwayat 7 hari
+        const hours = String(visitDate.getHours()).padStart(2, '0');
+        const minutes = String(visitDate.getMinutes()).padStart(2, '0');
+        
+        const restockedItemsList = v.items
+          .filter(item => item.restocked > 0)
+          .map(item => ({
+            name: item.product?.name || 'Produk',
+            quantity: item.restocked
+          }));
+        
+        recentHistory.push({
+          id: v.id,
+          time: `${dayNames[visitDate.getDay()]} ${hours}:${minutes}`,
+          store: v.store?.name || 'Toko Dihapus',
+          restockedItems: restockedItemsList
+        });
       });
 
       return {
-        weeklyRevenue,
         totalVisitsThisWeek,
         chartData: Array.from(chartMap.values()),
-        todayHistory
+        recentHistory
       };
     }
   });

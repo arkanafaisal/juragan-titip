@@ -4,6 +4,7 @@ import { db } from '../db';
 import { eq, desc, asc, like, and, or, gt, SQL, sql } from 'drizzle-orm';
 import { stores } from '../db/schema';
 import { StoreFormValues } from '../schemas/store-form.schema';
+import { useSettingsStore } from './settings.api';
 
 export function useAddStore() {
   const queryClient = useQueryClient();
@@ -29,6 +30,7 @@ export function useAddStore() {
         queryKey: ['stores'],
         refetchType: 'all'
       });
+      queryClient.invalidateQueries({ queryKey: ['overdueStores'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Disimpan',
@@ -153,6 +155,30 @@ export function useUpdateStore() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['stores'] });
       queryClient.invalidateQueries({ queryKey: ['store', variables.id] });
+    }
+  });
+}
+
+export function useGetOverdueStores() {
+  const storeOverdueDays = useSettingsStore(state => state.storeOverdueDays);
+
+  return useQuery({
+    queryKey: ['overdueStores', storeOverdueDays],
+    queryFn: async () => {
+      const results = await db.select()
+        .from(stores)
+        .where(
+          and(
+            eq(stores.isArchived, false),
+            or(
+              sql`${stores.lastVisitAt} IS NULL`,
+              sql`cast((julianday('now') - julianday(${stores.lastVisitAt})) as integer) >= ${storeOverdueDays}`
+            )
+          )
+        )
+        .orderBy(sql`COALESCE(${stores.lastVisitAt}, ${stores.createdAt}) ASC`, stores.name);
+        
+      return results;
     }
   });
 }

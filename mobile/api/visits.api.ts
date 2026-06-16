@@ -228,6 +228,7 @@ export function useCreateVisit() {
       queryClient.invalidateQueries({ queryKey: ['lastVisit', variables.storeId] });
       queryClient.invalidateQueries({ queryKey: ['products'] }); // Karena warehouseStock & returnedStock berubah
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       
       Toast.show({
         type: 'success',
