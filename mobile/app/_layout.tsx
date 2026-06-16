@@ -1,3 +1,15 @@
+// POLYFILL EXCELJS CRYPTO (WAJIB DI BARIS PALING ATAS!)
+if (typeof global !== 'undefined' && !(global as any).crypto) {
+  (global as any).crypto = {
+    getRandomValues: (array: any) => {
+      for (let i = 0; i < array.length; i++) {
+        array[i] = Math.floor(Math.random() * 256);
+      }
+      return array;
+    }
+  };
+}
+
 import '../global.css';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';

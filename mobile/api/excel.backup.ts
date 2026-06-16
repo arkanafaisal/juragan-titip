@@ -42,9 +42,8 @@ const generateHiddenSheets = (workbook: ExcelJS.Workbook, data: any) => {
     ws.addRow(headers);
     
     // Tulis Data
-    rows.forEach(row => {
-      ws.addRow(headers.map(key => row[key]));
-    });
+    const mappedRows = rows.map(row => headers.map(key => row[key]));
+    ws.addRows(mappedRows);
     return ws;
   };
 
