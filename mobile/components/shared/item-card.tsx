@@ -102,7 +102,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
           
           <View className="flex-col gap-0.5 flex-1">
             <View className="flex-row items-center gap-1">
-              <Text className="text-caption text-text-secondary">{isStore ? "Piutang" : "Jumlah Retur"}</Text>
+              <Text className="text-caption text-text-secondary">{isStore ? "Hutang" : "Jumlah Retur"}</Text>
             </View>
             <Text className={`text-data-md font-bold ${
               isStore 

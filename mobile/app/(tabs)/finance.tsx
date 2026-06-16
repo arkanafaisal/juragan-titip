@@ -121,7 +121,7 @@ export default function FinanceScreen() {
             <View className="flex-1">
               <View className="flex-row items-center justify-between mb-1">
                 <Text className="text-body-sm text-text-secondary font-medium" numberOfLines={1}>
-                  Total Piutang
+                  Total Hutang
                 </Text>
                 <View className="bg-error/10 px-2 py-1 rounded-md shrink-0">
                   <Text className="text-[10px] font-medium text-error">
@@ -177,7 +177,7 @@ export default function FinanceScreen() {
             className={`flex-1 py-2 rounded-lg items-center justify-center ${activeTab === 'receivables' ? 'bg-primary' : ''}`}
           >
             <Text className={`font-body-sm text-body-sm font-semibold ${activeTab === 'receivables' ? 'text-on-primary' : 'text-text-secondary'}`}>
-              Piutang
+              Hutang
             </Text>
           </TouchableOpacity>
           <TouchableOpacity 
