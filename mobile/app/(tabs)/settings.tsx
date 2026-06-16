@@ -140,7 +140,7 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        <Accordion title="Pengaturan Produk" icon={Package} defaultOpen={true}>
+        <Accordion title="Pengaturan Produk" icon={Package}>
           <View className="mb-4">
             <Text className="font-body-sm font-medium text-text-secondary mb-1.5">Batas Peringatan Stok Menipis</Text>
             <Controller
