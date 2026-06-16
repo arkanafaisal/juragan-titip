@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
 import { 
   Wallet, 
@@ -16,27 +16,11 @@ import THEME from '../../constants/css';
 import { Card } from '../../components/ui/card';
 
 import { formatRupiah } from '../../utils/formatter.util';
-
-const mockData = {
-  weeklyRevenue: 4500000,
-  totalVisitsThisWeek: 12,
-  chartData: [
-    { label: 'Sen', value: 2 },
-    { label: 'Sel', value: 0 },
-    { label: 'Rab', value: 3 },
-    { label: 'Kam', value: 1 },
-    { label: 'Jum', value: 4 },
-    { label: 'Sab', value: 2 },
-    { label: 'Min', value: 0 }
-  ],
-  todayHistory: [
-    { id: 1, time: '09:00', store: 'Toko Makmur Jaya', amount: 150000, isDebt: false },
-    { id: 2, time: '10:30', store: 'Warung Barokah', amount: 50000, isDebt: true },
-    { id: 3, time: '14:15', store: 'Toko Kelontong AA', amount: 300000, isDebt: false }
-  ]
-};
+import { useGetDashboardData } from '../../api/dashboard.api';
 
 export default function DashboardScreen() {
+  const { data: dashboardData, isLoading } = useGetDashboardData();
+
   const todayDate = new Intl.DateTimeFormat('id-ID', { 
     weekday: 'long', 
     day: 'numeric', 
@@ -48,6 +32,21 @@ export default function DashboardScreen() {
   const chartWidth = screenWidth - 64; 
   const barWidth = 28;
   const spacing = Math.max((chartWidth - (7 * barWidth)) / 7, 10);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" color={THEME.colors.primary} />
+      </View>
+    );
+  }
+
+  const data = dashboardData || {
+    weeklyRevenue: 0,
+    totalVisitsThisWeek: 0,
+    chartData: [],
+    todayHistory: []
+  };
 
   return (
     <ScrollView 
@@ -72,18 +71,18 @@ export default function DashboardScreen() {
             <Wallet size={16} color={THEME.colors.success} />
           </View>
           <Text className="font-body-sm text-body-sm font-semibold text-text-secondary">
-            Margin 7 Hari Terakhir
+            Pemasukan 7 Hari Terakhir
           </Text>
         </View>
         <View className="mt-1">
           <Text className="text-3xl font-bold tracking-tight text-text-primary" numberOfLines={1}>
-            {formatRupiah(mockData.weeklyRevenue)}
+            {formatRupiah(data.weeklyRevenue)}
           </Text>
         </View>
       </Card>
 
       {/* 3. JOURNEY HOOK */}
-      <Link href="/(tabs)/store-list" asChild>
+      <Link href="/journey" asChild>
         <TouchableOpacity className="w-full mb-4" activeOpacity={0.8}>
           {/* Gunakan View biasa, bukan Card, agar bg-primary tidak ditimpa oleh default Card (white) */}
           <View className="bg-primary rounded-2xl shadow-sm overflow-hidden p-5">
@@ -115,7 +114,7 @@ export default function DashboardScreen() {
         <View className="flex-row justify-between items-center mb-4">
           <View>
             <Text className="font-h3 text-h3 font-bold text-text-primary">Kunjungan</Text>
-            <Text className="font-caption text-caption text-text-secondary">7 Hari Terakhir (Total: {mockData.totalVisitsThisWeek})</Text>
+            <Text className="font-caption text-caption text-text-secondary">7 Hari Terakhir (Total: {data.totalVisitsThisWeek})</Text>
           </View>
           <View className="p-2 bg-surface-container-low rounded-lg">
             <TrendingUp size={16} color={THEME.colors.primary} />
@@ -123,14 +122,14 @@ export default function DashboardScreen() {
         </View>
         
         <View className="h-[150px] w-full mt-2">
-          {mockData.totalVisitsThisWeek === 0 ? (
+          {data.totalVisitsThisWeek === 0 ? (
             <View className="flex-1 items-center justify-center opacity-70">
               <Inbox size={32} color={THEME.colors['text-secondary']} className="mb-2" />
               <Text className="font-caption text-caption text-text-secondary">Belum ada kunjungan dalam 7 hari terakhir</Text>
             </View>
           ) : (
             <BarChart
-              data={mockData.chartData.map(d => ({
+              data={data.chartData.map(d => ({
                 value: d.value,
                 label: d.label,
                 frontColor: d.value > 0 ? THEME.colors.primary : THEME.colors['surface-container-high'],
@@ -140,7 +139,7 @@ export default function DashboardScreen() {
               }))}
               barWidth={barWidth}
               spacing={spacing}
-              initialSpacing={10}
+              initialSpacing={0}
               hideRules
               hideYAxisText
               yAxisThickness={0}
@@ -161,8 +160,8 @@ export default function DashboardScreen() {
         </View>
         
         <View className="flex-col">
-          {mockData.todayHistory.length > 0 ? (
-            mockData.todayHistory.map((item, index) => (
+          {data.todayHistory.length > 0 ? (
+            data.todayHistory.map((item, index) => (
               <TouchableOpacity 
                 key={item.id}
                 className={`flex-row items-center justify-between p-3 rounded-xl border border-outline-variant ${index !== 0 ? 'mt-2' : ''}`}
