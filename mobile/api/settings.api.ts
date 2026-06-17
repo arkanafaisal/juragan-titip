@@ -7,7 +7,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { sql } from 'drizzle-orm';
 import { db } from '../db';
-import { products, inventoryLogs, stores } from '../db/schema';
+import { products, inventoryLogs, stores, visits, visitItems } from '../db/schema';
 
 // ==========================================
 // 1. TIPE & KONSTANTA (Sesuai dengan file lama Anda)
@@ -258,6 +258,8 @@ export const useResetDatabase = () => {
   return useMutation({
     mutationFn: async () => {
       await db.transaction(async (tx) => {
+        await tx.delete(visitItems);
+        await tx.delete(visits);
         await tx.delete(inventoryLogs);
         await tx.delete(products);
         await tx.delete(stores);
@@ -265,7 +267,7 @@ export const useResetDatabase = () => {
       
       // Opsional: hapus urutan auto increment agar kembali mulai dari 1
       try {
-        await db.run(sql`DELETE FROM sqlite_sequence WHERE name IN ('products', 'inventory_logs', 'stores')`);
+        await db.run(sql`DELETE FROM sqlite_sequence WHERE name IN ('visit_items', 'visits', 'products', 'inventory_logs', 'stores')`);
       } catch (e) {
         // Abaikan jika tabel sqlite_sequence belum ada
       }
@@ -275,6 +277,13 @@ export const useResetDatabase = () => {
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs'] });
       queryClient.invalidateQueries({ queryKey: ['stores'] });
       queryClient.invalidateQueries({ queryKey: ['checkDatabaseHasData'] });
+      queryClient.invalidateQueries({ queryKey: ['overdueStores'] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['lastVisit'] });
+      queryClient.invalidateQueries({ queryKey: ['storeVisitsAnalysis'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+      queryClient.invalidateQueries({ queryKey: ['visit'] });
+      queryClient.invalidateQueries({ queryKey: ['store'] });
     }
   });
 };
