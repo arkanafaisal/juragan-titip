@@ -281,7 +281,7 @@ export default function DashboardScreen() {
         </View>
         
         <ScrollView 
-          style={{ height: 350 }}
+          style={{ maxHeight: 350 }}
           className="overflow-hidden" 
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
@@ -322,9 +322,9 @@ export default function DashboardScreen() {
               </Link>
             ))
           ) : (
-            <View className="items-center justify-center opacity-70">
+            <View className="h-[150px] items-center justify-center opacity-70">
               <Inbox size={32} color={THEME.colors['text-secondary']} className="mb-2" />
-              <Text className="font-body-sm text-body-sm text-text-secondary">
+              <Text className="font-caption text-caption text-text-secondary">
                 Belum ada kunjungan dalam 7 hari terakhir.
               </Text>
             </View>
