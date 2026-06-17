@@ -1,3 +1,32 @@
+git --no-pager log 94174e797bbfc4e49312277ecd2666d74b55b55d..HEAD --pretty=format:"%H %s"
+6214a82807b6432ecd8e36e3a4c8ff58944d92bd update(package): remove expo-notifications
+0ced96bb22feb4e8abe6ea4ae68b3f3d68932047 update(app config): version auto-increment
+8754ada70d49f2ee75dacd750c225e8c25113fe0 fix(add & update services): query invalidation
+0d8a2043273d6940faa190217847a91b87de3e3a update(recover db feature): file format validation
+e297f03083c3b138caa26e31af4e9247b2e929cf update(finance page): input date range
+cd6ff57cd95786646509b4c8fccf127601150f9c update(finance page): sections separation line
+cefa7344b0976a731b4bc5e8a78ab037c855a8cb update(packages): remove async storage
+497b73cf450c85e42979f911c058a097cbb74d2e update(finance page): reduce list card height
+b5832471498df455a36a4fab2199ccf0fbd3fd90 update(finance page): remove receivable content status     
+7e185bf4c923679a76054c180bcff467e66a5c68 update(finance page): sections position
+6052369d3d8745358030cfc04697e13047d7709d fix(input confirm modal): keep visible input on active keyboard
+409e9756f5f2415de85ec3d87a7e30b481b3d5b4 refactor(finance page): separate section components function
+442d20c989719605525295735a460b7448e2c9d3 fix(reset data service): delete visits & visitItems table, 
+add all invalidateQueries
+9e9d0d4322abfc921c9f5de2b799afc7876a9315 update(dashboard page): recent history height
+9c53065b24ea368986a274f98f78122ed4c9a2cb update(storage service): change async storage usage to mmkved0af1adb670ea25552214543c336602778916b6 update(store detail): add category data
+236224adbb07666733bcac1bb678604c54574310 update: add maxwidth for category label
+44f062a314648f8a0c4cc61d44e7f725ea6c2d22 update(store detail): swap product description and category position
+b4dd394e2d1fa4c9d96e7c927b1c7884d030dd7f update(store form): texts
+ebe0856bb81bed0637dea0687fc9abf3e3348545 update(map picker): manahan stadion default location       
+aba4d6a2b643d27f580ebf61608e2f79e47b46f8 fix(app plugin): add expo location
+283f4a21441ac5f0ece924f27fdf36da2e94419c update apk build type (.apk & arm64-v8a only)
+4367a2d44f8ad4a1952f54a5fd5787e69a5123fa update(app config): rename properties
+
+
+
+
+
 git --no-pager log 8d97a4bfdce2de8951078ce30907858b01ec883f..HEAD --pretty=format:"%H %s"
 be1bd928a517882c0563a9d73713e33471fb58b9 update(text): piutang to hutang
 f822a01a7ec857c86f39430293c6faa8a59cc715 update(settings page): remove product settings default openb64fd37d823b9981927167fe5a22931338bd30a8 add journey page (service integration)

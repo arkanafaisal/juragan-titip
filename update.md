@@ -1,3 +1,30 @@
+17 June 2026
+<details>
+- updated package: remove expo-notifications
+- updated app config: version auto-increment
+- fixed add & update services: query invalidation
+- updated recover db feature: file format validation
+- updated finance page: input date range
+- updated finance page: sections separation line
+- updated packages: remove async storage
+- updated finance page: reduce list card height
+- updated finance page: remove receivable content status     
+- updated finance page: sections position
+- fixed input confirm modal: keep visible input on active keyboard
+- refactored finance page: separate section components function
+- fixed reset data service: delete visits & visitItems table, add all invalidateQueries
+- updated dashboard page: recent history height
+- updated storage service: change async storage usage to mmkv
+- updated store detail: add category data
+- updated add maxwidth for category label
+- updated store detail: swap product description and category position
+- updated store form: texts
+- updated map picker: manahan stadion default location       
+- fixed app plugin: add expo location
+- updated apk build type (.apk & arm64-v8a only)
+- updated app config: rename properties
+</details>
+
 16 June 2026
 <details>
 - updated text: piutang to hutang
