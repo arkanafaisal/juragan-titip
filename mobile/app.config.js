@@ -43,6 +43,7 @@ export default {
       "expo-sqlite",
       "expo-sharing",
       "expo-notifications",
+      "expo-location",
       "@react-native-community/datetimepicker",
       [
         "expo-build-properties",
