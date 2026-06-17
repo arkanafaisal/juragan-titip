@@ -5,18 +5,19 @@ import {
   Banknote, 
   Wallet, 
   Package, 
-  ArrowRight
+  ArrowRight,
+  Calendar
 } from 'lucide-react-native';
 import { LineChart } from 'react-native-gifted-charts';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import THEME from '../../constants/css';
 import { Card } from '../../components/ui/card';
 import { formatRupiah } from '../../utils/formatter.util';
 import { 
-  useGetFinanceSummary, 
-  useGetFinanceIncomeList, 
-  useGetFinanceReceivableList, 
-  useGetFinanceAssetList 
+  useGetFinanceIncome, 
+  useGetFinanceReceivables, 
+  useGetFinanceAssets 
 } from '../../api/finance.api';
 import { ActivityIndicator } from 'react-native';
 
@@ -24,28 +25,59 @@ type TabType = 'income' | 'receivables' | 'assets';
 
 export default function FinanceScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('income');
+  const [customStart, setCustomStart] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 6);
+    d.setHours(0,0,0,0);
+    return d;
+  });
+  const [customEnd, setCustomEnd] = useState<Date>(new Date());
+  const [showPicker, setShowPicker] = useState<'start' | 'end' | null>(null);
 
-  const { data: summary, isLoading: isLoadingSummary } = useGetFinanceSummary();
-  const { data: incomes = [], isLoading: isLoadingIncomes } = useGetFinanceIncomeList();
-  const { data: receivables = [], isLoading: isLoadingReceivables } = useGetFinanceReceivableList();
-  const { data: assets = [], isLoading: isLoadingAssets } = useGetFinanceAssetList();
+  const activePreset = React.useMemo(() => {
+    const today = new Date();
+    if (customEnd.toDateString() !== today.toDateString()) return 'custom';
 
-  if (isLoadingSummary) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color={THEME.colors.primary} />
-      </View>
-    );
-  }
+    const checkStart = (mode: '7d' | '1m' | '3m') => {
+      const targetStart = new Date();
+      if (mode === '7d') targetStart.setDate(targetStart.getDate() - 6);
+      else if (mode === '1m') targetStart.setMonth(targetStart.getMonth() - 1);
+      else if (mode === '3m') targetStart.setMonth(targetStart.getMonth() - 3);
+      return customStart.toDateString() === targetStart.toDateString();
+    };
 
-  const defaultSummary = {
-    income: { totalThisMonth: 0, chartData: [{ value: 0 }] },
-    receivables: { storeCount: 0, totalDebt: 0 },
-    assets: { storeCount: 0, totalAssetValue: 0 }
+    if (checkStart('7d')) return '7d';
+    if (checkStart('1m')) return '1m';
+    if (checkStart('3m')) return '3m';
+    return 'custom';
+  }, [customStart, customEnd]);
+
+  const applyPreset = (mode: '7d' | '1m' | '3m') => {
+    const end = new Date();
+    setCustomEnd(end);
+    
+    const start = new Date();
+    if (mode === '7d') {
+      start.setDate(start.getDate() - 6);
+    } else if (mode === '1m') {
+      start.setMonth(start.getMonth() - 1);
+    } else if (mode === '3m') {
+      start.setMonth(start.getMonth() - 3);
+    }
+    start.setHours(0,0,0,0);
+    setCustomStart(start);
   };
-  const safeSummary = summary || defaultSummary;
+
+  const { data: incomeData, isLoading: isLoadingIncomes } = useGetFinanceIncome(customStart, customEnd);
+  const { data: receivablesData, isLoading: isLoadingReceivables } = useGetFinanceReceivables();
+  const { data: assetsData, isLoading: isLoadingAssets } = useGetFinanceAssets();
+
+  const safeIncomeSummary = incomeData?.summary || { totalThisPeriod: 0, chartData: [{ value: 0 }] };
+  const safeReceivablesSummary = receivablesData?.summary || { storeCount: 0, totalDebt: 0 };
+  const safeAssetsSummary = assetsData?.summary || { storeCount: 0, totalAssetValue: 0 };
 
   return (
+    <>
     <ScrollView 
       className="flex-1 bg-background"
       stickyHeaderIndices={[0]}
@@ -55,40 +87,114 @@ export default function FinanceScreen() {
       
       {activeTab === 'income' && (
         <View className="flex-1">
-          <IncomeChartSection summary={safeSummary} />
+          <View className="px-4 pt-4 pb-2">
+            <View className="flex-row items-center gap-2 bg-surface-container-low p-2 rounded-lg mb-3">
+              <TouchableOpacity 
+                className="flex-1 py-2 px-2 bg-surface rounded-md border border-outline-variant items-center"
+                onPress={() => setShowPicker('start')}
+              >
+                <Text className="text-[10px] text-text-secondary mb-0.5">Dari Tanggal</Text>
+                <Text className="font-body-sm text-body-sm font-medium text-text-primary">
+                  {customStart.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </Text>
+              </TouchableOpacity>
+              <Text className="text-text-secondary">-</Text>
+              <TouchableOpacity 
+                className="flex-1 py-2 px-2 bg-surface rounded-md border border-outline-variant items-center"
+                onPress={() => setShowPicker('end')}
+              >
+                <Text className="text-[10px] text-text-secondary mb-0.5">Sampai Tanggal</Text>
+                <Text className="font-body-sm text-body-sm font-medium text-text-primary">
+                  {customEnd.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+              <TouchableOpacity 
+                activeOpacity={0.7} 
+                onPress={() => applyPreset('7d')}
+                className={`px-3 py-1.5 rounded-full border mr-2 ${activePreset === '7d' ? 'bg-primary border-primary' : 'bg-transparent border-outline'}`}
+              >
+                <Text className={`font-body-sm text-body-sm ${activePreset === '7d' ? 'text-on-primary font-medium' : 'text-text-secondary'}`}>7 Hari Terakhir</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                activeOpacity={0.7} 
+                onPress={() => applyPreset('1m')}
+                className={`px-3 py-1.5 rounded-full border mr-2 ${activePreset === '1m' ? 'bg-primary border-primary' : 'bg-transparent border-outline'}`}
+              >
+                <Text className={`font-body-sm text-body-sm ${activePreset === '1m' ? 'text-on-primary font-medium' : 'text-text-secondary'}`}>1 Bulan Terakhir</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                activeOpacity={0.7} 
+                onPress={() => applyPreset('3m')}
+                className={`px-3 py-1.5 rounded-full border mr-2 ${activePreset === '3m' ? 'bg-primary border-primary' : 'bg-transparent border-outline'}`}
+              >
+                <Text className={`font-body-sm text-body-sm ${activePreset === '3m' ? 'text-on-primary font-medium' : 'text-text-secondary'}`}>3 Bulan Terakhir</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+
+          <IncomeChartSection summary={{ income: safeIncomeSummary }} filterMode={activePreset} customStart={customStart} customEnd={customEnd} />
           <View className="mx-4 my-4 h-[1px] bg-outline-variant/50" />
           <View className="px-4 pb-8 flex-1">
-            <IncomeContent incomes={incomes} isLoading={isLoadingIncomes} />
+            <IncomeContent incomes={incomeData?.list || []} isLoading={isLoadingIncomes} />
           </View>
         </View>
       )}
 
       {activeTab === 'receivables' && (
         <View className="flex-1">
-          <ReceivablesSummarySection summary={safeSummary} />
+          <ReceivablesSummarySection summary={{ receivables: safeReceivablesSummary }} />
           <View className="mx-4 my-4 h-[1px] bg-outline-variant/50" />
           <View className="px-4 pb-8 flex-1">
-            <ReceivableContent receivables={receivables} isLoading={isLoadingReceivables} />
+            <ReceivableContent receivables={receivablesData?.list || []} isLoading={isLoadingReceivables} />
           </View>
         </View>
       )}
 
       {activeTab === 'assets' && (
         <View className="flex-1">
-          <AssetsSummarySection summary={safeSummary} />
+          <AssetsSummarySection summary={{ assets: safeAssetsSummary }} />
           <View className="mx-4 my-4 h-[1px] bg-outline-variant/50" />
           <View className="px-4 pb-8 flex-1">
-            <AssetContent assets={assets} isLoading={isLoadingAssets} />
+            <AssetContent assets={assetsData?.list || []} isLoading={isLoadingAssets} />
           </View>
         </View>
       )}
     </ScrollView>
+    {showPicker && (
+      <DateTimePicker
+        value={showPicker === 'start' ? customStart : customEnd}
+        mode="date"
+        display="default"
+        onChange={(event, selectedDate) => {
+          setShowPicker(null);
+          if (selectedDate) {
+            if (showPicker === 'start') {
+              // Validasi: Dari Tanggal tidak boleh lebih dari Sampai Tanggal
+              if (selectedDate > customEnd) {
+                setCustomEnd(new Date(selectedDate));
+              }
+              setCustomStart(selectedDate);
+            } else {
+              // Validasi: Sampai Tanggal tidak boleh kurang dari Dari Tanggal
+              if (selectedDate < customStart) {
+                setCustomStart(new Date(selectedDate));
+              }
+              setCustomEnd(selectedDate);
+            }
+          }
+        }}
+      />
+    )}
+    </>
   );
 }
 
 // --- SUB-COMPONENTS ---
 
-function IncomeChartSection({ summary }: { summary: any }) {
+function IncomeChartSection({ summary, filterMode, customStart, customEnd }: { summary: any, filterMode: string, customStart?: Date, customEnd?: Date }) {
   const screenWidth = Dimensions.get('window').width;
   const chartWidth = screenWidth - 32; 
   const chartDataLength = summary.income.chartData.length;
@@ -111,11 +217,11 @@ function IncomeChartSection({ summary }: { summary: any }) {
           <View className="flex-row items-center gap-2 mb-2 opacity-90">
             <Banknote size={20} color={THEME.colors['on-primary']} />
             <Text className="font-body text-body-sm font-medium uppercase tracking-wider text-on-primary">
-              Margin (30 Hari Terakhir)
+              Margin ({filterMode === '7d' ? '7 Hari Terakhir' : filterMode === '1m' ? '1 Bulan Terakhir' : filterMode === '3m' ? '3 Bulan Terakhir' : (customStart && customEnd ? `${customStart.toLocaleDateString('id-ID', { day: '2-digit', month: 'long' })} - ${customEnd.toLocaleDateString('id-ID', { day: '2-digit', month: 'long' })}` : 'Kustom')})
             </Text>
           </View>
           <Text className="font-display text-display font-bold tracking-tight text-on-primary" numberOfLines={1}>
-            {formatRupiah(summary.income.totalThisMonth)}
+            {formatRupiah(summary.income.totalThisPeriod)}
           </Text>
         </View>
         
@@ -252,7 +358,7 @@ function IncomeContent({ incomes, isLoading }: { incomes: any[], isLoading: bool
         <ActivityIndicator className="py-8" color={THEME.colors.primary} />
       ) : incomes.length === 0 ? (
         <View className="py-8 items-center">
-          <Text className="text-text-secondary font-body-sm text-body-sm">Belum ada data pembayaran 30 hari terakhir.</Text>
+          <Text className="text-text-secondary font-body-sm text-body-sm">Belum ada data pembayaran pada periode ini.</Text>
         </View>
       ) : (
         <View className="flex-col gap-2">
