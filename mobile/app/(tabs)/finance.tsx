@@ -314,7 +314,7 @@ function ReceivableContent({ receivables, isLoading }: { receivables: any[], isL
             <View className="flex-row justify-between items-center">
               <View>
                 <Text className="font-caption text-caption text-text-secondary mb-0.5">Sisa Hutang:</Text>
-                <Text className={`font-bold text-body ${item.status === 'merah' ? 'text-error' : item.status === 'kuning' ? 'text-warning' : 'text-success'}`}>
+                <Text className={`font-bold text-body text-error`}>
                   {formatRupiah(item.debt)}
                 </Text>
               </View>

@@ -136,22 +136,13 @@ export function useGetFinanceReceivableList() {
       const now = new Date();
       
       return results.map(r => {
-        let status = 'hijau'; // default aman
         const refDate = r.lastVisitAt ? new Date(r.lastVisitAt) : new Date(r.createdAt);
         const diffDays = Math.ceil(Math.abs(now.getTime() - refDate.getTime()) / (1000 * 60 * 60 * 24));
-        
-        // Klasifikasi status piutang berdasarkan tingkat overdue
-        if (diffDays >= storeOverdueDays) {
-          status = 'merah'; // Melewati batas kunjungan (harus segera ditagih)
-        } else if (diffDays >= storeOverdueDays * 0.7) {
-          status = 'kuning'; // Mendekati batas kunjungan
-        }
 
         return {
           storeId: r.id,
           storeName: r.name,
-          debt: r.debt,
-          status
+          debt: r.debt
         };
       });
     }
