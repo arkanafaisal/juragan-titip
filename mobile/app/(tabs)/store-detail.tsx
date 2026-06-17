@@ -11,6 +11,7 @@ import { StoreTabsSection } from '../../components/stores/store-tabs-section';
 
 import { useGetStoreById } from '../../api/stores.api';
 import { useGetStoreVisitsAnalysis } from '../../api/visits.api';
+import { useSettingsStore } from '../../api/settings.api';
 
 const formatDate = (isoString: string) => {
   const d = new Date(isoString);
@@ -21,6 +22,7 @@ const formatDate = (isoString: string) => {
 export default function StoreDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const storeCategoryLabels = useSettingsStore(state => state.storeCategoryLabels);
 
   const { data: storeData, isLoading: isStoreLoading, isError: isStoreError, error: storeError } = useGetStoreById(id ? Number(id) : undefined);
   const { data: analysisData, isLoading: isAnalysisLoading } = useGetStoreVisitsAnalysis(id ? Number(id) : undefined);
@@ -60,6 +62,7 @@ export default function StoreDetailScreen() {
 
           <StoreInfoCard 
             store={store} 
+            categoryLabels={storeCategoryLabels}
             onEdit={() => router.push(`/store-form?id=${store.id}` as any)} 
             onVisit={() => router.push(`/store-visit?id=${store.id}` as any)} 
             formatDate={formatDate} 

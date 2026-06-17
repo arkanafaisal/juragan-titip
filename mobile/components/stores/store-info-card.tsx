@@ -7,22 +7,32 @@ import THEME from '../../constants/css';
 
 interface StoreInfoCardProps {
   store: any;
+  categoryLabels?: Record<string, string>;
   onEdit: () => void;
   onVisit: () => void;
   formatDate: (iso: string) => string;
 }
 
-export function StoreInfoCard({ store, onEdit, onVisit, formatDate }: StoreInfoCardProps) {
+export function StoreInfoCard({ store, categoryLabels = {}, onEdit, onVisit, formatDate }: StoreInfoCardProps) {
   return (
     <Card className="flex-col !p-0 overflow-hidden">
       <View className="p-4 flex-col justify-between">
         <View className="flex-row justify-between items-start mb-2">
           <View className="flex-1 pr-2">
-            <View className={`self-start flex-row items-center gap-1 px-2 py-0.5 rounded-full mb-2 ${store.lastVisitAt ? 'bg-primary/10' : 'bg-surface-variant'}`}>
-              <History size={12} color={store.lastVisitAt ? THEME.colors.primary : THEME.colors['text-secondary']} />
-              <Text className={`font-caption text-[10px] font-medium ${store.lastVisitAt ? 'text-primary' : 'text-text-secondary'}`}>
-                {store.lastVisitAt ? `Terakhir: ${formatDate(store.lastVisitAt)}` : "Belum pernah dikunjungi"}
-              </Text>
+            <View className="flex-row items-center flex-wrap gap-2 mb-2">
+              <View className={`self-start flex-row items-center gap-1 px-2 py-0.5 rounded-full ${store.lastVisitAt ? 'bg-primary/10' : 'bg-surface-variant'}`}>
+                <History size={12} color={store.lastVisitAt ? THEME.colors.primary : THEME.colors['text-secondary']} />
+                <Text className={`font-caption text-[10px] font-medium ${store.lastVisitAt ? 'text-primary' : 'text-text-secondary'}`}>
+                  {store.lastVisitAt ? `Terakhir: ${formatDate(store.lastVisitAt)}` : "Belum pernah dikunjungi"}
+                </Text>
+              </View>
+              {!!store.category && (
+                <View className="bg-secondary/10 px-2 py-0.5 rounded-full self-start max-w-[120px]">
+                  <Text className="font-caption text-[10px] font-bold text-secondary uppercase" numberOfLines={1}>
+                    {categoryLabels[store.category as keyof typeof categoryLabels] || store.category}
+                  </Text>
+                </View>
+              )}
             </View>
             <Text className="font-h2 text-h2 text-text-primary tracking-tight">{store.name}</Text>
           </View>
