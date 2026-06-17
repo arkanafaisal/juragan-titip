@@ -56,8 +56,8 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
           </View>
           <View className="items-end gap-1 shrink-0">
             {displayCategory && (
-              <View className={`px-2 py-0.5 rounded ${catStyle.bg}`}>
-                <Text className={`text-[10px] font-bold tracking-wide uppercase ${catStyle.text}`}>
+              <View className={`px-2 py-0.5 rounded ${catStyle.bg} max-w-[120px]`}>
+                <Text className={`text-[10px] font-bold tracking-wide uppercase ${catStyle.text}`} numberOfLines={1}>
                   {displayCategory}
                 </Text>
               </View>

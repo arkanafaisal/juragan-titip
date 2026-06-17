@@ -33,7 +33,7 @@ export function ProductInfoCard({ product, categoryLabels, onEdit }: ProductInfo
       <View className="flex-col mt-2 space-y-3">
         <View className="flex-row justify-between mb-2">
           <Text className="text-text-secondary shrink-0">Kategori</Text>
-          <Text className="text-text-primary font-medium capitalize text-right flex-1 ml-4">
+          <Text className="text-text-primary font-medium capitalize text-right flex-1 ml-4" numberOfLines={1}>
             {categoryLabels[product.category as keyof typeof categoryLabels] || product.category}
           </Text>
         </View>
