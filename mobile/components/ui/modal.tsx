@@ -14,18 +14,18 @@ interface BaseModalProps {
 export function BaseModal({ visible, children, onClose }: BaseModalProps) {
   return (
     <Modal transparent={true} visible={visible} animationType="fade" onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View className="flex-1 justify-center items-center bg-black/50 px-6">
-          <KeyboardAvoidingView 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            className="w-full max-w-[400px]"
-          >
-            <View className="bg-primary p-6 rounded-2xl shadow-lg w-full">
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="flex-1"
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-1 justify-center items-center bg-black/50 px-6">
+            <View className="bg-primary p-6 rounded-2xl shadow-lg w-full max-w-[400px]">
               {children}
             </View>
-          </KeyboardAvoidingView>
-        </View>
-      </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
