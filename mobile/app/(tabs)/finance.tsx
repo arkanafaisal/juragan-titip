@@ -48,21 +48,37 @@ export default function FinanceScreen() {
   return (
     <ScrollView 
       className="flex-1 bg-background"
-      stickyHeaderIndices={[1]}
+      stickyHeaderIndices={[0]}
       showsVerticalScrollIndicator={false}
     >
-      <View>
-        <IncomeChartSection summary={safeSummary} />
-        <ReceivablesAssetsSection summary={safeSummary} />
-      </View>
-      
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       
-      <View className="px-4 pb-8 flex-1">
-        {activeTab === 'income' && <IncomeContent incomes={incomes} isLoading={isLoadingIncomes} />}
-        {activeTab === 'receivables' && <ReceivableContent receivables={receivables} isLoading={isLoadingReceivables} />}
-        {activeTab === 'assets' && <AssetContent assets={assets} isLoading={isLoadingAssets} />}
-      </View>
+      {activeTab === 'income' && (
+        <View className="flex-1">
+          <IncomeChartSection summary={safeSummary} />
+          <View className="px-4 pb-8 mt-2 flex-1">
+            <IncomeContent incomes={incomes} isLoading={isLoadingIncomes} />
+          </View>
+        </View>
+      )}
+
+      {activeTab === 'receivables' && (
+        <View className="flex-1">
+          <ReceivablesSummarySection summary={safeSummary} />
+          <View className="px-4 pb-8 flex-1">
+            <ReceivableContent receivables={receivables} isLoading={isLoadingReceivables} />
+          </View>
+        </View>
+      )}
+
+      {activeTab === 'assets' && (
+        <View className="flex-1">
+          <AssetsSummarySection summary={safeSummary} />
+          <View className="px-4 pb-8 flex-1">
+            <AssetContent assets={assets} isLoading={isLoadingAssets} />
+          </View>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -132,87 +148,88 @@ function IncomeChartSection({ summary }: { summary: any }) {
   );
 }
 
-function ReceivablesAssetsSection({ summary }: { summary: any }) {
+function ReceivablesSummarySection({ summary }: { summary: any }) {
   return (
-    <View className="px-4 pt-4 pb-6 flex-col gap-4">
-      {/* 2. Dua Baris terpisah untuk Piutang & Aset */}
-      <View className="flex-col gap-4">
-        {/* Card Total Piutang */}
-        <Card className="flex-row items-start gap-3 p-4">
-          <View className="w-10 h-10 rounded-full bg-error/10 items-center justify-center shrink-0">
-            <Wallet size={20} color={THEME.colors.error} />
-          </View>
-          <View className="flex-1">
-            <View className="flex-row items-center justify-between mb-1">
-              <Text className="text-body-sm text-text-secondary font-medium" numberOfLines={1}>
-                Total Hutang
-              </Text>
-              <View className="bg-error/10 px-2 py-1 rounded-md shrink-0">
-                <Text className="text-[10px] font-medium text-error">
-                  {summary.receivables.storeCount} Toko
-                </Text>
-              </View>
-            </View>
-            <Text className="font-h3 text-h3 font-bold text-text-primary" numberOfLines={1}>
-              {formatRupiah(summary.receivables.totalDebt)}
+    <View className="px-4 pt-2 pb-4 flex-col">
+      <Card className="flex-row items-start gap-3 p-4">
+        <View className="w-10 h-10 rounded-full bg-error/10 items-center justify-center shrink-0">
+          <Wallet size={20} color={THEME.colors.error} />
+        </View>
+        <View className="flex-1">
+          <View className="flex-row items-center justify-between mb-1">
+            <Text className="text-body-sm text-text-secondary font-medium" numberOfLines={1}>
+              Total Hutang Berjalan
             </Text>
+            <View className="bg-error/10 px-2 py-1 rounded-md shrink-0">
+              <Text className="text-[10px] font-medium text-error">
+                {summary.receivables.storeCount} Toko
+              </Text>
+            </View>
           </View>
-        </Card>
+          <Text className="font-h3 text-h3 font-bold text-text-primary" numberOfLines={1}>
+            {formatRupiah(summary.receivables.totalDebt)}
+          </Text>
+        </View>
+      </Card>
+    </View>
+  );
+}
 
-        {/* Card Nilai Item Aktif */}
-        <Card className="flex-row items-start gap-3 p-4">
-          <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center shrink-0">
-            <Package size={20} color={THEME.colors.primary} />
-          </View>
-          <View className="flex-1">
-            <View className="flex-row items-center justify-between mb-1">
-              <Text className="text-body-sm text-text-secondary font-medium" numberOfLines={1}>
-                Nilai Item Aktif
-              </Text>
-              <View className="bg-primary/10 px-2 py-1 rounded-md shrink-0">
-                <Text className="text-[10px] font-medium text-primary">
-                  {summary.assets.storeCount} Toko
-                </Text>
-              </View>
-            </View>
-            <Text className="font-h3 text-h3 font-bold text-text-primary" numberOfLines={1}>
-              {formatRupiah(summary.assets.totalAssetValue)}
+function AssetsSummarySection({ summary }: { summary: any }) {
+  return (
+    <View className="px-4 pt-2 pb-4 flex-col">
+      <Card className="flex-row items-start gap-3 p-4">
+        <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center shrink-0">
+          <Package size={20} color={THEME.colors.primary} />
+        </View>
+        <View className="flex-1">
+          <View className="flex-row items-center justify-between mb-1">
+            <Text className="text-body-sm text-text-secondary font-medium" numberOfLines={1}>
+              Total Nilai Item Aktif
             </Text>
+            <View className="bg-primary/10 px-2 py-1 rounded-md shrink-0">
+              <Text className="text-[10px] font-medium text-primary">
+                {summary.assets.storeCount} Toko
+              </Text>
+            </View>
           </View>
-        </Card>
-      </View>
+          <Text className="font-h3 text-h3 font-bold text-text-primary" numberOfLines={1}>
+            {formatRupiah(summary.assets.totalAssetValue)}
+          </Text>
+        </View>
+      </Card>
     </View>
   );
 }
 
 function TabNavigation({ activeTab, onTabChange }: { activeTab: TabType, onTabChange: (tab: TabType) => void }) {
   return (
-    <View className="bg-background pb-4 pt-2 px-4 z-20">
-      <View className="flex-row bg-surface-container-low p-1 rounded-xl">
+    <View className="bg-background z-20 border-b border-outline-variant">
+      <View className="flex-row px-4">
         <TouchableOpacity 
           activeOpacity={0.7}
           onPress={() => onTabChange('income')}
-          className={`flex-1 py-2 rounded-lg items-center justify-center ${activeTab === 'income' ? 'bg-primary' : ''}`}
+          className={`flex-1 py-3 items-center justify-center border-b-2 ${activeTab === 'income' ? 'border-primary' : 'border-transparent'}`}
         >
-          <Text className={`font-body-sm text-body-sm font-semibold ${activeTab === 'income' ? 'text-on-primary' : 'text-text-secondary'}`}>
+          <Text className={`font-body text-body font-bold ${activeTab === 'income' ? 'text-primary' : 'text-text-secondary'}`}>
             Masuk
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 
           activeOpacity={0.7}
           onPress={() => onTabChange('receivables')}
-          className={`flex-1 py-2 rounded-lg items-center justify-center ${activeTab === 'receivables' ? 'bg-primary' : ''}`}
+          className={`flex-1 py-3 items-center justify-center border-b-2 ${activeTab === 'receivables' ? 'border-primary' : 'border-transparent'}`}
         >
-          <Text className={`font-body-sm text-body-sm font-semibold ${activeTab === 'receivables' ? 'text-on-primary' : 'text-text-secondary'}`}>
+          <Text className={`font-body text-body font-bold ${activeTab === 'receivables' ? 'text-primary' : 'text-text-secondary'}`}>
             Hutang
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 
           activeOpacity={0.7}
           onPress={() => onTabChange('assets')}
-          className={`flex-1 py-2 rounded-lg items-center justify-center ${activeTab === 'assets' ? 'bg-primary' : ''}`}
+          className={`flex-1 py-3 items-center justify-center border-b-2 ${activeTab === 'assets' ? 'border-primary' : 'border-transparent'}`}
         >
-          <Text className={`font-body-sm text-body-sm font-semibold ${activeTab === 'assets' ? 'text-on-primary' : 'text-text-secondary'}`}>
+          <Text className={`font-body text-body font-bold ${activeTab === 'assets' ? 'text-primary' : 'text-text-secondary'}`}>
             Aset
           </Text>
         </TouchableOpacity>
