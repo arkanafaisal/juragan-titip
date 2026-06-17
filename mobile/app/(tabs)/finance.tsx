@@ -240,9 +240,9 @@ function TabNavigation({ activeTab, onTabChange }: { activeTab: TabType, onTabCh
 
 function IncomeContent({ incomes, isLoading }: { incomes: any[], isLoading: boolean }) {
   return (
-    <View className="flex-col gap-4">
-      <Text className="text-body-sm text-text-secondary px-1">
-        Riwayat pembayaran uang tunai dari kunjungan toko.
+    <View className="flex-col pb-4">
+      <Text className="text-body-sm text-text-secondary px-1 mb-4">
+        Riwayat pembayaran uang tunai dari kunjungan toko. Ketuk kartu untuk melihat nota.
       </Text>
       
       {isLoading ? (
@@ -252,36 +252,37 @@ function IncomeContent({ incomes, isLoading }: { incomes: any[], isLoading: bool
           <Text className="text-text-secondary font-body-sm text-body-sm">Belum ada data pembayaran 30 hari terakhir.</Text>
         </View>
       ) : (
-        incomes.map((item, idx) => (
-          <Card key={idx} className="p-4">
-            <View className="mb-3">
-              <Text className="font-semibold text-body text-text-primary">
-                {item.storeName}
-              </Text>
-              <Text className="font-caption text-caption text-text-secondary mt-1">
-                📅 {item.date}
-              </Text>
-            </View>
-            
-            {/* Dashed Border */}
-            <View className="w-full my-3" style={{ borderBottomWidth: 1, borderStyle: 'dashed', borderColor: THEME.colors['outline-variant'] }} />
-            
-            <View className="flex-row justify-between items-center">
-              <View>
-                <Text className="font-caption text-caption text-text-secondary mb-0.5">Uang Masuk:</Text>
-                <Text className="font-bold text-body text-success">
-                  + {formatRupiah(item.amount)}
-                </Text>
-              </View>
-              <Link href={`/(tabs)/visit-invoice?id=${item.visitId}`} asChild>
-                <TouchableOpacity className="flex-row items-center gap-1" activeOpacity={0.7}>
-                  <Text className="font-body-sm text-body-sm font-semibold text-primary">Lihat Nota</Text>
-                  <ArrowRight size={16} color={THEME.colors.primary} />
-                </TouchableOpacity>
-              </Link>
-            </View>
-          </Card>
-        ))
+        <View className="flex-col gap-2">
+          {incomes.map((item, idx) => {
+            const showDateHeader = idx === 0 || incomes[idx - 1].date !== item.date;
+
+            return (
+              <React.Fragment key={idx}>
+                {showDateHeader && (
+                  <Text className={`font-body-sm text-body-sm font-bold text-text-secondary ml-1 mb-1 ${idx > 0 ? 'mt-3' : ''}`}>
+                    {item.date}
+                  </Text>
+                )}
+                <Link href={`/(tabs)/visit-invoice?id=${item.visitId}`} asChild>
+                  <TouchableOpacity activeOpacity={0.7}>
+                    <Card className="p-3 flex-row items-center justify-between">
+                      <View className="flex-1 pr-2">
+                        <Text className="font-semibold text-body-sm text-text-primary" numberOfLines={1}>
+                          {item.storeName}
+                        </Text>
+                      </View>
+                      <View className="items-end shrink-0">
+                        <Text className="font-bold text-body-sm text-success">
+                          + {formatRupiah(item.amount)}
+                        </Text>
+                      </View>
+                    </Card>
+                  </TouchableOpacity>
+                </Link>
+              </React.Fragment>
+            );
+          })}
+        </View>
       )}
     </View>
   );
@@ -291,7 +292,7 @@ function ReceivableContent({ receivables, isLoading }: { receivables: any[], isL
   return (
     <View className="flex-col gap-4">
       <Text className="text-body-sm text-text-secondary px-1">
-        Daftar tagihan aktif. Sisa hutang selalu berpindah dan diakumulasikan ke riwayat kunjungan paling akhir.
+        Daftar tagihan aktif. Sisa hutang selalu berpindah dan diakumulasikan ke riwayat kunjungan paling akhir. Ketuk kartu untuk melihat detail toko.
       </Text>
       
       {isLoading ? (
@@ -302,30 +303,22 @@ function ReceivableContent({ receivables, isLoading }: { receivables: any[], isL
         </View>
       ) : (
         receivables.map((item, idx) => (
-          <Card key={idx} className="p-4">
-            <View className="mb-3">
-              <Text className="font-semibold text-body text-text-primary">
-                {item.storeName}
-              </Text>
-            </View>
-            
-            <View className="w-full my-3" style={{ borderBottomWidth: 1, borderStyle: 'dashed', borderColor: THEME.colors['outline-variant'] }} />
-            
-            <View className="flex-row justify-between items-center">
-              <View>
-                <Text className="font-caption text-caption text-text-secondary mb-0.5">Sisa Hutang:</Text>
-                <Text className={`font-bold text-body text-error`}>
-                  {formatRupiah(item.debt)}
-                </Text>
-              </View>
-              <Link href={`/(tabs)/store-detail?id=${item.storeId}`} asChild>
-                <TouchableOpacity className="flex-row items-center gap-1 bg-primary/10 px-3 py-1.5 rounded-lg" activeOpacity={0.7}>
-                  <Text className="font-body-sm text-body-sm font-semibold text-primary">Detail Toko</Text>
-                  <ArrowRight size={16} color={THEME.colors.primary} />
-                </TouchableOpacity>
-              </Link>
-            </View>
-          </Card>
+          <Link href={`/(tabs)/store-detail?id=${item.storeId}`} asChild key={idx}>
+            <TouchableOpacity activeOpacity={0.7}>
+              <Card className="p-3 flex-row items-center justify-between">
+                <View className="flex-1 pr-2">
+                  <Text className="font-semibold text-body-sm text-text-primary" numberOfLines={1}>
+                    {item.storeName}
+                  </Text>
+                </View>
+                <View className="items-end shrink-0">
+                  <Text className="font-bold text-body-sm text-error">
+                    {formatRupiah(item.debt)}
+                  </Text>
+                </View>
+              </Card>
+            </TouchableOpacity>
+          </Link>
         ))
       )}
     </View>
@@ -336,7 +329,7 @@ function AssetContent({ assets, isLoading }: { assets: any[], isLoading: boolean
   return (
     <View className="flex-col gap-4">
       <Text className="text-body-sm text-text-secondary px-1">
-        Sebaran data nilai dan barang titipan terakhir di masing-masing toko.
+        Sebaran data nilai dan barang titipan terakhir di masing-masing toko. Ketuk kartu untuk melihat stok.
       </Text>
       
       {isLoading ? (
@@ -347,30 +340,22 @@ function AssetContent({ assets, isLoading }: { assets: any[], isLoading: boolean
         </View>
       ) : (
         assets.map((item, idx) => (
-          <Card key={idx} className="p-4">
-            <View className="mb-3">
-              <Text className="font-semibold text-body text-text-primary">
-                {item.storeName}
-              </Text>
-            </View>
-            
-            <View className="w-full my-3" style={{ borderBottomWidth: 1, borderStyle: 'dashed', borderColor: THEME.colors['outline-variant'] }} />
-            
-            <View className="flex-row justify-between items-end">
-              <View>
-                <Text className="font-caption text-caption text-text-secondary mb-0.5">Estimasi Aset:</Text>
-                <Text className="font-bold text-body text-primary">
-                  {formatRupiah(item.assetValue)}
-                </Text>
-              </View>
-              <Link href={`/(tabs)/store-detail?id=${item.storeId}`} asChild>
-                <TouchableOpacity className="flex-row items-center gap-1 bg-primary/10 px-3 py-1.5 rounded-lg" activeOpacity={0.7}>
-                  <Text className="font-body-sm text-body-sm font-semibold text-primary">Cek Stok</Text>
-                  <ArrowRight size={16} color={THEME.colors.primary} />
-                </TouchableOpacity>
-              </Link>
-            </View>
-          </Card>
+          <Link href={`/(tabs)/store-detail?id=${item.storeId}`} asChild key={idx}>
+            <TouchableOpacity activeOpacity={0.7}>
+              <Card className="p-3 flex-row items-center justify-between">
+                <View className="flex-1 pr-2">
+                  <Text className="font-semibold text-body-sm text-text-primary" numberOfLines={1}>
+                    {item.storeName}
+                  </Text>
+                </View>
+                <View className="items-end shrink-0">
+                  <Text className="font-bold text-body-sm text-primary">
+                    {formatRupiah(item.assetValue)}
+                  </Text>
+                </View>
+              </Card>
+            </TouchableOpacity>
+          </Link>
         ))
       )}
     </View>
