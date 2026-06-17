@@ -228,9 +228,7 @@ export const useImportDatabase = () => {
     mutationFn: async () => {
       const result = await DocumentPicker.getDocumentAsync({
         type: [
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
-          'application/vnd.ms-excel',
-          '*/*'
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ],
         copyToCacheDirectory: true
       });
@@ -238,6 +236,11 @@ export const useImportDatabase = () => {
       if (result.canceled) return false;
 
       const file = result.assets[0];
+      
+      // Validasi manual ekstensi file sebagai lapis keamanan kedua
+      if (!file.name.toLowerCase().endsWith('.xlsx')) {
+        throw new Error("Format file tidak didukung. Harap pilih file backup Excel berformat .xlsx");
+      }
       const { importDatabaseFromExcel } = await import('./excel.backup');
       const res = await importDatabaseFromExcel(file.uri);
       return res.success;
