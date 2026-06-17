@@ -26,15 +26,15 @@ export function ProductInfoCard({ product, categoryLabels, onEdit }: ProductInfo
         </TouchableOpacity>
       </View>
       
-      <Text className="text-body-sm text-text-secondary mb-4 capitalize">
-        {categoryLabels[product.category as keyof typeof categoryLabels] || product.category}
+      <Text className={`text-body-sm mb-4 ${product.description ? 'text-text-primary' : 'text-text-secondary italic'}`}>
+        {product.description || 'Tidak ada deskripsi'}
       </Text>
       
       <View className="flex-col mt-2 space-y-3">
-        <View className="flex-row justify-between items-start gap-4 mb-2">
-          <Text className="text-text-secondary shrink-0">Deskripsi</Text>
-          <Text className={`text-right flex-1 ${product.description ? 'text-text-primary' : 'text-text-secondary italic text-body-sm'}`}>
-            {product.description || 'Tidak ada deskripsi'}
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-text-secondary shrink-0">Kategori</Text>
+          <Text className="text-text-primary font-medium capitalize text-right flex-1 ml-4">
+            {categoryLabels[product.category as keyof typeof categoryLabels] || product.category}
           </Text>
         </View>
         <View className="flex-row justify-between mb-2">
