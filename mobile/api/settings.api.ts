@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { zustandStorage } from '../utils/storage.util';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
@@ -90,13 +90,13 @@ export const useSettingsStore = create<SettingsState>()(
       }),
     }),
     {
-      name: 'juragantitip-settings', // Kunci unik di AsyncStorage
-      storage: createJSONStorage(() => AsyncStorage), // Menggunakan AsyncStorage
+      name: 'juragantitip-settings', // Kunci unik di MMKV
+      storage: createJSONStorage(() => zustandStorage), // Menggunakan MMKV
 
       // Meniru fitur "Telemetry & Data Healing" dari file lama Anda
       onRehydrateStorage: () => (state, error) => {
         if (error) {
-          console.warn('[Settings Store] Failed to parse data from AsyncStorage. Data corrupted.', error);
+          console.warn('[Settings Store] Failed to parse data from MMKV. Data corrupted.', error);
           // Zustand otomatis membuang data yang korup dan kembali menggunakan nilai default
         }
       },
