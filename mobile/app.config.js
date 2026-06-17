@@ -4,7 +4,7 @@ export default {
   "expo": {
     "name": "Juragan Titip",
     "slug": "juragan-titip",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "juragantitip",
@@ -19,7 +19,6 @@ export default {
     },
     "android": {
       "package": "id.my.arkanafaisal.juragantitip",
-      "versionCode": 1,
       "config": {
         "googleMaps": {
           "apiKey": process.env.GOOGLE_MAPS_API_KEY
