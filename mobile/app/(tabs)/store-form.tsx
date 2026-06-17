@@ -189,7 +189,7 @@ export default function StoreFormScreen() {
                 activeOpacity={0.7}
               >
                 <Text className={`font-body text-body ${watchedCategory ? 'text-text-primary' : 'text-text-secondary'}`}>
-                  {watchedCategory ? storeCategoryLabels[watchedCategory as keyof typeof storeCategoryLabels] : 'Pilih Rute...'}
+                  {watchedCategory ? storeCategoryLabels[watchedCategory as keyof typeof storeCategoryLabels] : 'Pilih Kategori...'}
                 </Text>
                 <ChevronDown size={THEME.iconSize['md']} color={THEME.colors['on-surface-variant']} />
               </TouchableOpacity>
@@ -326,7 +326,7 @@ export default function StoreFormScreen() {
         onClose={() => setIsCategoryModalOpen(false)}
       >
         <View className="flex-col gap-4 pb-4">
-          <Text className="text-h3 font-bold text-text-primary text-center">Pilih Rute / Kategori</Text>
+          <Text className="text-h3 font-bold text-text-primary text-center">Pilih Kategori</Text>
           <View className="flex-col gap-2 mt-2">
             {Object.entries(storeCategoryLabels).map(([key, label]) => (
               <TouchableOpacity
