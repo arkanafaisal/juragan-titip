@@ -43,7 +43,15 @@ export default {
       "expo-sqlite",
       "expo-sharing",
       "expo-notifications",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-build-properties",
+        {
+          android: {
+            reactNativeArchitectures: ["arm64-v8a"]
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

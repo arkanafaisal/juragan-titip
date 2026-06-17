@@ -25,6 +25,7 @@
     "drizzle-orm": "^0.45.2",
     "exceljs": "^4.4.0",
     "expo": "~55.0.26",
+    "expo-build-properties": "~55.0.14",
     "expo-constants": "~55.0.16",
     "expo-dev-client": "~55.0.35",
     "expo-document-picker": "~55.0.13",
