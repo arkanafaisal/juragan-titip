@@ -1,3 +1,19 @@
+git --no-pager log 8d97a4bfdce2de8951078ce30907858b01ec883f..HEAD --pretty=format:"%H %s"
+be1bd928a517882c0563a9d73713e33471fb58b9 update(text): piutang to hutang
+f822a01a7ec857c86f39430293c6faa8a59cc715 update(settings page): remove product settings default openb64fd37d823b9981927167fe5a22931338bd30a8 add journey page (service integration)
+33f81ac0fbf2de3001529fd1b1d91b9cff07eb4b update(finance page): GET services integration
+d83c2cf16678088737320be30d72f3b5e96501ce update(dashboard page): remove weekly revenue, add overdue 
+stores & product stock warning, lengthen visit history, typography, styles, text
+4efb7a653cad7493ba5b81039d6c8695864f9066 update(dashboard page): GET service integration
+ab781658863e849e3e2132c4d6b0993524f25bb2 update(backup service): crypto polyfill & bulk add rows    
+2f1b5c8892c228c14c706b9f910463b579e701cb fix(backup service): unhandled promise - stack size limit  
+1a31647438b9777e4383f0cf9a24d8ad136ffdca update(backup feature): loading message
+85a55de27508f3a8a8de71df659951d8e8dd25ac update(excel backup service): excelJs usage (from xlsx)  
+
+
+
+
+
 git --no-pager log 55bc2a0715ff908b46000b93389fb5611efc07ad..HEAD --pretty=format:"%H %s"
 c56cc65017433110e1468314d2d6f78c3974bac4 add dashboard page (UI)
 fe7b54cd756c71d65214e6399234f68781673970 update assets

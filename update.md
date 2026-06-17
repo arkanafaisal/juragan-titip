@@ -1,3 +1,17 @@
+16 June 2026
+<details>
+- updated text: piutang to hutang
+- updated settings page: remove product settings default open
+- added journey page with service integration
+- updated finance page: GET services integration
+- updated dashboard page: remove weekly revenue, add overdue stores & product stock warning, lengthen visit history, typography, styles, text
+- updated dashboard page: GET service integration
+- updated backup service: crypto polyfill & bulk add rows
+- fixed backup service unhandled promise - stack size limit
+- added loading message on backup feature
+- updated excel backup service: excelJs usage (from xlsx)
+</details>
+
 15 June 2026
 <details>
 - added dashboard page (UI)
