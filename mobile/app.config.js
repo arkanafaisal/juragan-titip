@@ -2,12 +2,12 @@ import 'dotenv/config'
 
 export default {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Juragan Titip",
+    "slug": "juragan-titip",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "juragantitip",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash-icon.png",
@@ -19,6 +19,7 @@ export default {
     },
     "android": {
       "package": "id.my.arkanafaisal.juragantitip",
+      "versionCode": 1,
       "config": {
         "googleMaps": {
           "apiKey": process.env.GOOGLE_MAPS_API_KEY
@@ -49,7 +50,7 @@ export default {
     },
     "extra": {
       "eas": {
-        "projectId": "d9eb137f-d4c0-4da8-9bbc-a92ccbd16b42"
+        "projectId": "284a8dcf-6e10-46f5-a8dd-203dee7525c3"
       }
     }
   }
