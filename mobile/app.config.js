@@ -41,7 +41,6 @@ export default {
       "expo-router",
       "expo-sqlite",
       "expo-sharing",
-      "expo-notifications",
       "expo-location",
       "@react-native-community/datetimepicker",
       [
