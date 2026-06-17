@@ -44,6 +44,7 @@ export function useAddProduct() {
         refetchType: 'all'
       });
       queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Disimpan',
@@ -88,6 +89,7 @@ export function useUpdateProduct() {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Diperbarui',
@@ -233,6 +235,7 @@ export function useAddStock() {
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       Toast.show({
         type: 'success',
         text1: 'Stok Ditambahkan',
@@ -295,6 +298,7 @@ export function useEditStock() {
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       Toast.show({
         type: 'success',
         text1: 'Stok Dikoreksi',
@@ -370,6 +374,7 @@ export function useProcessReturn() {
       queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       Toast.show({
         type: 'success',
         text1: 'Retur Diolah',
@@ -401,6 +406,7 @@ export function useArchiveProduct() {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', id] });
       queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Diarsipkan',
@@ -432,6 +438,7 @@ export function useRecoverProduct() {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', id] });
       queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Dipulihkan',

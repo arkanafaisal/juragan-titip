@@ -31,6 +31,9 @@ export function useAddStore() {
         refetchType: 'all'
       });
       queryClient.invalidateQueries({ queryKey: ['overdueStores'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+      queryClient.invalidateQueries({ queryKey: ['financeReceivables'] });
+      queryClient.invalidateQueries({ queryKey: ['financeAssets'] });
       Toast.show({
         type: 'success',
         text1: 'Berhasil Disimpan',
@@ -155,6 +158,11 @@ export function useUpdateStore() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['stores'] });
       queryClient.invalidateQueries({ queryKey: ['store', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['overdueStores'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+      queryClient.invalidateQueries({ queryKey: ['financeReceivables'] });
+      queryClient.invalidateQueries({ queryKey: ['financeAssets'] });
+      queryClient.invalidateQueries({ queryKey: ['storeVisitsAnalysis', variables.id] });
     }
   });
 }

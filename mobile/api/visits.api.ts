@@ -229,6 +229,12 @@ export function useCreateVisit() {
       queryClient.invalidateQueries({ queryKey: ['products'] }); // Karena warehouseStock & returnedStock berubah
       queryClient.invalidateQueries({ queryKey: ['inventoryLogs'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+      queryClient.invalidateQueries({ queryKey: ['storeVisitsAnalysis', variables.storeId] });
+      queryClient.invalidateQueries({ queryKey: ['overdueStores'] });
+      queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['financeIncome'] });
+      queryClient.invalidateQueries({ queryKey: ['financeReceivables'] });
+      queryClient.invalidateQueries({ queryKey: ['financeAssets'] });
       
       Toast.show({
         type: 'success',
