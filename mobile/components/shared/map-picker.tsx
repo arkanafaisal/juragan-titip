@@ -13,11 +13,11 @@ interface MapPickerProps {
   height?: number;
 }
 
-export function MapPicker({ initialLatitude = -6.200000, initialLongitude = 106.816666, onLocationChange, readonly = false, height = 280 }: MapPickerProps) {
+export function MapPicker({ initialLatitude = -7.55556, initialLongitude = 110.80639, onLocationChange, readonly = false, height = 280 }: MapPickerProps) {
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>({
-    latitude: initialLatitude || -6.200000,
-    longitude: initialLongitude || 106.816666,
+    latitude: initialLatitude || -7.55556,
+    longitude: initialLongitude || 110.80639,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   });
