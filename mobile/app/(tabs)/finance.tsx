@@ -56,7 +56,8 @@ export default function FinanceScreen() {
       {activeTab === 'income' && (
         <View className="flex-1">
           <IncomeChartSection summary={safeSummary} />
-          <View className="px-4 pb-8 mt-2 flex-1">
+          <View className="mx-4 my-4 h-[1px] bg-outline-variant/50" />
+          <View className="px-4 pb-8 flex-1">
             <IncomeContent incomes={incomes} isLoading={isLoadingIncomes} />
           </View>
         </View>
@@ -65,6 +66,7 @@ export default function FinanceScreen() {
       {activeTab === 'receivables' && (
         <View className="flex-1">
           <ReceivablesSummarySection summary={safeSummary} />
+          <View className="mx-4 my-4 h-[1px] bg-outline-variant/50" />
           <View className="px-4 pb-8 flex-1">
             <ReceivableContent receivables={receivables} isLoading={isLoadingReceivables} />
           </View>
@@ -74,6 +76,7 @@ export default function FinanceScreen() {
       {activeTab === 'assets' && (
         <View className="flex-1">
           <AssetsSummarySection summary={safeSummary} />
+          <View className="mx-4 my-4 h-[1px] bg-outline-variant/50" />
           <View className="px-4 pb-8 flex-1">
             <AssetContent assets={assets} isLoading={isLoadingAssets} />
           </View>
@@ -150,7 +153,7 @@ function IncomeChartSection({ summary }: { summary: any }) {
 
 function ReceivablesSummarySection({ summary }: { summary: any }) {
   return (
-    <View className="px-4 pt-2 pb-4 flex-col">
+    <View className="px-4 mt-4 flex-col">
       <Card className="flex-row items-start gap-3 p-4">
         <View className="w-10 h-10 rounded-full bg-error/10 items-center justify-center shrink-0">
           <Wallet size={20} color={THEME.colors.error} />
@@ -177,7 +180,7 @@ function ReceivablesSummarySection({ summary }: { summary: any }) {
 
 function AssetsSummarySection({ summary }: { summary: any }) {
   return (
-    <View className="px-4 pt-2 pb-4 flex-col">
+    <View className="px-4 mt-4 flex-col">
       <Card className="flex-row items-start gap-3 p-4">
         <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center shrink-0">
           <Package size={20} color={THEME.colors.primary} />
