@@ -47,7 +47,7 @@ export default {
         "expo-build-properties",
         {
           android: {
-            reactNativeArchitectures: ["arm64-v8a"]
+            buildArchs: ["arm64-v8a"]
           }
         }
       ]
