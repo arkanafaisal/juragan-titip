@@ -5,7 +5,9 @@ import {
   Clock, 
   ArrowRight,
   TrendingUp,
-  ChevronRight
+  ChevronRight,
+  Smartphone,
+  Download
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
@@ -67,6 +69,28 @@ export default function Dashboard() {
           {todayDate}
         </p>
       </div>
+
+      {/* BANNER APLIKASI MOBILE */}
+      <SectionCard className="w-full bg-primary/10 border border-primary/20 flex flex-row items-center justify-between p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Smartphone className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-h3 text-h3 font-bold text-text-primary">Aplikasi Mobile Tersedia</h3>
+            <p className="font-body-sm text-body-sm text-text-secondary mt-0.5">
+              Unduh sekarang untuk pengalaman yang lebih baik.
+            </p>
+          </div>
+        </div>
+        <button 
+          onClick={() => window.open('https://drive.google.com/file/d/1YOkisnrAKttgtVrMz3GTRAoR82s010Jt/view?usp=drive_link', '_blank')}
+          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-on-primary rounded-lg text-sm font-semibold transition-colors shrink-0"
+        >
+          <Download className="w-4 h-4" />
+          Unduh
+        </button>
+      </SectionCard>
 
       {/* 2. PENDAPATAN MINGGU INI (Full Width) */}
       <SectionCard className="w-full flex flex-col justify-between">
