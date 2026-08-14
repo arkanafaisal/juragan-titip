@@ -165,7 +165,7 @@ export default function StoreDetailPage() {
               <button onClick={() => navigate(`/stores/${store.id}/visit`)} className="w-full  bg-primary text-on-primary rounded-lg py-sm  px-md  flex items-center justify-center gap-sm font-body text-body   font-semibold hover:bg-primary/90 transition-all shadow-md active:scale-[0.98] whitespace-nowrap">
                 <Navigation className="w-4 h-4   shrink-0" /> MULAI KUNJUNGAN
               </button>
-              <button onClick={() => window.open(`https://maps.google.com/?q=$${store.latitude},${store.longitude}`, '_blank')} className="w-full  bg-surface text-text-secondary border border-outline-variant rounded-lg py-sm  px-md  flex items-center justify-center gap-sm font-body text-body   font-semibold hover:text-primary hover:bg-surface-container-low transition-all active:scale-[0.98] whitespace-nowrap">
+              <button onClick={() => window.open(`https://maps.google.com/?q=${store.latitude},${store.longitude}`, '_blank')} className="w-full  bg-surface text-text-secondary border border-outline-variant rounded-lg py-sm  px-md  flex items-center justify-center gap-sm font-body text-body   font-semibold hover:text-primary hover:bg-surface-container-low transition-all active:scale-[0.98] whitespace-nowrap">
                 <MapPin className="w-4 h-4   shrink-0" /> MAPS
               </button>
             </div>
