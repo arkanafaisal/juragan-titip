@@ -54,9 +54,8 @@ export const validateRegisterForm = (data: any): string | null => {
 
 export const validateStoreForm = (data: any): string | null => {
   if (!validateRequired(data.name) || !validateLength(data.name, VALIDATION_RULES.STORE.NAME_MIN, VALIDATION_RULES.STORE.NAME_MAX)) return `Nama toko harus antara ${VALIDATION_RULES.STORE.NAME_MIN}-${VALIDATION_RULES.STORE.NAME_MAX} karakter.`;
-  if (!validateRequired(data.ownerName) || !validateLength(data.ownerName, VALIDATION_RULES.STORE.OWNER_MIN, VALIDATION_RULES.STORE.OWNER_MAX)) return `Nama pemilik harus antara ${VALIDATION_RULES.STORE.OWNER_MIN}-${VALIDATION_RULES.STORE.OWNER_MAX} karakter.`;
+  if (data.ownerName && data.ownerName.trim() !== "" && !validateLength(data.ownerName, VALIDATION_RULES.STORE.OWNER_MIN, VALIDATION_RULES.STORE.OWNER_MAX)) return `Nama pemilik harus maksimal ${VALIDATION_RULES.STORE.OWNER_MAX} karakter.`;
   if (data.phone && !validateWhatsApp(data.phone, VALIDATION_RULES.PHONE)) return "Format nomor telepon tidak valid (Harus diawali 0, full angka, tanpa spasi/+, min 10 digit).";
-  if (!validateRequired(data.address) || !validateLength(data.address, VALIDATION_RULES.STORE.ADDRESS_MIN, VALIDATION_RULES.STORE.ADDRESS_MAX)) return `Alamat harus antara ${VALIDATION_RULES.STORE.ADDRESS_MIN}-${VALIDATION_RULES.STORE.ADDRESS_MAX} karakter.`;
   if (data.notes && data.notes.length > VALIDATION_RULES.STORE.NOTES_MAX) return `Catatan maksimal ${VALIDATION_RULES.STORE.NOTES_MAX} karakter.`;
   return null;
 };

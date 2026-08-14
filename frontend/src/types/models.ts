@@ -24,9 +24,8 @@ export interface Store {
   id: number
   name: string
   normalizedName: string
-  ownerName: string
+  ownerName?: string
   phone?: string
-  address: string
   latitude: number
   longitude: number
   notes: string

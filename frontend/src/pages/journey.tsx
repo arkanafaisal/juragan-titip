@@ -317,10 +317,7 @@ export default function JourneyPage() {
                     {getDaysAgoText(currentStore.lastVisitAt)}
                   </span>
                 </h2>
-                <p className="font-body-sm text-body-sm text-text-secondary mt-1 flex items-start gap-1">
-                  <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                  <span className="line-clamp-2">{currentStore.address || 'Alamat tidak tersedia'}</span>
-                </p>
+
               </div>
 
               <div className="space-y-1.5 border-y border-dashed border-outline-variant py-3">

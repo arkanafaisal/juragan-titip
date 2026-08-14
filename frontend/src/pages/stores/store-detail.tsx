@@ -144,14 +144,12 @@ export default function StoreDetailPage() {
               </div>
 
               <div className="space-y-sm mt-md">
-                <div className="flex items-start gap-xs  text-text-secondary  ">
-                  <MapPin className="w-4 h-4   mt-0.5 shrink-0" />
-                  <p>{store.address}</p>
-                </div>
-                <div className="flex items-center gap-xs  text-text-secondary  ">
-                  <User className="w-4 h-4   shrink-0" />
-                  <p>{store.ownerName}</p>
-                </div>
+                {store.ownerName && (
+                  <div className="flex items-center gap-xs  text-text-secondary  ">
+                    <User className="w-4 h-4   shrink-0" />
+                    <p>{store.ownerName}</p>
+                  </div>
+                )}
                 <div className="flex items-center gap-xs  text-text-secondary  ">
                   <Phone className="w-4 h-4   shrink-0" />
                   <p>{store.phone}</p>

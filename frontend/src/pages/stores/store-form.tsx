@@ -41,9 +41,8 @@ export default function StoreFormPage() {
     name: "",
     ownerName: "",
     phone: "",
-    address: "",
     notes: "",
-    category: "",
+    category: "1",
   });
 
   
@@ -60,11 +59,10 @@ export default function StoreFormPage() {
         if (response.success) {
           setFormData({
             name: response.data.store.name,
-            ownerName: response.data.store.ownerName,
+            ownerName: response.data.store.ownerName || "",
             phone: response.data.store.phone || "",
-            address: response.data.store.address,
             notes: response.data.store.notes || "",
-            category: response.data.store.category || "",
+            category: response.data.store.category || "1",
           });
           setLocation({
             lat: response.data.store.latitude,
@@ -291,7 +289,7 @@ export default function StoreFormPage() {
                 
                 <div className="flex flex-col gap-xs">
                   <label className="font-caption text-caption text-text-secondary" htmlFor="ownerName">
-                    Nama Pemilik / PIC <span className="text-error">*</span>
+                    Nama Pemilik / PIC (Opsional)
                   </label>
                   <input 
                     id="ownerName"
@@ -301,8 +299,6 @@ export default function StoreFormPage() {
                     className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all" 
                     placeholder="Budi Santoso" 
                     type="text" 
-                    required 
-                    minLength={VALIDATION_RULES.STORE.OWNER_MIN}
                     maxLength={VALIDATION_RULES.STORE.OWNER_MAX}
                     autoComplete="off"
                   />
@@ -357,26 +353,8 @@ export default function StoreFormPage() {
               </div>
 
               <div className="flex flex-col gap-xs">
-                <label className="font-caption text-caption text-text-secondary" htmlFor="address">
-                  Alamat Lengkap <span className="text-error">*</span>
-                </label>
-                <textarea 
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-text-muted transition-all resize-none" 
-                  placeholder="Jl. Merdeka No. 123, patokan seberang pom bensin" 
-                  rows={3} 
-                  required 
-                  minLength={VALIDATION_RULES.STORE.ADDRESS_MIN}
-                  maxLength={VALIDATION_RULES.STORE.ADDRESS_MAX}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="flex flex-col gap-xs">
               <h3 className="font-caption text-caption text-text-secondary">
-                  Catatan Tambahan (opsional)
+                  Catatan (opsional)
                 </h3>
                 <textarea 
                   id="notes"

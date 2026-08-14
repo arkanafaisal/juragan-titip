@@ -34,7 +34,10 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
   const displayCategory = data.category ? labels[data.category as keyof typeof labels] || data.category : null;
 
   const title = data.name;
-  const desc = isStore ? `${(data as Store).ownerName} • ${(data as Store).phone}` : ((data as Product).description || "Belum ada deskripsi");
+  const storeOwnerAndPhone = isStore 
+    ? [((data as Store).ownerName || ""), ((data as Store).phone || "")].filter(Boolean).join(" • ") || "Belum ada info kontak"
+    : "";
+  const desc = isStore ? storeOwnerAndPhone : ((data as Product).description || "Belum ada deskripsi");
 
   return (
     <SectionCard className={`!p-0 hover:shadow-md transition-shadow flex flex-col overflow-hidden ${data.category ? `!border-[1.5px] !${catStyle.border}` : ''}`}>
@@ -60,13 +63,6 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
             )}
           </div>
         </div>
-        
-        {isStore && (
-          <div className="flex items-start gap-xs text-text-secondary mb-md">
-            <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-            <span className="font-body-sm text-body-sm line-clamp-2">{(data as Store).address}</span>
-          </div>
-        )}
 
         <div className="grid grid-cols-2 gap-sm mb-xs mt-auto">
           <div className="flex flex-col gap-0.5">

@@ -9,9 +9,8 @@ export interface ProductFormData {
 
 export interface StoreFormData {
   name: string
-  ownerName: string
+  ownerName?: string
   phone: string
-  address: string
   latitude: number
   longitude: number
   notes: string

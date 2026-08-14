@@ -72,4 +72,15 @@ db.version(14).stores({
   inventoryLogs: '++id, [productId+createdAt]'
 });
 
+db.version(15).stores({
+  products: '++id, &normalizedName, category',
+  stores: '++id, normalizedName, phone, lastVisitAt, category',
+  visits: '++id, storeId, createdAt',
+  inventoryLogs: '++id, [productId+createdAt]'
+}).upgrade(tx => {
+  return tx.table('stores').toCollection().modify(store => {
+    delete store.address;
+  });
+});
+
 export { db };
