@@ -51,6 +51,7 @@ export default function StoreFormPage() {
     lat: -6.902481,
     lng: 107.61881,
   });
+  const [coordinateInput, setCoordinateInput] = useState("");
 
   useEffect(() => {
     if (isEditMode && id) {
@@ -88,6 +89,39 @@ export default function StoreFormPage() {
 
   const handleLocationChange = (lat: number, lng: number) => {
     setLocation({ lat, lng });
+    setCoordinateInput(""); // Clear input if map is manually dragged
+  };
+
+  const extractCoordinates = (text: string) => {
+    const regexes = [
+      /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /[?&]query=(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
+      /(?:^|\s)(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)(?:\s|$)/ // pure coordinates paste
+    ];
+
+    for (const regex of regexes) {
+      const match = text.match(regex);
+      if (match && match[1] && match[2]) {
+        return {
+          lat: parseFloat(match[1]),
+          lng: parseFloat(match[2])
+        };
+      }
+    }
+    return null;
+  };
+
+  const handleCoordinateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setCoordinateInput(val);
+    
+    const coords = extractCoordinates(val);
+    if (coords) {
+      setLocation(coords);
+      toast.success("Koordinat berhasil diperbarui.");
+    }
   };
 
   const handleDetectGPS = () => {
@@ -382,6 +416,21 @@ export default function StoreFormPage() {
                 <Locate className="w-4 h-4" />
                 Deteksi GPS
               </button>
+            </div>
+
+            <div className="p-md bg-surface border-b border-outline-variant flex flex-col gap-xs shrink-0">
+              <label className="font-caption text-caption text-text-secondary" htmlFor="coordinateInput">
+                Paste Koordinat Latitude, Longitude
+              </label>
+              <input 
+                id="coordinateInput"
+                type="text"
+                placeholder="Contoh: -7.559194, 110.780329"
+                className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body text-body text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                value={coordinateInput}
+                onChange={handleCoordinateInputChange}
+                autoComplete="off"
+              />
             </div>
 
             <div className="relative w-full h-[240px]  shrink-0">
