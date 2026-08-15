@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useSmartBack } from "@/hooks/use-smart-back";
 import { 
-  X, MapPin, Map as MapIcon, Play, ChevronDown, ChevronUp, 
-  ChevronLeft, ChevronRight, Navigation, LocateFixed 
+  X, MapPin, Map as MapIcon, Play, Navigation, LocateFixed 
 } from "lucide-react";
 import { journeyApi, type StoreWithDistance } from "@/services/api/journey";
 import { storeApi } from "@/services/api/stores";
@@ -23,7 +22,7 @@ L.Icon.Default.mergeOptions({
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
   const map = useMap();
   useEffect(() => {
-    map.setView(center, zoom);
+    map.flyTo(center, zoom, { duration: 0.5 });
   }, [center[0], center[1], zoom, map]);
   return null;
 }
@@ -41,10 +40,12 @@ export default function JourneyPage() {
   const [stores, setStores] = useState<StoreWithDistance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalStoresCount, setTotalStoresCount] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  
   const [isLocating, setIsLocating] = useState(false);
   const [hasGpsAccess, setHasGpsAccess] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  
+  const [selectedStore, setSelectedStore] = useState<StoreWithDistance | null>(null);
   
   const [notification, setNotification] = useState<{ message: string, type: 'error' | 'info' } | null>(null);
 
@@ -59,9 +60,6 @@ export default function JourneyPage() {
   const showNotif = (message: string, type: 'error' | 'info' = 'info') => {
     setNotification({ message, type });
   };
-
-  const [showMiniMenu, setShowMiniMenu] = useState(true);
-  const miniMenuRef = useRef<HTMLDivElement>(null);
 
   // Helper: Format Rupiah
   const formatRp = (num: number) => `Rp ${num.toLocaleString('id-ID')}`;
@@ -100,7 +98,6 @@ export default function JourneyPage() {
         const optimalRoute = await journeyApi.getStoresRoute({ latitude, longitude });
         setStores(optimalRoute);
         setHasGpsAccess(true);
-        setCurrentIndex(0); 
         setIsLocating(false);
         if (optimalRoute.length > 0) {
           showNotif("Lokasi diperbarui! Menampilkan rute optimal.", 'info');
@@ -114,18 +111,6 @@ export default function JourneyPage() {
       { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
   };
-
-  // 3. Efek Auto-Scroll pada Mini Menu
-  useEffect(() => {
-    if (miniMenuRef.current && hasGpsAccess && showMiniMenu) {
-      const activeEl = miniMenuRef.current.children[currentIndex] as HTMLElement;
-      if (activeEl) {
-        const container = miniMenuRef.current;
-        const scrollPos = activeEl.offsetLeft - (container.clientWidth / 2) + (activeEl.clientWidth / 2);
-        container.scrollTo({ left: scrollPos, behavior: 'smooth' });
-      }
-    }
-  }, [currentIndex, hasGpsAccess, showMiniMenu]);
 
   const handleClose = () => {
     goBack('/dashboard'); 
@@ -209,24 +194,19 @@ export default function JourneyPage() {
     );
   }
 
-  const currentStore = stores[currentIndex];
-  const hasPrev = currentIndex > 0;
-  const hasNext = currentIndex < stores.length - 1;
-
-  const goPrev = () => { if (hasPrev) setCurrentIndex(prev => prev - 1); };
-  const goNext = () => { if (hasNext) setCurrentIndex(prev => prev + 1); };
-  
-  const openMaps = () => {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${currentStore.latitude},${currentStore.longitude}`, '_blank');
+  const openMaps = (lat: number, lng: number) => {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
   };
 
-  const startVisit = () => {
-    navigate(`/stores/${currentStore.id}/visit`); 
+  const startVisit = (storeId: number) => {
+    navigate(`/stores/${storeId}/visit`); 
   };
+
+  const defaultCenter: [number, number] = userLocation || [stores[0]?.latitude || -6.2, stores[0]?.longitude || 106.8];
 
   return (
     // FULLSCREEN OVERLAY
-    <div className="h-dvh overflow-hidden w-full bg-inverse-surface flex flex-col font-body animate-in fade-in duration-300 relative">
+    <div className="h-dvh overflow-hidden w-full bg-surface flex flex-col font-body animate-in fade-in duration-300 relative">
       
       {/* CUSTOM NOTIFICATION */}
       {notification && (
@@ -239,169 +219,139 @@ export default function JourneyPage() {
         </div>
       )}
 
-      {/* HEADER BAR */}
-      <div className="flex justify-between items-center p-4 text-inverse-on-surface shrink-0">
-        <button onClick={handleClose} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
-          <X className="w-5 h-5" />
+      {/* HEADER BAR (Floating overlay) */}
+      <div className="absolute top-0 inset-x-0 z-[100] flex justify-between items-start p-4 pointer-events-none">
+        <button onClick={handleClose} className="p-3 bg-surface rounded-full shadow-lg border border-outline-variant hover:bg-surface-container transition-colors pointer-events-auto">
+          <X className="w-6 h-6 text-text-primary" />
         </button>
         <button 
           onClick={() => handleUpdateLocation()} 
           disabled={isLocating}
-          className="flex items-center gap-2 px-4 py-2 bg-primary/20 text-primary-fixed border border-primary/30 rounded-full font-medium text-sm hover:bg-primary/30 transition-colors"
+          className="flex items-center gap-2 px-5 py-3 bg-surface text-primary border border-outline-variant rounded-full font-bold text-sm shadow-lg hover:bg-surface-container transition-colors pointer-events-auto"
         >
-          <Navigation className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
+          <Navigation className={`w-5 h-5 ${isLocating ? 'animate-spin' : ''}`} />
           {isLocating ? 'Mencari...' : 'Perbarui Lokasi'}
         </button>
       </div>
 
-      {/* MAIN CAROUSEL AREA */}
-      <div className="flex-1 flex items-center justify-center relative overflow-hidden">
-        <div className="relative w-full max-w-[360px] flex items-center justify-center">
+      {/* FULL SCREEN MAP */}
+      <div className="flex-1 w-full relative z-0">
+        <MapContainer 
+          center={defaultCenter} 
+          zoom={14} 
+          zoomControl={false}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; OpenStreetMap'
+          />
           
-          {/* FAKE BORDER LEFT (Klik Mundur) */}
-          {hasPrev && (
-            <button 
-              onClick={goPrev}
-              className="absolute -left-6  w-10  h-[85%] bg-surface rounded-r-3xl opacity-40 hover:opacity-80 transition-opacity flex items-center justify-end pr-1  shadow-2xl z-10 border-y border-r border-outline-variant"
+          {stores.map(store => (
+            store.latitude && store.longitude && (
+              <Marker 
+                key={store.id} 
+                position={[store.latitude, store.longitude]}
+                eventHandlers={{
+                  click: () => {
+                    setSelectedStore(store);
+                  },
+                }}
+              >
+                <Popup>{store.name}</Popup>
+              </Marker>
+            )
+          ))}
+
+          {userLocation && (
+            <CircleMarker 
+              center={userLocation} 
+              radius={8} 
+              pathOptions={{ color: 'white', fillColor: '#3b82f6', fillOpacity: 1, weight: 2 }}
             >
-              <ChevronLeft className="w-6 h-6 text-text-primary" />
-            </button>
+              <Popup>Posisi Anda (terakhir diperbarui)</Popup>
+            </CircleMarker>
           )}
 
-          {/* MAIN CARD ACTIVE */}
-          <div className="w-full bg-surface rounded-3xl shadow-2xl overflow-hidden flex flex-col mx-4 z-20 transition-all duration-300">
+          {/* Jika ada toko yang dipilih, geser view perlahan */}
+          {selectedStore && selectedStore.latitude && selectedStore.longitude && (
+            <ChangeView center={[selectedStore.latitude, selectedStore.longitude]} zoom={16} />
+          )}
+        </MapContainer>
+      </div>
+
+      {/* STORE DETAIL BOTTOM SHEET (Floating Card) */}
+      {selectedStore && (
+        <div className="absolute bottom-0 inset-x-0 z-[100] flex justify-center pb-0 animate-in slide-in-from-bottom-10 fade-in duration-300 pointer-events-none">
+          <div className="w-full max-w-[400px] bg-surface rounded-t-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] border-t border-outline-variant/30 pointer-events-auto flex flex-col pb-8">
             
-            {/* Peta Interaktif Leaflet */}
-            <div className="h-40 relative z-0 bg-surface-container-low">
-              <MapContainer 
-                center={[currentStore.latitude || -6.200000, currentStore.longitude || 106.816666]} 
-                zoom={16} 
-                zoomControl={false}
-                style={{ width: '100%', height: '100%' }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; OpenStreetMap'
-                />
-                {currentStore.latitude && currentStore.longitude && (
-                  <Marker position={[currentStore.latitude, currentStore.longitude]}>
-                    <Popup>{currentStore.name}</Popup>
-                  </Marker>
-                )}
-                {userLocation && (
-                  <CircleMarker 
-                    center={userLocation} 
-                    radius={7} 
-                    pathOptions={{ color: 'white', fillColor: '#3b82f6', fillOpacity: 1, weight: 2 }}
-                  >
-                    <Popup>Posisi Anda (terakhir diperbarui)</Popup>
-                  </CircleMarker>
-                )}
-                {/* Komponen pembantu untuk memindahkan kamera */}
-                <ChangeView center={[currentStore.latitude || -6.2, currentStore.longitude || 106.8]} zoom={16} />
-              </MapContainer>
-
-              <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-surface/50 to-transparent pointer-events-none z-10" />
-              <div className="absolute bottom-3 right-3 bg-inverse-surface/90 backdrop-blur-md text-inverse-on-surface px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
-                <MapPin className="w-4 h-4 text-primary-fixed" />
-                {currentStore.distance === undefined ? '?' : currentStore.distance} km
-              </div>
+            {/* Drag Handle Dummy */}
+            <div className="w-full flex justify-center pt-4 pb-2">
+               <div className="w-12 h-1.5 bg-outline-variant/50 rounded-full" />
             </div>
+            
+            <button 
+              onClick={() => setSelectedStore(null)}
+              className="absolute top-5 right-5 p-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-colors"
+            >
+               <X className="w-5 h-5 text-text-primary" />
+            </button>
 
-            {/* Info Toko */}
-            <div className="p-5 flex flex-col gap-4 bg-surface z-20">
-              <div>
-                <h2 className="font-h2 text-h2 font-bold text-text-primary line-clamp-1 flex items-center gap-2">
-                  {currentStore.name}
-                  <span className="px-2 py-0.5 bg-error text-on-error text-[10px] uppercase rounded-full tracking-wider whitespace-nowrap">
-                    {getDaysAgoText(currentStore.lastVisitAt)}
-                  </span>
-                </h2>
-
-              </div>
-
-              <div className="space-y-1.5 border-y border-dashed border-outline-variant py-3">
-                <div className="flex justify-between text-body-sm">
-                  <span className="text-text-secondary">🔴 Piutang Aktif:</span>
-                  <span className="font-bold text-error font-mono">{formatRp(currentStore.debt || 0)}</span>
+            <div className="px-6 pt-2 flex flex-col gap-5">
+               <div>
+                  <div className="flex items-center gap-3 mb-3 pr-10">
+                    <h1 className="font-h1 text-h1 font-bold text-text-primary line-clamp-2">
+                      {selectedStore.name}
+                    </h1>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mb-3">
+                     <div className="px-3 py-1.5 bg-error/10 rounded-lg">
+                       <span className="text-error text-[11px] uppercase tracking-wider font-bold">
+                         {getDaysAgoText(selectedStore.lastVisitAt)}
+                       </span>
+                     </div>
+                     <div className="px-3 py-1.5 bg-primary/10 rounded-lg flex items-center gap-1.5">
+                       <MapPin className="w-3.5 h-3.5 text-primary" />
+                       <span className="text-primary text-[11px] font-bold tracking-wider">
+                         {selectedStore.distance === undefined ? '?' : selectedStore.distance} KM
+                       </span>
+                     </div>
+                  </div>
                 </div>
-                <div className="flex justify-between text-body-sm">
-                  <span className="text-text-secondary">📦 Aset Titipan:</span>
-                  <span className="font-bold text-success font-mono">{formatRp(currentStore.assetValue || 0)}</span>
-                </div>
-              </div>
 
-              {/* Flex Row Actions */}
-              <div className="flex gap-3 pt-2">
-                <button 
-                  onClick={openMaps}
-                  className="w-1/2 flex flex-col items-center justify-center py-3 bg-surface-container-low hover:bg-surface-container border border-outline-variant rounded-xl transition-colors text-text-primary gap-1"
-                >
-                  <MapIcon className="w-5 h-5" />
-                  <span className="font-bold text-xs">BUKA MAPS</span>
-                </button>
-                <button 
-                  onClick={startVisit}
-                  className="w-1/2 flex flex-col items-center justify-center py-3 bg-primary hover:bg-primary/90 text-on-primary rounded-xl transition-colors shadow-md gap-1"
-                >
-                  <Play className="w-5 h-5 fill-current" />
-                  <span className="font-bold text-xs">KUNJUNGI</span>
-                </button>
-              </div>
+                <div className="py-5 my-1 border-y border-dashed border-outline-variant">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="font-body text-body font-medium text-text-secondary">🔴 Piutang Aktif:</span>
+                    <span className="font-bold text-xl text-error font-mono">{formatRp(selectedStore.debt || 0)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-body text-body font-medium text-text-secondary">📦 Aset Titipan:</span>
+                    <span className="font-bold text-xl text-success font-mono">{formatRp(selectedStore.assetValue || 0)}</span>
+                  </div>
+                </div>
+
+                {/* Flex Row Actions */}
+                <div className="flex gap-3 pt-1">
+                  <button 
+                    onClick={() => openMaps(selectedStore.latitude, selectedStore.longitude)}
+                    className="flex-1 flex flex-col items-center justify-center py-4 bg-surface-container-low hover:bg-surface-container border border-outline-variant rounded-2xl transition-colors active:scale-[0.98]"
+                  >
+                    <MapIcon className="w-5 h-5 text-text-primary" />
+                    <span className="font-bold text-sm mt-1.5 text-text-primary">BUKA MAPS</span>
+                  </button>
+                  <button 
+                    onClick={() => startVisit(selectedStore.id)}
+                    className="flex-1 flex flex-col items-center justify-center py-4 bg-primary hover:bg-primary/90 rounded-2xl transition-colors shadow-md active:scale-[0.98]"
+                  >
+                    <Play className="w-5 h-5 fill-current text-on-primary" />
+                    <span className="font-bold text-sm mt-1.5 text-on-primary">KUNJUNGI</span>
+                  </button>
+                </div>
             </div>
           </div>
-
-          {/* FAKE BORDER RIGHT (Klik Maju) */}
-          {hasNext && (
-            <button 
-              onClick={goNext}
-              className="absolute -right-6  w-10  h-[85%] bg-surface rounded-l-3xl opacity-40 hover:opacity-80 transition-opacity flex items-center justify-start pl-1  shadow-2xl z-10 border-y border-l border-outline-variant"
-            >
-              <ChevronRight className="w-6 h-6 text-text-primary" />
-            </button>
-          )}
-
         </div>
-      </div>
-
-      {/* MINI JUMPER MENU (Bottom Sheet/Drawer) */}
-      <div 
-        className={`absolute bottom-0 inset-x-0 bg-on-surface/95 backdrop-blur-lg border-t border-white/10 transition-transform duration-300 ease-in-out z-50 ${
-          showMiniMenu ? "translate-y-0" : "translate-y-[calc(100%-40px)]"
-        }`}
-      >
-        <button 
-          onClick={() => setShowMiniMenu(!showMiniMenu)} 
-          className="w-full h-10 flex items-center justify-center gap-2 text-inverse-on-surface/50 hover:text-inverse-on-surface/80 transition-colors font-medium text-xs tracking-wider uppercase"
-        >
-          {showMiniMenu ? <ChevronDown className="w-4 h-4"/> : <ChevronUp className="w-4 h-4"/>}
-          {showMiniMenu ? `Sembunyikan (Posisi ${currentIndex + 1} dari ${stores.length})` : 'Tampilkan Radar Rute'}
-        </button>
-        
-        {/* Scrollable Mini Cards */}
-        <div 
-          ref={miniMenuRef}
-          className="flex overflow-x-auto gap-3 px-4 pb-6 pt-2 snap-x snap-mandatory no-scrollbar relative"
-        >
-          {stores.map((store, idx) => (
-            <button
-              key={store.id}
-              onClick={() => setCurrentIndex(idx)}
-              className={`relative shrink-0 w-[4.5rem] h-20 rounded-2xl flex flex-col items-center justify-center snap-center transition-all duration-200 ${
-                idx === currentIndex 
-                  ? 'bg-surface-tint/30 text-inverse-on-surface ring-2 ring-primary scale-105 shadow-xl' 
-                  : 'bg-inverse-surface/50 text-inverse-on-surface/60 border border-white/5 hover:bg-surface-tint/30'
-              }`}
-            >
-
-              <span className="font-bold text-lg leading-none">
-                {store.distance === undefined ? '?' : store.distance}
-              </span>
-              <span className="font-caption text-[10px] mt-1 opacity-70">km</span>
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
