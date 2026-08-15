@@ -32,27 +32,41 @@ const generateHiddenSheets = (workbook: ExcelJS.Workbook, data: any) => {
     });
   }
 
-  // B. Fungsi Penulis Raw Data 100% (Menjaga agar nama key sama dengan DB)
-  const addRaw = (sheetName: string, rows: any[]) => {
+  // B. Fungsi Penulis Raw Data (Menggunakan header statis agar kolom tidak geser)
+  const addRaw = (sheetName: string, rows: any[], explicitHeaders: string[]) => {
     const ws = workbook.addWorksheet(sheetName, { state: 'hidden' });
-    if (rows.length === 0) return ws;
+    ws.addRow(explicitHeaders);
     
-    // Tulis Header menggunakan Object Keys dari baris pertama
-    const headers = Object.keys(rows[0]);
-    ws.addRow(headers);
-    
-    // Tulis Data
-    const mappedRows = rows.map(row => headers.map(key => row[key]));
-    ws.addRows(mappedRows);
+    if (rows.length > 0) {
+      const mappedRows = rows.map(row => explicitHeaders.map(key => row[key] ?? null));
+      ws.addRows(mappedRows);
+    }
     return ws;
   };
 
-  // Simpan SELURUH tabel untuk backup yang aman
-  addRaw('_Raw_Products', data.products);
-  addRaw('_Raw_Stores', data.stores);
-  addRaw('_Raw_Visits', data.visits);
-  addRaw('_Raw_VisitItems', data.visitItems);
-  addRaw('_Raw_InventoryLogs', data.inventoryLogs);
+  // Simpan SELURUH tabel untuk backup yang aman (dengan kolom eksplisit)
+  addRaw('_Raw_Products', data.products, [
+    'id', 'name', 'normalizedName', 'category', 'costPrice', 'wholesalePrice', 
+    'retailPrice', 'warehouseStock', 'returnedStock', 'description', 'isArchived', 'createdAt'
+  ]);
+  
+  addRaw('_Raw_Stores', data.stores, [
+    'id', 'name', 'normalizedName', 'ownerName', 'phone', 'latitude', 'longitude', 
+    'notes', 'debt', 'assetValue', 'lastVisitAt', 'category', 'isArchived', 'createdAt'
+  ]);
+  
+  addRaw('_Raw_Visits', data.visits, [
+    'id', 'storeId', 'storeName', 'amountPaid', 'currentDebt', 'createdAt'
+  ]);
+  
+  addRaw('_Raw_VisitItems', data.visitItems, [
+    'visitId', 'productId', 'storeName', 'sold', 'returned', 'costPrice', 
+    'wholesalePrice', 'productName', 'remained'
+  ]);
+  
+  addRaw('_Raw_InventoryLogs', data.inventoryLogs, [
+    'id', 'productId', 'type', 'quantity', 'storeId', 'storeName', 'notes', 'createdAt'
+  ]);
 };
 
 // ==========================================
@@ -95,11 +109,10 @@ const generateDisplaySheet = (
       
       if (col.customFormula) {
         cell.value = { formula: col.customFormula(rowIndex) };
-      } else if (col.isDate) {
-        // Tampilkan raw date string sebagai teks biasa agar aman dibaca
-        cell.value = { formula: `${rawSheetName}!${col.rawCol}${rowIndex}` }; 
       } else {
-        cell.value = { formula: `${rawSheetName}!${col.rawCol}${rowIndex}` };
+        const rawCell = `${rawSheetName}!${col.rawCol}${rowIndex}`;
+        // Gunakan IF untuk fallback value agar nilai kosong tidak ditampilkan sebagai "0"
+        cell.value = { formula: `IF(OR(ISBLANK(${rawCell}), ${rawCell}=""), "-", ${rawCell})` };
       }
 
       // Format Angka Ribuan
@@ -162,7 +175,7 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
     generateDisplaySheet(workbook, '1. Produk', '_Raw_Products', [
       { header: 'Nama Produk', rawCol: 'B', width: 30 },
       { header: 'Deskripsi', rawCol: 'J', width: 35 },
-      { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Products!D${r}, _Config!A:B, 2, FALSE)` },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(_Raw_Products!D${r}, _Config!A:B, 2, FALSE), "-")` },
       { header: 'Stok Gudang', rawCol: 'H', width: 15, align: 'right', isNumber: true },
       { header: 'Stok Retur', rawCol: 'I', width: 15, align: 'right', isNumber: true },
       { header: 'Harga Modal', rawCol: 'E', width: 18, align: 'right', isCurrency: true },
@@ -178,7 +191,7 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
       { header: 'Nama Pemilik', rawCol: 'D', width: 20 },
       { header: 'Nomor Telepon', rawCol: 'E', width: 18 },
       { header: 'Catatan Khusus', rawCol: 'H', width: 30 },
-      { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Stores!L${r}, _Config!C:D, 2, FALSE)` },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(_Raw_Stores!L${r}, _Config!C:D, 2, FALSE), "-")` },
       { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },
       { header: 'Nilai Aset Titipan', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
       { header: 'Kunjungan Terakhir', rawCol: 'K', width: 22, isDate: true, align: 'right' },
