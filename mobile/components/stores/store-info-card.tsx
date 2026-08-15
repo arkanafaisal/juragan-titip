@@ -46,14 +46,13 @@ export function StoreInfoCard({ store, categoryLabels = {}, onEdit, onVisit, for
         </View>
 
         <View className="space-y-2 mt-2">
-          <View className="flex-row items-start gap-2">
-            <MapPin size={16} color={THEME.colors['text-secondary']} className="mt-0.5 shrink-0" />
-            <Text className="flex-1 font-body text-body-sm text-text-secondary">{store.address}</Text>
-          </View>
-          <View className="flex-row items-center gap-2">
-            <User size={16} color={THEME.colors['text-secondary']} className="shrink-0" />
-            <Text className="flex-1 font-body text-body-sm text-text-secondary">{store.ownerName}</Text>
-          </View>
+
+          {!!store.ownerName && (
+            <View className="flex-row items-center gap-2">
+              <User size={16} color={THEME.colors['text-secondary']} className="shrink-0" />
+              <Text className="flex-1 font-body text-body-sm text-text-secondary">{store.ownerName}</Text>
+            </View>
+          )}
           {!!store.phone && (
             <View className="flex-row items-center gap-2">
               <Phone size={16} color={THEME.colors['text-secondary']} className="shrink-0" />

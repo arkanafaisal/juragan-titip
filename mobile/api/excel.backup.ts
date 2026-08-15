@@ -172,19 +172,18 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
     ], rawProducts.length, rawProducts);
 
     // 6. Generate Display: Toko
-    // Raw Map Stores: A=id, B=name, C=normalized, D=owner, E=phone, F=address, G=lat, H=lng, I=notes, J=debt, K=assetValue, L=lastVisit, M=category, N=isArchived, O=createdAt
+    // Raw Map Stores: A=id, B=name, C=normalized, D=owner, E=phone, F=lat, G=lng, H=notes, I=debt, J=assetValue, K=lastVisit, L=category, M=isArchived, N=createdAt
     generateDisplaySheet(workbook, '2. Toko', '_Raw_Stores', [
       { header: 'Nama Toko', rawCol: 'B', width: 28 },
       { header: 'Nama Pemilik', rawCol: 'D', width: 20 },
       { header: 'Nomor Telepon', rawCol: 'E', width: 18 },
-      { header: 'Alamat Lengkap', rawCol: 'F', width: 40 },
-      { header: 'Catatan Khusus', rawCol: 'I', width: 30 },
-      { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Stores!M${r}, _Config!C:D, 2, FALSE)` },
-      { header: 'Total Hutang', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
-      { header: 'Nilai Aset Titipan', rawCol: 'K', width: 18, align: 'right', isCurrency: true },
-      { header: 'Kunjungan Terakhir', rawCol: 'L', width: 22, isDate: true, align: 'right' },
-      { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & _Raw_Stores!G${r} & "," & _Raw_Stores!H${r}, "Buka Peta")` },
-      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Stores!N${r}=1, "Diarsipkan", "Aktif")` }
+      { header: 'Catatan Khusus', rawCol: 'H', width: 30 },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Stores!L${r}, _Config!C:D, 2, FALSE)` },
+      { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },
+      { header: 'Nilai Aset Titipan', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
+      { header: 'Kunjungan Terakhir', rawCol: 'K', width: 22, isDate: true, align: 'right' },
+      { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & _Raw_Stores!F${r} & "," & _Raw_Stores!G${r}, "Buka Peta")` },
+      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Stores!M${r}=1, "Diarsipkan", "Aktif")` }
     ], rawStores.length, rawStores);
 
     // 7. Generate Display: Kunjungan (Header Nota Utama)

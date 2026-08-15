@@ -5,9 +5,8 @@ export const stores = sqliteTable('stores', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   normalizedName: text('normalized_name').notNull().unique(),
-  ownerName: text('owner_name').notNull(),
+  ownerName: text('owner_name'),
   phone: text('phone'),
-  address: text('address').notNull(),
   
   // Koordinat lokasi
   latitude: real('latitude').notNull(),

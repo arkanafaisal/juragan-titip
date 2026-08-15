@@ -5,8 +5,7 @@ export const STORE_VALIDATION_RULES = {
   NAME_MAX: 30,
   OWNER_MIN: 3,
   OWNER_MAX: 20,
-  ADDRESS_MIN: 6,
-  ADDRESS_MAX: 60,
+
   NOTES_MAX: 200,
   PHONE_MIN: 10,
   PHONE_MAX: 13,
@@ -19,8 +18,9 @@ export const storeFormSchema = z.object({
     .max(STORE_VALIDATION_RULES.NAME_MAX, `Nama toko maksimal ${STORE_VALIDATION_RULES.NAME_MAX} karakter`),
   
   ownerName: z.string()
-    .min(STORE_VALIDATION_RULES.OWNER_MIN, `Nama pemilik minimal ${STORE_VALIDATION_RULES.OWNER_MIN} karakter`)
-    .max(STORE_VALIDATION_RULES.OWNER_MAX, `Nama pemilik maksimal ${STORE_VALIDATION_RULES.OWNER_MAX} karakter`),
+    .max(STORE_VALIDATION_RULES.OWNER_MAX, `Nama pemilik maksimal ${STORE_VALIDATION_RULES.OWNER_MAX} karakter`)
+    .optional()
+    .or(z.literal('')),
   
   // Karena nomor HP opsional, tapi kalau diisi harus valid
   phone: z.string()
@@ -29,9 +29,7 @@ export const storeFormSchema = z.object({
     .optional()
     .or(z.literal('')),
     
-  address: z.string()
-    .min(STORE_VALIDATION_RULES.ADDRESS_MIN, `Alamat minimal ${STORE_VALIDATION_RULES.ADDRESS_MIN} karakter`)
-    .max(STORE_VALIDATION_RULES.ADDRESS_MAX, `Alamat maksimal ${STORE_VALIDATION_RULES.ADDRESS_MAX} karakter`),
+
 
   // Karena di schema database wajib diisi
   latitude: z.number({

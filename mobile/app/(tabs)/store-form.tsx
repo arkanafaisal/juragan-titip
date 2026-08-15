@@ -27,6 +27,29 @@ export default function StoreFormScreen() {
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string; onContinue?: () => void; buttonText?: string}>({ visible: false, title: '', message: '' });
+  const [coordinateInput, setCoordinateInput] = useState("");
+  const [mapKey, setMapKey] = useState(0);
+
+  const extractCoordinates = (text: string) => {
+    const regexes = [
+      /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /[?&]query=(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
+      /(?:^|\s)(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)(?:\s|$)/ 
+    ];
+
+    for (const regex of regexes) {
+      const match = text.match(regex);
+      if (match && match[1] && match[2]) {
+        return {
+          lat: parseFloat(match[1]),
+          lng: parseFloat(match[2])
+        };
+      }
+    }
+    return null;
+  };
 
   const storeCategoryLabels = useSettingsStore(state => state.storeCategoryLabels);
   
@@ -40,8 +63,7 @@ export default function StoreFormScreen() {
       name: '',
       ownerName: '',
       phone: '',
-      address: '',
-      category: '' as any,
+      category: '1' as any,
       notes: '',
       latitude: 0,
       longitude: 0,
@@ -56,6 +78,16 @@ export default function StoreFormScreen() {
 
   const handleCancel = () => {
     setIsLeaveModalOpen(true);
+  };
+
+  const handleCoordinateInputChange = (val: string) => {
+    setCoordinateInput(val);
+    const coords = extractCoordinates(val);
+    if (coords) {
+      setValue('latitude', coords.lat, { shouldValidate: true, shouldDirty: true });
+      setValue('longitude', coords.lng, { shouldValidate: true, shouldDirty: true });
+      setMapKey(prev => prev + 1);
+    }
   };
 
   useFocusEffect(
@@ -75,8 +107,7 @@ export default function StoreFormScreen() {
             name: '',
             ownerName: '',
             phone: '',
-            address: '',
-            category: '' as any,
+            category: '1' as any,
             notes: '',
             latitude: 0,
             longitude: 0,
@@ -91,9 +122,8 @@ export default function StoreFormScreen() {
       const s = storeData;
       reset({
         name: s.name,
-        ownerName: s.ownerName,
+        ownerName: s.ownerName || '',
         phone: s.phone || '',
-        address: s.address,
         category: s.category as any,
         notes: s.notes || '',
         latitude: s.latitude,
@@ -170,7 +200,7 @@ export default function StoreFormScreen() {
               name="ownerName"
               render={({ field: { onChange, value, onBlur } }) => (
                 <Input
-                  label="Nama Pemilik"
+                  label="Nama Pemilik (Opsional)"
                   error={errors.ownerName?.message}
                   value={value}
                   onChangeText={onChange}
@@ -217,30 +247,20 @@ export default function StoreFormScreen() {
           <Card className="flex-col gap-3 mt-4">
             <Text className="text-h3 font-bold text-text-primary mb-1">Lokasi & Catatan</Text>
 
-            <Controller
-              control={control}
-              name="address"
-              render={({ field: { onChange, value, onBlur } }) => (
-                <Input
-                  label="Alamat"
-                  error={errors.address?.message}
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  multiline
-                  numberOfLines={2}
-                  className="min-h-[60px] text-top"
-                  placeholder="Contoh: Jl. Merdeka No. 123"
-                  style={{ textAlignVertical: 'top' }}
-                />
-              )}
-            />
 
             <View className="mt-1 flex-col gap-3">
+              <Input
+                label="Paste Koordinat Latitude, Longitude"
+                value={coordinateInput}
+                onChangeText={handleCoordinateInputChange}
+                placeholder="Contoh: -7.559194, 110.780329"
+                className="mb-1"
+              />
+
               <MapPicker 
-                key={isEdit ? (isLoadingStore ? 'loading' : `loaded-${storeId}`) : 'new'}
-                initialLatitude={isEdit && storeData? storeData.latitude : (watchedCategory ? -6.200000 : undefined)} 
-                initialLongitude={isEdit && storeData? storeData.longitude : (watchedCategory ? 106.816666 : undefined)} 
+                key={isEdit ? (isLoadingStore ? 'loading' : `loaded-${storeId}-${mapKey}`) : `new-${mapKey}`}
+                initialLatitude={isEdit && storeData && mapKey === 0 ? storeData.latitude : (watch('latitude') || (watchedCategory ? -6.200000 : undefined))} 
+                initialLongitude={isEdit && storeData && mapKey === 0 ? storeData.longitude : (watch('longitude') || (watchedCategory ? 106.816666 : undefined))} 
                 onLocationChange={(lat, lng) => {
                   setValue('latitude', lat, { shouldValidate: true, shouldDirty: true });
                   setValue('longitude', lng, { shouldValidate: true, shouldDirty: true });
@@ -288,7 +308,7 @@ export default function StoreFormScreen() {
               name="notes"
               render={({ field: { onChange, value, onBlur } }) => (
                 <Input
-                  label="Catatan Khusus (Opsional)"
+                  label="Catatan (Opsional)"
                   error={errors.notes?.message}
                   value={value}
                   onChangeText={onChange}

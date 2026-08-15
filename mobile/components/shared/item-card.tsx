@@ -40,7 +40,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
 
   const title = data.name;
   const desc = isStore 
-    ? `${(data as Store).ownerName} • ${(data as Store).phone || '-'}` 
+    ? `${(data as Store).ownerName ? `${(data as Store).ownerName} • ` : ''}${(data as Store).phone || '-'}` 
     : ((data as Product).description || "Belum ada deskripsi");
 
   return (
@@ -77,14 +77,7 @@ export function ItemCard({ store, product, storeCategoryLabels, categoryLabels, 
           </View>
         </View>
 
-        {isStore && (
-          <View className="flex-row items-start gap-1 mb-4">
-            <MapPin size={THEME.iconSize['sm']} color={THEME.colors['outline']} className="mt-0.5" />
-            <Text className="text-body-sm text-text-secondary flex-1" numberOfLines={2}>
-              {(data as Store).address}
-            </Text>
-          </View>
-        )}
+
 
         <View className={`flex-row justify-between mt-4 ${isStore? "mb-2" : ""}`}>
           <View className="flex-col gap-0.5 flex-1">

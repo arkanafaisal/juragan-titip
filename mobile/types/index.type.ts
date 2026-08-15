@@ -4,12 +4,11 @@ export interface Store {
   id: number;
   name: string;
   normalizedName: string;
-  ownerName: string;
-  phone?: string;
-  address: string;
+  ownerName: string | null;
+  phone?: string | null;
   latitude: number;
   longitude: number;
-  notes: string;
+  notes: string | null;
   debt: number;
   assetValue: number;
   lastVisitAt: string;

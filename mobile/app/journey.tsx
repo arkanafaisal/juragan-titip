@@ -260,12 +260,6 @@ export default function JourneyScreen() {
                    </View>
                 </View>
 
-                <View className="flex-row items-start gap-2 mt-1">
-                  <MapPin size={18} color={THEME.colors['text-secondary']} className="mt-0.5" />
-                  <Text className="font-body text-body text-text-secondary flex-1 leading-relaxed">
-                    {selectedStore.address}
-                  </Text>
-                </View>
               </View>
 
               <View className="py-5 my-1" style={{ borderTopWidth: 1, borderBottomWidth: 1, borderStyle: 'dashed', borderColor: THEME.colors['outline-variant'] }}>
