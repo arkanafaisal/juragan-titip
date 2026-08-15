@@ -1,345 +1,337 @@
 import { db } from "@/lib/db";
-// import ExcelJS from "exceljs";
-// import { saveAs } from "file-saver";
-// import { toast } from "sonner";
-// import { settingsApi } from "./settings";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import { settingsApi } from "./settings";
 
 // ==========================================
-// UTILITY: AUTO SIZE COLUMNS
+// 1. KONFIGURASI GLOBAL
 // ==========================================
-// const autoSizeColumns = (worksheet: ExcelJS.Worksheet) => {
-//   worksheet.columns.forEach((column) => {
-//     if (!column || typeof column.eachCell !== 'function') return;
-
-//     let maxLength = 0;
-//     column.eachCell({ includeEmpty: true }, (cell) => {
-//       if (cell.value && typeof cell.value === 'string' && cell.value.includes('\n')) {
-//         cell.alignment = { wrapText: true, vertical: 'top' };
-//       }
-//       const columnLength = cell.value ? cell.toString().length : 0;
-//       if (columnLength > maxLength) {
-//         maxLength = columnLength;
-//       }
-//     });
-    
-//     column.width = Math.min(Math.max(maxLength + 2, 10), 50);
-//   });
-// };
-
-// // ==========================================
-// // HELPER 1: GENERATE TABEL KIRI (MASTER PRODUK)
-// // ==========================================
-// const generateLeftSection = (wsReport: ExcelJS.Worksheet, products: any[]) => {
-//   const sortedProducts = [...products].sort((a, b) => {
-//     if (a.isArchived !== b.isArchived) return a.isArchived ? 1 : -1;
-//     return a.name.localeCompare(b.name);
-//   });
-
-//   const categoryLabels = settingsApi.getCategoryLabels();
-//   const categoryMap: Record<number, string> = {
-//     1: categoryLabels['1'], 2: categoryLabels['2'], 3: categoryLabels['3'], 
-//     4: categoryLabels['4'], 5: categoryLabels['5']
-//   };
-
-//   wsReport.columns = [
-//     { header: 'ID', key: 'id' },
-//     { header: 'Nama Produk', key: 'name' },
-//     { header: 'Deskripsi', key: 'description' },
-//     { header: 'Kategori', key: 'category' },
-//     { header: 'Stok', key: 'stock' },
-//     { header: 'Retur Belum Olah', key: 'returnedStock' },
-//     { header: 'Hrg Modal', key: 'costPrice' },
-//     { header: 'Hrg Grosir', key: 'wholesalePrice' },
-//     { header: 'Hrg Ecer', key: 'retailPrice' },
-//   ];
-
-//   sortedProducts.forEach(p => {
-//     const row = wsReport.addRow({
-//       id: p.id,
-//       name: p.name,
-//       description: p.description || '',
-//       category: categoryMap[Number(p.category)] || p.category,
-//       stock: p.warehouseStock,
-//       returnedStock: p.returnedStock,
-//       costPrice: p.costPrice,
-//       wholesalePrice: p.wholesalePrice,
-//       retailPrice: p.retailPrice
-//     });
-
-//     if (p.isArchived) {
-//       row.eachCell({ includeEmpty: true }, (cell) => {
-//         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFe5e7eb' } };
-//         cell.font = { strike: true };
-//       });
-//     }
-//   });
-
-//   wsReport.autoFilter = 'A1:I1'; // AutoFilter untuk tabel kiri
-// };
-
-// // ==========================================
-// // HELPER 2: GENERATE PANEL KANAN (ANALISIS PRODUK)
-// // ==========================================
-// const generateRightSection = (wsReport: ExcelJS.Worksheet, stores: any[], visitItemsData: any[]) => {
-//   wsReport.getCell('K1').value = "🔍 PILIH PRODUK :";
-//   wsReport.getCell('K1').font = { bold: true };
-  
-//   // Perbaikan Dropdown (Referensi sheet yang sama dengan "=")
-//   wsReport.getCell('K2').dataValidation = {
-//     type: 'list',
-//     allowBlank: true,
-//     formulae: ['=$B$2:$B$10000']
-//   };
-//   wsReport.getCell('K2').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
-
-//   wsReport.getCell('L2').value = { formula: 'INDEX(A2:A10000, MATCH(K2, B2:B10000, 0))' };
-//   wsReport.getCell('L2').numFmt = ';;;'; // Hide ID secara rapi
-
-//   wsReport.getCell('K4').value = "Total Laku:";
-//   wsReport.getCell('L4').value = { formula: 'SUMIFS(DB_Visit_Items!D2:D10000, DB_Visit_Items!B2:B10000, L2)' };
-  
-//   wsReport.getCell('K5').value = "Total Retur:";
-//   wsReport.getCell('L5').value = { formula: 'SUMIFS(DB_Visit_Items!E2:E10000, DB_Visit_Items!B2:B10000, L2)' };
-
-//   wsReport.getCell('K6').value = "Total Aktif Dititip:";
-//   wsReport.getCell('L6').value = { formula: 'SUM(N10:N10000)' }; // Menjumlahkan kolom aktif di bawahnya
-
-//   // Label Baru Sebelum Tabel
-//   wsReport.getCell('K8').value = "🏪 PERSEBARAN PRODUK DI TOKO";
-//   wsReport.getCell('K8').font = { bold: true };
-
-//   wsReport.getCell('K9').value = "NAMA TOKO";
-//   wsReport.getCell('L9').value = "LAKU";
-//   wsReport.getCell('M9').value = "RETUR";
-//   wsReport.getCell('N9').value = "AKTIF DITITIP";
-//   wsReport.getRow(9).font = { bold: true };
-
-//   // Algoritma Pintar: Menghitung toko paling aktif agar yang "0" tenggelam ke bawah
-//   const storeActivity: Record<string, number> = {};
-//   visitItemsData.forEach(item => {
-//     storeActivity[item.storeName] = (storeActivity[item.storeName] || 0) + item.sold + item.returned + item.remained;
-//   });
-
-//   const uniqueStores = Array.from(new Set(stores.map(s => s.name.trim())))
-//     .sort((a, b) => {
-//       const actA = storeActivity[a] || 0;
-//       const actB = storeActivity[b] || 0;
-//       if (actB !== actA) return actB - actA; // Urutkan aktivitas tertinggi ke atas
-//       return a.localeCompare(b);
-//     });
-
-//   uniqueStores.forEach((storeName, index) => {
-//     const rowNum = 10 + index;
-    
-//     wsReport.getCell(`K${rowNum}`).value = storeName;
-    
-//     // Total Laku
-//     wsReport.getCell(`L${rowNum}`).value = { 
-//       formula: `SUMIFS(DB_Visit_Items!D2:D10000, DB_Visit_Items!B2:B10000, L$2, DB_Visit_Items!C2:C10000, K${rowNum})` 
-//     };
-    
-//     // Total Retur
-//     wsReport.getCell(`M${rowNum}`).value = { 
-//       formula: `SUMIFS(DB_Visit_Items!E2:E10000, DB_Visit_Items!B2:B10000, L$2, DB_Visit_Items!C2:C10000, K${rowNum})` 
-//     };
-
-//     // Total Aktif Dititip (Mencari sisa titipan terakhir menggunakan MAXIFS & SUMIFS di Kolom I)
-//     wsReport.getCell(`N${rowNum}`).value = { 
-//       formula: `SUMIFS(DB_Visit_Items!I2:I10000, DB_Visit_Items!A2:A10000, MAXIFS(DB_Visit_Items!A2:A10000, DB_Visit_Items!B2:B10000, L$2, DB_Visit_Items!C2:C10000, K${rowNum}), DB_Visit_Items!B2:B10000, L$2, DB_Visit_Items!C2:C10000, K${rowNum})` 
-//     };
-//   });
-
-//   wsReport.getColumn('K').width = 25;
-//   wsReport.getColumn('L').width = 15;
-//   wsReport.getColumn('M').width = 15;
-//   wsReport.getColumn('N').width = 20;
-// };
-
-// // ==========================================
-// // HELPER 3: GENERATE RAW DB SHEETS (HIDDEN)
-// // ==========================================
-// const generateRawDbSheets = (workbook: ExcelJS.Workbook, data: any) => {
-//   const { products, stores, visits, visitItemsData, inventoryLogs } = data;
-
-//   const addHiddenSheet = (name: string, columns: any[], rows: any[]) => {
-//     const ws = workbook.addWorksheet(name);
-//     ws.state = 'hidden';
-//     ws.columns = columns;
-//     ws.addRows(rows);
-//     ws.getRow(1).font = { bold: true };
-//     return ws;
-//   };
-
-//   addHiddenSheet('DB_Products', [
-//     { header: 'ID', key: 'id' }, { header: 'Name', key: 'name' }, { header: 'Normalized Name', key: 'normalizedName' },
-//     { header: 'Category', key: 'category' }, { header: 'Cost Price', key: 'costPrice' },
-//     { header: 'Wholesale Price', key: 'wholesalePrice' }, { header: 'Retail Price', key: 'retailPrice' },
-//     { header: 'Warehouse Stock', key: 'warehouseStock' }, { header: 'Returned Stock', key: 'returnedStock' },
-//     { header: 'Description', key: 'description' }, { header: 'Is Archived', key: 'isArchived' }
-//   ], products);
-
-//   addHiddenSheet('DB_Stores', [
-//     { header: 'ID', key: 'id' }, { header: 'Name', key: 'name' }, { header: 'Normalized Name', key: 'normalizedName' },
-//     { header: 'Owner Name', key: 'ownerName' }, { header: 'Phone', key: 'phone' }, { header: 'Address', key: 'address' },
-//     { header: 'Latitude', key: 'latitude' }, { header: 'Longitude', key: 'longitude' }, { header: 'Notes', key: 'notes' },
-//     { header: 'Debt', key: 'debt' }, { header: 'Asset Value', key: 'assetValue' }, { header: 'Last Visit At', key: 'lastVisitAt' },
-//     { header: 'Category', key: 'category' }, { header: 'Is Archived', key: 'isArchived' }
-//   ], stores);
-
-//   addHiddenSheet('DB_Visits', [
-//     { header: 'ID', key: 'id' }, { header: 'Store ID', key: 'storeId' }, { header: 'Store Name', key: 'storeName' },
-//     { header: 'Amount Paid', key: 'amountPaid' }, { header: 'Current Debt', key: 'currentDebt' }, { header: 'Created At', key: 'createdAt' }
-//   ], visits.map((v: any) => ({ ...v })));
-
-//   // Perhatikan: Kolom I ditambahkan untuk 'remained' agar rumus 'Aktif Dititip' bisa bekerja
-//   addHiddenSheet('DB_Visit_Items', [
-//     { header: 'Visit ID', key: 'visitId' }, { header: 'Product ID', key: 'productId' }, { header: 'Store Name', key: 'storeName' },
-//     { header: 'Sold', key: 'sold' }, { header: 'Returned', key: 'returned' }, { header: 'Cost Price', key: 'costPrice' },
-//     { header: 'Wholesale Price', key: 'wholesalePrice' }, { header: 'Product Name', key: 'productName' },
-//     { header: 'Remained', key: 'remained' }
-//   ], visitItemsData);
-
-//   addHiddenSheet('DB_InventoryLogs', [
-//     { header: 'ID', key: 'id' }, { header: 'Product ID', key: 'productId' }, { header: 'Type', key: 'type' },
-//     { header: 'Quantity', key: 'quantity' }, { header: 'Store ID', key: 'storeId' }, { header: 'Store Name', key: 'storeName' },
-//     { header: 'Notes', key: 'notes' }, { header: 'Created At', key: 'createdAt' }
-//   ], inventoryLogs);
-// };
+const PASSWORD_LOCK = 'juragan123'; // Sandi untuk membuka gembok sheet
 
 // ==========================================
-// MAIN FUNCTION EXPORT API
+// 2. HELPER: MEMBUAT SHEET RAW (TERSEMBUNYI)
+// ==========================================
+const generateHiddenSheets = (workbook: ExcelJS.Workbook, data: any) => {
+  // A. Buat Sheet Config (Untuk referensi VLOOKUP kategori)
+  const wsConfig = workbook.addWorksheet('_Config', { state: 'hidden' });
+  wsConfig.columns = [
+    { header: 'ID_Prod', key: 'p_id' }, { header: 'Label_Prod', key: 'p_label' },
+    { header: 'ID_Toko', key: 's_id' }, { header: 'Label_Toko', key: 's_label' }
+  ];
+
+  const categoryLabels = settingsApi.getCategoryLabels();
+  const storeCategoryLabels = settingsApi.getStoreCategoryLabels();
+
+  for (let i = 1; i <= 5; i++) {
+    const id = String(i) as "1" | "2" | "3" | "4" | "5";
+    wsConfig.addRow({
+      p_id: id, p_label: categoryLabels[id],
+      s_id: id, s_label: storeCategoryLabels[id]
+    });
+  }
+
+  // B. Fungsi Penulis Raw Data 100% (Menjaga agar nama key sama dengan DB)
+  const addRaw = (sheetName: string, rows: any[]) => {
+    const ws = workbook.addWorksheet(sheetName, { state: 'hidden' });
+    if (rows.length === 0) return ws;
+    
+    // Tulis Header menggunakan Object Keys dari baris pertama
+    const headers = Object.keys(rows[0]);
+    ws.addRow(headers);
+    
+    // Tulis Data
+    const mappedRows = rows.map(row => headers.map(key => row[key]));
+    ws.addRows(mappedRows);
+    return ws;
+  };
+
+  // Simpan SELURUH tabel untuk backup yang aman
+  addRaw('_Raw_Products', data.products);
+  addRaw('_Raw_Stores', data.stores);
+  addRaw('_Raw_Visits', data.visits);
+  addRaw('_Raw_VisitItems', data.visitItems);
+  addRaw('_Raw_InventoryLogs', data.inventoryLogs);
+};
+
+// ==========================================
+// 3. HELPER: MEMBUAT SHEET DISPLAY (TAMPILAN)
+// ==========================================
+const generateDisplaySheet = (
+  workbook: ExcelJS.Workbook,
+  sheetName: string,
+  rawSheetName: string,
+  columnsConfig: any[],
+  dataLength: number,
+  rawDataArray: any[]
+) => {
+  // Aktifkan Freeze Panes pada baris pertama
+  const ws = workbook.addWorksheet(sheetName, {
+    views: [{ state: 'frozen', ySplit: 1 }] 
+  });
+
+  // Setup Header dan Lebar Kolom
+  ws.columns = columnsConfig.map(col => ({
+    header: col.header,
+    width: col.width,
+    style: { alignment: { horizontal: col.align || 'left', vertical: 'middle' } }
+  }));
+
+  // Styling Visual Header (Background Biru, Font Putih, Bold)
+  const headerRow = ws.getRow(1);
+  headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0284C7' } };
+  headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+
+  // Generate Data Menggunakan Rumus yang Mengambil dari Sheet Raw
+  for (let r = 0; r < dataLength; r++) {
+    const rowIndex = r + 2; 
+    const row = ws.getRow(rowIndex);
+    const isArchived = rawDataArray[r]?.isArchived;
+
+    columnsConfig.forEach((col, colIdx) => {
+      const cell = row.getCell(colIdx + 1);
+      
+      if (col.customFormula) {
+        cell.value = { formula: col.customFormula(rowIndex) };
+      } else if (col.isDate) {
+        // Tampilkan raw date string sebagai teks biasa agar aman dibaca
+        cell.value = { formula: `${rawSheetName}!${col.rawCol}${rowIndex}` }; 
+      } else {
+        cell.value = { formula: `${rawSheetName}!${col.rawCol}${rowIndex}` };
+      }
+
+      // Format Angka Ribuan
+      if (col.isCurrency || col.isNumber) cell.numFmt = '#,##0'; 
+    });
+
+    // Terapkan Gaya "Arsip" (Abu-abu & Coret) jika isArchived = true
+    if (isArchived) {
+      row.eachCell({ includeEmpty: true }, (c) => {
+        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } };
+        c.font = { strike: true, color: { argb: 'FF888888' } };
+      });
+    }
+  }
+
+  // Kunci Sheet (Protect) - Hanya mengizinkan Copy/Select Text
+  ws.protect(PASSWORD_LOCK, {
+    selectLockedCells: true,
+    selectUnlockedCells: true,
+    formatColumns: true, // Izinkan pengguna menyesuaikan lebar kolom secara manual jika mau
+    spinCount: 1
+  });
+};
+
+// ==========================================
+// 4. FUNGSI UTAMA EXPORT (BACKUP)
 // ==========================================
 export const backupApi = {
-  // exportInteractiveExcel: async (): Promise<boolean> => {
-  //   try {
-  //     const products = await db.products.toArray();
-  //     const stores = await db.stores.toArray();
-  //     const visits = await db.visits.toArray();
-  //     const inventoryLogs = await db.inventoryLogs.toArray();
-
-  //     // Ekstraksi Visit Items (Termasuk 'remained' untuk Aktif Dititip)
-  //     const visitItemsData = visits.flatMap(visit => 
-  //       Array.isArray(visit.items) ? visit.items.map(item => ({
-  //         visitId: visit.id,
-  //         productId: item.productId,
-  //         storeName: visit.storeName,
-  //         sold: Number(item.sold) || 0,
-  //         returned: Number(item.returned) || 0,
-  //         costPrice: Number(item.costPrice) || 0,
-  //         wholesalePrice: Number(item.wholesalePrice) || 0,
-  //         productName: item.productName,
-  //         remained: Number(item.remained) || 0
-  //       })) : []
-  //     );
-
-  //     const workbook = new ExcelJS.Workbook();
-  //     const wsReport = workbook.addWorksheet('1. Laporan Produk');
-
-  //     // 1. Render Kiri
-  //     generateLeftSection(wsReport, products);
-      
-  //     // 2. Render Kanan
-  //     generateRightSection(wsReport, stores, visitItemsData);
-      
-  //     // 3. Render DB Mentah (Sembunyi)
-  //     generateRawDbSheets(workbook, { products, stores, visits, visitItemsData, inventoryLogs });
-
-  //     // Apply AutoSize ke semua sheet
-  //     workbook.worksheets.forEach(ws => autoSizeColumns(ws));
-
-  //     const buffer = await workbook.xlsx.writeBuffer();
-  //     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  //     saveAs(blob, 'Backup_dan_Laporan_Juragan.xlsx');
-      
-  //     return true;
-  //   } catch (error) {
-  //     console.error("Failed to export Excel backup:", error);
-  //     toast.error("Gagal melakukan backup data.");
-  //     return false;
-  //   }
-  // },
-
-  
-  exportToJson: async (): Promise<boolean> => {
+  exportInteractiveExcel: async (): Promise<boolean> => {
     try {
-      const products = await db.products.toArray();
-      const stores = await db.stores.toArray();
-      const visits = await db.visits.toArray();
-      const inventoryLogs = await db.inventoryLogs.toArray();
+      // 1. Ambil Seluruh Data Utuh dari Database
+      const rawProducts = await db.products.toArray();
+      const rawStores = await db.stores.toArray();
+      const rawVisits = await db.visits.toArray();
+      const rawInventoryLogs = await db.inventoryLogs.toArray();
 
-      const backupData = {
-        timestamp: new Date().toISOString(),
-        version: 1,
-        data: {
-          products,
-          stores,
-          visits,
-          inventoryLogs
-        }
+      // Ekstraksi Visit Items (Dalam Dexie web, items bersarang di visit.items)
+      // Kita pecah menjadi array terpisah mirip di mobile (tabel visitItems DB relational)
+      const rawVisitItems = rawVisits.flatMap(visit => 
+        Array.isArray(visit.items) ? visit.items.map(item => ({
+          visitId: visit.id,
+          productId: item.productId,
+          storeName: visit.storeName,
+          sold: Number(item.sold) || 0,
+          returned: Number(item.returned) || 0,
+          costPrice: Number(item.costPrice) || 0,
+          wholesalePrice: Number(item.wholesalePrice) || 0,
+          productName: item.productName,
+          remained: Number(item.remained) || 0
+        })) : []
+      );
+
+      // Jangan mengekspor items yang bersarang ke sheet raw visits agar lebih rapi
+      const sanitizedVisitsForRaw = rawVisits.map((v: any) => {
+        const { items, ...rest } = v;
+        return rest;
+      });
+
+      // 2. Logika Sorting (A-Z, lalu Arsip diletakkan di paling bawah)
+      const sortByArchivedAndName = (a: any, b: any) => {
+        if (a.isArchived !== b.isArchived) return a.isArchived ? 1 : -1;
+        if (a.name && b.name) return a.name.localeCompare(b.name);
+        return 0;
       };
+      rawProducts.sort(sortByArchivedAndName);
+      rawStores.sort(sortByArchivedAndName);
 
-      const jsonString = JSON.stringify(backupData, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
+      // 3. Inisiasi Mesin Excel
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Juragan Titip App';
+
+      // 4. Generate Hidden Raw Sheets (Menampung ke-5 Tabel)
+      generateHiddenSheets(workbook, { 
+        products: rawProducts, 
+        stores: rawStores, 
+        visits: sanitizedVisitsForRaw, 
+        visitItems: rawVisitItems, 
+        inventoryLogs: rawInventoryLogs 
+      });
+
+      // 5. Generate Display: Produk
+      // Raw Map Products: A=id, B=name, C=normalized, D=category, E=cost, F=wholesale, G=retail, H=warehouseStock, I=returnedStock, J=desc, K=isArchived, L=createdAt
+      generateDisplaySheet(workbook, '1. Produk', '_Raw_Products', [
+        { header: 'Nama Produk', rawCol: 'B', width: 30 },
+        { header: 'Deskripsi', rawCol: 'J', width: 35 },
+        { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Products!D${r}, _Config!A:B, 2, FALSE)` },
+        { header: 'Stok Gudang', rawCol: 'H', width: 15, align: 'right', isNumber: true },
+        { header: 'Stok Retur', rawCol: 'I', width: 15, align: 'right', isNumber: true },
+        { header: 'Harga Modal', rawCol: 'E', width: 18, align: 'right', isCurrency: true },
+        { header: 'Harga Grosir', rawCol: 'F', width: 18, align: 'right', isCurrency: true },
+        { header: 'Harga Eceran', rawCol: 'G', width: 18, align: 'right', isCurrency: true },
+        { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Products!K${r}=1, "Diarsipkan", "Aktif")` }
+      ], rawProducts.length, rawProducts);
+
+      // 6. Generate Display: Toko
+      // Raw Map Stores: A=id, B=name, C=normalized, D=owner, E=phone, F=lat, G=lng, H=notes, I=debt, J=assetValue, K=lastVisit, L=category, M=isArchived, N=createdAt
+      generateDisplaySheet(workbook, '2. Toko', '_Raw_Stores', [
+        { header: 'Nama Toko', rawCol: 'B', width: 28 },
+        { header: 'Nama Pemilik', rawCol: 'D', width: 20 },
+        { header: 'Nomor Telepon', rawCol: 'E', width: 18 },
+        { header: 'Catatan Khusus', rawCol: 'H', width: 30 },
+        { header: 'Kategori', width: 20, customFormula: (r: number) => `VLOOKUP(_Raw_Stores!L${r}, _Config!C:D, 2, FALSE)` },
+        { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },
+        { header: 'Nilai Aset Titipan', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
+        { header: 'Kunjungan Terakhir', rawCol: 'K', width: 22, isDate: true, align: 'right' },
+        { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & _Raw_Stores!F${r} & "," & _Raw_Stores!G${r}, "Buka Peta")` },
+        { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Stores!M${r}=1, "Diarsipkan", "Aktif")` }
+      ], rawStores.length, rawStores);
+
+      // 7. Generate Display: Kunjungan (Header Nota Utama)
+      // Raw Map Visits: A=id, B=storeId, C=subtotal, D=amountPaid, E=debt, F=createdAt
+      generateDisplaySheet(workbook, '3. Kunjungan', '_Raw_Visits', [
+        { header: 'ID Nota', rawCol: 'A', width: 12, align: 'center' },
+        { header: 'Total Nilai Laku', rawCol: 'C', width: 20, align: 'right', isCurrency: true },
+        { header: 'Tunai Dibayar', rawCol: 'D', width: 20, align: 'right', isCurrency: true },
+        { header: 'Sisa Hutang Tercatat', rawCol: 'E', width: 20, align: 'right', isCurrency: true },
+        { header: 'Waktu Transaksi', rawCol: 'F', width: 25, isDate: true, align: 'right' }
+      ], rawVisits.length, rawVisits);
+
+      // 8. Tulis Buffer dan Download ke web browser
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `juragan_titip_backup_${new Date().toISOString().split('T')[0]}.json`;
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      return true
+      const dateStr = new Date().toISOString().split('T')[0];
+      saveAs(blob, `Laporan_JuraganTitip_${dateStr}.xlsx`);
+
+      return true;
     } catch (error) {
-      console.error("Failed to export backup:", error);
-      return false
+      console.error("Gagal melakukan export ExcelJS:", error);
+      return false;
     }
   },
 
-  importFromJson: async (file: File): Promise<void> => {
+  importFromExcel: async (file: File): Promise<void> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
       reader.onload = async (e) => {
         try {
-          const content = e.target?.result as string;
-          if (!content) throw new Error("File kosong");
-          
-          const parsed = JSON.parse(content);
-          
-          if (!parsed.data || !Array.isArray(parsed.data.products) || !Array.isArray(parsed.data.stores) || !Array.isArray(parsed.data.visits)) {
-            throw new Error("Format file backup tidak valid.");
+          const buffer = e.target?.result as ArrayBuffer;
+          if (!buffer) throw new Error("File kosong");
+
+          const workbook = new ExcelJS.Workbook();
+          await workbook.xlsx.load(buffer);
+
+          // Tarik seluruh 5 sheet raw yang tersembunyi
+          const rawProductsSheet = workbook.getWorksheet('_Raw_Products');
+          const rawStoresSheet = workbook.getWorksheet('_Raw_Stores');
+          const rawVisitsSheet = workbook.getWorksheet('_Raw_Visits');
+          const rawVisitItemsSheet = workbook.getWorksheet('_Raw_VisitItems');
+          const rawLogsSheet = workbook.getWorksheet('_Raw_InventoryLogs');
+
+          if (!rawProductsSheet || !rawStoresSheet || !rawVisitsSheet) {
+            throw new Error("File tidak valid. Tidak ditemukan data utuh '_Raw' di dalam file backup ini.");
           }
 
-          const { products, stores, visits, inventoryLogs = [] } = parsed.data;
+          // Helper Parser dari Sheet ExcelJS ke Array of Objects JSON
+          const parseSheet = (sheet: ExcelJS.Worksheet | undefined) => {
+            const data: any[] = [];
+            if (!sheet) return data;
 
+            let keys: string[] = [];
+            sheet.eachRow((row, rowNumber) => {
+              if (rowNumber === 1) {
+                row.eachCell((cell, colNumber) => {
+                  keys[colNumber] = cell.value?.toString() || '';
+                });
+              } else {
+                const rowData: any = {};
+                row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                  const key = keys[colNumber];
+                  let cellValue = cell.value;
+                  if (cellValue && typeof cellValue === 'object' && 'result' in cellValue) {
+                    cellValue = (cellValue as any).result;
+                  }
+                  if (key) rowData[key] = cellValue;
+                });
+                data.push(rowData);
+              }
+            });
+            return data;
+          };
+
+          // Parse Data & Normalisasi Boolean
+          const mapBooleans = (item: any) => ({
+            ...item,
+            isArchived: item.isArchived === 'true' || item.isArchived === true || item.isArchived === 1,
+          });
+
+          const finalProducts = parseSheet(rawProductsSheet).map(mapBooleans);
+          const finalStores = parseSheet(rawStoresSheet).map(mapBooleans);
+          let finalVisits = parseSheet(rawVisitsSheet);
+          const finalVisitItems = parseSheet(rawVisitItemsSheet);
+          const finalLogs = parseSheet(rawLogsSheet);
+
+          // REHYDRATE VISIT ITEMS INTO VISITS FOR DEXIE (WEB-SPECIFIC LOGIC)
+          const visitItemsMap: Record<number, any[]> = {};
+          finalVisitItems.forEach(item => {
+            if (!visitItemsMap[item.visitId]) {
+              visitItemsMap[item.visitId] = [];
+            }
+            visitItemsMap[item.visitId].push(item);
+          });
+
+          finalVisits = finalVisits.map(visit => ({
+            ...visit,
+            items: visitItemsMap[visit.id] || []
+          }));
+
+          // Eksekusi Restore dalam DB Transaction Dexie
           await db.transaction('rw', db.products, db.stores, db.visits, db.inventoryLogs, async () => {
             await db.products.clear();
             await db.stores.clear();
             await db.visits.clear();
             await db.inventoryLogs.clear();
 
-            if (products.length > 0) await db.products.bulkAdd(products);
-            if (stores.length > 0) await db.stores.bulkAdd(stores);
-            if (visits.length > 0) await db.visits.bulkAdd(visits);
-            if (inventoryLogs.length > 0) await db.inventoryLogs.bulkAdd(inventoryLogs);
+            if (finalProducts.length > 0) await db.products.bulkAdd(finalProducts);
+            if (finalStores.length > 0) await db.stores.bulkAdd(finalStores);
+            if (finalVisits.length > 0) await db.visits.bulkAdd(finalVisits);
+            if (finalLogs.length > 0) await db.inventoryLogs.bulkAdd(finalLogs);
           });
 
           resolve();
         } catch (error) {
-          console.error("Failed to import backup:", error);
+          console.error("Gagal melakukan import ExcelJS:", error);
           reject(error);
         }
       };
 
       reader.onerror = () => {
-        reject(new Error("Gagal membaca file backup"));
+        reject(new Error("Gagal membaca file backup Excel"));
       };
 
-      reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
     });
   }
-  
 };

@@ -41,7 +41,7 @@ export const storeApi = {
           const query = params.search.toLowerCase();
           collection = collection.filter(s => 
             s.normalizedName.startsWith(query) || 
-            s.ownerName.toLowerCase().startsWith(query)
+            (s.ownerName ? s.ownerName.toLowerCase().startsWith(query) : false)
           );
         }
         

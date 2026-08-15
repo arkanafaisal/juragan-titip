@@ -116,8 +116,8 @@ export default function SettingsPage() {
 
   const handleExportBackup = async () => {
     setIsBackupLoading(true);
-    toast.info("Mempersiapkan file JSON...");
-    const success = await backupApi.exportToJson();
+    toast.info("Mempersiapkan file Excel...");
+    const success = await backupApi.exportInteractiveExcel();
     if (success) {
       toast.success("Backup file berhasil diunduh!");
     } else {
@@ -140,7 +140,7 @@ export default function SettingsPage() {
       setIsBackupLoading(true);
       toast.info("Memproses file backup...");
       try {
-        await backupApi.importFromJson(file);
+        await backupApi.importFromExcel(file);
         toast.success("Data berhasil direstore! Memuat ulang...");
         setTimeout(() => window.location.reload(), 1500);
       } catch (error) {
@@ -430,7 +430,7 @@ export default function SettingsPage() {
               disabled={isBackupLoading}
               className="w-full bg-surface border border-primary text-primary hover:bg-primary/10 font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
-              <Download className="w-5 h-5" /> Backup Data ke File (JSON)
+              <Download className="w-5 h-5" /> Backup & Laporan Excel (.xlsx)
             </button>
             
             
@@ -443,7 +443,7 @@ export default function SettingsPage() {
             </button>
             <input 
               type="file" 
-              accept=".json,application/json" 
+              accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
               className="hidden" 
               ref={fileInputRef} 
               onChange={handleFileChange} 
