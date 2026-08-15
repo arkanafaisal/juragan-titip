@@ -3,13 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import {
-  ChevronDown, 
-  ChevronUp, 
-  Package, 
-  Database, 
-  Download, 
-  Upload, 
-  Trash2, 
+  ChevronDown,
+  ChevronUp,
+  Package,
+  Database,
+  Download,
+  Upload,
+  Trash2,
   Save,
   Store,
   RefreshCw
@@ -149,7 +149,7 @@ export default function SettingsPage() {
         setIsBackupLoading(false);
       }
     }
-    
+
     // Reset input agar bisa pilih file yang sama lagi
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -217,25 +217,25 @@ export default function SettingsPage() {
 
         {/* SECTION: PENGATURAN PRODUK */}
         <SectionCard id="section-produk" className="transition-all">
-          <button 
+          <button
             onClick={() => toggleSection('produk')}
-            className="w-full flex justify-between items-center bg-surface-container-low hover:bg-surface-bright rounded-xl transition-colors"
+            className="w-full flex justify-between items-center rounded-xl transition-colors"
           >
             <span className="font-h2 text-h2 font-bold text-text-primary flex items-center gap-sm">
               <Package className="w-5 h-5 text-primary" /> Pengaturan Produk
             </span>
-            {openSection === 'produk' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
+            {openSection === 'produk' ? <ChevronUp className="w-5 h-5 text-text-secondary" /> : <ChevronDown className="w-5 h-5 text-text-secondary" />}
           </button>
-          
+
           {openSection === 'produk' && (
             <div className="pt-4 mt-4 border-t border-outline-variant space-y-md animate-in slide-in-from-top-2">
-              
+
               <div>
                 <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
                   Batas Peringatan Stok Menipis (Gudang)
                 </label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   min={VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MIN}
                   max={VALIDATION_RULES.SETTINGS.STOCK_THRESHOLD_MAX}
                   value={lowStockThreshold}
@@ -257,10 +257,10 @@ export default function SettingsPage() {
                       <span className="font-mono bg-surface-container-low px-3 py-2 rounded-lg text-text-secondary font-bold w-12 text-center border border-outline-variant">
                         {num}
                       </span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={categoryLabels[num.toString() as keyof typeof categoryLabels]}
-                        onChange={(e) => setCategoryLabels(prev => ({...prev, [num.toString()]: e.target.value}))}
+                        onChange={(e) => setCategoryLabels(prev => ({ ...prev, [num.toString()]: e.target.value }))}
                         placeholder={`Kategori ${num}`}
                         minLength={VALIDATION_RULES.SETTINGS.CATEGORY_MIN}
                         maxLength={VALIDATION_RULES.SETTINGS.CATEGORY_MAX}
@@ -279,24 +279,24 @@ export default function SettingsPage() {
 
         {/* SECTION: PENGATURAN TOKO */}
         <SectionCard id="section-toko" className="transition-all">
-          <button 
+          <button
             onClick={() => toggleSection('toko')}
-            className="w-full flex justify-between items-center bg-surface-container-low hover:bg-surface-bright rounded-xl transition-colors"
+            className="w-full flex justify-between items-center rounded-xl transition-colors"
           >
             <span className="font-h2 text-h2 font-bold text-text-primary flex items-center gap-sm">
               <Store className="w-5 h-5 text-primary" /> Pengaturan Toko
             </span>
-            {openSection === 'toko' ? <ChevronUp className="w-5 h-5 text-text-secondary"/> : <ChevronDown className="w-5 h-5 text-text-secondary"/>}
+            {openSection === 'toko' ? <ChevronUp className="w-5 h-5 text-text-secondary" /> : <ChevronDown className="w-5 h-5 text-text-secondary" />}
           </button>
-          
+
           {openSection === 'toko' && (
             <div className="pt-4 mt-4 border-t border-outline-variant space-y-md animate-in slide-in-from-top-2">
               <div>
                 <label className="font-body-sm text-body-sm font-medium text-text-secondary block mb-1.5">
                   Batas Peringatan Belum Dikunjungi (Hari)
                 </label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   min={VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MIN}
                   max={VALIDATION_RULES.SETTINGS.OVERDUE_DAYS_MAX}
                   value={storeOverdueDays}
@@ -318,10 +318,10 @@ export default function SettingsPage() {
                       <span className="font-mono bg-surface-container-low px-3 py-2 rounded-lg text-text-secondary font-bold w-12 text-center border border-outline-variant">
                         {num}
                       </span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={storeCategoryLabels[num.toString() as keyof typeof storeCategoryLabels]}
-                        onChange={(e) => setStoreCategoryLabels(prev => ({...prev, [num.toString()]: e.target.value}))}
+                        onChange={(e) => setStoreCategoryLabels(prev => ({ ...prev, [num.toString()]: e.target.value }))}
                         placeholder={`Kategori Toko ${num}`}
                         minLength={VALIDATION_RULES.SETTINGS.CATEGORY_MIN}
                         maxLength={VALIDATION_RULES.SETTINGS.CATEGORY_MAX}
@@ -403,7 +403,7 @@ export default function SettingsPage() {
         </div> */}
 
         {/* TOMBOL SIMPAN PENGATURAN UMUM */}
-        <button 
+        <button
           onClick={handleSaveSettings}
           className="w-full mt-4 bg-primary text-on-primary font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-md active:scale-95"
         >
@@ -416,39 +416,39 @@ export default function SettingsPage() {
           <h2 className="font-h3 text-h3 font-bold text-text-primary flex items-center gap-2 mb-md">
             <Database className="w-5 h-5 text-text-secondary" /> Manajemen Data (Offline)
           </h2>
-          
+
           <div className="space-y-sm">
-            <button 
+            <button
               onClick={handleResetSettings}
               className="w-full bg-surface border border-outline-variant text-text-primary hover:bg-surface-container-low font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors mb-4"
             >
               <RefreshCw className="w-5 h-5" /> Kembalikan Pengaturan
             </button>
 
-            <button 
+            <button
               onClick={handleExportBackup}
               disabled={isBackupLoading}
               className="w-full bg-surface border border-primary text-primary hover:bg-primary/10 font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               <Download className="w-5 h-5" /> Backup & Laporan Excel (.xlsx)
             </button>
-            
-            
-            <button 
+
+
+            <button
               onClick={handleImportBackup}
               disabled={isBackupLoading}
               className="w-full bg-surface border border-outline-variant text-text-primary hover:bg-surface-container-low font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               <Upload className="w-5 h-5" /> Pulihkan dari File Backup
             </button>
-            <input 
-              type="file" 
-              accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
-              className="hidden" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
+            <input
+              type="file"
+              accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleFileChange}
             />
-           
+
 
             {/* ZONA BERBAHAYA */}
             <SectionCard className="!bg-error/10 !border-error/30 mt-md">
@@ -456,7 +456,7 @@ export default function SettingsPage() {
               <p className="font-caption text-caption text-error/80 mb-3">
                 Aksi ini akan menghapus permanen seluruh riwayat toko, hutang, dan produk dari HP ini. Pastikan Anda sudah melakukan Backup.
               </p>
-              <button 
+              <button
                 onClick={handleResetDataClick}
                 className="w-full bg-surface border border-error text-error hover:bg-error hover:text-on-error font-body text-body py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
               >

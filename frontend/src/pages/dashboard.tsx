@@ -1,22 +1,21 @@
 import { Link } from "react-router";
-import { 
-  Wallet, 
-  Navigation, 
-  Clock, 
+import {
+  Wallet,
+  Navigation,
+  Clock,
   ArrowRight,
   TrendingUp,
   ChevronRight,
-  Smartphone,
   Download
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { 
-  BarChart, 
-  Bar, 
+import {
+  BarChart,
+  Bar,
   XAxis,
-  Tooltip, 
-  ResponsiveContainer, 
+  Tooltip,
+  ResponsiveContainer,
   Cell
 } from "recharts";
 import { useState, useEffect } from "react";
@@ -27,7 +26,7 @@ import { SectionCard } from "@/components/shared/section-card";
 
 export default function Dashboard() {
   const todayDate = format(new Date(), "EEEE, dd MMM yyyy", { locale: idLocale });
-  
+
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
@@ -59,7 +58,7 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-container-max mx-auto space-y-md animate-in fade-in duration-300">
-      
+
       {/* 1. HEADER & GREETING */}
       <div className="flex flex-col gap-1 px-1">
         <h1 className="font-h1 text-h1 font-bold text-text-primary">
@@ -73,9 +72,6 @@ export default function Dashboard() {
       {/* BANNER APLIKASI MOBILE */}
       <SectionCard className="w-full bg-primary/10 border border-primary/20 flex flex-row items-center justify-between p-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Smartphone className="w-5 h-5" />
-          </div>
           <div>
             <h3 className="font-h3 text-h3 font-bold text-text-primary">Aplikasi Mobile Tersedia</h3>
             <p className="font-body-sm text-body-sm text-text-secondary mt-0.5">
@@ -83,7 +79,7 @@ export default function Dashboard() {
             </p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => window.open('https://drive.google.com/file/d/1YOkisnrAKttgtVrMz3GTRAoR82s010Jt/view?usp=drive_link', '_blank')}
           className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-on-primary rounded-lg text-sm font-semibold transition-colors shrink-0"
         >
@@ -110,7 +106,7 @@ export default function Dashboard() {
       </SectionCard>
 
       {/* 3. JOURNEY HOOK (The Big Red Button) */}
-      <Link 
+      <Link
         to="/journey"
         className="block w-full transition-all active:scale-[0.98] group"
       >
@@ -118,7 +114,7 @@ export default function Dashboard() {
           <div className="relative z-10 flex items-center justify-between">
             <div>
               <h2 className="font-h2 text-h2 font-bold flex items-center gap-2">
-                <Navigation className="w-5 h-5" /> 
+                <Navigation className="w-5 h-5" />
                 Mulai Rute Keliling
               </h2>
               <p className="font-body-sm text-body-sm text-on-primary/80 mt-1 max-w-[240px]">
@@ -145,7 +141,7 @@ export default function Dashboard() {
             <TrendingUp className="w-4 h-4" />
           </div>
         </div>
-        
+
         {/* Recharts Area */}
         <div className="h-[180px] w-full">
           {data.totalVisitsThisWeek === 0 ? (
@@ -156,22 +152,22 @@ export default function Dashboard() {
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
                   tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }}
                   dy={10}
                 />
-                <Tooltip 
+                <Tooltip
                   cursor={{ fill: 'var(--color-surface-container-low)' }}
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                 />
                 <Bar dataKey="visits" radius={[6, 6, 6, 6]} maxBarSize={40}>
                   {data.chartData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={entry.visits > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)'} 
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.visits > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)'}
                     />
                   ))}
                 </Bar>
@@ -187,11 +183,11 @@ export default function Dashboard() {
           <Clock className="w-4 h-4 text-primary" />
           Riwayat Hari Ini
         </h3>
-        
+
         <div className="flex flex-col divide-y divide-outline-variant/50">
           {data.todayHistory.length > 0 ? (
             data.todayHistory.map((item) => (
-              <button 
+              <button
                 key={item.id}
                 onClick={() => setSelectedVisitId(item.id)}
                 className="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-xl border border-outline-variant transition-colors text-left"
@@ -205,7 +201,7 @@ export default function Dashboard() {
                       {item.store}
                     </h4>
                     <p className="font-caption text-caption text-text-secondary mt-0.5 flex items-center gap-1">
-                      ↳ Masuk: 
+                      ↳ Masuk:
                       <span className={`font-semibold ${item.isDebt ? 'text-warning' : 'text-success'}`}>
                         {item.isDebt ? `Rp ${item.amount.toLocaleString('id-ID')} (Piutang)` : formatRp(item.amount)}
                       </span>
