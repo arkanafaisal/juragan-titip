@@ -180,7 +180,7 @@ export function useGetOverdueStores() {
             eq(stores.isArchived, false),
             or(
               sql`${stores.lastVisitAt} IS NULL`,
-              sql`cast((julianday('now') - julianday(${stores.lastVisitAt})) as integer) >= ${storeOverdueDays}`
+              sql`${stores.lastVisitAt} < datetime('now', '-' || ${storeOverdueDays} || ' days')`
             )
           )
         )
