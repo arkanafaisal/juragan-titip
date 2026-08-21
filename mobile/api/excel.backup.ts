@@ -56,16 +56,15 @@ const generateHiddenSheets = (workbook: ExcelJS.Workbook, data: any) => {
   ]);
   
   addRaw('_Raw_Visits', data.visits, [
-    'id', 'storeId', 'storeName', 'amountPaid', 'currentDebt', 'createdAt'
+    'id', 'storeId', 'subtotal', 'amountPaid', 'debt', 'createdAt'
   ]);
   
   addRaw('_Raw_VisitItems', data.visitItems, [
-    'visitId', 'productId', 'storeName', 'sold', 'returned', 'costPrice', 
-    'wholesalePrice', 'productName', 'remained'
+    'id', 'visitId', 'productId', 'initialStock', 'sold', 'returned', 'restocked', 'price'
   ]);
   
   addRaw('_Raw_InventoryLogs', data.inventoryLogs, [
-    'id', 'productId', 'type', 'quantity', 'storeId', 'storeName', 'notes', 'createdAt'
+    'id', 'productId', 'type', 'quantity', 'storeName', 'createdAt'
   ]);
 };
 
@@ -284,17 +283,27 @@ export const importDatabaseFromExcel = async (fileUri: string) => {
       return data;
     };
 
-    // Parse Data & Normalisasi Boolean (karena tipe bolean SQLite sering berubah saat melewati Excel)
-    const mapBooleans = (item: any) => ({
-      ...item,
-      isArchived: item.isArchived === 'true' || item.isArchived === true || item.isArchived === 1,
-    });
+    // Parse Data & Normalisasi Boolean dan Date (karena tipe bolean dan date sering berubah saat melewati Excel)
+    const normalizeData = (item: any) => {
+      const newItem = { ...item };
+      
+      if ('isArchived' in newItem) {
+        newItem.isArchived = newItem.isArchived === 'true' || newItem.isArchived === true || newItem.isArchived === 1;
+      }
 
-    const finalProducts = parseSheet(rawProductsSheet).map(mapBooleans);
-    const finalStores = parseSheet(rawStoresSheet).map(mapBooleans);
-    const finalVisits = parseSheet(rawVisitsSheet);
-    const finalVisitItems = parseSheet(rawVisitItemsSheet);
-    const finalLogs = parseSheet(rawLogsSheet);
+      for (const key of Object.keys(newItem)) {
+        if (newItem[key] instanceof Date) {
+          newItem[key] = newItem[key].toISOString();
+        }
+      }
+      return newItem;
+    };
+
+    const finalProducts = parseSheet(rawProductsSheet).map(normalizeData);
+    const finalStores = parseSheet(rawStoresSheet).map(normalizeData);
+    const finalVisits = parseSheet(rawVisitsSheet).map(normalizeData);
+    const finalVisitItems = parseSheet(rawVisitItemsSheet).map(normalizeData);
+    const finalLogs = parseSheet(rawLogsSheet).map(normalizeData);
 
     // Eksekusi Restore dalam DB Transaction Drizzle
     await db.transaction(async (tx) => {
@@ -309,9 +318,53 @@ export const importDatabaseFromExcel = async (fileUri: string) => {
       // Insert ulang data secara berurutan dari Induk ke Anak
       if (finalStores.length > 0) await tx.insert(stores).values(finalStores as any);
       if (finalProducts.length > 0) await tx.insert(products).values(finalProducts as any);
-      if (finalVisits.length > 0) await tx.insert(visits).values(finalVisits as any);
-      if (finalVisitItems.length > 0) await tx.insert(visitItems).values(finalVisitItems as any);
-      if (finalLogs.length > 0) await tx.insert(inventoryLogs).values(finalLogs as any);
+      
+      if (finalVisits.length > 0) {
+        const cleanVisits = finalVisits.map(visit => {
+          const payload: any = {
+            storeId: visit.storeId,
+            subtotal: visit.subtotal ?? 0,
+            amountPaid: visit.amountPaid ?? 0,
+            debt: visit.debt ?? visit.currentDebt ?? 0,
+            createdAt: visit.createdAt
+          };
+          if (visit.id !== undefined && visit.id !== null) payload.id = visit.id;
+          return payload;
+        });
+        await tx.insert(visits).values(cleanVisits as any);
+      }
+
+      if (finalVisitItems.length > 0) {
+        const cleanVisitItems = finalVisitItems.map(item => {
+          const payload: any = {
+            visitId: item.visitId,
+            productId: item.productId,
+            initialStock: item.initialStock ?? 0,
+            sold: item.sold ?? 0,
+            returned: item.returned ?? 0,
+            restocked: item.restocked ?? 0,
+            price: item.price ?? 0
+          };
+          if (item.id !== undefined && item.id !== null) payload.id = item.id;
+          return payload;
+        });
+        await tx.insert(visitItems).values(cleanVisitItems as any);
+      }
+
+      if (finalLogs.length > 0) {
+        const cleanLogs = finalLogs.map(log => {
+          const payload: any = {
+            productId: log.productId,
+            type: log.type,
+            quantity: log.quantity ?? 0,
+            storeName: log.storeName,
+            createdAt: log.createdAt
+          };
+          if (log.id !== undefined && log.id !== null) payload.id = log.id;
+          return payload;
+        });
+        await tx.insert(inventoryLogs).values(cleanLogs as any);
+      }
     });
 
     return { success: true, message: "Restore data berhasil!" };

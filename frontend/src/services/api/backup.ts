@@ -294,17 +294,27 @@ export const backupApi = {
             return data;
           };
 
-          // Parse Data & Normalisasi Boolean
-          const mapBooleans = (item: any) => ({
-            ...item,
-            isArchived: item.isArchived === 'true' || item.isArchived === true || item.isArchived === 1,
-          });
+          // Parse Data & Normalisasi Boolean dan Date
+          const normalizeData = (item: any) => {
+            const newItem = { ...item };
+            
+            if ('isArchived' in newItem) {
+              newItem.isArchived = newItem.isArchived === 'true' || newItem.isArchived === true || newItem.isArchived === 1;
+            }
 
-          const finalProducts = parseSheet(rawProductsSheet).map(mapBooleans);
-          const finalStores = parseSheet(rawStoresSheet).map(mapBooleans);
-          let finalVisits = parseSheet(rawVisitsSheet);
-          const finalVisitItems = parseSheet(rawVisitItemsSheet);
-          const finalLogs = parseSheet(rawLogsSheet);
+            for (const key of Object.keys(newItem)) {
+              if (newItem[key] instanceof Date) {
+                newItem[key] = newItem[key].toISOString();
+              }
+            }
+            return newItem;
+          };
+
+          const finalProducts = parseSheet(rawProductsSheet).map(normalizeData);
+          const finalStores = parseSheet(rawStoresSheet).map(normalizeData);
+          let finalVisits = parseSheet(rawVisitsSheet).map(normalizeData);
+          const finalVisitItems = parseSheet(rawVisitItemsSheet).map(normalizeData);
+          const finalLogs = parseSheet(rawLogsSheet).map(normalizeData);
 
           // REHYDRATE VISIT ITEMS INTO VISITS FOR DEXIE (WEB-SPECIFIC LOGIC)
           const visitItemsMap: Record<number, any[]> = {};

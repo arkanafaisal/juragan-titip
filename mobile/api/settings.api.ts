@@ -251,6 +251,13 @@ export const useImportDatabase = () => {
         queryClient.invalidateQueries({ queryKey: ['inventoryLogs'] });
         queryClient.invalidateQueries({ queryKey: ['stores'] });
         queryClient.invalidateQueries({ queryKey: ['checkDatabaseHasData'] });
+        queryClient.invalidateQueries({ queryKey: ['overdueStores'] });
+        queryClient.invalidateQueries({ queryKey: ['criticalStockProducts'] });
+        queryClient.invalidateQueries({ queryKey: ['lastVisit'] });
+        queryClient.invalidateQueries({ queryKey: ['storeVisitsAnalysis'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+        queryClient.invalidateQueries({ queryKey: ['visit'] });
+        queryClient.invalidateQueries({ queryKey: ['store'] });
       }
     }
   });
