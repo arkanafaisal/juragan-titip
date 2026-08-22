@@ -17,19 +17,27 @@ const PASSWORD_LOCK = 'juragan123'; // Sandi untuk membuka gembok sheet
 // ==========================================
 const generateHiddenSheets = (workbook: ExcelJS.Workbook, data: any) => {
   // A. Buat Sheet Config (Untuk referensi VLOOKUP kategori)
-  const wsConfig = workbook.addWorksheet('_Config', { state: 'hidden' });
+  const wsConfig = workbook.addWorksheet(RAW_SHEETS.CONFIG, { state: 'hidden' });
   wsConfig.columns = [
     { header: 'ID_Prod', key: 'p_id' }, { header: 'Label_Prod', key: 'p_label' },
-    { header: 'ID_Toko', key: 's_id' }, { header: 'Label_Toko', key: 's_label' }
+    { header: 'ID_Toko', key: 's_id' }, { header: 'Label_Toko', key: 's_label' },
+    { header: 'Setting_Key', key: 'set_key' }, { header: 'Setting_Val', key: 'set_val' }
   ];
 
-  const { categoryLabels, storeCategoryLabels } = useSettingsStore.getState();
+  const { categoryLabels, storeCategoryLabels, lowStockThreshold, storeOverdueDays } = useSettingsStore.getState();
+
+  const settingsEntries = [
+    { key: 'lowStockThreshold', val: lowStockThreshold },
+    { key: 'storeOverdueDays', val: storeOverdueDays }
+  ];
 
   for (let i = 1; i <= 5; i++) {
     const id = String(i) as "1" | "2" | "3" | "4" | "5";
     wsConfig.addRow({
       p_id: id, p_label: categoryLabels[id],
-      s_id: id, s_label: storeCategoryLabels[id]
+      s_id: id, s_label: storeCategoryLabels[id],
+      set_key: settingsEntries[i-1]?.key || null,
+      set_val: settingsEntries[i-1]?.val ?? null
     });
   }
 
@@ -241,7 +249,7 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
     generateDisplaySheet(workbook, '1. Produk', RAW_SHEETS.PRODUCTS, [
       { header: 'Nama Produk', rawCol: 'B', width: 30 },
       { header: 'Deskripsi', rawCol: 'J', width: 35 },
-      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.PRODUCTS}!D${r}, _Config!A:B, 2, FALSE), "-")` },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.PRODUCTS}!D${r}, ${RAW_SHEETS.CONFIG}!A:B, 2, FALSE), "-")` },
       { header: 'Stok Gudang', rawCol: 'H', width: 15, align: 'right', isNumber: true },
       { header: 'Stok Retur', rawCol: 'I', width: 15, align: 'right', isNumber: true },
       { header: 'Tersebar di Toko', width: 20, align: 'right', isNumber: true, customValue: (row: any) => productActiveConsignedMap.get(row.id) || 0 },
@@ -258,7 +266,7 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
       { header: 'Nama Pemilik', rawCol: 'D', width: 20 },
       { header: 'Nomor Telepon', rawCol: 'E', width: 18 },
       { header: 'Catatan Khusus', rawCol: 'H', width: 30 },
-      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.STORES}!L${r}, _Config!C:D, 2, FALSE), "-")` },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.STORES}!L${r}, ${RAW_SHEETS.CONFIG}!C:D, 2, FALSE), "-")` },
       { header: 'Daftar Barang Titipan', width: 45, customValue: (row: any) => storeActiveItemsMap.get(row.id) },
       { header: 'Nilai Aset Titipan', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
       { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },

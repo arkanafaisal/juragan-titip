@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Buffer } from 'buffer';
 import { db } from '../db';
 import { products, stores, visits, visitItems, inventoryLogs } from '../db/schema';
+import { useSettingsStore } from './settings.api';
 import { RAW_SHEETS, getTableColumnNames } from './excel.constants';
 
 // ==========================================
@@ -77,6 +78,31 @@ export const importDatabaseFromExcel = async (fileUri: string) => {
     const finalVisits = parseSheet(rawVisitsSheet).map(normalizeData);
     const finalVisitItems = parseSheet(rawVisitItemsSheet).map(normalizeData);
     const finalLogs = parseSheet(rawLogsSheet).map(normalizeData);
+
+    // Proses Restore Config / Settings
+    const rawConfigSheet = workbook.getWorksheet(RAW_SHEETS.CONFIG);
+    if (rawConfigSheet) {
+      const configData = parseSheet(rawConfigSheet);
+      const { setCategoryLabels, setStoreCategoryLabels, setLowStockThreshold, setStoreOverdueDays } = useSettingsStore.getState();
+      
+      let pLabels: any = {};
+      let sLabels: any = {};
+      
+      configData.forEach(row => {
+        if (row.ID_Prod && row.Label_Prod) pLabels[String(row.ID_Prod)] = row.Label_Prod;
+        if (row.ID_Toko && row.Label_Toko) sLabels[String(row.ID_Toko)] = row.Label_Toko;
+        
+        if (row.Setting_Key === 'lowStockThreshold' && row.Setting_Val !== undefined && row.Setting_Val !== null) {
+          setLowStockThreshold(Number(row.Setting_Val));
+        }
+        if (row.Setting_Key === 'storeOverdueDays' && row.Setting_Val !== undefined && row.Setting_Val !== null) {
+          setStoreOverdueDays(Number(row.Setting_Val));
+        }
+      });
+      
+      if (Object.keys(pLabels).length > 0) setCategoryLabels(pLabels);
+      if (Object.keys(sLabels).length > 0) setStoreCategoryLabels(sLabels);
+    }
 
     // Eksekusi Restore dalam DB Transaction Drizzle
     await db.transaction(async (tx) => {

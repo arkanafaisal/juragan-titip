@@ -1,6 +1,7 @@
 import { getTableColumns } from 'drizzle-orm';
 
 export const RAW_SHEETS = {
+  CONFIG: '_Config',
   PRODUCTS: '_Raw_Products',
   STORES: '_Raw_Stores',
   VISITS: '_Raw_Visits',
