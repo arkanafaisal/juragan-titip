@@ -95,7 +95,11 @@ const generateDisplaySheet = (
     columnsConfig.forEach((col, colIdx) => {
       const cell = row.getCell(colIdx + 1);
       
-      if (col.customFormula) {
+      if (col.customValue) {
+        const rIndex = rawRowIndex - 2;
+        const rowData = rawDataArray[rIndex];
+        cell.value = col.customValue(rowData) || "-";
+      } else if (col.customFormula) {
         cell.value = { formula: col.customFormula(rawRowIndex) };
       } else if (col.isDate) {
         const rawCell = `${rawSheetName}!${col.rawCol}${rawRowIndex}`;
@@ -159,7 +163,69 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
     rawProducts.sort(sortByArchivedAndName);
     rawStores.sort(sortByArchivedAndName);
 
-    // 3. Inisiasi Mesin Excel
+    // 3. Pra-proses Data Relasional (Barang Titipan)
+    if (onProgress) onProgress('Memproses relasi data barang...');
+    
+    const productMap = new Map<number, string>();
+    rawProducts.forEach(p => productMap.set(p.id, p.name));
+
+    // A. Agregasi untuk Kunjungan
+    const visitItemsStrMap = new Map<number, string[]>(); // visitId -> array of string
+    const productTotalSoldMap = new Map<number, number>(); // productId -> total laku historis
+
+    rawVisitItems.forEach(vi => {
+      const pName = productMap.get(vi.productId) || 'Unknown';
+      let details = [];
+      if (vi.sold > 0) details.push(`${vi.sold} Laku`);
+      if (vi.returned > 0) details.push(`${vi.returned} Retur`);
+      if (vi.restocked > 0) details.push(`${vi.restocked} Baru`);
+      if (details.length === 0) details.push('Cek Stok');
+      
+      const str = `${pName} (${details.join(', ')})`;
+      const existing = visitItemsStrMap.get(vi.visitId) || [];
+      existing.push(str);
+      visitItemsStrMap.set(vi.visitId, existing);
+
+      // Kalkulasi total historis barang laku per produk
+      const currentSold = productTotalSoldMap.get(vi.productId) || 0;
+      productTotalSoldMap.set(vi.productId, currentSold + vi.sold);
+    });
+
+    // B. Agregasi untuk Toko (Active Items yang masih dititipkan)
+    const storeActiveItemsMap = new Map<number, string>(); 
+    const ascVisits = [...rawVisits].sort((a, b) => a.id - b.id);
+    const storeLatestState = new Map<number, Map<number, number>>(); 
+    
+    ascVisits.forEach(v => {
+      const sMap = storeLatestState.get(v.storeId) || new Map<number, number>();
+      const vItems = rawVisitItems.filter(vi => vi.visitId === v.id);
+      vItems.forEach(vi => {
+        const remained = (vi.initialStock - vi.sold - vi.returned) + vi.restocked;
+        if (remained > 0) {
+          sMap.set(vi.productId, remained);
+        } else {
+          sMap.delete(vi.productId);
+        }
+      });
+      storeLatestState.set(v.storeId, sMap);
+    });
+
+    const productActiveConsignedMap = new Map<number, number>(); // productId -> total qty aktif di semua toko
+
+    storeLatestState.forEach((productQuantities, storeId) => {
+      const itemsArr: string[] = [];
+      productQuantities.forEach((qty, pId) => {
+        const pName = productMap.get(pId) || 'Unknown';
+        itemsArr.push(`${pName} (${qty})`);
+        
+        // Kalkulasi total barang aktif yang dititipkan per produk
+        const currentQty = productActiveConsignedMap.get(pId) || 0;
+        productActiveConsignedMap.set(pId, currentQty + qty);
+      });
+      storeActiveItemsMap.set(storeId, itemsArr.join(', '));
+    });
+
+    // 4. Inisiasi Mesin Excel
     if (onProgress) onProgress('Menyusun format Excel...');
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Juragan Titip App';
@@ -178,6 +244,8 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
       { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.PRODUCTS}!D${r}, _Config!A:B, 2, FALSE), "-")` },
       { header: 'Stok Gudang', rawCol: 'H', width: 15, align: 'right', isNumber: true },
       { header: 'Stok Retur', rawCol: 'I', width: 15, align: 'right', isNumber: true },
+      { header: 'Tersebar di Toko', width: 20, align: 'right', isNumber: true, customValue: (row: any) => productActiveConsignedMap.get(row.id) || 0 },
+      { header: 'Total Laku Terjual', width: 22, align: 'right', isNumber: true, customValue: (row: any) => productTotalSoldMap.get(row.id) || 0 },
       { header: 'Harga Modal', rawCol: 'E', width: 18, align: 'right', isCurrency: true },
       { header: 'Harga Grosir', rawCol: 'F', width: 18, align: 'right', isCurrency: true },
       { header: 'Harga Eceran', rawCol: 'G', width: 18, align: 'right', isCurrency: true }
@@ -191,8 +259,9 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
       { header: 'Nomor Telepon', rawCol: 'E', width: 18 },
       { header: 'Catatan Khusus', rawCol: 'H', width: 30 },
       { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.STORES}!L${r}, _Config!C:D, 2, FALSE), "-")` },
-      { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },
+      { header: 'Daftar Barang Titipan', width: 45, customValue: (row: any) => storeActiveItemsMap.get(row.id) },
       { header: 'Nilai Aset Titipan', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
+      { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },
       { header: 'Kunjungan Terakhir', rawCol: 'K', width: 35, isDate: true, align: 'right' },
       { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & ${RAW_SHEETS.STORES}!F${r} & "," & ${RAW_SHEETS.STORES}!G${r}, "Buka Peta")` }
     ], rawStores.length, rawStores);
@@ -202,6 +271,7 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
     generateDisplaySheet(workbook, '3. Kunjungan', RAW_SHEETS.VISITS, [
       { header: 'Waktu Kunjungan', rawCol: 'F', width: 35, isDate: true, align: 'right' },
       { header: 'Nama Toko', width: 30, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.VISITS}!B${r}, ${RAW_SHEETS.STORES}!A:B, 2, FALSE), "-")` },
+      { header: 'Rincian Barang', width: 45, customValue: (row: any) => visitItemsStrMap.get(row.id)?.join(', ') },
       { header: 'Total Nilai Laku', rawCol: 'C', width: 20, align: 'right', isCurrency: true },
       { header: 'Tunai Dibayar', rawCol: 'D', width: 20, align: 'right', isCurrency: true },
       { header: 'Sisa Hutang Tercatat', rawCol: 'E', width: 20, align: 'right', isCurrency: true }
