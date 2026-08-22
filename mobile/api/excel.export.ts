@@ -62,7 +62,8 @@ const generateDisplaySheet = (
   rawSheetName: string,
   columnsConfig: any[],
   dataLength: number,
-  rawDataArray: any[]
+  rawDataArray: any[],
+  reverseOrder: boolean = false
 ) => {
   // Aktifkan Freeze Panes pada baris pertama
   const ws = workbook.addWorksheet(sheetName, {
@@ -86,21 +87,36 @@ const generateDisplaySheet = (
   for (let r = 0; r < dataLength; r++) {
     const rowIndex = r + 2; 
     const row = ws.getRow(rowIndex);
-    const isArchived = rawDataArray[r]?.isArchived;
+    
+    // Tentukan referensi baris raw sheet (jika reverseOrder, urutkan dari bawah)
+    const rawRowIndex = reverseOrder ? (dataLength - r + 1) : rowIndex;
+    const isArchived = rawDataArray[reverseOrder ? (dataLength - r - 1) : r]?.isArchived;
 
     columnsConfig.forEach((col, colIdx) => {
       const cell = row.getCell(colIdx + 1);
       
       if (col.customFormula) {
-        cell.value = { formula: col.customFormula(rowIndex) };
+        cell.value = { formula: col.customFormula(rawRowIndex) };
+      } else if (col.isDate) {
+        const rawCell = `${rawSheetName}!${col.rawCol}${rawRowIndex}`;
+        // Ekstrak bagian YYYY-MM-DD dan HH:MM:SS dari format ISO/SQL Timestamp dan rakit menjadi Date asli Excel
+        const dateFormula = `DATE(VALUE(MID(${rawCell},1,4)), VALUE(MID(${rawCell},6,2)), VALUE(MID(${rawCell},9,2))) + TIME(VALUE(MID(${rawCell},12,2)), VALUE(MID(${rawCell},15,2)), VALUE(MID(${rawCell},18,2)))`;
+        cell.value = { formula: `IF(OR(ISBLANK(${rawCell}), ${rawCell}=""), "-", IFERROR(${dateFormula}, "-"))` };
       } else {
-        const rawCell = `${rawSheetName}!${col.rawCol}${rowIndex}`;
+        const rawCell = `${rawSheetName}!${col.rawCol}${rawRowIndex}`;
         // Gunakan IF untuk fallback value agar nilai kosong tidak ditampilkan sebagai "0"
         cell.value = { formula: `IF(OR(ISBLANK(${rawCell}), ${rawCell}=""), "-", ${rawCell})` };
       }
 
       // Format Angka Ribuan
-      if (col.isCurrency || col.isNumber) cell.numFmt = '#,##0'; 
+      if (col.isCurrency || col.isNumber) {
+        cell.numFmt = '#,##0'; 
+      }
+      
+      // Format Tanggal Indonesia (Human Readable)
+      if (col.isDate) {
+        cell.numFmt = '[$-id-ID]hh:mm, d mmmm yyyy';
+      }
     });
 
     // Terapkan Gaya "Arsip" (Abu-abu & Coret) jika isArchived = true
@@ -164,8 +180,7 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
       { header: 'Stok Retur', rawCol: 'I', width: 15, align: 'right', isNumber: true },
       { header: 'Harga Modal', rawCol: 'E', width: 18, align: 'right', isCurrency: true },
       { header: 'Harga Grosir', rawCol: 'F', width: 18, align: 'right', isCurrency: true },
-      { header: 'Harga Eceran', rawCol: 'G', width: 18, align: 'right', isCurrency: true },
-      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(${RAW_SHEETS.PRODUCTS}!K${r}=1, "Diarsipkan", "Aktif")` }
+      { header: 'Harga Eceran', rawCol: 'G', width: 18, align: 'right', isCurrency: true }
     ], rawProducts.length, rawProducts);
 
     // 6. Generate Display: Toko
@@ -178,20 +193,19 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
       { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.STORES}!L${r}, _Config!C:D, 2, FALSE), "-")` },
       { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },
       { header: 'Nilai Aset Titipan', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
-      { header: 'Kunjungan Terakhir', rawCol: 'K', width: 22, isDate: true, align: 'right' },
-      { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & ${RAW_SHEETS.STORES}!F${r} & "," & ${RAW_SHEETS.STORES}!G${r}, "Buka Peta")` },
-      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(${RAW_SHEETS.STORES}!M${r}=1, "Diarsipkan", "Aktif")` }
+      { header: 'Kunjungan Terakhir', rawCol: 'K', width: 35, isDate: true, align: 'right' },
+      { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & ${RAW_SHEETS.STORES}!F${r} & "," & ${RAW_SHEETS.STORES}!G${r}, "Buka Peta")` }
     ], rawStores.length, rawStores);
 
-    // 7. Generate Display: Kunjungan (Header Nota Utama)
+    // 7. Generate Display: Kunjungan
     // Raw Map Visits: A=id, B=storeId, C=subtotal, D=amountPaid, E=debt, F=createdAt
     generateDisplaySheet(workbook, '3. Kunjungan', RAW_SHEETS.VISITS, [
-      { header: 'ID Nota', rawCol: 'A', width: 12, align: 'center' },
+      { header: 'Waktu Kunjungan', rawCol: 'F', width: 35, isDate: true, align: 'right' },
+      { header: 'Nama Toko', width: 30, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.VISITS}!B${r}, ${RAW_SHEETS.STORES}!A:B, 2, FALSE), "-")` },
       { header: 'Total Nilai Laku', rawCol: 'C', width: 20, align: 'right', isCurrency: true },
       { header: 'Tunai Dibayar', rawCol: 'D', width: 20, align: 'right', isCurrency: true },
-      { header: 'Sisa Hutang Tercatat', rawCol: 'E', width: 20, align: 'right', isCurrency: true },
-      { header: 'Waktu Transaksi', rawCol: 'F', width: 25, isDate: true, align: 'right' }
-    ], rawVisits.length, rawVisits);
+      { header: 'Sisa Hutang Tercatat', rawCol: 'E', width: 20, align: 'right', isCurrency: true }
+    ], rawVisits.length, rawVisits, true);
 
     // 8. Tulis Buffer dan Bagikan
     const buffer = await workbook.xlsx.writeBuffer();
