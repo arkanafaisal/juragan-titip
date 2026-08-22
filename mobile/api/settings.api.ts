@@ -158,7 +158,7 @@ export const useCheckDatabaseHasData = () => {
 export const useExportDatabase = () => {
   return useMutation({
     mutationFn: async (onProgress?: (msg: string) => void) => {
-      const { exportDatabaseToExcel } = await import('./excel.backup');
+      const { exportDatabaseToExcel } = await import('./excel.export');
       return exportDatabaseToExcel(onProgress);
     }
   });
@@ -241,7 +241,7 @@ export const useImportDatabase = () => {
       if (!file.name.toLowerCase().endsWith('.xlsx')) {
         throw new Error("Format file tidak didukung. Harap pilih file backup Excel berformat .xlsx");
       }
-      const { importDatabaseFromExcel } = await import('./excel.backup');
+      const { importDatabaseFromExcel } = await import('./excel.import');
       const res = await importDatabaseFromExcel(file.uri);
       return res.success;
     },
