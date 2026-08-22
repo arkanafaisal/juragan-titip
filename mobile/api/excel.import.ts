@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Buffer } from 'buffer';
 import { db } from '../db';
 import { products, stores, visits, visitItems, inventoryLogs } from '../db/schema';
+import { RAW_SHEETS, getTableColumnNames } from './excel.constants';
 
 // ==========================================
 // FUNGSI UTAMA IMPORT (RESTORE DATA)
@@ -17,11 +18,11 @@ export const importDatabaseFromExcel = async (fileUri: string) => {
     await workbook.xlsx.load(buffer as any);
 
     // Tarik seluruh 5 sheet raw yang tersembunyi
-    const rawProductsSheet = workbook.getWorksheet('_Raw_Products');
-    const rawStoresSheet = workbook.getWorksheet('_Raw_Stores');
-    const rawVisitsSheet = workbook.getWorksheet('_Raw_Visits');
-    const rawVisitItemsSheet = workbook.getWorksheet('_Raw_VisitItems');
-    const rawLogsSheet = workbook.getWorksheet('_Raw_InventoryLogs');
+    const rawProductsSheet = workbook.getWorksheet(RAW_SHEETS.PRODUCTS);
+    const rawStoresSheet = workbook.getWorksheet(RAW_SHEETS.STORES);
+    const rawVisitsSheet = workbook.getWorksheet(RAW_SHEETS.VISITS);
+    const rawVisitItemsSheet = workbook.getWorksheet(RAW_SHEETS.VISIT_ITEMS);
+    const rawLogsSheet = workbook.getWorksheet(RAW_SHEETS.INVENTORY_LOGS);
 
     if (!rawProductsSheet || !rawStoresSheet) {
       throw new Error("File tidak valid. Tidak ditemukan data utuh '_Raw' di dalam file backup ini.");
@@ -87,56 +88,27 @@ export const importDatabaseFromExcel = async (fileUri: string) => {
       await tx.delete(products);
       await tx.delete(stores);
 
+      // Helper pembersih data dinamis
+      const cleanItems = (items: any[], table: any) => {
+        const keys = getTableColumnNames(table);
+        return items.map(item => {
+          const payload: any = {};
+          keys.forEach(k => {
+             // Pastikan tipe data boolean dari database ditangani dengan baik
+             if (item[k] !== undefined && item[k] !== null && item[k] !== '') {
+               payload[k] = item[k];
+             }
+          });
+          return payload;
+        });
+      };
+
       // Insert ulang data secara berurutan dari Induk ke Anak
-      if (finalStores.length > 0) await tx.insert(stores).values(finalStores as any);
-      if (finalProducts.length > 0) await tx.insert(products).values(finalProducts as any);
-      
-      if (finalVisits.length > 0) {
-        const cleanVisits = finalVisits.map(visit => {
-          const payload: any = {
-            storeId: visit.storeId,
-            subtotal: visit.subtotal ?? 0,
-            amountPaid: visit.amountPaid ?? 0,
-            debt: visit.debt ?? visit.currentDebt ?? 0,
-            createdAt: visit.createdAt
-          };
-          if (visit.id !== undefined && visit.id !== null) payload.id = visit.id;
-          return payload;
-        });
-        await tx.insert(visits).values(cleanVisits as any);
-      }
-
-      if (finalVisitItems.length > 0) {
-        const cleanVisitItems = finalVisitItems.map(item => {
-          const payload: any = {
-            visitId: item.visitId,
-            productId: item.productId,
-            initialStock: item.initialStock ?? 0,
-            sold: item.sold ?? 0,
-            returned: item.returned ?? 0,
-            restocked: item.restocked ?? 0,
-            price: item.price ?? 0
-          };
-          if (item.id !== undefined && item.id !== null) payload.id = item.id;
-          return payload;
-        });
-        await tx.insert(visitItems).values(cleanVisitItems as any);
-      }
-
-      if (finalLogs.length > 0) {
-        const cleanLogs = finalLogs.map(log => {
-          const payload: any = {
-            productId: log.productId,
-            type: log.type,
-            quantity: log.quantity ?? 0,
-            storeName: log.storeName,
-            createdAt: log.createdAt
-          };
-          if (log.id !== undefined && log.id !== null) payload.id = log.id;
-          return payload;
-        });
-        await tx.insert(inventoryLogs).values(cleanLogs as any);
-      }
+      if (finalStores.length > 0) await tx.insert(stores).values(cleanItems(finalStores, stores) as any);
+      if (finalProducts.length > 0) await tx.insert(products).values(cleanItems(finalProducts, products) as any);
+      if (finalVisits.length > 0) await tx.insert(visits).values(cleanItems(finalVisits, visits) as any);
+      if (finalVisitItems.length > 0) await tx.insert(visitItems).values(cleanItems(finalVisitItems, visitItems) as any);
+      if (finalLogs.length > 0) await tx.insert(inventoryLogs).values(cleanItems(finalLogs, inventoryLogs) as any);
     });
 
     return { success: true, message: "Restore data berhasil!" };

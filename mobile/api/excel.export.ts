@@ -5,6 +5,7 @@ import { Buffer } from 'buffer';
 import { db } from '../db';
 import { products, stores, visits, visitItems, inventoryLogs } from '../db/schema';
 import { useSettingsStore } from './settings.api';
+import { RAW_SHEETS, getTableColumnNames } from './excel.constants';
 
 // ==========================================
 // 1. KONFIGURASI GLOBAL
@@ -45,27 +46,11 @@ const generateHiddenSheets = (workbook: ExcelJS.Workbook, data: any) => {
   };
 
   // Simpan SELURUH tabel untuk backup yang aman (dengan kolom eksplisit)
-  addRaw('_Raw_Products', data.products, [
-    'id', 'name', 'normalizedName', 'category', 'costPrice', 'wholesalePrice', 
-    'retailPrice', 'warehouseStock', 'returnedStock', 'description', 'isArchived', 'createdAt'
-  ]);
-  
-  addRaw('_Raw_Stores', data.stores, [
-    'id', 'name', 'normalizedName', 'ownerName', 'phone', 'latitude', 'longitude', 
-    'notes', 'debt', 'assetValue', 'lastVisitAt', 'category', 'isArchived', 'createdAt'
-  ]);
-  
-  addRaw('_Raw_Visits', data.visits, [
-    'id', 'storeId', 'subtotal', 'amountPaid', 'debt', 'createdAt'
-  ]);
-  
-  addRaw('_Raw_VisitItems', data.visitItems, [
-    'id', 'visitId', 'productId', 'initialStock', 'sold', 'returned', 'restocked', 'price'
-  ]);
-  
-  addRaw('_Raw_InventoryLogs', data.inventoryLogs, [
-    'id', 'productId', 'type', 'quantity', 'storeName', 'createdAt'
-  ]);
+  addRaw(RAW_SHEETS.PRODUCTS, data.products, getTableColumnNames(products));
+  addRaw(RAW_SHEETS.STORES, data.stores, getTableColumnNames(stores));
+  addRaw(RAW_SHEETS.VISITS, data.visits, getTableColumnNames(visits));
+  addRaw(RAW_SHEETS.VISIT_ITEMS, data.visitItems, getTableColumnNames(visitItems));
+  addRaw(RAW_SHEETS.INVENTORY_LOGS, data.inventoryLogs, getTableColumnNames(inventoryLogs));
 };
 
 // ==========================================
@@ -171,36 +156,36 @@ export const exportDatabaseToExcel = async (onProgress?: (msg: string) => void) 
 
     // 5. Generate Display: Produk
     // Raw Map Products: A=id, B=name, C=normalized, D=category, E=cost, F=wholesale, G=retail, H=warehouseStock, I=returnedStock, J=desc, K=isArchived, L=createdAt
-    generateDisplaySheet(workbook, '1. Produk', '_Raw_Products', [
+    generateDisplaySheet(workbook, '1. Produk', RAW_SHEETS.PRODUCTS, [
       { header: 'Nama Produk', rawCol: 'B', width: 30 },
       { header: 'Deskripsi', rawCol: 'J', width: 35 },
-      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(_Raw_Products!D${r}, _Config!A:B, 2, FALSE), "-")` },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.PRODUCTS}!D${r}, _Config!A:B, 2, FALSE), "-")` },
       { header: 'Stok Gudang', rawCol: 'H', width: 15, align: 'right', isNumber: true },
       { header: 'Stok Retur', rawCol: 'I', width: 15, align: 'right', isNumber: true },
       { header: 'Harga Modal', rawCol: 'E', width: 18, align: 'right', isCurrency: true },
       { header: 'Harga Grosir', rawCol: 'F', width: 18, align: 'right', isCurrency: true },
       { header: 'Harga Eceran', rawCol: 'G', width: 18, align: 'right', isCurrency: true },
-      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Products!K${r}=1, "Diarsipkan", "Aktif")` }
+      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(${RAW_SHEETS.PRODUCTS}!K${r}=1, "Diarsipkan", "Aktif")` }
     ], rawProducts.length, rawProducts);
 
     // 6. Generate Display: Toko
     // Raw Map Stores: A=id, B=name, C=normalized, D=owner, E=phone, F=lat, G=lng, H=notes, I=debt, J=assetValue, K=lastVisit, L=category, M=isArchived, N=createdAt
-    generateDisplaySheet(workbook, '2. Toko', '_Raw_Stores', [
+    generateDisplaySheet(workbook, '2. Toko', RAW_SHEETS.STORES, [
       { header: 'Nama Toko', rawCol: 'B', width: 28 },
       { header: 'Nama Pemilik', rawCol: 'D', width: 20 },
       { header: 'Nomor Telepon', rawCol: 'E', width: 18 },
       { header: 'Catatan Khusus', rawCol: 'H', width: 30 },
-      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(_Raw_Stores!L${r}, _Config!C:D, 2, FALSE), "-")` },
+      { header: 'Kategori', width: 20, customFormula: (r: number) => `IFERROR(VLOOKUP(${RAW_SHEETS.STORES}!L${r}, _Config!C:D, 2, FALSE), "-")` },
       { header: 'Total Hutang', rawCol: 'I', width: 18, align: 'right', isCurrency: true },
       { header: 'Nilai Aset Titipan', rawCol: 'J', width: 18, align: 'right', isCurrency: true },
       { header: 'Kunjungan Terakhir', rawCol: 'K', width: 22, isDate: true, align: 'right' },
-      { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & _Raw_Stores!F${r} & "," & _Raw_Stores!G${r}, "Buka Peta")` },
-      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(_Raw_Stores!M${r}=1, "Diarsipkan", "Aktif")` }
+      { header: 'Google Maps', width: 18, align: 'center', customFormula: (r: number) => `HYPERLINK("https://www.google.com/maps/search/?api=1&query=" & ${RAW_SHEETS.STORES}!F${r} & "," & ${RAW_SHEETS.STORES}!G${r}, "Buka Peta")` },
+      { header: 'Status Arsip', width: 15, align: 'center', customFormula: (r: number) => `IF(${RAW_SHEETS.STORES}!M${r}=1, "Diarsipkan", "Aktif")` }
     ], rawStores.length, rawStores);
 
     // 7. Generate Display: Kunjungan (Header Nota Utama)
     // Raw Map Visits: A=id, B=storeId, C=subtotal, D=amountPaid, E=debt, F=createdAt
-    generateDisplaySheet(workbook, '3. Kunjungan', '_Raw_Visits', [
+    generateDisplaySheet(workbook, '3. Kunjungan', RAW_SHEETS.VISITS, [
       { header: 'ID Nota', rawCol: 'A', width: 12, align: 'center' },
       { header: 'Total Nilai Laku', rawCol: 'C', width: 20, align: 'right', isCurrency: true },
       { header: 'Tunai Dibayar', rawCol: 'D', width: 20, align: 'right', isCurrency: true },
