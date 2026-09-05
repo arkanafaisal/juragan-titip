@@ -80,7 +80,7 @@ export default function Dashboard() {
           </div>
         </div>
         <button
-          onClick={() => window.open('https://drive.google.com/file/d/1Llqtwb5En8yeq1dNV2OzjpAaYoEPDoRw/view?usp=drive_link', '_blank')}
+          onClick={() => window.open('https://drive.google.com/drive/folders/1V5Id5c5mO0FkjOY88hmPFGVMYc3EX0PT?usp=drive_link', '_blank')}
           className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-on-primary rounded-lg text-sm font-semibold transition-colors shrink-0"
         >
           <Download className="w-4 h-4" />
