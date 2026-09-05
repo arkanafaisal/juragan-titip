@@ -88,9 +88,10 @@ export default function VisitInvoiceScreen() {
         {/* HEADER KONTROL (Di luar nota, ikut scroll) */}
         <View className="flex-row items-center justify-between mb-4 mt-2">
           <BackButton />
+          {/* Fitur cetak di-hide sementara sampai siap diimplementasikan */}
           <TouchableOpacity 
             onPress={handlePrint}
-            className="px-4 py-2 bg-primary rounded-xl flex-row items-center gap-2 active:opacity-80"
+            className="hidden px-4 py-2 bg-primary rounded-xl flex-row items-center gap-2 active:opacity-80"
           >
             <Printer size={THEME.iconSize.sm} color={THEME.colors['on-primary']} />
             <Text className="text-on-primary font-bold text-body-sm">Cetak</Text>
