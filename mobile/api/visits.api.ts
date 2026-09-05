@@ -98,6 +98,10 @@ export function useCreateVisit() {
 
   return useMutation({
     mutationFn: async (data: VisitFormValues) => {
+      if (!data.storeId || data.storeId <= 0) {
+        throw new Error("Sistem mencegah penyimpanan: ID Toko tidak ditemukan atau bernilai 0. Silakan tutup halaman ini dan buka kembali dari daftar toko.");
+      }
+      
       return await db.transaction(async (tx) => {
         
         // --- A. Hitung Subtotal dan Piutang ---

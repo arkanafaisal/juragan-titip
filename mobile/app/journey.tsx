@@ -284,7 +284,7 @@ export default function JourneyScreen() {
                   <Text className="font-bold text-sm mt-1.5 text-text-primary">BUKA MAPS</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
-                  onPress={() => router.push(`/(tabs)/store-visit?storeId=${selectedStore.id}`)}
+                  onPress={() => router.push(`/(tabs)/store-visit?id=${selectedStore.id}`)}
                   activeOpacity={0.8}
                   className="flex-1 items-center justify-center py-4 bg-primary rounded-2xl"
                 >
