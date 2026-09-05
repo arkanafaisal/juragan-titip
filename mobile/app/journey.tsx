@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Linking, StyleSheet, ActivityIndicator } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { 
   X, MapPin, Map as MapIcon, Play, Navigation, LocateFixed 
 } from 'lucide-react-native';
@@ -11,6 +11,7 @@ import * as Location from 'expo-location';
 import THEME from '../constants/css';
 import { formatRupiah } from '../utils/formatter.util';
 import { useGetOverdueStores } from '../api/stores.api';
+import { useSettingsStore } from '../api/settings.api';
 
 const getDaysAgoText = (dateString?: string | null) => {
   if (!dateString) return "Belum Pernah";
@@ -36,6 +37,41 @@ export default function JourneyScreen() {
   const router = useRouter();
   
   const { data: dbStores, isLoading } = useGetOverdueStores();
+  const storeOverdueDays = useSettingsStore(state => state.storeOverdueDays);
+
+  const [mapStores, setMapStores] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (dbStores) {
+      setMapStores(prev => {
+        const storeMap = new Map(prev.map(s => [s.id, s]));
+
+        // Update dengan data terbaru dari DB
+        dbStores.forEach(store => {
+          storeMap.set(store.id, store);
+        });
+
+        // Toko yang tadinya ada tapi hilang dari dbStores berarti baru saja dikunjungi (tidak overdue lagi)
+        prev.forEach(store => {
+          if (!dbStores.find(s => s.id === store.id)) {
+            storeMap.set(store.id, {
+              ...store,
+              lastVisitAt: new Date().toISOString()
+            });
+          }
+        });
+
+        return Array.from(storeMap.values());
+      });
+    }
+  }, [dbStores]);
+
+  const isStoreOverdue = React.useCallback((lastVisitAt: string | null) => {
+    if (!lastVisitAt) return true;
+    const diffTime = Math.abs(new Date().getTime() - new Date(lastVisitAt).getTime());
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    return diffDays >= storeOverdueDays;
+  }, [storeOverdueDays]);
   
   const [hasGpsAccess, setHasGpsAccess] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
@@ -44,10 +80,17 @@ export default function JourneyScreen() {
   const [selectedStore, setSelectedStore] = useState<any | null>(null);
   const mapRef = useRef<MapView>(null);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // Auto-close modal ketika kembali ke halaman ini
+      setSelectedStore(null);
+    }, [])
+  );
+
   const stores = React.useMemo(() => {
-    if (!dbStores) return [];
+    if (!mapStores) return [];
     
-    return dbStores.map(store => {
+    return mapStores.map(store => {
       let dist = 0;
       if (userLocation) {
         dist = getDistanceKm(userLocation.lat, userLocation.lng, store.latitude, store.longitude);
@@ -60,7 +103,7 @@ export default function JourneyScreen() {
       if (a.distance === '?' || b.distance === '?') return 0;
       return parseFloat(a.distance) - parseFloat(b.distance);
     });
-  }, [dbStores, userLocation]);
+  }, [mapStores, userLocation]);
 
   const handleUpdateLocation = async () => {
     setIsLocating(true);
@@ -147,17 +190,17 @@ export default function JourneyScreen() {
     );
   }
 
-  // STATUS: Kosong (Tidak ada toko overdue)
+  // STATUS: Kosong (Tidak ada toko)
   if (hasGpsAccess && stores.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-surface items-center justify-center p-6">
         <Stack.Screen options={{ headerShown: false }} />
         <Text className="text-3xl mb-4">🎉</Text>
         <Text className="font-h2 text-h2 font-bold mb-3 text-center text-text-primary">
-          Luar Biasa!
+          Tidak Ada Toko
         </Text>
         <Text className="text-text-secondary mb-8 font-body text-body text-center max-w-[300px]">
-          Semua toko sudah dikunjungi tepat waktu. Tidak ada target kunjungan untuk rute keliling saat ini.
+          Tidak ditemukan toko aktif untuk dikunjungi saat ini.
         </Text>
         <TouchableOpacity onPress={() => router.back()} className="px-6 py-3 bg-primary rounded-full" activeOpacity={0.7}>
           <Text className="text-on-primary font-bold">Tutup Mode Keliling</Text>
@@ -194,8 +237,18 @@ export default function JourneyScreen() {
           <Marker
             key={store.id}
             coordinate={{ latitude: store.latitude, longitude: store.longitude }}
-            onPress={() => handleMarkerPress(store)}
-            pinColor={selectedStore?.id === store.id ? THEME.colors.primary : THEME.colors.error}
+            onPress={() => {
+              if (isStoreOverdue(store.lastVisitAt)) {
+                handleMarkerPress(store);
+              }
+            }}
+            pinColor={
+              selectedStore?.id === store.id 
+                ? THEME.colors.primary 
+                : isStoreOverdue(store.lastVisitAt) 
+                  ? THEME.colors.error 
+                  : THEME.colors.success
+            }
           />
         ))}
       </MapView>
