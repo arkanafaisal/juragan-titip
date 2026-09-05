@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
-import { 
-  Navigation, 
-  Clock, 
+import {
+  Navigation,
+  Clock,
   ArrowRight,
   TrendingUp,
   Inbox
@@ -20,19 +20,19 @@ import { useSettingsStore } from '../../api/settings.api';
 
 const getRelativeDateString = (dateStr: string | null) => {
   if (!dateStr) return 'Belum Pernah';
-  
+
   const visitDate = new Date(dateStr);
   const now = new Date();
-  
+
   visitDate.setHours(0, 0, 0, 0);
   now.setHours(0, 0, 0, 0);
-  
+
   const diffTime = now.getTime() - visitDate.getTime();
   const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-  
+
   const relativeText = diffDays === 0 ? 'Hari ini' : diffDays === 1 ? 'Kemarin' : `${diffDays} hari lalu`;
   const staticText = visitDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-  
+
   return `${relativeText} (${staticText})`;
 };
 
@@ -45,15 +45,15 @@ export default function DashboardScreen() {
 
   const isLoading = isLoadingDashboard || isLoadingStock;
 
-  const todayDate = new Intl.DateTimeFormat('id-ID', { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'short', 
-    year: 'numeric' 
+  const todayDate = new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
   }).format(new Date());
 
   const screenWidth = Dimensions.get('window').width;
-  const chartWidth = screenWidth - 64; 
+  const chartWidth = screenWidth - 64;
   const barWidth = 28;
   const spacing = Math.max((chartWidth - (7 * barWidth)) / 7, 10);
 
@@ -72,7 +72,7 @@ export default function DashboardScreen() {
   };
 
   return (
-    <ScrollView 
+    <ScrollView
       className="flex-1 bg-background"
       contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
@@ -80,7 +80,7 @@ export default function DashboardScreen() {
       {/* 1. HEADER & GREETING */}
       <View className="flex-col gap-1 mb-6">
         <Text className="font-h1 text-h1 font-bold text-text-primary">
-          Halo, Juragan! 👋
+          Halo juragan, ayo keliling!
         </Text>
         <Text className="font-body-sm text-body-sm text-text-secondary">
           {todayDate}
@@ -94,24 +94,24 @@ export default function DashboardScreen() {
             {overdueStores.length} Toko Perlu Dikunjungi <Text className="font-body-sm text-body-sm font-normal opacity-80">{`(> ${storeOverdueDays} hari)`}</Text>
           </Text>
         </View>
-        
+
         {overdueStores.length > 0 ? (
-          <ScrollView 
-            style={{ maxHeight: 165 }} 
-            nestedScrollEnabled 
+          <ScrollView
+            style={{ maxHeight: 165 }}
+            nestedScrollEnabled
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 8 }}
           >
             <View className="flex-row flex-wrap gap-2">
               {overdueStores.map((store) => (
                 <Link href={`/store-detail?id=${store.id}`} asChild key={store.id}>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     className="p-3 rounded-xl bg-surface-container-lowest flex-grow max-w-[48%]"
                     style={{ minWidth: '48%' }}
                     activeOpacity={0.7}
                   >
-                    <Text 
-                      className="font-body-sm text-body-sm font-semibold text-text-primary" 
+                    <Text
+                      className="font-body-sm text-body-sm font-semibold text-text-primary"
                       numberOfLines={1}
                       adjustsFontSizeToFit
                       minimumFontScale={0.8}
@@ -146,19 +146,19 @@ export default function DashboardScreen() {
             {criticalStock.outOfStock.length} Habis, {criticalStock.lowStock.length} Menipis <Text className="font-body-sm text-body-sm font-normal opacity-80">{`(≤ ${lowStockThreshold})`}</Text>
           </Text>
         </View>
-        
+
         {(criticalStock.outOfStock.length > 0 || criticalStock.lowStock.length > 0) ? (
-          <ScrollView 
-            style={{ maxHeight: 125, overflow: 'hidden' }} 
-            nestedScrollEnabled 
+          <ScrollView
+            style={{ maxHeight: 125, overflow: 'hidden' }}
+            nestedScrollEnabled
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 8 }}
           >
             <View className="flex-row flex-wrap gap-2">
               {criticalStock.outOfStock.map(p => (
                 <Link href={`/product-detail?id=${p.id}`} asChild key={p.id}>
-                  <TouchableOpacity 
-                    className="p-3 rounded-xl bg-surface-container-lowest flex-row items-center justify-between flex-grow max-w-[48%]" 
+                  <TouchableOpacity
+                    className="p-3 rounded-xl bg-surface-container-lowest flex-row items-center justify-between flex-grow max-w-[48%]"
                     style={{ minWidth: '48%' }}
                     activeOpacity={0.7}
                   >
@@ -173,8 +173,8 @@ export default function DashboardScreen() {
               ))}
               {criticalStock.lowStock.map(p => (
                 <Link href={`/product-detail?id=${p.id}`} asChild key={p.id}>
-                  <TouchableOpacity 
-                    className="p-3 rounded-xl bg-surface-container-lowest flex-row items-center justify-between flex-grow max-w-[48%]" 
+                  <TouchableOpacity
+                    className="p-3 rounded-xl bg-surface-container-lowest flex-row items-center justify-between flex-grow max-w-[48%]"
                     style={{ minWidth: '48%' }}
                     activeOpacity={0.7}
                   >
@@ -209,11 +209,11 @@ export default function DashboardScreen() {
           <View className="bg-primary rounded-2xl shadow-sm overflow-hidden p-5">
             {/* Ornamen Background diletakkan di atas agar berada di layer bawah secara Native */}
             <View className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full" />
-            
+
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4">
                 <View className="flex-row items-center gap-2 mb-1">
-                  <Navigation size={20} color={THEME.colors['on-primary']} /> 
+                  <Navigation size={20} color={THEME.colors['on-primary']} />
                   <Text className="font-h2 text-h2 font-bold text-on-primary">
                     Mulai Rute Keliling
                   </Text>
@@ -241,7 +241,7 @@ export default function DashboardScreen() {
             <TrendingUp size={16} color={THEME.colors.primary} />
           </View>
         </View>
-        
+
         <View className="h-[150px] w-full mt-2">
           {data.totalVisitsThisWeek === 0 ? (
             <View className="flex-1 items-center justify-center opacity-70">
@@ -279,10 +279,10 @@ export default function DashboardScreen() {
           <Clock size={16} color={THEME.colors.primary} />
           <Text className="font-h3 text-h3 font-bold text-text-primary">Riwayat 7 Hari Terakhir</Text>
         </View>
-        
-        <ScrollView 
+
+        <ScrollView
           style={{ maxHeight: 350 }}
-          className="overflow-hidden" 
+          className="overflow-hidden"
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
           contentContainerStyle={data.recentHistory.length === 0 ? { flexGrow: 1, justifyContent: 'center' } : {}}
@@ -290,34 +290,34 @@ export default function DashboardScreen() {
           {data.recentHistory.length > 0 ? (
             data.recentHistory.map((item, index) => (
               <Link href={`/visit-invoice?id=${item.id}`} asChild key={item.id}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   className={`flex-row items-center justify-between px-3 rounded-xl border border-outline-variant ${index !== 0 ? 'mt-2' : ''}`}
                   activeOpacity={0.7}
                 >
                   <View className="flex-row items-center gap-3 flex-1 pr-2 py-2">
-                  <Text className="font-data-sm text-data-sm text-text-secondary w-[70px] shrink-0">
-                    {item.time}
-                  </Text>
-                  <View className="flex-1">
-                    <Text className="font-body-sm text-body-sm font-semibold text-text-primary" numberOfLines={1}>
-                      {item.store}
+                    <Text className="font-data-sm text-data-sm text-text-secondary w-[70px] shrink-0">
+                      {item.time}
                     </Text>
-                  </View>
-                </View>
-
-                <View className="flex-col items-start shrink-0 pl-2 max-w-[120px]">
-                  {item.restockedItems.length > 0 ? (
-                    item.restockedItems.slice(0, 3).map((prod, idx) => (
-                      <Text key={idx} className="text-[10px] leading-[14px] text-text-secondary text-right" numberOfLines={1}>
-                        <Text className="font-semibold text-text-primary">+{prod.quantity}</Text> {prod.name}
+                    <View className="flex-1">
+                      <Text className="font-body-sm text-body-sm font-semibold text-text-primary" numberOfLines={1}>
+                        {item.store}
                       </Text>
-                    ))
-                  ) : (
-                    <Text className="text-[10px] text-text-muted text-right">
-                      -
-                    </Text>
-                  )}
-                </View>
+                    </View>
+                  </View>
+
+                  <View className="flex-col items-start shrink-0 pl-2 max-w-[120px]">
+                    {item.restockedItems.length > 0 ? (
+                      item.restockedItems.slice(0, 3).map((prod, idx) => (
+                        <Text key={idx} className="text-[10px] leading-[14px] text-text-secondary text-right" numberOfLines={1}>
+                          <Text className="font-semibold text-text-primary">+{prod.quantity}</Text> {prod.name}
+                        </Text>
+                      ))
+                    ) : (
+                      <Text className="text-[10px] text-text-muted text-right">
+                        -
+                      </Text>
+                    )}
+                  </View>
                 </TouchableOpacity>
               </Link>
             ))
