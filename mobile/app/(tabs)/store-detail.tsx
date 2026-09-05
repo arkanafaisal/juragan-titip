@@ -9,7 +9,7 @@ import { StoreInfoCard } from '../../components/stores/store-info-card';
 import { FinancialSummary } from '../../components/stores/financial-summary';
 import { StoreTabsSection } from '../../components/stores/store-tabs-section';
 
-import { useGetStoreById } from '../../api/stores.api';
+import { useGetStoreById, useToggleArchiveStore } from '../../api/stores.api';
 import { useGetStoreVisitsAnalysis } from '../../api/visits.api';
 import { useSettingsStore } from '../../api/settings.api';
 
@@ -26,6 +26,13 @@ export default function StoreDetailScreen() {
 
   const { data: storeData, isLoading: isStoreLoading, isError: isStoreError, error: storeError } = useGetStoreById(id ? Number(id) : undefined);
   const { data: analysisData, isLoading: isAnalysisLoading } = useGetStoreVisitsAnalysis(id ? Number(id) : undefined);
+  const toggleArchiveStore = useToggleArchiveStore();
+
+  const handleRestoreStore = () => {
+    if (storeData) {
+      toggleArchiveStore.mutate({ id: storeData.id, isArchived: false });
+    }
+  };
 
   if (isStoreLoading || isAnalysisLoading) {
     return (
@@ -58,6 +65,23 @@ export default function StoreDetailScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="p-4 flex-col gap-4 pb-8">
           
+          {store.isArchived && (
+            <View className="flex-row items-center justify-between p-3 bg-warning/20 border border-warning/50 rounded-xl mb-1">
+              <View className="flex-1 pr-3">
+                <Text className="font-bold text-text-primary text-sm">Toko Diarsipkan</Text>
+                <Text className="text-xs text-text-secondary">Toko ini disembunyikan dari daftar utama.</Text>
+              </View>
+              <TouchableOpacity 
+                onPress={handleRestoreStore}
+                disabled={toggleArchiveStore.isPending}
+                className="bg-warning px-3 py-2 rounded-lg"
+                activeOpacity={0.7}
+              >
+                <Text className="text-on-warning font-bold text-xs">PULIHKAN</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           <BackButton />
 
           <StoreInfoCard 

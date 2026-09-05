@@ -43,6 +43,41 @@ export function useAddStore() {
   });
 }
 
+
+export function useToggleArchiveStore() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, isArchived }: { id: number; isArchived: boolean }) => {
+      try {
+        await db.update(stores)
+          .set({ isArchived })
+          .where(eq(stores.id, id));
+      } catch (error: any) {
+        throw new Error(error.message || "Gagal mengubah status arsip toko.");
+      }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
+      queryClient.invalidateQueries({ queryKey: ['store', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['overdueStores'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+      
+      Toast.show({
+        type: 'success',
+        text1: variables.isArchived ? 'Toko Diarsipkan' : 'Toko Dipulihkan',
+        text2: variables.isArchived ? 'Toko telah disembunyikan dari daftar utama.' : 'Toko kembali muncul di daftar utama.'
+      });
+    },
+    onError: (error: any, variables) => {
+      Toast.show({
+        type: 'error',
+        text1: variables.isArchived ? 'Gagal Mengarsipkan' : 'Gagal Memulihkan',
+        text2: error.message || 'Terjadi kesalahan sistem'
+      });
+    }
+  });
+}
+
 export interface GetStoresFilters {
   search?: string;
   category?: string;

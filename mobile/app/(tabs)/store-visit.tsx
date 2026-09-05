@@ -119,6 +119,22 @@ export default function StoreVisitScreen() {
     }, [reset, storeIdNum])
   );
 
+  // Cek Status Arsip Toko
+  useEffect(() => {
+    if (storeData?.isArchived) {
+      setInfoModal({
+        visible: true,
+        title: 'Toko Diarsipkan',
+        message: 'Tidak dapat memulai kunjungan untuk toko yang sedang diarsipkan. Silakan pulihkan toko terlebih dahulu.',
+        buttonText: 'Kembali',
+        onClose: () => {
+          setInfoModal(prev => ({ ...prev, visible: false }));
+          router.back();
+        }
+      });
+    }
+  }, [storeData?.isArchived, router]);
+
   // Mencegat Navigasi (Hardware Back)
   useFocusEffect(
     useCallback(() => {

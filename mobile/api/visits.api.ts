@@ -104,6 +104,12 @@ export function useCreateVisit() {
       
       return await db.transaction(async (tx) => {
         
+        // --- 0. PRE-CHECK: Toko tidak diarsipkan ---
+        const targetStore = await tx.select({ isArchived: stores.isArchived }).from(stores).where(eq(stores.id, data.storeId)).limit(1);
+        if (targetStore.length === 0 || targetStore[0].isArchived) {
+           throw new Error("Sistem mencegah penyimpanan: Toko tidak ditemukan atau sedang diarsipkan.");
+        }
+
         // --- A. Hitung Subtotal dan Piutang ---
         let subtotal = 0;
         let newAssetValue = 0;

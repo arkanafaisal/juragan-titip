@@ -14,7 +14,7 @@ import { BottomModal } from '@/components/ui/bottom-modal';
 import { MapPicker } from '../../components/shared/map-picker';
 
 import { storeFormSchema, StoreFormValues } from '../../schemas/store-form.schema';
-import { useAddStore, useUpdateStore, useGetStoreById } from '../../api/stores.api';
+import { useAddStore, useUpdateStore, useGetStoreById, useToggleArchiveStore } from '../../api/stores.api';
 import { useSettingsStore } from '../../api/settings.api';
 
 export default function StoreFormScreen() {
@@ -25,6 +25,7 @@ export default function StoreFormScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [errorInfo, setErrorInfo] = useState<{visible: boolean; title: string; message: string; onContinue?: () => void; buttonText?: string}>({ visible: false, title: '', message: '' });
   const [coordinateInput, setCoordinateInput] = useState("");
@@ -55,6 +56,7 @@ export default function StoreFormScreen() {
   
   const addStore = useAddStore();
   const updateStore = useUpdateStore();
+  const toggleArchiveStore = useToggleArchiveStore();
   const { data: storeData, isLoading: isLoadingStore } = useGetStoreById(storeId);
 
   const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<StoreFormValues>({
@@ -146,6 +148,21 @@ export default function StoreFormScreen() {
           router.back();
         },
         onError: (err) => showError('Gagal Menyimpan', err.message)
+      });
+    }
+  };
+
+  const handleArchiveToggle = () => {
+    if (isEdit && storeId && storeData) {
+      const newStatus = !storeData.isArchived;
+      toggleArchiveStore.mutate({ id: storeId, isArchived: newStatus }, {
+        onSuccess: () => {
+          setIsArchiveModalOpen(false);
+          router.back();
+        },
+        onError: (err) => {
+          setIsArchiveModalOpen(false);
+        }
       });
     }
   };
@@ -336,6 +353,19 @@ export default function StoreFormScreen() {
                 {(addStore.isPending || updateStore.isPending) ? "MENYIMPAN..." : (isEdit ? "SIMPAN PERUBAHAN" : "TAMBAH TOKO")}
               </Text>
             </TouchableOpacity>
+            
+            {isEdit && storeData && (
+              <TouchableOpacity 
+                onPress={() => setIsArchiveModalOpen(true)}
+                disabled={addStore.isPending || updateStore.isPending || toggleArchiveStore.isPending}
+                className={`w-full py-3.5 rounded-xl flex-row items-center justify-center shadow-sm ${storeData.isArchived ? 'bg-success' : 'bg-error'}`}
+                activeOpacity={0.7}
+              >
+                <Text className={`font-bold text-sm ${storeData.isArchived ? 'text-on-success' : 'text-on-error'}`}>
+                  {storeData.isArchived ? "PULIHKAN TOKO" : "ARSIPKAN TOKO"}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
         </View>
@@ -382,6 +412,16 @@ export default function StoreFormScreen() {
           setIsLeaveModalOpen(false);
           router.back();
         }}
+      />
+
+      <ConfirmModal
+        visible={isArchiveModalOpen}
+        title={storeData?.isArchived ? "Pulihkan Toko?" : "Arsipkan Toko?"}
+        message={storeData?.isArchived ? "Toko akan dikembalikan ke daftar utama dan bisa diakses seperti biasa." : "Yakin ingin mengarsipkan toko ini?\nToko yang diarsipkan tidak akan muncul di daftar, namun riwayat kunjungannya akan tetap tersimpan."}
+        cancelText="Batal"
+        confirmText={storeData?.isArchived ? "Pulihkan" : "Arsipkan"}
+        onCancel={() => setIsArchiveModalOpen(false)}
+        onConfirm={handleArchiveToggle}
       />
 
       <InfoModal
