@@ -108,11 +108,11 @@ export const importDatabaseFromExcel = async (fileUri: string) => {
     await db.transaction(async (tx) => {
       // Hapus berurutan dari tabel paling anak (Child) ke tabel induk (Parent)
       // Ini WAJIB untuk menghindari error "FOREIGN KEY constraint failed"
-      await tx.delete(visitItems);
-      await tx.delete(inventoryLogs);
-      await tx.delete(visits);
-      await tx.delete(products);
-      await tx.delete(stores);
+      await tx.delete(visitItems).run();
+      await tx.delete(inventoryLogs).run();
+      await tx.delete(visits).run();
+      await tx.delete(products).run();
+      await tx.delete(stores).run();
 
       // Helper pembersih data dinamis
       const cleanItems = (items: any[], table: any) => {

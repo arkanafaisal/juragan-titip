@@ -268,11 +268,11 @@ export const useResetDatabase = () => {
   return useMutation({
     mutationFn: async () => {
       await db.transaction(async (tx) => {
-        await tx.delete(visitItems);
-        await tx.delete(visits);
-        await tx.delete(inventoryLogs);
-        await tx.delete(products);
-        await tx.delete(stores);
+        await tx.delete(visitItems).run();
+        await tx.delete(visits).run();
+        await tx.delete(inventoryLogs).run();
+        await tx.delete(products).run();
+        await tx.delete(stores).run();
       });
       
       // Opsional: hapus urutan auto increment agar kembali mulai dari 1
